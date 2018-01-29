@@ -5,9 +5,17 @@
   "scripts": {
     "test": "",
     "build": "webpack",
-    "dev": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --disable-host-check"
+    "dev": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --disable-host-check",
+    "lint": "eslint .",
+    "validate": "npm ls"
   },
   "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
     "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
@@ -15,8 +23,14 @@
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.9",
     "eac.js": "^1.0.4",
+    "precommit-hook-eslint": "^3.0.0",
     "style-loader": "^0.20.1",
     "web3": "^1.0.0-beta.29",
     "webpack": "^3.10.0"
-  }
+  },
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ]
 }
