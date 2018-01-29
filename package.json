@@ -1,0 +1,22 @@
+{
+  "name": "eth-alarm-clock-dapp",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "test": "",
+    "build": "webpack",
+    "dev": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --disable-host-check"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.11.1"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "copy-webpack-plugin": "^4.3.1",
+    "css-loader": "^0.28.9",
+    "eac.js": "^1.0.4",
+    "style-loader": "^0.20.1",
+    "web3": "^1.0.0-beta.29",
+    "webpack": "^3.10.0"
+  }
+}
