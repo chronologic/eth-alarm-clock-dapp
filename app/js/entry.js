@@ -1,10 +1,7 @@
-/*
-	Import all JS and CSS here.
-	This is used for minimisation/obfuscation.
-*/
+/* Import all JS and CSS here. This is used for minimisation/obfuscation. */
 
 // JS
-import "./app.js";
+import './app.js'
 
 // CSS
-import "../css/style.css";
+import '../css/style.css'

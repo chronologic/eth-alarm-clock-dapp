@@ -1,6 +1,6 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
+const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
 
 module.exports = {
   entry: './app/js/entry.js',
@@ -10,22 +10,22 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      { from: './app/index.html', to: "index.html" },
+      { from: './app/index.html', to: 'index.html' }
     ]),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: false,
+        warnings: false
       },
       output: {
-        comments: false,
-      },
+        comments: false
+      }
     })
   ],
   module: {
     rules: [
       {
-       test: /\.css$/,
-       use: [ 'style-loader', 'css-loader' ]
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
       }
     ],
     loaders: [
