@@ -8,4 +8,15 @@ cache:
   directories:
     - node_modules
 script:
-  - npm run test
+  - npm run build
+language: generic
+before_deploy:
+  - cd www
+deploy:
+  provider: s3
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: $AWS_S3_BUCKET
+  skip_cleanup: true
+  acl: public_read
+  upload-dir: $AWS_S3_BUCKET_DIR
