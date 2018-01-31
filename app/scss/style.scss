@@ -2,8 +2,15 @@ $primary-color: #21FFFF;
 
 
 /* PAGES TEMPLATE OVERRIDES */
+
 .brand {
 	margin-left: 80px;
+}
+
+.page-container {	
+    top: 0;
+    bottom: 0;
+    position: fixed;
 }
 
 .page-content-wrapper {
