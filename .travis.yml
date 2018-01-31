@@ -11,7 +11,7 @@ install: npm install
 script:
   - npm run build
 before_deploy:
-  - cd www
+  - cd out
 deploy:
   provider: s3
   access_key_id: $AWS_ACCESS_KEY
