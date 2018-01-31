@@ -12,3 +12,7 @@ A DApp that interacts with the Ethereum Alarm Clock.
 3. `npm run build` - Build all the custom JS and CSS
 4. `npm run dev` - Run the dev server
 5. Check `localhost:8080` in your browser
+
+## Debugging
+Having issues with the project? Try these:
+- Try cleaning the project `npm run clean` then running `npm run dev`

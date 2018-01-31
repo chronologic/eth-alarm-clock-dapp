@@ -6,7 +6,8 @@
     "test": "",
     "build": "webpack",
     "dev": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --disable-host-check",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "clean": "./tools/clean.sh"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
