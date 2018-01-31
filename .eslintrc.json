@@ -12,6 +12,6 @@
         "node": true
      },
     "rules": {
-        "linebreak-style": 2
+        "linebreak-style": 0
     }
 }

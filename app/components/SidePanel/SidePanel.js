@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 
 class SidePanel extends Component {
+
+  componentDidMount(){
+      const {jQuery} = window;
+      jQuery.Pages.init();
+  }
+
   render () {
     return (
       <nav className="page-sidebar" data-pages="sidebar">
