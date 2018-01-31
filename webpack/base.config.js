@@ -12,13 +12,13 @@ module.exports = {
 
   // Webpack checks this file for any additional JS dependencies to be bundled
   entry: [
-    path.resolve(__dirname, 'app/entry.js'),
-    path.resolve(__dirname, 'app/index.js')
+    path.resolve(__dirname, '../app/entry.js'),
+    path.resolve(__dirname, '../app/index.js')
   ],
 
   output: {
     // Output folder in which the files will be built
-    path: path.resolve(__dirname, 'out'),
+    path: path.resolve(__dirname, '../out'),
     // All the JS files will be bundled in this one minified/obfuscated file
     filename: './js/app.bundle.js'
   },
@@ -71,7 +71,7 @@ module.exports = {
       {
         test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,
-        include: path.resolve(__dirname, 'app'),
+        include: path.resolve(__dirname, '../app'),
         loader: 'babel-loader',
         options: {
           presets: ["es2015", "env", "react"],
@@ -104,17 +104,7 @@ module.exports = {
       Popper: ['popper.js', 'default']
     }),
 
-    extractSass,
-
-    // Uglifies and minifies the JS
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      },
-      output: {
-        comments: false
-      }
-    })
+    extractSass
   ]
 
 }
