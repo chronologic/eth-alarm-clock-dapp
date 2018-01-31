@@ -11,101 +11,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta content="" name="description" />
     <meta content="" name="author" />
-    
     <link class="main-stylesheet" href="main.css" rel="stylesheet" type="text/css" />
   </head>
-
   <body class="fixed-header dashboard">
-    <!-- BEGIN SIDEBPANEL-->
-    <nav class="page-sidebar" data-pages="sidebar">
-      
-      <!-- BEGIN SIDEBAR MENU HEADER-->
-      <div class="sidebar-header">
-        <img src="img/eac-logo_sm.png" alt="logo" class="brand" data-src="img/eac-logo_sm.png">
-        <div class="sidebar-header-controls">
-          <button type="button" class="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i class="fa fs-12"></i>
-          </button>
-        </div>
-      </div>
-      <!-- END SIDEBAR MENU HEADER-->
-      <!-- START SIDEBAR MENU -->
-      <div class="sidebar-menu">
-        <!-- BEGIN SIDEBAR MENU ITEMS-->
-        <ul class="menu-items">
-          <li class="m-t-30 ">
-            <a href="#"><span class="title">Schedule</span></a>
-            <span class="icon-thumbnail"><i class="pg-calender"></i></span>
-          </li>
-          <li>
-            <a href="javascript:;"><span class="title">Transactions</span>
-            <span class=" arrow"></span></a>
-            <span class="icon-thumbnail"><i class="pg-charts"></i></span>
-            <ul class="sub-menu">
-              <li class="">
-                <a href="#">Scheduled</a>
-                <span class="icon-thumbnail">c</span>
-              </li>
-              <li class="">
-                <a href="#">Executed</a>
-                <span class="icon-thumbnail">L</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-      <!-- END SIDEBAR MENU -->
-    </nav>
-    <!-- END SIDEBAR -->
-    <!-- END SIDEBPANEL-->
-
-    <!-- START PAGE-CONTAINER -->
-    <div class="page-container ">
-      <!-- START HEADER -->
-      <div class="header ">
-        <!-- START MOBILE SIDEBAR TOGGLE -->
-        <a href="#" class="btn-link toggle-sidebar d-lg-none pg pg-menu" data-toggle="sidebar">
-        </a>
-        <!-- END MOBILE SIDEBAR TOGGLE -->
-        <div class="">
-          <div class="brand inline">
-            <img src="img/eac-logo.png" alt="logo" data-src="img/eac-logo.png">
-          </div>
-        </div>
-        <div class="d-flex align-items-center">
-          <div class="brand inline">
-            <img src="img/logo-white.png" alt="logo" data-src="img/logo-white.png" height="36">
-          </div>
-        </div>
-      </div>
-      <!-- END HEADER -->
-
-      <!-- START PAGE CONTENT WRAPPER -->
-      <div class="page-content-wrapper ">
-        <!-- START PAGE CONTENT -->
-        <div class="content sm-gutter">
-          <!-- START CONTAINER FLUID -->
-          <div class="container-fluid padding-25 sm-padding-10">
-
-            <h1 class="view-title">Schedule Transaction</h1>
-            
-            <!-- START WIDGET D3 widget_graphWidget-->
-            <div class="widget-12 card no-border widget-loader-circle no-margin">
-              <div class="card-body">
-                INSERT CONTENT HERE
-              </div>
-            </div>
-            <!-- END WIDGET -->
-          </div>
-          <!-- END CONTAINER FLUID -->
-        </div>
-        <!-- END PAGE CONTENT -->
-        
-      </div>
-      <!-- END PAGE CONTENT WRAPPER -->
-    </div>
-    <!-- END PAGE CONTAINER -->
-
+    <div id="root"></div>
     <script src="js/modernizr.custom.js"></script>
     <script src="js/app.bundle.js"></script>
   </body>

@@ -11,7 +11,10 @@ const extractSass = new ExtractTextPlugin({
 module.exports = {
 
   // Webpack checks this file for any additional JS dependencies to be bundled
-  entry: './app/entry.js',
+  entry: [
+    path.resolve(__dirname, 'app/entry.js'),
+    path.resolve(__dirname, 'app/index.js')
+  ],
 
   output: {
     // Output folder in which the files will be built
@@ -58,23 +61,34 @@ module.exports = {
         options: {
           name: 'fonts/[name].[ext]'
         }
-      }
-    ],
+      },
 
-    loaders: [
       {
         test: /\.json$/,
         use: 'json-loader'
       },
+      
       {
-        test: /\.js$/,
+        test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,
-        loaders: ['babel-loader']
+        include: path.resolve(__dirname, 'app'),
+        loader: 'babel-loader',
+        options: {
+          presets: ["es2015", "env", "react"],
+          plugins: [
+              "transform-runtime"
+          ]
+        }
       }
     ]
   },
 
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     // Directly copies certain files
     new CopyWebpackPlugin([
       { from: './app/index.html', to: 'index.html' },
