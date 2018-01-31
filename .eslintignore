@@ -1,2 +1,4 @@
-www/
+out/
 node_modules/
+app/pages/
+app/plugins/
