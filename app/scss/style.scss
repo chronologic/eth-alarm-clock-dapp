@@ -1,0 +1,48 @@
+$primary-color: #21FFFF;
+
+
+/* PAGES TEMPLATE OVERRIDES */
+
+.brand {
+	margin-left: 80px;
+}
+
+.page-container {	
+    top: 0;
+    bottom: 0;
+    position: fixed;
+}
+
+.page-content-wrapper {
+	background: url(../assets/img/background.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.header {
+	background: transparent;
+	border-bottom: none;
+}
+
+.pages-sidebar {
+	background-color: #1D252A;
+}
+
+.pages-sidebar .sidebar-header {
+	background-color: #181E21;
+}
+
+.icon-thumbnail {
+	background: $primary-color;
+	color: inherit;
+}
+
+
+/* NEW CUSTOM CSS */
+.view-title {
+	color: #fff;
+	font-size: 32px;
+	font-weight: normal;
+}

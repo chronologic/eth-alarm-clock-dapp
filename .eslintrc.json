@@ -1,7 +1,17 @@
 {
-    "extends": "standard",
-
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true
+        }
+    },
+    "env": {
+        "browser": true,
+        "node": true
+     },
     "rules": {
-        "linebreak-style": 2
+        "linebreak-style": 0
     }
 }
