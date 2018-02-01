@@ -22,7 +22,7 @@ export default class Web3Service {
     }
 
     @action
-    async init(which) {
+    async init() {
 
         if (!this.initialized) {
             await this.connect();
