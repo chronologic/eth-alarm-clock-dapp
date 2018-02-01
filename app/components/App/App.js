@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import SidePanel from '../SidePanel/SidePanel';
 import Header from '../Header/Header';
-import ScheduleWizard from '../ScheduleWizard/ScheduleWizard';
+import ScheduleWizard from '../ScheduleWizard';
 
 class App extends Component {
   render() {
