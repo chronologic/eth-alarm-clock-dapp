@@ -1,1 +1,2 @@
-export {default} from './ScheduleWizard'
+export {default} from './ScheduleWizard';
+export {Step} from './Step'
