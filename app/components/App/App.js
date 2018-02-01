@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import SidePanel from '../SidePanel/SidePanel';
 import Header from '../Header/Header';
+import ScheduleWizard from '../ScheduleWizard';
 
 class App extends Component {
   render() {
@@ -15,7 +16,7 @@ class App extends Component {
                 <h1 className="view-title">Schedule Transaction</h1>
                 <div className="widget-12 card no-border widget-loader-circle no-margin">
                   <div className="card-body">
-                    INSERT CONTENT HERE
+                    <ScheduleWizard/>
                   </div>
                 </div>
               </div>
