@@ -25,4 +25,10 @@ constructor(activeStepKey, activeApp, props) {
     result
   ), {});
 }
+
+async componentDidMount(){
+  const {web3Service} = this.props;
+  await web3Service.awaitInitialized();
+  this.validatePrevState
+}
 }
