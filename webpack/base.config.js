@@ -26,24 +26,6 @@ module.exports = {
   module: {
 
     rules: [
-      // Loader for the stylesheets
-      {
-        test: /\.(css|sass|scss)$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true
-              }
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ],
-          fallback: 'style-loader'
-        })
-      },
 
       // Loader for the image files
       {

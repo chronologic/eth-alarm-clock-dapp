@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import TimeSettings from './TimeSettings';
+import InfoSettings from './InfoSettings';
+import BountySettings from './BountySettings';
+import ConfirmSettings from './ConfirmSettings';
 
 class ScheduleWizard extends Component {
   state = {}
@@ -44,16 +48,16 @@ render() {
 
       <div className="tab-content">
         <div className="tab-pane active slide" id="tab1">
-          Day and time component here
+          <TimeSettings/>
         </div>
         <div className="tab-pane slide" id="tab2">
-          Information component here
+          <InfoSettings/>
         </div>
         <div className="tab-pane slide" id="tab3">
-          Bounty component here
+          <BountySettings/>
         </div>
         <div className="tab-pane slide" id="tab4">
-          Confirmation component here
+          <ConfirmSettings/>
         </div>
 
         <ul className="pager wizard no-style">
