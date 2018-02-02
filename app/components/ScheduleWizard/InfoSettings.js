@@ -13,7 +13,7 @@ render() {
     <div id="infoSettings">
 
       <div className="row">
-        <div className="col-4">
+        <div className="col-md-4">
 
           <div className="form-group form-group-default">
             <label>To Address</label>
@@ -22,7 +22,7 @@ render() {
 
         </div>
 
-        <div className="col-4">
+        <div className="col-md-4">
 
           <div className="form-group form-group-default">
             <label>Gas Amount</label>
@@ -33,7 +33,7 @@ render() {
       </div>
 
       <div className="row">
-        <div className="col-4">
+        <div className="col-md-4">
 
           <div className="form-group form-group-default">
             <label>Value/Amount to Send</label>
@@ -42,7 +42,7 @@ render() {
 
         </div>
 
-        <div className="col-4">
+        <div className="col-md-4">
 
           <div className="form-group form-group-default">
             <label>Gas Price</label>
@@ -58,7 +58,7 @@ render() {
       </div>
 
       <div className="row">
-        <div className="col-4">
+        <div className="col-md-4">
           <div className="form-group form-group-default">
             <label>Your Data</label>
             <input type="text" placeholder="Enter Your Data" className="form-control"></input>
