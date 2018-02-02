@@ -39,3 +39,7 @@ export const NETWORK_MESSAGES = {
     '4': 'You are connected to the Rinkeby Testnet',
     default: 'You are connected to an unknown network',
 };
+
+export const PROPERTIES = {
+
+}
