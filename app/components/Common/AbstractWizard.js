@@ -29,6 +29,12 @@ constructor(activeStepKey, activeApp, props) {
 async componentDidMount(){
   const {web3Service} = this.props;
   await web3Service.awaitInitialized();
-  this.validatePrevState
+  await this.validatePrevState();
 }
+
+web3web3Disabled(web3Service){
+    return !web3Service.connectedToMetaMask || !(typeof web3Service.accounts !== 'undefined' && web3Service.accounts.length > 0)
+}
+
+
 }
