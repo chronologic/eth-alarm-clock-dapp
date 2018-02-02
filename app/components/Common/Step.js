@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 
 class Step extends Component {
 
@@ -7,7 +7,7 @@ class Step extends Component {
   }
 
   render() {
-    throw('Implement me!!');
+    return 0;
   }
 }
 
