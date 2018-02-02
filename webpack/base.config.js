@@ -90,7 +90,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     // Directly copies certain files
     new CopyWebpackPlugin([
       { from: './app/index.html', to: 'index.html' },
