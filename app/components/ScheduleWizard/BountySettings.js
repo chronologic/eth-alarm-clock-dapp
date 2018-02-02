@@ -13,7 +13,7 @@ render() {
     <div id="bountySettings">
 
       <div className="row">
-        <div className="col-4">
+        <div className="col-md-4">
 
           <div className="form-group form-group-default">
             <label>Time Bounty</label>
@@ -29,7 +29,7 @@ render() {
       </div>
 
       <div className="row">
-        <div className="col-4">
+        <div className="col-md-4">
           <div className="form-group form-group-default">
             <label>Deposit</label>
             <input type="text" placeholder="Enter Deposit" className="form-control"></input>
