@@ -12,7 +12,7 @@ import './pages/js/pages.min.js'
 import 'bootstrap-timepicker/css/bootstrap-timepicker.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'jquery.scrollbar/jquery.scrollbar.css'
-import 'select2/select2.css'
+import 'select2/dist/css/select2.css'
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.css'
 
 import './pages/css/pages-icons.css'
