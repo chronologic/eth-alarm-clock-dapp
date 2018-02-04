@@ -12,7 +12,7 @@ class TimeSettings extends Component {
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     });
-    jQuery('#datepicker-component').datepicker({});
+    //jQuery('#datepicker-component').datepicker();
   }
 
 
