@@ -5,7 +5,7 @@
   "scripts": {
     "test": "",
     "build": "webpack --config webpack/prod.config.js",
-    "dev": "node_modules/.bin/webpack-dev-server --config webpack/base.config.js --host 0.0.0.0 --disable-host-check --hot",
+    "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check --hot",
     "lint": "eslint .",
     "clean": "./tools/clean.sh",
     "validate": "npm ls"
@@ -46,6 +46,7 @@
     "bluebird": "^3.5.1",
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-datepicker": "^1.7.1",
+    "bootstrap-timepicker": "^0.5.2",
     "eac.js": "^1.0.4",
     "jquery": "^1.11.1",
     "jquery.scrollbar": "^0.2.11",
@@ -54,8 +55,11 @@
     "popper": "^1.0.1",
     "popper.js": "^1.12.9",
     "react": "^16.2.0",
+    "react-bootstrap-tabs": "^1.0.2",
     "react-dom": "^16.2.0",
     "select2": "^3.5.1",
+    "select2-bootstrap-theme": "0.1.0-beta.10",
+    "select2-bootstrap4-theme": "^1.0.0",
     "web3": "^0.20.0"
   },
   "pre-commit": [
