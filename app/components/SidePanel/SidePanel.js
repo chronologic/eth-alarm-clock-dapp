@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 class SidePanel extends Component {
-
-  componentDidMount(){
-      const {jQuery} = window;
-      jQuery.Pages.init();
+  componentDidMount() {
+    const { jQuery } = window;
+    
+    jQuery.Pages.init();
   }
 
-  render () {
+  render() {
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
@@ -20,11 +22,11 @@ class SidePanel extends Component {
         <div className="sidebar-menu">
           <ul className="menu-items">
             <li className="m-t-30 ">
-              <a href="#"><span className="title">Schedule</span></a>
+              <NavLink to="/" className="title">Schedule</NavLink>
               <span className="icon-thumbnail"><i className="pg-calender"></i></span>
             </li>
             <li className="">
-              <a href="#"><span className="title">Transactions</span></a>
+              <NavLink to="/transactions" className="title">Transactions</NavLink>
               <span className="icon-thumbnail"><i className="pg-charts"></i></span>
             </li>
           </ul>
@@ -34,5 +36,9 @@ class SidePanel extends Component {
     )
   }
 }
+
+SidePanel.propTypes = {
+  routing: PropTypes.any
+};
 
 export default SidePanel
