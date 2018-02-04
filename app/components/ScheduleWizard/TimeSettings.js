@@ -30,7 +30,7 @@ render() {
 
       <div className="row">
 
-        <div className="col-3">
+        <div className="col-md-3">
 
           <div className="form-group form-group-default form-group-default-select2 required">
             <label className="">Timezone</label>
@@ -50,7 +50,7 @@ render() {
 
         </div>
 
-        <div className="col-3">
+        <div className="col-md-3">
 
           <div className="form-group form-group-default input-group">
             <div className="form-input-group">
@@ -64,7 +64,7 @@ render() {
 
         </div>
 
-        <div className="col-3">
+        <div className="col-md-3">
 
           <div className="form-group form-group-default input-group">
             <div className="form-input-group">
@@ -78,7 +78,7 @@ render() {
 
         </div>
 
-        <div className="col-2">
+        <div className="col-md-2">
           <div className="btn-group d-flex" data-toggle="buttons">
             <label className="btn btn-default w-100 active">
               <input type="radio" name="options" id="option1" defaultChecked/>1 min

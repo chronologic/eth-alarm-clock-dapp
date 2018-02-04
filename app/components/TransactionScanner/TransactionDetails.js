@@ -13,7 +13,7 @@ render() {
     <div id="transactionDetails">
 
       <div className="row">
-        <div className="col-8">
+        <div className="col-md-8">
 
           <table className="table">
             <tbody>
@@ -71,7 +71,7 @@ render() {
       </div>
 
       <div className="row">
-        <div className="col-12 text-right">
+        <div className="col-md-12 text-right">
           <button className="btn btn-default">Cancel Transaction</button>
         </div>
       </div>
