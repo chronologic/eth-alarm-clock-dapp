@@ -3,7 +3,6 @@ import TimeSettings from './TimeSettings';
 import InfoSettings from './InfoSettings';
 import BountySettings from './BountySettings';
 import ConfirmSettings from './ConfirmSettings';
-import ScrollArea from 'react-scrollbar';
 
 class ScheduleWizard extends Component {
   state = {}
@@ -31,7 +30,6 @@ class ScheduleWizard extends Component {
 
 render() {
   return (
-    <ScrollArea>
     <div id="scheduleWizard">
       <ul className="nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
         <li>
@@ -86,8 +84,6 @@ render() {
         </ul>
       </div>
     </div>
-    </ScrollArea>
-
   );
 }
 }

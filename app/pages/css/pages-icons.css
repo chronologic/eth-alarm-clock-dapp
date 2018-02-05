@@ -30,6 +30,7 @@ Pages Icons
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 .pg-link:before {
   content: "\e900";
 }
