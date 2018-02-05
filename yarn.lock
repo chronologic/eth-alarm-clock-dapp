@@ -1067,11 +1067,7 @@ babel-register@^6.26.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.15"
 
-<<<<<<< Updated upstream
 babel-runtime@^6.18.0, babel-runtime@^6.2.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^6.26.0:
-=======
-babel-runtime@^6.18.0, babel-runtime@^6.2.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
->>>>>>> Stashed changes
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   dependencies:
@@ -1905,13 +1901,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-<<<<<<< Updated upstream
 classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
-=======
->>>>>>> Stashed changes
 clear@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/clear/-/clear-0.0.1.tgz#e5186e229d99448179c130311b6f9d30bff6b0ba"
@@ -6796,7 +6789,6 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-<<<<<<< Updated upstream
 react-bootstrap-tabs@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/react-bootstrap-tabs/-/react-bootstrap-tabs-1.0.2.tgz#32b8f8119c095493477b696e5a273b6e2adc6d0f"
@@ -6804,8 +6796,6 @@ react-bootstrap-tabs@^1.0.2:
     babel-runtime "^6.23.0"
     classnames "^2.2.5"
 
-=======
->>>>>>> Stashed changes
 react-deep-force-update@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-2.1.1.tgz#8ea4263cd6455a050b37445b3f08fd839d86e909"
