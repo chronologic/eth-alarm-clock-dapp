@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import ExecutionWindowPreset from './TimeSettings/ExecutionWindowPreset'
 import moment from 'moment';
 import 'moment-timezone';
 
 const presetExecutionWindows = [
-  { value: 1, selected: true },
+  { value: 1, selected: false },
   { value: 3, selected: false },
   { value: 5, selected: false }
 ];
@@ -22,6 +21,7 @@ class TimeSettings extends Component {
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     });
     jQuery('#datepicker-component').datepicker();
+
   }
 
   clearPresetExecWindow() {
@@ -30,9 +30,12 @@ class TimeSettings extends Component {
 
   render() {
 
+    window.presetExecutionWindows = presetExecutionWindows;
+
     const timezones = moment.tz.names();
     const localTimezone = moment.tz.guess();
     const defaultTime = moment().add(1, 'hours').format("hh:mm a");
+
 
     return (
 
@@ -88,18 +91,19 @@ class TimeSettings extends Component {
 
           </div>
 
-          <div className="col-md-2">
+          <div className="col-md-3">
+            <div className="form-group">
+              <label>Execution Window</label>
+            </div>
             <div className="btn-group d-flex" data-toggle="buttons">
               {presetExecutionWindows.map((exeWind, index) => 
-                <ExecutionWindowPreset 
-                  key={index}
-                  value={exeWind.value}
-                  selected={exeWind.selected}
-                />
+                <label key={index} className={"btn btn-default w-100 " + (exeWind.selected ? 'active' : '')}>
+                  <input type="radio" name="exeWindOptions" value={exeWind.value} defaultChecked={exeWind.selected}/>{exeWind.value} min
+                </label>
               )} 
             </div>
 
-            <div className="form-group form-group-default">
+            <div id="customExecution" className="form-group form-group-default">
               <label>Custom</label>
               <input type="text" placeholder="Enter custom execution window (min)" className="form-control" onChange={() => {this.clearPresetExecWindow()}}></input>
             </div>
