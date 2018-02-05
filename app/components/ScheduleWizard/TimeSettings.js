@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
+import ExecutionWindowPreset from './TimeSettings/ExecutionWindowPreset'
+import moment from 'moment';
+import 'moment-timezone';
+
+const presetExecutionWindows = [
+  { value: 1, selected: true },
+  { value: 3, selected: false },
+  { value: 5, selected: false }
+];
 
 class TimeSettings extends Component {
-  state = {}
 
   componentDidMount() {
 
@@ -16,93 +24,92 @@ class TimeSettings extends Component {
     jQuery('#datepicker-component').datepicker();
   }
 
+  clearPresetExecWindow() {
+    
+  }
 
-render() {
-  return (
+  render() {
 
-    <div id="timeSettings">
+    const timezones = moment.tz.names();
+    const localTimezone = moment.tz.guess();
+    const defaultTime = moment().add(1, 'hours').format("hh:mm a");
 
-      <div className="radio radio-primary">
-        <input type="radio" id="timeSettingsTime" name="timeSettingsType" defaultChecked/>
-        <label htmlFor="timeSettingsTime">Time</label>
-        <input type="radio" id="timeSettingsBlock" name="timeSettingsType"/>
-        <label htmlFor="timeSettingsBlock">Block</label>
+    return (
+
+      <div id="timeSettings">
+
+        <div className="radio radio-primary">
+          <input type="radio" id="timeSettingsTime" name="timeSettingsType" defaultChecked/>
+          <label htmlFor="timeSettingsTime">Time</label>
+          <input type="radio" id="timeSettingsBlock" name="timeSettingsType"/>
+          <label htmlFor="timeSettingsBlock">Block</label>
+        </div>
+
+        <div className="row">
+
+          <div className="col-md-3">
+
+            <div className="form-group form-group-default form-group-default-select2 required">
+              <label className="">Timezone</label>
+              <select id="timezoneSelect" className="full-width" data-init-plugin="select2" defaultValue={localTimezone}>
+                {timezones.map((timezone, index) => 
+                  <option key={index} value={timezone}>{timezone}</option>
+                )} 
+              </select>
+            </div>
+
+          </div>
+
+          <div className="col-md-3">
+
+            <div className="form-group form-group-default input-group">
+              <div className="form-input-group">
+                <label>Transaction Date</label>
+                <input type="email" className="form-control" placeholder="Pick a date" id="datepicker-component"/>
+              </div>
+              <div className="input-group-addon">
+                <i className="fa fa-calendar"></i>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="col-md-3">
+
+            <div className="form-group form-group-default input-group">
+              <div className="form-input-group">
+                <label>Transaction Time</label>
+              <input id="timepicker" type="text" className="form-control" defaultValue={defaultTime}/>
+              </div>
+              <div className="input-group-addon">
+                <i className="pg-clock"></i>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="col-md-2">
+            <div className="btn-group d-flex" data-toggle="buttons">
+              {presetExecutionWindows.map((exeWind, index) => 
+                <ExecutionWindowPreset 
+                  key={index}
+                  value={exeWind.value}
+                  selected={exeWind.selected}
+                />
+              )} 
+            </div>
+
+            <div className="form-group form-group-default">
+              <label>Custom</label>
+              <input type="text" placeholder="Enter custom execution window (min)" className="form-control" onChange={() => {this.clearPresetExecWindow()}}></input>
+            </div>
+          </div>
+
+        </div>
+
       </div>
-
-      <div className="row">
-
-        <div className="col-md-3">
-
-          <div className="form-group form-group-default form-group-default-select2 required">
-            <label className="">Timezone</label>
-            <select id="timezoneSelect" className="full-width" data-placeholder="Select Country" data-init-plugin="select2">
-              <optgroup label="Alaskan/Hawaiian Time Zone">
-                <option value="AK">Alaska</option>
-                <option value="HI">Hawaii</option>
-              </optgroup>
-              <optgroup label="Pacific Time Zone">
-                <option value="CA">California</option>
-                <option value="NV">Nevada</option>
-                <option value="OR">Oregon</option>
-                <option value="WA">Washington</option>
-              </optgroup>
-            </select>
-          </div>
-
-        </div>
-
-        <div className="col-md-3">
-
-          <div className="form-group form-group-default input-group">
-            <div className="form-input-group">
-              <label>Transaction Date</label>
-              <input type="email" className="form-control" placeholder="Pick a date" id="datepicker-component"/>
-            </div>
-            <div className="input-group-addon">
-              <i className="fa fa-calendar"></i>
-            </div>
-          </div>
-
-        </div>
-
-        <div className="col-md-3">
-
-          <div className="form-group form-group-default input-group">
-            <div className="form-input-group">
-              <label>Transaction Time</label>
-            <input id="timepicker" type="text" className="form-control"/>
-            </div>
-            <div className="input-group-addon">
-              <i className="pg-clock"></i>
-            </div>
-          </div>
-
-        </div>
-
-        <div className="col-md-2">
-          <div className="btn-group d-flex" data-toggle="buttons">
-            <label className="btn btn-default w-100 active">
-              <input type="radio" name="options" id="option1" defaultChecked/>1 min
-            </label>
-            <label className="btn btn-default w-100">
-              <input type="radio" name="options" id="option2"/>3 min
-            </label>
-            <label className="btn btn-default w-100">
-              <input type="radio" name="options" id="option3"/>5 min
-            </label>
-          </div>
-
-          <div className="form-group form-group-default">
-            <label>Custom</label>
-            <input type="text" placeholder="Enter custom execution window" className="form-control"></input>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  );
-}
+    );
+  }
 }
 
 export default TimeSettings;
