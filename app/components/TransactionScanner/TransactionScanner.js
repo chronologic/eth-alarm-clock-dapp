@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
+import { inject } from 'mobx-react';
 
+@inject('transactionStore')
 class TransactionScanner extends Component {
   state = {}
 
