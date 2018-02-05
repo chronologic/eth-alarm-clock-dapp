@@ -57,7 +57,8 @@ render() {
           <BountySettings/>
         </div>
         <div className="tab-pane slide" id="tab4">
-          <ConfirmSettings/>
+          <ConfirmSettings
+          />
         </div>
 
         <ul className="pager wizard no-style">

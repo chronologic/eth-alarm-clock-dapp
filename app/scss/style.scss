@@ -7,7 +7,7 @@ $primary-color: #21FFFF;
 	margin-left: 80px;
 }
 
-.page-container {	
+.page-container {
     top: 0;
     bottom: 0;
     position: fixed;
@@ -49,4 +49,15 @@ $primary-color: #21FFFF;
 
 .horizontal-center {
 	text-align: center;
+}
+
+.card .card-body{
+   height: 650px;
+}
+#scheduleWizard{
+  height: 100%;
+}
+.tab-content{
+     overflow-y: auto;
+    height: 90%;
 }
