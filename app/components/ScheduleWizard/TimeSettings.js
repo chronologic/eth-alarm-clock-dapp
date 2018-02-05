@@ -7,12 +7,12 @@ class TimeSettings extends Component {
 
     const { jQuery } = window;
 
-    jQuery('#datepicker-component').datepicker();
     jQuery('#timepicker').timepicker().on('show.timepicker', function() {
         var widget = jQuery('.bootstrap-timepicker-widget');
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     });
+    jQuery('#datepicker-component').datepicker();
   }
 
 

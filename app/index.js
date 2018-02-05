@@ -3,7 +3,8 @@ import { render } from 'react-dom'
 import 'jquery.scrollbar';
 import 'bootstrap';
 import 'select2';
-import 'bootstrap-datepicker';
+import 'bootstrap-timepicker';
+import './plugins/bootstrap-datepicker/js/bootstrap-datepicker.js'
 
 import App from './components/App'
 
