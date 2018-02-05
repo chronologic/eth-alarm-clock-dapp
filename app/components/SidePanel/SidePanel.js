@@ -24,7 +24,7 @@ class SidePanel extends Component {
               <span className="icon-thumbnail"><i className="pg-calender"></i></span>
             </li>
             <li className="">
-              <a href="#"><span className="title">Statistics</span></a>
+              <a href="#"><span className="title">Transactions</span></a>
               <span className="icon-thumbnail"><i className="pg-charts"></i></span>
             </li>
           </ul>
