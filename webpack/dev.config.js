@@ -4,7 +4,9 @@ const baseConfig = require('./base.config.js')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = merge(baseConfig, {
-
+  devServer: {
+    historyApiFallback: true,
+  },
 	module: {
 		rules: [
 			// Loader for the stylesheets

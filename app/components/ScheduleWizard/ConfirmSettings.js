@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class ConfirmSettings extends Component {
   state = {}
@@ -72,5 +73,17 @@ render() {
   );
 }
 }
+
+ConfirmSettings.propTypes = {
+  totalcost: PropTypes.any,
+  deposit: PropTypes.any,
+  donation: PropTypes.any,
+  timeBounty: PropTypes.any,
+  gasprice: PropTypes.any,
+  address: PropTypes.any,
+  data: PropTypes.any,
+  blockortime: PropTypes.any,
+  gasamount: PropTypes.any
+};
 
 export default ConfirmSettings;
