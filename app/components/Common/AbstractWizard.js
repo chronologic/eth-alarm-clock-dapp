@@ -1,10 +1,7 @@
 /* eslint-disable react/require-render-return */
 import React from 'react';
-import { action } from 'mobx';
 
 import { NAVIGATION_STEPS, PROPERTIES as ALL_PROPERTIES } from '../lib/consts';
-import InputField from './InputField';
-
 export default class AbstractWizard extends React.Component {
 constructor(activeStepKey, activeApp, props) {
   super(props);
