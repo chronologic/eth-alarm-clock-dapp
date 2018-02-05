@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ScheduleWizard from '../ScheduleWizard/ScheduleWizard';
+import ScheduleWizard from '../Common/ScheduleWizard';
 
 export class ScheduleRoute extends Component {
   render() {

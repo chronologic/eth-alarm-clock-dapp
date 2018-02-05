@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 class SidePanel extends Component {
@@ -36,9 +35,5 @@ class SidePanel extends Component {
     )
   }
 }
-
-SidePanel.propTypes = {
-  routing: PropTypes.any
-};
 
 export default SidePanel

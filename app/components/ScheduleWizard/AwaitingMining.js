@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class AwaitingMining extends Component {
   state = {}
@@ -15,11 +16,15 @@ render() {
       <div className="progress-circle-indeterminate m-t-45"></div>
       <p className="horizontal-center">Awaiting Mining</p>
 
-      <p className="horizontal-center">Transation Hash: <a href="#">0x56as51d6as51d6as5d1a6sdsa61d6as81d</a></p>
-      
+      <p className="horizontal-center">Transation Hash: <a href="#">{this.props.address}</a></p>
+
     </div>
   );
 }
 }
+
+AwaitingMining.propTypes = {
+  address: PropTypes.any
+};
 
 export default AwaitingMining;
