@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
 class ConfirmSettings extends Component {
+  constructor(props){
+    super(props);
+  }
   state = {}
 
   componentDidMount() {
@@ -8,6 +11,7 @@ class ConfirmSettings extends Component {
   }
 
 render() {
+  const props = this.props;
   return (
 
     <div id="confirmSettings">
@@ -25,43 +29,43 @@ render() {
             <tbody>
               <tr>
                 <td>To Address</td>
-                <td><a href="#">{this.props.address}</a></td>
+                <td><a href="#">{props.address}</a></td>
               </tr>
               <tr>
                 <td>Data</td>
-                <td>{this.props.data}</td>
+                <td>{props.data}</td>
               </tr>
               <tr>
                 <td>Block or Time</td>
-                <td>{this.props.blockortime}</td>
+                <td>{props.blockortime}</td>
               </tr>
               <tr>
                 <td>Window Size</td>
-                <td>{this.props.blockortime}</td>
+                <td>{props.blockortime}</td>
               </tr>
               <tr>
                 <td>Gas Amount</td>
-                <td>{this.props.gasamount}</td>
+                <td>{props.gasamount}</td>
               </tr>
               <tr>
                 <td>Gas Price</td>
-                <td>{this.props.gasprice}</td>
+                <td>{props.gasprice}</td>
               </tr>
               <tr>
                 <td>Time Bounty</td>
-                <td>{this.props.timeBounty}</td>
+                <td>{props.timeBounty}</td>
               </tr>
               <tr>
                 <td>Donation</td>
-                <td>{this.props.donation}</td>
+                <td>{props.donation}</td>
               </tr>
               <tr>
                 <td>Deposit</td>
-                <td>{this.props.deposit}</td>
+                <td>{props.deposit}</td>
               </tr>
               <tr>
                 <td><strong>Total cost</strong></td>
-                <td><strong>{this.props.totalcost}</strong></td>
+                <td><strong>{props.totalcost}</strong></td>
               </tr>
             </tbody>
           </table>
