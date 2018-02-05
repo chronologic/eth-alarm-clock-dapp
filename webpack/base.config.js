@@ -26,24 +26,6 @@ module.exports = {
   module: {
 
     rules: [
-      // Loader for the stylesheets
-      {
-        test: /\.(css|sass|scss)$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true
-              }
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ],
-          fallback: 'style-loader'
-        })
-      },
 
       // Loader for the image files
       {
@@ -90,7 +72,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     // Directly copies certain files
     new CopyWebpackPlugin([
       { from: './app/index.html', to: 'index.html' },
