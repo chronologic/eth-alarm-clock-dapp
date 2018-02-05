@@ -95,11 +95,12 @@ export default class Web3Service {
 
 export function initWeb3Service(isServer, source) {
     if (isServer) {
-        return new Web3Service(source);
-    } else {
-        if (instance === null) {
-            instance = new Web3Service(source);
-        }
-        return instance;
+      return new Web3Service(source);
     }
+     
+    if (instance === null) {
+      instance = new Web3Service(source);
+    }
+    
+    return instance;
 }
