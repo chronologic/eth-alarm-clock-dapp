@@ -4,7 +4,7 @@ import 'jquery.scrollbar';
 import 'bootstrap';
 import 'select2';
 import 'bootstrap-timepicker';
-import 'bootstrap-datepicker';
+import './plugins/bootstrap-datepicker/js/bootstrap-datepicker.js'
 
 import App from './components/App'
 
