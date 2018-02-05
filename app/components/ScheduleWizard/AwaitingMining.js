@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class AwaitingMining extends Component {
   state = {}
@@ -21,5 +22,9 @@ render() {
   );
 }
 }
+
+AwaitingMining.propTypes = {
+  address: PropTypes.any
+};
 
 export default AwaitingMining;

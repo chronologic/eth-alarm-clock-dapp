@@ -5,4 +5,4 @@ const Networks =  {
   4: 'Rinkeby',
 }
 
-export default {Networks};
+export default { Networks };
