@@ -77,10 +77,10 @@ render() {
 
       <div id="transactionsPagination">
         <div className="row">
-          <div className="col-6">
+          <div className="col-md-6">
             Showing 1 to 10 of 22 entries
           </div>
-          <div className="col-6 text-right">
+          <div className="col-md-6 text-right">
            <i className="fas fa-angle-left"></i> 1 2 3 <i className="fas fa-angle-right"></i>
           </div>
         </div>

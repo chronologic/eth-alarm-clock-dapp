@@ -13,7 +13,7 @@ render() {
     <div id="confirmSettings">
 
       <div className="row">
-        <div className="col-6">
+        <div className="col-md-6">
 
           <table className="table">
             <thead>
