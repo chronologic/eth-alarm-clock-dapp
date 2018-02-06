@@ -26,8 +26,6 @@ render() {
 }
 }
 
-AwaitingMining.propTypes = {
-  address: PropTypes.any
-};
+
 
 export default AwaitingMining;

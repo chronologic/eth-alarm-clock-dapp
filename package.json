@@ -53,6 +53,7 @@
     "mobx": "^3.4.1",
     "mobx-react": "^4.3.5",
     "mobx-react-router": "^4.0.1",
+    "moment-timezone": "^0.5.14",
     "popper": "^1.0.1",
     "popper.js": "^1.12.9",
     "prop-types": "^15.6.0",
@@ -61,6 +62,7 @@
     "react-dom": "^16.2.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "react-spinners": "^0.2.6",
     "select2": "^4.0.4",
     "web3": "^0.20.0"
   },
