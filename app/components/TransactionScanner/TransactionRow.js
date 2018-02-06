@@ -30,7 +30,13 @@ class TransactionsRow extends Component {
       status = 'Cancelled';
     }
 
-    let time = await this.props.eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
+    let time;
+
+    if (isTimestamp) {
+      time = transaction.windowStart;
+    } else {
+      time = await this.props.eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
+    }
 
     time = moment.unix(time).format('YYYY-MM-DD HH:MM');
     
