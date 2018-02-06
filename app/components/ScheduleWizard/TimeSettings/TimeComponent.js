@@ -38,13 +38,9 @@ class TimeComponent extends Component {
     const defaultTime = moment().add(1, 'hours').format("hh:mm a");
 
     return (
-
       <div id="timeComponent">
-
         <div className="row">
-
           <div className="col-md-3">
-
             <div className="form-group form-group-default form-group-default-select2 required">
               <label className="">Timezone</label>
               <select id="timezoneSelect" className="full-width" data-init-plugin="select2" defaultValue={localTimezone}>
@@ -53,11 +49,9 @@ class TimeComponent extends Component {
                 )} 
               </select>
             </div>
-
           </div>
 
           <div className="col-md-3">
-
             <div className="form-group form-group-default input-group">
               <div className="form-input-group">
                 <label>Transaction Date</label>
@@ -67,11 +61,9 @@ class TimeComponent extends Component {
                 <i className="fa fa-calendar"></i>
               </div>
             </div>
-
           </div>
 
           <div className="col-md-3">
-
             <div className="form-group form-group-default input-group">
               <div className="form-input-group">
                 <label>Transaction Time</label>
@@ -81,7 +73,6 @@ class TimeComponent extends Component {
                 <i className="pg-clock"></i>
               </div>
             </div>
-
           </div>
 
           <div className="col-md-3">
@@ -103,7 +94,6 @@ class TimeComponent extends Component {
           </div>
 
         </div>
-
       </div>
     );
   }

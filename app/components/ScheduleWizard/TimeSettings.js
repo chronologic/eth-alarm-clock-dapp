@@ -26,9 +26,7 @@ class TimeSettings extends Component {
     }
 
     return (
-
       <div id="timeSettings">
-
         <div className="radio radio-primary">
           <input type="radio" 
             id="timeSettingsTime" 
@@ -43,11 +41,9 @@ class TimeSettings extends Component {
             onChange={this.toggleBlockTime} />
           <label htmlFor="timeSettingsBlock">Block</label>
         </div>
-
         <div className="chosenTimeSettings">
           {componentToRender}
         </div>
-
       </div>
     );
   }
