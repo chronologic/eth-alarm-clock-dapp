@@ -30,12 +30,9 @@ class TimeSettings extends Component {
 
   render() {
 
-    window.presetExecutionWindows = presetExecutionWindows;
-
     const timezones = moment.tz.names();
     const localTimezone = moment.tz.guess();
     const defaultTime = moment().add(1, 'hours').format("hh:mm a");
-
 
     return (
 
