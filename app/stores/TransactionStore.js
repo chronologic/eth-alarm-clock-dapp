@@ -52,12 +52,6 @@ export class TransactionStore {
     };
   }
 
-  // deserializeTransaction(transactionData) {
-  //   return {
-  //     status: 
-  //   };
-  // }
-
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {    
     toAddress = '0xDacC9C61754a0C4616FC5323dC946e89Eb272302';
     callData = '';
