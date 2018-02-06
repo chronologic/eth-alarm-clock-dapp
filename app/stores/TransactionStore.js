@@ -56,39 +56,39 @@ export class TransactionStore {
     toAddress = '0xDacC9C61754a0C4616FC5323dC946e89Eb272302';
     callData = '';
     callGas = 3000000
-		callValue = 123454321
-		windowSize = 255
-		windowStart = (await this._eac.Util.getBlockNumber()) + 25
-		gasPrice = this._web3.web3.toWei("55", "gwei")
-		donation = this._web3.web3.toWei("120", "finney")
-		payment = this._web3.web3.toWei("250", "finney")
-		requiredDeposit = this._web3.web3.toWei("50", "finney")
+    callValue = 123454321
+    windowSize = 255
+    windowStart = (await this._eac.Util.getBlockNumber()) + 25
+    gasPrice = this._web3.web3.toWei("55", "gwei")
+    donation = this._web3.web3.toWei("120", "finney")
+    payment = this._web3.web3.toWei("250", "finney")
+    requiredDeposit = this._web3.web3.toWei("50", "finney")
 
-		const endowment = this._eacScheduler.calcEndowment(
-			new BigNumber(callGas),
-			new BigNumber(callValue),
-			new BigNumber(gasPrice),
-			new BigNumber(donation),
-			new BigNumber(payment)
+    const endowment = this._eacScheduler.calcEndowment(
+      new BigNumber(callGas),
+      new BigNumber(callValue),
+      new BigNumber(gasPrice),
+      new BigNumber(donation),
+      new BigNumber(payment)
     )
     
-		this._eacScheduler.initSender({
-			from: this._web3.eth.defaultAccount,
-			gas: 3000000,
-			value: endowment
+    this._eacScheduler.initSender({
+      from: this._web3.eth.defaultAccount,
+      gas: 3000000,
+      value: endowment
     });
     
-		this._eacScheduler.blockSchedule(
-			toAddress,
-			this._web3.web3.fromAscii(callData),
-			callGas,
-			callValue,
-			windowSize,
-			windowStart,
-			gasPrice,
-			donation,
-			payment,
-			requiredDeposit
-		)
+    this._eacScheduler.blockSchedule(
+      toAddress,
+      this._web3.web3.fromAscii(callData),
+      callGas,
+      callValue,
+      windowSize,
+      windowStart,
+      gasPrice,
+      donation,
+      payment,
+      requiredDeposit
+    )
   }
 }

@@ -5,9 +5,9 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = merge(baseConfig, {
 
-	module: {
-		rules: [
-			// Loader for the stylesheets
+  module: {
+    rules: [
+      // Loader for the stylesheets
       {
         test: /\.(css|sass|scss)$/,
         use: ExtractTextPlugin.extract({
@@ -28,13 +28,13 @@ module.exports = merge(baseConfig, {
           fallback: 'style-loader'
         })
       }
-		]
-	},
+    ]
+  },
 
-	plugins: [
-		// Uglifies and minifies the JS
-		new UglifyJSPlugin({
-			uglifyOptions: {
+  plugins: [
+    // Uglifies and minifies the JS
+    new UglifyJSPlugin({
+      uglifyOptions: {
         compress: {
           warnings: false
         },
@@ -42,6 +42,6 @@ module.exports = merge(baseConfig, {
           comments: false
         }
       }
-		})
-	]
+    })
+  ]
 });
