@@ -61,28 +61,30 @@ render() {
           />
         </div>
 
-        <ul className="pager wizard no-style">
-          <li className="next">
-            <button className="btn btn-primary btn-cons pull-right" type="button">
-              <span>Next</span>
-            </button>
-          </li>
-          <li className="next finish" style={{display: 'none'}}>
-            <button className="btn btn-primary btn-cons pull-right" type="button">
-              <span>Schedule</span>
-            </button>
-          </li>
-          <li className="previous first" style={{display: 'none'}}>
-                <button className="btn btn-white btn-cons pull-right" type="button">
-                    <span>First</span>
-                </button>
+        <div className="footer-buttons">
+          <ul className="pager wizard no-style">
+            <li className="next">
+              <button className="btn btn-primary btn-cons pull-right" type="button">
+                <span>Next</span>
+              </button>
             </li>
-          <li className="previous">
-            <button className="btn btn-white btn-cons pull-right" type="button">
-              <span>Previous</span>
-            </button>
-          </li>
-        </ul>
+            <li className="next finish" style={{display: 'none'}}>
+              <button className="btn btn-primary btn-cons pull-right" type="button">
+                <span>Schedule</span>
+              </button>
+            </li>
+            <li className="previous first" style={{display: 'none'}}>
+                  <button className="btn btn-white btn-cons pull-right" type="button">
+                      <span>First</span>
+                  </button>
+              </li>
+            <li className="previous">
+              <button className="btn btn-white btn-cons pull-right" type="button">
+                <span>Previous</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
