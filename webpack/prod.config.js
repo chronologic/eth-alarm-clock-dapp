@@ -19,6 +19,9 @@ module.exports = merge(baseConfig, {
               }
             },
             {
+              loader: 'resolve-url-loader'
+            },
+            {
               loader: 'sass-loader'
             }
           ],

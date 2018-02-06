@@ -271,7 +271,7 @@ input[type=radio]:checked + label:before{
         border-color: $color-success;
     }
     .radio.radio-primary &{
-        border-color: $color-primary;
+        border-color: $color-black;
     }
     .radio.radio-info &{
         border-color: $color-info;

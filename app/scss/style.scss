@@ -39,6 +39,13 @@ $primary-color: #21FFFF;
 	color: inherit;
 }
 
+.datepicker thead tr .prev:before {
+  content: "<";
+}
+.datepicker thead tr .next:before {
+  content: ">";
+}
+
 
 /* NEW CUSTOM CSS */
 .view-title {
@@ -52,7 +59,7 @@ $primary-color: #21FFFF;
 }
 
 .card .card-body{
-   height: 650px;
+   height: 860px;
 }
 #scheduleWizard{
   height: 100%;
