@@ -1,30 +1,26 @@
 import React, { Component } from 'react'
 import SidePanel from '../SidePanel/SidePanel';
 import Header from '../Header/Header';
-import ScheduleWizard from '../Common/ScheduleWizard';
+import { Route } from 'react-router-dom';
+import { TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
+import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 
 class App extends Component {
   render() {
     return (
       <div>
         <SidePanel />
-        <div className="page-container ">
+        <div className="page-container">
           <Header />
-          <div className="page-content-wrapper ">
+          <div className="page-content-wrapper">
             <div className="content sm-gutter">
-              <div className="container-fluid padding-25 sm-padding-10">
-                <h1 className="view-title">Schedule Transaction</h1>
-                <div className="widget-12 card no-border widget-loader-circle no-margin">
-                  <div className="card-body">
-                    <ScheduleWizard/>
-                  </div>
-                </div>
-              </div>
+              <Route exact path="/" component={ScheduleRoute}/>
+              <Route path="/transactions" component={TransactionsRoute}/>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

@@ -5,7 +5,7 @@ import { action, observable, runInAction } from 'mobx';
 // import dayTokenABI from './abi/dayTokenABI';
 // import dayFaucetABI from './abi/dayFaucetABI';
 
-import {Networks} from 'config/web3Config.js'
+import { Networks } from './config/web3Config.js'
 
 let instance = null;
 
@@ -53,6 +53,7 @@ export default class Web3Service {
         this.accounts = web3.eth.accounts;
         web3.eth.defaultAccount = this.accounts[0];
         // console.log('accounts', this.accounts);
+
         const netId =
             await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {

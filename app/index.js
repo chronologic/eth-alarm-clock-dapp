@@ -4,13 +4,19 @@ import 'jquery.scrollbar';
 import 'bootstrap';
 import 'select2';
 import 'bootstrap-timepicker';
-import 'bootstrap-datepicker';
+import './plugins/bootstrap-datepicker/js/bootstrap-datepicker.js'
+import { Provider } from 'mobx-react';
+import { Router, Route } from 'react-router-dom';
+import App from './components/App';
+import { stores, history } from './stores';
 
-import App from './components/App'
-
-const rootEl = document.getElementById('root')
+const rootEl = document.getElementById('root');
 
 render(
-    <App />,
-    rootEl
-  )
+  <Provider {...stores}>
+    <Router history={history}>
+      <Route component={App} />
+    </Router>
+  </Provider>,
+  rootEl
+);
