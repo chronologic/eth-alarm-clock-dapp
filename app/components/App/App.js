@@ -17,7 +17,7 @@ class App extends Component {
   }
 
   updateSearchState(enabled) {
-    this.setState({showSearchOverlay: enabled});
+    this.setState({ showSearchOverlay: enabled });
   }
 
   render() {
