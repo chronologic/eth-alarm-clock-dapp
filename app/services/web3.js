@@ -1,12 +1,11 @@
 import Web3 from 'web3/index';
-import eac from 'eac.js';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
 
 // import dayTokenABI from './abi/dayTokenABI';
 // import dayFaucetABI from './abi/dayFaucetABI';
 
-import { Networks } from './config/web3Config.js'
+import { Networks } from '../config/web3Config.js'
 
 let instance = null;
 

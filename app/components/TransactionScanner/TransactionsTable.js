@@ -24,27 +24,9 @@ class TransactionsTable extends Component {
               </tr>
             </thead>
             <tbody>
-              {/* <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr> */}
               {this.props.transactions.map((transaction, index) => (
                 <TransactionRow key={index} transaction={transaction} />
               ))}
-              {/* <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Failed</a></td>
-              </tr> */}
             </tbody>
           </table>
         </div>
