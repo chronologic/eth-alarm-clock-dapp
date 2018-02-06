@@ -4,7 +4,7 @@
 import './plugins/bootstrap-form-wizard/js/jquery.bootstrap.wizard.js'
 //import './plugins/bootstrap/js/bootstrap.min.js'
 
-import './pages/js/pages.min.js'
+import './pages/js/pages.js'
 
 // Load all the CSS files
 import 'bootstrap-timepicker/css/bootstrap-timepicker.css'
