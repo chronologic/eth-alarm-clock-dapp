@@ -58,7 +58,7 @@ render() {
     <div id="awaitingMining" className="horizontal-center">
 
       <div className="progress-circle-indeterminate m-t-45"></div>
-      <PacmanLoader {...loaderConfig}/>
+      <PacmanLoader {...Object.assign({loading:true},loaderConfig)}/>
       <p className="horizontal-center">Awaiting Mining</p>
 
       <p className="horizontal-center">Transation Hash: <a href="#">{this.state.transactionHash}</a></p>
