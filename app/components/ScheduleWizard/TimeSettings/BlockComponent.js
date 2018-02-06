@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 class BlockComponent extends Component {
 
   render() {
-
     return (
       <div id="blockComponent">
         <div className="row">

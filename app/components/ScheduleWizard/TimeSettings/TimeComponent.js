@@ -18,16 +18,14 @@ class TimeComponent extends Component {
   }
 
   componentDidMount() {
-
     const { jQuery } = window;
 
     jQuery('#timepicker').timepicker().on('show.timepicker', function() {
-        var widget = jQuery('.bootstrap-timepicker-widget');
+        const widget = jQuery('.bootstrap-timepicker-widget');
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     });
     jQuery('#datepicker-component').datepicker();
-
   }
 
   clearPresetExecWindow() {
@@ -35,7 +33,6 @@ class TimeComponent extends Component {
   }
 
   render() {
-
     const timezones = moment.tz.names();
     const localTimezone = moment.tz.guess();
     const defaultTime = moment().add(1, 'hours').format("hh:mm a");

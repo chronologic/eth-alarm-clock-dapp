@@ -18,7 +18,6 @@ class TimeSettings extends Component {
   }
 
   render() {
-
     let componentToRender = null;
     if (this.state.isUsingTime) {
       componentToRender = <TimeComponent />;
