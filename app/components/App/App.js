@@ -14,10 +14,23 @@ class App extends Component {
       showSearchOverlay: false
     };
     this.updateSearchState = this.updateSearchState.bind(this);
+    this.escFunction = this.escFunction.bind(this);
   }
 
   updateSearchState(enabled) {
     this.setState({ showSearchOverlay: enabled });
+  }
+
+  escFunction(event){
+    if(event.keyCode === 27) {
+      if(this.state.showSearchOverlay) {
+        this.updateSearchState(false);
+      }
+    }
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.escFunction, false);
   }
 
   render() {
