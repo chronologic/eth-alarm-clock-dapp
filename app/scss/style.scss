@@ -59,12 +59,28 @@ $primary-color: #21FFFF;
 }
 
 .card .card-body{
-   height: 860px;
+   height: 650px;
 }
 #scheduleWizard{
   height: 100%;
 }
-.tab-content{
-     overflow-y: auto;
-    height: 90%;
+
+#scheduleWizard .tab-content{
+  height: 570px;
+}
+
+#scheduleWizard .tab-pane.active{
+	overflow: hidden;
+	overflow-y: auto;
+	height:90%;
+}
+
+#scheduleWizard .footer-buttons{
+	margin-top: 15px;
+	display:block;
+	height:6.5%;
+}
+
+#confirmSettings table td {
+  padding: 10px 20px;
 }
