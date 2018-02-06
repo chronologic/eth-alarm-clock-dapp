@@ -7,45 +7,56 @@ export class TransactionStatus {
   static CANCELLED = 3
 }
 
+export const DEFAULT_LIMIT = 10;
+
 export class TransactionStore {
-  _eac = null
-  _web3 = null
-  _eacScheduler = null
+  _eac = null;
+  _web3 = null;
+  _eacScheduler = null;
+
+  requestFactoryStartBlock = '5555500';
 
   constructor(eac, web3) {
     this._web3 = web3;
     this._eac = eac;
-
-    // console.log(this);
 
     this.setup();
   }
 
   async setup() {
     this._eacScheduler = await this._eac.scheduler();
-    
-    // const requestFactory = await this._eac.requestFactory();
-
-    // const trackerAddress = requestFactory.getTrackerAddress();
-
-    // console.log(requestFactory, await requestFactory.address, await requestFactory.getRequests());
 
     await this._web3.connect();
   }
 
-  async getTransactions() {
-    return [
-      {
-        address: '0x50as6d50asd56as0d50s6a5d0',
-        time: new Date(),
-        bounty: '0.001 ETH',
-        txValue: '10 ETH',
-        depositAmount: '1 ETH',
-        timeWindow: '5 min',
-        status: TransactionStatus.EXECUTED
-      }
-    ];
+  async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }) {
+    const requestFactory = await this._eac.requestFactory();
+
+    let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
+
+    requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
+
+    return requestsCreated;
   }
+
+  async getTransactionsProcessed({ startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0 }) {
+    let transactions = await this.getTransactions({ startBlock, endBlock });
+
+    const total = transactions.length;
+
+    transactions = transactions.slice(offset, limit);
+
+    return {
+      transactions,
+      total
+    };
+  }
+
+  // deserializeTransaction(transactionData) {
+  //   return {
+  //     status: 
+  //   };
+  // }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {    
     toAddress = '0xDacC9C61754a0C4616FC5323dC946e89Eb272302';

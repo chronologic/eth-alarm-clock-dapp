@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import TransactionRow from './TransactionRow';
 
 class TransactionsTable extends Component {
   state = {}
-
-  componentDidMount() {
-
-  }
 
   render() {
     return (
@@ -26,7 +24,7 @@ class TransactionsTable extends Component {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              {/* <tr>
                 <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
                 <td className="v-align-middle">2019-01-23 12:32</td>
                 <td className="v-align-middle semi-bold">0.001 ETH</td>
@@ -34,17 +32,11 @@ class TransactionsTable extends Component {
                 <td className="v-align-middle">1 ETH</td>
                 <td className="v-align-middle">5 min</td>
                 <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Cancelled</a></td>
-              </tr>
-              <tr>
+              </tr> */}
+              {this.props.transactions.map((transaction, index) => (
+                <TransactionRow key={index} transaction={transaction} />
+              ))}
+              {/* <tr>
                 <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
                 <td className="v-align-middle">2019-01-23 12:32</td>
                 <td className="v-align-middle semi-bold">0.001 ETH</td>
@@ -52,33 +44,15 @@ class TransactionsTable extends Component {
                 <td className="v-align-middle">1 ETH</td>
                 <td className="v-align-middle">5 min</td>
                 <td className="v-align-middle"><a href="#">Failed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
 
-        <div id="transactionsPagination">
+        <div className="mt-4">
           <div className="row">
             <div className="col-md-6">
-              Showing 1 to 10 of 22 entries
+              Showing {this.props.transactionsOffset + 1} to {this.props.transactionsOffset + this.props.transactionsLimit} of {this.props.transactionsTotal} entries
             </div>
             <div className="col-md-6 text-right">
             <i className="fas fa-angle-left"></i> 1 2 3 <i className="fas fa-angle-right"></i>
@@ -90,5 +64,12 @@ class TransactionsTable extends Component {
     );
   }
 }
+
+TransactionsTable.propTypes = {
+  transactions: PropTypes.array,
+  transactionsTotal: PropTypes.number,
+  transactionsLimit: PropTypes.number,
+  transactionsOffset: PropTypes.number
+};
 
 export default TransactionsTable;
