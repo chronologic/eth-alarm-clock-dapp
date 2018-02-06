@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 
 class ScheduleWizard extends Component {
-  state = {}
+  constructor(props){
+    super(props);
+    this.state = {}
+
+    this.goToWait = this.goToWait.bind(this);
+  }
+
+  goToWait(){
+  }
 
   componentDidMount() {
     const { jQuery } = window;
@@ -69,9 +78,9 @@ render() {
               </button>
             </li>
             <li className="next finish" style={{display: 'none'}}>
-              <button className="btn btn-primary btn-cons pull-right" type="button">
+              <Link to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
                 <span>Schedule</span>
-              </button>
+              </Link>
             </li>
             <li className="previous first" style={{display: 'none'}}>
                   <button className="btn btn-white btn-cons pull-right" type="button">
