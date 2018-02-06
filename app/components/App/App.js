@@ -3,8 +3,8 @@ import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
 import { Route } from 'react-router-dom';
-import { TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
+import { TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
 
 class App extends Component {
 
