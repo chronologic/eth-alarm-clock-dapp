@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import moment from 'moment';
+import ValueDisplay from '../Common/ValueDisplay';
+
+class TEMPORAL_UNIT {
+  static BLOCK = 1;
+  static TIMESTAMP = 2;
+}
 
 const INITIAL_STATE = {
   time: ''
@@ -13,9 +19,12 @@ class TransactionsRow extends Component {
 
   async componentDidMount() {
     const { transaction } = this.props;
+
     await transaction.fillData();
 
-    let status = transaction.wasCalled ? 'Executed' : 'Pending';
+    const isTimestamp = transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+
+    let status = transaction.wasCalled ? 'Executed' : 'Scheduled';
 
     if (transaction.isCancelled) {
       status = 'Cancelled';
@@ -25,22 +34,37 @@ class TransactionsRow extends Component {
 
     time = moment.unix(time).format('YYYY-MM-DD HH:MM');
     
+    let timeWindow = transaction.windowSize * 15;
+
+    if (isTimestamp) {
+      timeWindow = transaction.windowSize;
+    }
+
+    timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');
+
     this.setState({
+      bounty: transaction.bounty,
+      deposit: transaction.requiredDeposit,
       time,
-      status
+      status,
+      timeWindow,
+      value: transaction.callValue
     });
   }
 
   render() {
+    const { transaction } = this.props;
+    const { bounty, deposit, status, time, timeWindow, value } = this.state;
+
     return (
       <tr>
-        <td className="v-align-middle semi-bold"><a href="#">{this.props.transaction.address}</a></td>
-        <td className="v-align-middle">{this.state.time}</td>
-        <td className="v-align-middle semi-bold">0.001 ETH</td>
-        <td className="v-align-middle">10 ETH</td>
-        <td className="v-align-middle">1 ETH</td>
-        <td className="v-align-middle">5 min</td>
-        <td className="v-align-middle"><a href="#">{this.state.status}</a></td>
+        <td className="v-align-middle semi-bold"><a href="#">{transaction.address}</a></td>
+        <td className="v-align-middle">{time}</td>
+        <td className="v-align-middle semi-bold"><ValueDisplay priceInWei={bounty}/></td>
+        <td className="v-align-middle"><ValueDisplay priceInWei={value}/></td>
+        <td className="v-align-middle"><ValueDisplay priceInWei={deposit}/></td>
+        <td className="v-align-middle">{timeWindow}</td>
+        <td className="v-align-middle"><a href="#">{status}</a></td>
       </tr>
     );
   }

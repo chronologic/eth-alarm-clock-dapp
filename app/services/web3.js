@@ -91,6 +91,36 @@ export default class Web3Service {
         return Networks[this.netId];
     }
 
+    humanizeCurrencyDisplay(priceInWei) {
+      const ETHER_UNITS_VALUES_MAPPING = {
+        WEI: 1,
+        MWEI: 1000000,
+        FINNEY: 1000000000000000,
+        ETH: 1000000000000000000
+      };
+
+      let unit = 'ETH';
+
+      if (!priceInWei) {
+        return null;
+      }
+
+      const priceAsNumber = priceInWei.toNumber();
+      
+      let display = priceAsNumber;  
+
+      if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.MWEI) {
+        unit = 'WEI';
+      } else if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.FINNEY) {
+        display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.MWEI).toFixed();
+        unit = 'MWEI';
+      } else if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.ETH) {
+        display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.FINNEY).toFixed();
+        unit = 'FINNEY';
+      }
+
+      return `${display} ${unit}`;
+    }
 }
 
 export function initWeb3Service(isServer, source) {

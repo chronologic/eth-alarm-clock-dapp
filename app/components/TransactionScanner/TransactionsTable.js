@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import TransactionRow from './TransactionRow';
 
 class TransactionsTable extends Component {
-  state = {}
-
+  pages = [1, 2, 3]
+  
   render() {
     return (
-
-      <div id="transactionsTable">
-
+      <div>
         <div className="table-responsive">
           <table className="table table-hover table-condensed" id="detailedTable">
             <thead>
@@ -34,10 +32,15 @@ class TransactionsTable extends Component {
         <div className="mt-4">
           <div className="row">
             <div className="col-md-6">
-              Showing {this.props.transactionsOffset + 1} to {this.props.transactionsOffset + this.props.transactionsLimit} of {this.props.transactionsTotal} entries
+              Showing {this.props.transactionsOffset + 1} to {this.props.transactions.length} of {this.props.transactionsTotal} entries
             </div>
             <div className="col-md-6 text-right">
-            <i className="fas fa-angle-left"></i> 1 2 3 <i className="fas fa-angle-right"></i>
+            <i className="fas fa-angle-left"></i>
+            &nbsp;
+            {this.pages.map(page => (
+              <span key={page}>{page}&nbsp;</span>
+            ))}
+            <i className="fas fa-angle-right"></i>
             </div>
           </div>
         </div>
