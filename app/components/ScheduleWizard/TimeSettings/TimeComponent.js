@@ -26,6 +26,7 @@ class TimeComponent extends Component {
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     });
     jQuery('#datepicker-component').datepicker();
+    jQuery('#timezoneSelect').select2();
   }
 
   clearPresetExecWindow() {
@@ -43,7 +44,7 @@ class TimeComponent extends Component {
           <div className="col-md-3">
             <div className="form-group form-group-default form-group-default-select2 required">
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" data-init-plugin="select2" defaultValue={localTimezone}>
+              <select id="timezoneSelect" className="full-width" defaultValue={localTimezone}>
                 {timezones.map((timezone, index) => 
                   <option key={index} value={timezone}>{timezone}</option>
                 )} 
