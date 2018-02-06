@@ -1,12 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-export class TransactionStatus {
-  static PENDING = 0
-  static EXECUTED = 1
-  static FAILED = 2
-  static CANCELLED = 3
-}
-
 export const DEFAULT_LIMIT = 10;
 
 export class TransactionStore {
