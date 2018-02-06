@@ -44,7 +44,7 @@ export class TransactionStore {
 
     const total = transactions.length;
 
-    transactions = transactions.slice(offset, limit);
+    transactions = transactions.slice(offset, offset + limit);
 
     return {
       transactions,

@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 const INITIAL_STATE = {
   transactions: [],
   limit: 10,
-  offset: 0
+  offset: 0,
+  currentPage: 1
 };
 
 @inject('transactionStore')
@@ -17,18 +18,32 @@ class TransactionScanner extends Component {
     super(...arguments);
 
     this.state = INITIAL_STATE;
+
+    this.goToPage = this.goToPage.bind(this);
   }
 
-  async componentWillMount() {
+  async loadPage(page) {
+    const offset = (page - 1) * this.state.limit;
+
     const { total, transactions } = await this.props.transactionStore.getTransactionsProcessed({
       limit: this.state.limit,
-      offset: this.state.offset
+      offset
     });
 
     this.setState({
+      currentPage: page,
       transactions,
+      offset,
       total
     });
+  }
+
+  async componentWillMount() {
+    await this.loadPage(1);
+  }
+
+  async goToPage(page) {
+    await this.loadPage(page);
   }
 
   render() {
@@ -36,9 +51,11 @@ class TransactionScanner extends Component {
       <div id="TransactionScanner">
         <TransactionsTable
           transactions={this.state.transactions}
-          transactionsLimit={this.state.limit}
-          transactionsOffset={this.state.offset}
-          transactionsTotal={this.state.total}
+          limit={this.state.limit}
+          offset={this.state.offset}
+          total={this.state.total}
+          goToPage={this.goToPage}
+          currentPage={this.state.currentPage}
         />
       </div>
     );
