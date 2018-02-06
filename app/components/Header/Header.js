@@ -10,6 +10,10 @@ class Header extends Component {
           <div className="brand inline">
             <img src="img/eac-logo.png" alt="logo" data-src="img/eac-logo.png" />
           </div>
+          <a href="#" className="search-link d-lg-inline-block d-none" data-toggle="search">
+            <i className="pg-search"></i>
+            Search by Address
+          </a>
         </div>
         <div className="d-flex align-items-center">
           <div className="brand inline">
