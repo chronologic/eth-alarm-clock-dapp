@@ -1,4 +1,5 @@
 import Web3 from 'web3/index';
+import eac from 'eac.js';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
 
