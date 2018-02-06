@@ -117,6 +117,9 @@ export default class Web3Service {
       } else if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.ETH) {
         display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.FINNEY).toFixed();
         unit = 'FINNEY';
+      } else {
+        display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.ETH).toFixed();
+        unit = 'ETH';
       }
 
       return `${display} ${unit}`;
