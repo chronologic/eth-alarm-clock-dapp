@@ -1,19 +1,83 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import TransactionRow from './TransactionRow';
+
+const INITIAL_STATE = {
+  pages: [],
+  currentPage: 1,
+  lastPage: 1
+};
 
 class TransactionsTable extends Component {
-  state = {}
+  state = INITIAL_STATE
 
-  componentDidMount() {
+  constructor() {
+    super(...arguments);
 
+    this.state = INITIAL_STATE;
   }
 
+  calculatePages(props = this.props) {
+    const pages = [];
+    let lastPage = 0;
+
+    const { limit, total } = props;
+
+    if (total <= limit) {
+      pages.push(1);
+    } else {
+      for (let i = 0; i < total; i += limit) {
+        pages.push(++lastPage);
+      }
+    }
+
+    this.setState({
+      lastPage: lastPage ? lastPage : 1,
+      pages
+    });
+  }
+
+  componentWillMount() {
+    this.calculatePages();
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.calculatePages(newProps);
+
+    this.setState(() => ({
+      currentPage: newProps.currentPage 
+    }));
+  }
+
+  get showPreviousPageButton() {
+    return this.props.currentPage > 1;
+  }
+
+  get showNextPageButton() {
+    return this.props.currentPage < this.state.lastPage;
+  }
+
+  goToPage(page) {
+    if (page >= 1 && page !== this.state.currentPage && page <= this.state.lastPage) {
+      this.props.goToPage(page);
+    }
+  }
+
+  getNextPageButton() {
+    return <i className="fa fa-angle-right"></i>;
+  }
+
+  getPreviousPageButton() {
+    return <i className="fa fa-angle-left"></i>;
+  }
+  
   render() {
+    const { offset, transactions, total } = this.props;
+
     return (
-
-      <div id="transactionsTable">
-
+      <div>
         <div className="table-responsive">
-          <table className="table table-hover table-condensed" id="detailedTable">
+          <table className="table table-hover table-condensed">
             <thead>
               <tr>
                 <th>Contract Address</th>
@@ -26,63 +90,29 @@ class TransactionsTable extends Component {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Cancelled</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Failed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
-              <tr>
-                <td className="v-align-middle semi-bold"><a href="#">0x50as6d50asd56as0d50s6a5d0</a></td>
-                <td className="v-align-middle">2019-01-23 12:32</td>
-                <td className="v-align-middle semi-bold">0.001 ETH</td>
-                <td className="v-align-middle">10 ETH</td>
-                <td className="v-align-middle">1 ETH</td>
-                <td className="v-align-middle">5 min</td>
-                <td className="v-align-middle"><a href="#">Executed</a></td>
-              </tr>
+              {transactions.map((transaction, index) => (
+                <TransactionRow key={index} transaction={transaction} />
+              ))}
             </tbody>
           </table>
         </div>
 
-        <div id="transactionsPagination">
+        <div className="mt-4">
           <div className="row">
             <div className="col-md-6">
-              Showing 1 to 10 of 22 entries
+              Showing {offset + 1} to {offset + transactions.length} of {total} entries
             </div>
-            <div className="col-md-6 text-right">
-            <i className="fas fa-angle-left"></i> 1 2 3 <i className="fas fa-angle-right"></i>
-            </div>
+            {this.state.lastPage !== 1 &&
+              <div className="col-md-6 text-right">
+                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(this.props.currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>                
+
+                {this.state.pages.map(page => (
+                  <span key={page} className={page === this.state.currentPage ? 'bold' : ''} onClick={() => this.goToPage(page)}>{page}&nbsp;</span>
+                ))}
+
+                <span className={this.showNextPageButton ? '' : 'd-none'}onClick={() => this.goToPage(this.props.currentPage + 1)}>{this.getNextPageButton()}</span>
+              </div>
+            }
           </div>
         </div>
 
@@ -90,5 +120,14 @@ class TransactionsTable extends Component {
     );
   }
 }
+
+TransactionsTable.propTypes = {
+  transactions: PropTypes.array,
+  total: PropTypes.number,
+  limit: PropTypes.number,
+  offset: PropTypes.number,
+  goToPage: PropTypes.any,
+  currentPage: PropTypes.any
+};
 
 export default TransactionsTable;

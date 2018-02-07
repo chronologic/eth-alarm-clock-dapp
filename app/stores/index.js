@@ -1,12 +1,18 @@
 import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
-//import mobxStore from 'mobxStore';
+import { TransactionStore } from './TransactionStore';
+import { services } from '../services';
+
+const { eacService, web3Service } = services;
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
+export const transactionStore = new TransactionStore(eacService, web3Service);
+
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
 export const stores = {
-  routing: routingStore
+  routing: routingStore,
+  transactionStore
 };
