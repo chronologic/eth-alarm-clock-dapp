@@ -11,7 +11,6 @@ class SearchOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      limit: 10,
       transactions: []
     }
   }
@@ -28,9 +27,7 @@ class SearchOverlay extends Component {
     return await this.props.transactionStore.getAllTransactions();        
   }
 
-  async loadPage(page) {
-    const offset = (page - 1) * this.state.limit;
-
+  async loadData() {
     this.setState({
       fetchingTransactions: true
     });
@@ -42,16 +39,14 @@ class SearchOverlay extends Component {
     }
 
     this.setState({
-      currentPage: page,
       transactions,
-      offset,
       total,
       fetchingTransactions: false
     });
   }
 
   async componentWillMount() {
-    await this.loadPage(1);
+    await this.loadData();
   }
 
   render() {
