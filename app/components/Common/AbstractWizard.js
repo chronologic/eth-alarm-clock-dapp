@@ -24,7 +24,7 @@ constructor(activeStepKey, activeApp, props) {
 }
 
 async componentDidMount(){
-  const {web3Service} = this.props;
+  const { web3Service } = this.props;
   await web3Service.awaitInitialized();
   await this.validatePrevState();
 }

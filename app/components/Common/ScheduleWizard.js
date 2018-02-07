@@ -68,12 +68,12 @@ render() {
                 <span>Next</span>
               </button>
             </li>
-            <li className="next finish" style={{display: 'none'}}>
+            <li className="next finish" style={{ display: 'none' }}>
               <button className="btn btn-primary btn-cons pull-right" type="button">
                 <span>Schedule</span>
               </button>
             </li>
-            <li className="previous first" style={{display: 'none'}}>
+            <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" type="button">
                       <span>First</span>
                   </button>
