@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { inject } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import SearchResult from './SearchResult';
 
+@observer
 @inject('transactionStore')
 class SearchOverlay extends Component {
 
@@ -23,24 +24,19 @@ class SearchOverlay extends Component {
     this._isMounted = true;
   }
 
-  async fetchData() {
-    return await this.props.transactionStore.getAllTransactions();        
-  }
-
   async loadData() {
     this.setState({
       fetchingTransactions: true
     });
 
-    const { total, transactions } = await this.fetchData();
+    await this.props.transactionStore.getAllTransactions();
 
     if (!this._isMounted) {
       return;
     }
-
+    
     this.setState({
-      transactions,
-      total,
+      transactions: this.props.transactionStore.allTransactions,
       fetchingTransactions: false
     });
   }
