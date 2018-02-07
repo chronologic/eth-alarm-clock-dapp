@@ -82,7 +82,6 @@ render() {
                 <span>Next</span>
               </button>
             </li>
-<<<<<<< HEAD
             <li className="next finish" style={{display: 'none'}}>
               <button className="btn btn-primary btn-cons pull-right"  type="button">
                 <span>Schedule</span>
@@ -90,15 +89,6 @@ render() {
             </li>
             <li className="previous first" style={{display: 'none'}}>
                   <button className="btn btn-white btn-cons pull-right" onClick={this.initiateScrollbar} type="button">
-=======
-            <li className="next finish" style={{ display: 'none' }}>
-              <button className="btn btn-primary btn-cons pull-right" type="button">
-                <span>Schedule</span>
-              </button>
-            </li>
-            <li className="previous first" style={{ display: 'none' }}>
-                  <button className="btn btn-white btn-cons pull-right" type="button">
->>>>>>> 92a5b5f578675f2fb287a9f313891b43355a9da0
                       <span>First</span>
                   </button>
               </li>
