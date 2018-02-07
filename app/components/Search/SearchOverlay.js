@@ -1,8 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import SearchResult from './SearchResult';
 
 class SearchOverlay extends Component {
   render() {
+    const results = [
+      {
+        txHash: "0xasudbasidubasfafasd6s4d6asd45asd",
+        txStatus: "Executed"
+      },
+      {
+        txHash: "0x68asd1a8s6d1as68d1asa4s7898123",
+        txStatus: "Scheduled"
+      },
+      {
+        txHash: "0xASidnasodinOi123907adfoinoi123456",
+        txStatus: "Executed"
+      }
+    ];
+
     return (
       <div id="searchOverlay" className="overlay" data-pages="search">
         <div className="overlay-content has-results m-t-20">
@@ -28,37 +44,13 @@ class SearchOverlay extends Component {
           <div className="container-fluid">
             <div className="search-results m-t-40">
               <p className="bold">ETH Alarm Clock Search Results</p>
-              <div className="row">
-                <div className="col-md-12">
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>E</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0xasudbasidubasfafasd6s4d6asd45asd</span></h5>
-                      <p className="hint-text">Executed</p>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>S</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0x68asd1a8s6d1as68d1asa4s7898123</span></h5>
-                      <p className="hint-text">Scheduled</p>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>E</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0xASidnasodinOi123907adfoinoi123456</span></h5>
-                      <p className="hint-text">Executed</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                {results.map((result, index) => 
+                  <SearchResult
+                    key={index}
+                    txHash={result.txHash}
+                    txStatus={result.txStatus}
+                  />
+                )}
             </div>
           </div>
         </div>
