@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { observable } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -6,6 +7,8 @@ export class TransactionStore {
   _eac = null;
   _web3 = null;
   _eacScheduler = null;
+
+  @observable allTransactions;
 
   requestFactoryStartBlock = '5555500';
 
@@ -33,19 +36,12 @@ export class TransactionStore {
   }
 
   async getAllTransactions() {
-    let transactions = await this.getTransactions({});
+    this.allTransactions = await this.getTransactions({});
 
-    for (let transaction of transactions) {
+    for (let transaction of this.allTransactions) {
       await transaction.fillData();
       transaction.resolved = await this.isTransactionResolved(transaction);
     }
-
-    const total = transactions.length
-
-    return {
-      transactions,
-      total
-    };
   }
 
   async queryTransactions({ transactions, offset, limit, resolved }) {
