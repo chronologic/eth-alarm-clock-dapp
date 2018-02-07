@@ -72,7 +72,7 @@ class TransactionsTable extends Component {
   }
   
   render() {
-    const { offset, transactions, total } = this.props;
+    const { offset, showStatus, transactions, total } = this.props;
 
     return (
       <div>
@@ -86,18 +86,18 @@ class TransactionsTable extends Component {
                 <th>TxValue</th>
                 <th>Deposit Amount</th>
                 <th>Time Window</th>
-                <th>Status</th>
+                {showStatus && <th>Status</th>}
               </tr>
             </thead>
             <tbody>
               {transactions.map((transaction, index) => (
-                <TransactionRow key={index} transaction={transaction} />
+                <TransactionRow key={index} transaction={transaction} showStatus={showStatus} />
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="mt-4">
+        <div className={this.props.fetchingTransactions ? 'd-none' : 'mt-4'}>
           <div className="row">
             <div className="col-md-6">
               Showing {offset + 1} to {offset + transactions.length} of {total} entries
@@ -116,6 +116,10 @@ class TransactionsTable extends Component {
           </div>
         </div>
 
+        <div className={this.props.fetchingTransactions ? 'mt-4' : 'd-none'}>
+            Fetching transactions...
+        </div>
+
       </div>
     );
   }
@@ -127,7 +131,9 @@ TransactionsTable.propTypes = {
   limit: PropTypes.number,
   offset: PropTypes.number,
   goToPage: PropTypes.any,
-  currentPage: PropTypes.any
+  currentPage: PropTypes.any,
+  showStatus: PropTypes.bool,
+  fetchingTransactions: PropTypes.bool
 };
 
 export default TransactionsTable;

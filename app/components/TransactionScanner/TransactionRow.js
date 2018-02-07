@@ -14,21 +14,20 @@ const INITIAL_STATE = {
 };
 
 @inject('eacService')
+@inject('transactionStore')
 class TransactionsRow extends Component {
   state = INITIAL_STATE
 
-  async componentDidMount() {
-    const { transaction } = this.props;
+  _isMounted = false
 
+  async getPreparedState() {
+    const { transaction, transactionStore } = this.props;
+    
     await transaction.fillData();
 
     const isTimestamp = transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
 
-    let status = transaction.wasCalled ? 'Executed' : 'Scheduled';
-
-    if (transaction.isCancelled) {
-      status = 'Cancelled';
-    }
+    const status = await transactionStore.getTxStatus(transaction);
 
     let time;
 
@@ -40,26 +39,42 @@ class TransactionsRow extends Component {
 
     time = moment.unix(time).format('YYYY-MM-DD HH:MM');
     
-    let timeWindow = transaction.windowSize * 15;
+    let timeWindow = transaction.windowSize.toNumber();
 
-    if (isTimestamp) {
-      timeWindow = transaction.windowSize;
+    if (!isTimestamp) {
+      timeWindow = timeWindow * 15;
     }
 
     timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');
 
-    this.setState({
+    return {
       bounty: transaction.bounty,
       deposit: transaction.requiredDeposit,
       time,
       status,
       timeWindow,
       value: transaction.callValue
-    });
+    };
+  }
+
+  async componentDidMount() {
+    this._isMounted = true;
+
+    const preparedState = await this.getPreparedState();
+
+    if (!this._isMounted) {
+      return;
+    }
+
+    this.setState(preparedState);
+  }
+
+  async componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
-    const { transaction } = this.props;
+    const { showStatus, transaction } = this.props;
     const { bounty, deposit, status, time, timeWindow, value } = this.state;
 
     return (
@@ -70,7 +85,7 @@ class TransactionsRow extends Component {
         <td className="v-align-middle"><ValueDisplay priceInWei={value}/></td>
         <td className="v-align-middle"><ValueDisplay priceInWei={deposit}/></td>
         <td className="v-align-middle">{timeWindow}</td>
-        <td className="v-align-middle"><a href="#">{status}</a></td>
+        {showStatus && <td className="v-align-middle"><a href="#">{status}</a></td>}
       </tr>
     );
   }
@@ -78,7 +93,9 @@ class TransactionsRow extends Component {
 
 TransactionsRow.propTypes = {
   transaction: PropTypes.object.isRequired,
-  eacService: PropTypes.any
+  eacService: PropTypes.any,
+  transactionStore: PropTypes.any,
+  showStatus: PropTypes.bool
 };
 
 export default TransactionsRow;

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 const INITIAL_STATE = {
   transactions: [],
+  fetchingTransactions: false,
   limit: 10,
   offset: 0,
   currentPage: 1
@@ -14,6 +15,8 @@ const INITIAL_STATE = {
 class TransactionScanner extends Component {
   state = INITIAL_STATE
 
+  _isMounted = false;
+
   constructor() {
     super(...arguments);
 
@@ -22,19 +25,57 @@ class TransactionScanner extends Component {
     this.goToPage = this.goToPage.bind(this);
   }
 
+  async fetchData({ limit, offset }) {
+    const options = {
+      limit,
+      offset
+    };
+
+    if (this.props.includeResolved) {
+      options.resolved = true;        
+    }
+
+    if (this.props.includeUnresolved) {
+      options.resolved = false;
+    }
+
+    if (!this.props.includeResolved && !this.props.includeUnresolved) {
+      options.resolved = null;
+    }
+
+    return await this.props.transactionStore.getTransactionsFiltered(options);        
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
   async loadPage(page) {
     const offset = (page - 1) * this.state.limit;
 
-    const { total, transactions } = await this.props.transactionStore.getTransactionsProcessed({
+    this.setState({
+      fetchingTransactions: true
+    });
+
+    const { total, transactions } = await this.fetchData({
       limit: this.state.limit,
       offset
     });
+
+    if (!this._isMounted) {
+      return;
+    }
 
     this.setState({
       currentPage: page,
       transactions,
       offset,
-      total
+      total,
+      fetchingTransactions: false
     });
   }
 
@@ -48,14 +89,16 @@ class TransactionScanner extends Component {
 
   render() {
     return (
-      <div id="TransactionScanner">
+      <div>
         <TransactionsTable
           transactions={this.state.transactions}
+          fetchingTransactions={this.state.fetchingTransactions}
           limit={this.state.limit}
           offset={this.state.offset}
           total={this.state.total}
           goToPage={this.goToPage}
           currentPage={this.state.currentPage}
+          showStatus={this.props.showStatus}
         />
       </div>
     );
@@ -63,7 +106,10 @@ class TransactionScanner extends Component {
 }
 
 TransactionScanner.propTypes = {
-  transactionStore: PropTypes.any
+  transactionStore: PropTypes.any,
+  showStatus: PropTypes.bool,
+  includeResolved: PropTypes.bool,
+  includeUnresolved: PropTypes.bool
 };
 
 export default TransactionScanner;
