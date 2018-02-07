@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -9,6 +9,13 @@ export class TransactionStore {
   _eacScheduler = null;
 
   @observable allTransactions;
+  @observable filter;
+  @computed get filteredTransactions() {
+    var matchesFilter = new RegExp(this.filter, 'i');
+    if(this.allTransactions) {
+      return this.allTransactions.filter(transaction => !this.filter || matchesFilter.test(transaction.instance.address));
+    }
+  }
 
   requestFactoryStartBlock = '5555500';
 
