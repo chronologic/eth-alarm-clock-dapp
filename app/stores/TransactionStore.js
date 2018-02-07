@@ -32,6 +32,22 @@ export class TransactionStore {
     return requestsCreated;
   }
 
+  async getAllTransactions() {
+    let transactions = await this.getTransactions({});
+
+    for (let transaction of transactions) {
+      await transaction.fillData();
+      transaction.resolved = await this.isTransactionResolved(transaction);
+    }
+
+    const total = transactions.length
+
+    return {
+      transactions,
+      total
+    };
+  }
+
   async queryTransactions({ transactions, offset, limit, resolved }) {
     const processed = [];
 

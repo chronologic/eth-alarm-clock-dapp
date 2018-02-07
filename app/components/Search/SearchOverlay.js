@@ -1,24 +1,60 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { inject } from 'mobx-react';
 import SearchResult from './SearchResult';
 
+@inject('transactionStore')
 class SearchOverlay extends Component {
-  render() {
-    const results = [
-      {
-        txHash: "0xasudbasidubasfafasd6s4d6asd45asd",
-        txStatus: "Executed"
-      },
-      {
-        txHash: "0x68asd1a8s6d1as68d1asa4s7898123",
-        txStatus: "Scheduled"
-      },
-      {
-        txHash: "0xASidnasodinOi123907adfoinoi123456",
-        txStatus: "Executed"
-      }
-    ];
 
+  _isMounted = false;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      limit: 10,
+      transactions: []
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  async fetchData() {
+    return await this.props.transactionStore.getAllTransactions();        
+  }
+
+  async loadPage(page) {
+    const offset = (page - 1) * this.state.limit;
+
+    this.setState({
+      fetchingTransactions: true
+    });
+
+    const { total, transactions } = await this.fetchData();
+
+    if (!this._isMounted) {
+      return;
+    }
+
+    this.setState({
+      currentPage: page,
+      transactions,
+      offset,
+      total,
+      fetchingTransactions: false
+    });
+  }
+
+  async componentWillMount() {
+    await this.loadPage(1);
+  }
+
+  render() {
     return (
       <div id="searchOverlay" className="overlay" data-pages="search">
         <div className="overlay-content has-results m-t-20">
@@ -44,11 +80,11 @@ class SearchOverlay extends Component {
           <div className="container-fluid">
             <div className="search-results m-t-40">
               <p className="bold">ETH Alarm Clock Search Results</p>
-                {results.map((result, index) => 
+                {this.state.transactions.map((result, index) => 
                   <SearchResult
                     key={index}
-                    txHash={result.txHash}
-                    txStatus={result.txStatus}
+                    txHash={result.instance.address}
+                    txResolved={result.resolved}
                   />
                 )}
             </div>
@@ -60,7 +96,8 @@ class SearchOverlay extends Component {
 }
 
 SearchOverlay.propTypes = {
-  updateSearchState: PropTypes.any
+  updateSearchState: PropTypes.any,
+  transactionStore: PropTypes.any
 };
 
 export default SearchOverlay;
