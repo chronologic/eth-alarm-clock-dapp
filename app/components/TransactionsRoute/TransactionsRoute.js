@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
-import TransactionScanner from '../TransactionScanner/TransactionScanner';
+import PropTypes from 'prop-types';
+import { Route, Redirect, Switch } from 'react-router';
+import TransactionsCompleted from './TransactionsCompleted';
+import TransactionsScheduled from './TransactionsScheduled';
 
-export class TransactionsRoute extends Component {
+class TransactionsRoute extends Component {
   render() {
     return (
       <div className="container-fluid padding-25 sm-padding-10">
-        <h1 className="view-title">Transactions</h1>
-        <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <div className="card-body">
-            <TransactionScanner/>
-          </div>
-        </div>
+        <Switch>
+          <Redirect exact path="/transactions" to="/transactions/completed"/>
+          <Route path="/transactions/completed" component={TransactionsCompleted}/>
+          <Route path="/transactions/scheduled" component={TransactionsScheduled}/>
+        </Switch>
       </div>
     );
   }
 }
+
+TransactionsRoute.propTypes = {
+  children: PropTypes.any
+};
+
+export default TransactionsRoute;

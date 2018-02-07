@@ -25,8 +25,19 @@ class SidePanel extends Component {
               <span className="icon-thumbnail"><i className="pg-calender"></i></span>
             </li>
             <li className="">
-              <NavLink to="/transactions" className="title">Transactions</NavLink>
+              <a href="#" onClick={(e) => e.preventDefault()} className="title">Transactions</a>
               <span className="icon-thumbnail"><i className="pg-charts"></i></span>
+
+              <ul className="sub-menu">
+                <li>
+                  <NavLink to="/transactions/scheduled" className="title">Scheduled</NavLink>
+                  <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>              
+                </li>
+                <li>                
+                  <NavLink to="/transactions/completed" className="title">Completed</NavLink>
+                  <span className="icon-thumbnail"><i className="fa fa-check"></i></span>                                
+                </li>
+              </ul>
             </li>
           </ul>
           <div className="clearfix"></div>
@@ -36,4 +47,4 @@ class SidePanel extends Component {
   }
 }
 
-export default SidePanel
+export default SidePanel;
