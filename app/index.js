@@ -18,7 +18,7 @@ const rootEl = document.getElementById('root');
 render(
   <Provider {...injectables}>
     <Router history={history}>
-      <Route component={App} />
+      <Route component={App} path="/" />
     </Router>
   </Provider>,
   rootEl

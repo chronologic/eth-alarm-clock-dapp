@@ -20,7 +20,6 @@ deploy:
   bucket: $AWS_S3_BUCKET
   skip_cleanup: true
   acl: public_read
-  upload-dir: $AWS_S3_BUCKET_DIR
   on:
     branch: develop
 notifications:
