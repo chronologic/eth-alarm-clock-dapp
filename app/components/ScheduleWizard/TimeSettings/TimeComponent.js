@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import 'moment-timezone';
+import momentDurationFormatSetup from 'moment-duration-format';
+
+momentDurationFormatSetup(moment);
 
 const presetExecutionWindows = [
   { value: 1, selected: false },

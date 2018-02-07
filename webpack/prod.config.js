@@ -1,13 +1,13 @@
 const merge = require('webpack-merge')
 const baseConfig = require('./base.config.js')
-const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = merge(baseConfig, {
 
-	module: {
-		rules: [
-			// Loader for the stylesheets
+  module: {
+    rules: [
+      // Loader for the stylesheets
       {
         test: /\.(css|sass|scss)$/,
         use: ExtractTextPlugin.extract({
@@ -28,18 +28,20 @@ module.exports = merge(baseConfig, {
           fallback: 'style-loader'
         })
       }
-		]
-	},
+    ]
+  },
 
-	plugins: [
-		// Uglifies and minifies the JS
-		new webpack.optimize.UglifyJsPlugin({
-			compress: {
-				warnings: false
-			},
-			output: {
-				comments: false
-			}
-		})
-	]
+  plugins: [
+    // Uglifies and minifies the JS
+    new UglifyJSPlugin({
+      uglifyOptions: {
+        compress: {
+          warnings: false
+        },
+        output: {
+          comments: false
+        }
+      }
+    })
+  ]
 });

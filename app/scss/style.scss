@@ -46,6 +46,18 @@ $primary-color: #21FFFF;
   content: ">";
 }
 
+.header .search-link {
+  padding-left: 20px;
+  border-left: solid 2px white;
+  color: #fff;
+  font-size: 15px;
+  margin-left: 30px;
+}
+
+.header .search-link:hover, .header .search-link:visited {
+  color: #fff;
+}
+
 
 /* NEW CUSTOM CSS */
 .view-title {
