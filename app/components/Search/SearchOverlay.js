@@ -59,9 +59,9 @@ class SearchOverlay extends Component {
       filteredTransactions = this.props.transactionStore.filteredTransactions;
     }
 
-    const transactionsList = filteredTransactions.map((transaction, index) => 
+    const transactionsList = filteredTransactions.map(transaction => 
       <SearchResult
-        key={index}
+        key={transaction.instance.address}
         txHash={transaction.instance.address}
         txResolved={transaction.resolved}
       />
