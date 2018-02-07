@@ -12,8 +12,8 @@ class SearchOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      limit: 10,
-      transactions: []
+      transactions: [],
+      filter: ''
     }
   }
 
@@ -37,7 +37,6 @@ class SearchOverlay extends Component {
     }
     
     this.setState({
-      transactions: this.props.transactionStore.allTransactions,
       fetchingTransactions: false
     });
   }
@@ -46,7 +45,28 @@ class SearchOverlay extends Component {
     await this.loadPage(1);
   }
 
+  filter(e) {
+    this.props.transactionStore.filter = e.target.value;
+    this.forceUpdate();
+  }
+
   render() {
+    let filter = "";
+    let filteredTransactions = [];
+
+    if (this._isMounted) {
+      filter = this.props.transactionStore.filter;
+      filteredTransactions = this.props.transactionStore.filteredTransactions;
+    }
+
+    const transactionsList = filteredTransactions.map((transaction, index) => 
+      <SearchResult
+        key={index}
+        txHash={transaction.instance.address}
+        txResolved={transaction.resolved}
+      />
+    );
+
     return (
       <div id="searchOverlay" className="overlay" data-pages="search">
         <div className="overlay-content has-results m-t-20">
@@ -57,28 +77,19 @@ class SearchOverlay extends Component {
             </a>
           </div>
           <div className="container-fluid">
-            <input id="overlay-search" className="no-border overlay-search bg-transparent" placeholder="Search..." autoComplete="off" spellCheck="false"/>
-            <br/>
-            <div className="inline-block">
-              <div className="checkbox right">
-                <input id="checkboxn" type="checkbox" value="1" defaultChecked="checked"/>
-                <label htmlFor="checkboxn"><i className="fa fa-search"></i> Search within page</label>
-              </div>
-            </div>
-            <div className="inline-block m-l-10">
-              <p className="fs-13">Press enter to search</p>
-            </div>
+            <input id="overlay-search" 
+              className="no-border overlay-search bg-transparent" 
+              placeholder="Search..." 
+              autoComplete="off" 
+              spellCheck="false"
+              value={filter}
+              onChange={this.filter.bind(this)}
+              autoFocus/>
           </div>
           <div className="container-fluid">
             <div className="search-results m-t-40">
-              <p className="bold">ETH Alarm Clock Search Results</p>
-                {this.state.transactions.map((result, index) => 
-                  <SearchResult
-                    key={index}
-                    txHash={result.instance.address}
-                    txResolved={result.resolved}
-                  />
-                )}
+              <p className="bold">ETH Alarm Clock - Search Results</p>
+                {transactionsList}
             </div>
           </div>
         </div>
