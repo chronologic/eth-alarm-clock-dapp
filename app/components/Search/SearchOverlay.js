@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import SearchResult from './SearchResult';
 
-@observer
 @inject('transactionStore')
+@observer
 class SearchOverlay extends Component {
 
   constructor(props) {

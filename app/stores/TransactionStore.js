@@ -3,6 +3,19 @@ import { observable, computed } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
 
+export class TRANSACTION_STATUS {
+  static SCHEDULED = 'Scheduled';
+  static EXECUTED = 'Executed';
+  static FAILED = 'Failed';
+  static CANCELLED = 'Cancelled';
+  static MISSED = 'Not executed';
+}
+
+export class TEMPORAL_UNIT {
+  static BLOCK = 1;
+  static TIMESTAMP = 2;
+}
+
 export class TransactionStore {
   _eac = null;
   _web3 = null;
@@ -100,18 +113,18 @@ export class TransactionStore {
   }
 
   async getTxStatus(transaction) {
-    let status = 'Scheduled';
+    let status = TRANSACTION_STATUS.SCHEDULED;
 
     if (transaction.wasCalled) {
-      status = transaction.data.meta.wasSuccessful ? 'Executed' : 'Failed';
+      status = transaction.data.meta.wasSuccessful ? TRANSACTION_STATUS.EXECUTED : TRANSACTION_STATUS.FAILED;
     }
 
     if (transaction.isCancelled) {
-      status = 'Cancelled';
+      status = TRANSACTION_STATUS.CANCELLED;
     }
 
     if (await this.isTransactionMissed(transaction)) {
-      status = 'Not executed';
+      status = TRANSACTION_STATUS.MISSED;
     }
 
     return status;
@@ -127,6 +140,16 @@ export class TransactionStore {
     const executionWindowClosed = await transaction.afterExecutionWindow();
 
     return executionWindowClosed && !transaction.wasCalled;
+  }
+
+  async getTransactionByAddress(address) {
+    const txRequest = this._eac.transactionRequest(address, this._web3);
+
+    return txRequest;
+  }
+
+  isTxUnitTimestamp(transaction) {
+    return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {    
