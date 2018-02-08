@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
+import PropTypes from 'PropTypes';
 import { observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 
-@inject('mobxStore')
+@inject('store')
 @observer
 class BlockComponent extends Component {
 
   constructor (props) {
     super(props)
-    this._props = this.props;
-    this.updateProperty = this.updateProperty.bind(this)
-    this.onChange = this.onChange.bind(this)
+//    this._props = this.props;
+
+    this.onChange = this.onChange.bind(this);
   }
 
-  updateProperty (value) {
-    this._props.blockNumber = value
-  }
 
   onChange (event) {
-     this.updateProperty(event.target.value)
+     this.props.onChange(event.target.name,event.target.value)
    }
 
 @observable
@@ -30,14 +28,14 @@ getValidations() {
   return this._validations
 }
   render() {
-
+const blockSettings = this.props;
     return (
       <div id="blockComponent">
         <div className="row">
           <div className="col-md-4">
             <div className="form-group form-group-default">
               <label>Block Number</label>
-              <input type="text" placeholder="Enter a block number" value={this._props.blocknumber} onChange={this.onChange} className="form-control"></input>
+              <input type="text" placeholder="Enter a block number" value={blockSettings.value} onChange={this.onChange} className="form-control"></input>
             </div>
           </div>
         </div>
@@ -45,5 +43,7 @@ getValidations() {
     );
   }
 }
-
+BlockComponent.propTypes = {
+  onChange: PropTypes.func.isRequired
+}
 export default BlockComponent;
