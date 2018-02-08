@@ -11,7 +11,7 @@ const loaderConfig = {
 class AwaitingMining extends Component {
   constructor(props){
     super(props);
-    this.props = Object.assign(this.props,props);
+    this.props = Object.assign({},this.props,props);
 
     this.state = {
       transactionHash:'',
@@ -44,9 +44,17 @@ class AwaitingMining extends Component {
   }
 
   async componentDidMount() {
+    console.log(history,Router,Router.history)
+    const { query } = Router;
+    if(!query){
+      //history.goBack();
+      return;
+    }
     let { query:{ newContract,transactionHash,destination } } = Router;
-    if((!newContract && !transactionHash) || !destination)
-      history.goBack();
+    if((!newContract && !transactionHash) || !destination){
+      //history.goBack();
+      return;
+    }
 
     this.setState(Object.assign(this.state,{ newContract:newContract,transactionHash:transactionHash,destination:destination }));
     await this.loadUp();
@@ -56,13 +64,16 @@ render() {
   return (
 
     <div id="awaitingMining" className="horizontal-center">
+      <div className='card-body'>
+        <div className='tabs-content'>
+          <div className="loader">
+            <PacmanLoader {...Object.assign({ loading:true },loaderConfig)} />
+          </div>
+          <p className="horizontal-center">Awaiting Mining</p>
 
-      <div className="progress-circle-indeterminate m-t-45"></div>
-      <PacmanLoader {...Object.assign({ loading:true },loaderConfig)}/>
-      <p className="horizontal-center">Awaiting Mining</p>
-
-      <p className="horizontal-center">Transation Hash: <a href="#">{this.state.transactionHash}</a></p>
-
+          <p className="horizontal-center">Transation Hash: <a href="#">{this.state.transactionHash}</a></p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -73,6 +73,15 @@ $primary-color: #21FFFF;
 .card .card-body{
    height: 650px;
 }
+
+.loader{
+	width: 50px;
+	height: 50px;
+	background-size: 100% auto;
+	margin: 0 auto;
+	margin-top:20%;
+}
+
 #scheduleWizard{
   height: 100%;
 }
