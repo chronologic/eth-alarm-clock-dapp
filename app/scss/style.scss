@@ -96,3 +96,9 @@ $primary-color: #21FFFF;
 #confirmSettings table td {
   padding: 10px 20px;
 }
+
+@media (max-width:589px) {
+	#scheduleWizard .tab-content{
+	    height: 500px;
+	}
+}

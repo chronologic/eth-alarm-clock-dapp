@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -8,8 +9,8 @@ import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 class ScheduleWizard extends Component {
   constructor(props){
     super(props);
-    this.state = {}
-
+    this.state = {};
+    this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.goToWait = this.goToWait.bind(this);
   }
 
@@ -35,9 +36,19 @@ class ScheduleWizard extends Component {
         }
       }
     });
-}
+    this.initiateScrollbar();
+  }
+
+  initiateScrollbar(){
+    const options = {};
+    const element = document.querySelector('.tab-pane.active');
+    if(element){
+      Scrollbar.init(element, options)
+    }
+   }
 
 render() {
+
   return (
     <div id="scheduleWizard">
       <ul className="nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
@@ -73,7 +84,7 @@ render() {
         <div className="footer-buttons">
           <ul className="pager wizard no-style">
             <li className="next">
-              <button className="btn btn-primary btn-cons pull-right" type="button">
+              <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
                 <span>Next</span>
               </button>
             </li>
@@ -82,13 +93,13 @@ render() {
                 <span>Schedule</span>
               </Link>
             </li>
-            <li className="previous first" style={{display: 'none'}}>
-                  <button className="btn btn-white btn-cons pull-right" type="button">
+            <li className="previous first" style={{ display: 'none' }}>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
                       <span>First</span>
                   </button>
               </li>
             <li className="previous">
-              <button className="btn btn-white btn-cons pull-right" type="button">
+              <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
                 <span>Previous</span>
               </button>
             </li>

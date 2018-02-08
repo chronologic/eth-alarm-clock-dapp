@@ -35,7 +35,7 @@ export default class Web3Service {
 
     @action
     async connect() {
-        let {web3} = this;
+        let { web3 } = this;
         if (!web3) {
             if (typeof window.web3 !== 'undefined') {
                 web3 = new Web3(window.web3.currentProvider);
