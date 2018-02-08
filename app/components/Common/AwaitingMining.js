@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 //import PropTypes from 'prop-types';
 import { Router, history } from 'react-router';
-import { PacmanLoader} from 'react-spinners';
+import { PacmanLoader } from 'react-spinners';
 
 
 const loaderConfig = {
@@ -44,11 +44,11 @@ class AwaitingMining extends Component {
   }
 
   async componentDidMount() {
-    let {query:{newContract,transactionHash,destination}} = Router;
+    let { query:{ newContract,transactionHash,destination } } = Router;
     if((!newContract && !transactionHash) || !destination)
       history.goBack();
 
-    this.setState(Object.assign(this.state,{newContract:newContract,transactionHash:transactionHash,destination:destination}));
+    this.setState(Object.assign(this.state,{ newContract:newContract,transactionHash:transactionHash,destination:destination }));
     await this.loadUp();
   }
 
@@ -58,7 +58,7 @@ render() {
     <div id="awaitingMining" className="horizontal-center">
 
       <div className="progress-circle-indeterminate m-t-45"></div>
-      <PacmanLoader {...Object.assign({loading:true},loaderConfig)}/>
+      <PacmanLoader {...Object.assign({ loading:true },loaderConfig)}/>
       <p className="horizontal-center">Awaiting Mining</p>
 
       <p className="horizontal-center">Transation Hash: <a href="#">{this.state.transactionHash}</a></p>

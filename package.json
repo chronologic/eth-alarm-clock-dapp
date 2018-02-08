@@ -7,6 +7,7 @@
     "build": "webpack --config webpack/prod.config.js",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check --hot",
     "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
     "clean": "./tools/clean.sh",
     "validate": "npm ls"
   },
@@ -68,6 +69,7 @@
     "react-router-dom": "^4.2.2",
     "react-spinners": "^0.2.6",
     "select2": "^4.0.4",
+    "smooth-scrollbar": "^8.2.6",
     "web3": "^0.20.0"
   },
   "pre-commit": [
