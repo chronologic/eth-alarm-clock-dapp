@@ -43,7 +43,7 @@ class SearchOverlay extends Component {
         filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length, 
         " of ", 
         filteredTransactions.length
-      )
+      );
     }
 
     const shortList = filteredTransactions.slice(0, maxTxShown);
