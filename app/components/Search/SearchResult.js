@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 class SearchResult extends Component {
 
@@ -18,7 +19,7 @@ class SearchResult extends Component {
           <div>{this.state.txResolved[0]}</div>
         </div>
         <div className="p-l-10 inline p-t-5">
-          <h5 className="m-b-5">Transaction <span className="semi-bold result-name">{this.state.txHash}</span></h5>
+          <h5 className="m-b-5">Transaction <Link to={`/transactions/${this.state.txHash}`} className="semi-bold result-name">{this.state.txHash}</Link></h5>
           <p className="hint-text">{this.state.txResolved}</p>
         </div>
       </div>
