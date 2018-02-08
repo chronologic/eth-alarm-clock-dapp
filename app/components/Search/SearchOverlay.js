@@ -7,42 +7,21 @@ import SearchResult from './SearchResult';
 @inject('transactionStore')
 class SearchOverlay extends Component {
 
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
       transactions: [],
-      filter: ''
-    }
+      filter: '',
+      fetchedTransactions: false
+    };
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-  }
-
-  async loadData() {
-    this.setState({
-      fetchingTransactions: true
-    });
-
+  async componentDidMount() {
     await this.props.transactionStore.getAllTransactions();
 
-    if (!this._isMounted) {
-      return;
-    }
-    
     this.setState({
-      fetchingTransactions: false
+      fetchedTransactions: true
     });
-  }
-
-  async componentWillMount() {
-    await this.loadPage(1);
   }
 
   filter(e) {
@@ -54,7 +33,7 @@ class SearchOverlay extends Component {
     let filter = "";
     let filteredTransactions = [];
 
-    if (this._isMounted) {
+    if (this.state.fetchedTransactions) {
       filter = this.props.transactionStore.filter;
       filteredTransactions = this.props.transactionStore.filteredTransactions;
     }
@@ -84,7 +63,7 @@ class SearchOverlay extends Component {
               placeholder="Search..." 
               autoComplete="off" 
               spellCheck="false"
-              value={filter}
+              value={filter || ''}
               onChange={this.filter.bind(this)}
               autoFocus/>
           </div>

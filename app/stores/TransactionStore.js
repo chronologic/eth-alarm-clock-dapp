@@ -10,9 +10,10 @@ export class TransactionStore {
 
   @observable allTransactions;
   @observable filter;
+  
   @computed get filteredTransactions() {
-    var matchesFilter = new RegExp(this.filter, 'i');
-    if(this.allTransactions) {
+    const matchesFilter = new RegExp(this.filter, 'i');
+    if (this.allTransactions) {
       return this.allTransactions.filter(transaction => !this.filter || matchesFilter.test(transaction.instance.address));
     }
   }

@@ -1,1 +1,1 @@
-export { default } from './SearchOverlay'
+export { default } from './SearchOverlay';
