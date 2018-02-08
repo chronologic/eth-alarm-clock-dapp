@@ -2,7 +2,7 @@ import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { TransactionStore } from './TransactionStore';
 import { services } from '../services';
-import { blockSettings,timeSettings,bountySettings,infoSettings } from 'mobxStore';
+import { blockSettings,timeSettings,bountySettings,infoSettings } from './mobxStore';
 
 const { eacService, web3Service } = services;
 
