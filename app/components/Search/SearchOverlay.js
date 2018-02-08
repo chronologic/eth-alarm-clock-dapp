@@ -1,8 +1,61 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { observer, inject } from 'mobx-react';
+import SearchResult from './SearchResult';
 
+@observer
+@inject('transactionStore')
 class SearchOverlay extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      transactions: [],
+      filter: '',
+      fetchedTransactions: false
+    };
+  }
+
+  async componentDidMount() {
+    await this.props.transactionStore.getAllTransactions();
+
+    this.setState({
+      fetchedTransactions: true
+    });
+  }
+
+  filter(e) {
+    this.props.transactionStore.filter = e.target.value;
+    this.forceUpdate();
+  }
+
   render() {
+    let searchResultsString = "Fetching...";
+    let filter = "";
+    let filteredTransactions = [];
+    const maxTxShown = 5;
+
+    if (this.state.fetchedTransactions) {
+      filter = this.props.transactionStore.filter;
+      filteredTransactions = this.props.transactionStore.filteredTransactions;
+
+      searchResultsString = "Showing ".concat(
+        filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length, 
+        " of ", 
+        filteredTransactions.length
+      );
+    }
+
+    const shortList = filteredTransactions.slice(0, maxTxShown);
+
+    const transactionsList = shortList.map(transaction => 
+      <SearchResult
+        key={transaction.instance.address}
+        txHash={transaction.instance.address}
+        txResolved={transaction.resolved}
+      />
+    );
+
     return (
       <div id="searchOverlay" className="overlay" data-pages="search">
         <div className="overlay-content has-results m-t-20">
@@ -13,52 +66,19 @@ class SearchOverlay extends Component {
             </a>
           </div>
           <div className="container-fluid">
-            <input id="overlay-search" className="no-border overlay-search bg-transparent" placeholder="Search..." autoComplete="off" spellCheck="false"/>
-            <br/>
-            <div className="inline-block">
-              <div className="checkbox right">
-                <input id="checkboxn" type="checkbox" value="1" defaultChecked="checked"/>
-                <label htmlFor="checkboxn"><i className="fa fa-search"></i> Search within page</label>
-              </div>
-            </div>
-            <div className="inline-block m-l-10">
-              <p className="fs-13">Press enter to search</p>
-            </div>
+            <input id="overlay-search" 
+              className="no-border overlay-search bg-transparent" 
+              placeholder="Search by contract address..." 
+              autoComplete="off" 
+              spellCheck="false"
+              value={filter || ''}
+              onChange={this.filter.bind(this)}
+              autoFocus/>
           </div>
           <div className="container-fluid">
             <div className="search-results m-t-40">
-              <p className="bold">ETH Alarm Clock Search Results</p>
-              <div className="row">
-                <div className="col-md-12">
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>E</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0xasudbasidubasfafasd6s4d6asd45asd</span></h5>
-                      <p className="hint-text">Executed</p>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>S</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0x68asd1a8s6d1as68d1asa4s7898123</span></h5>
-                      <p className="hint-text">Scheduled</p>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-                      <div>E</div>
-                    </div>
-                    <div className="p-l-10 inline p-t-5">
-                      <h5 className="m-b-5">Transaction <span className="semi-bold result-name">0xASidnasodinOi123907adfoinoi123456</span></h5>
-                      <p className="hint-text">Executed</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <p className="bold">{"Search Results - " + searchResultsString}</p>
+                {transactionsList}
             </div>
           </div>
         </div>
@@ -68,7 +88,8 @@ class SearchOverlay extends Component {
 }
 
 SearchOverlay.propTypes = {
-  updateSearchState: PropTypes.any
+  updateSearchState: PropTypes.any,
+  transactionStore: PropTypes.any
 };
 
 export default SearchOverlay;
