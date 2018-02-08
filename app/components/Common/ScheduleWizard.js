@@ -32,14 +32,15 @@ class ScheduleWizard extends Component {
       }
     });
     this.initiateScrollbar();
-}
+  }
 
-initiateScrollbar(){
-  const options = {}
-  const ele = document.querySelector('.tab-pane.active');
-  if(ele)
-  Scrollbar.init(ele, options)
-}
+  initiateScrollbar(){
+    const options = {};
+    const element = document.querySelector('.tab-pane.active');
+    if(element){
+      Scrollbar.init(element, options)
+    }
+   }
 
 render() {
 
