@@ -65,6 +65,16 @@ $primary-color: #21FFFF;
     pointer-events: none;
 }
 
+.input-group {
+  flex-wrap: nowrap;
+}
+
+.input-group-addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* NEW CUSTOM CSS */
 .view-title {
 	color: #fff;
