@@ -53,16 +53,16 @@ render() {
     <div id="scheduleWizard">
       <ul className="nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
         <li>
-          <a data-toggle="tab" href="#tab1"><i className="far fa-clock tab-icon fa-2x"></i> <span>Date & Time</span></a>
+          <a data-toggle="tab" href="#tab1"  onClick={ this.initiateScrollbar }><i className="far fa-clock tab-icon fa-2x"></i> <span>Date & Time</span></a>
         </li>
         <li>
-          <a data-toggle="tab" href="#tab2"><i className="fas fa-info fa-2x tab-icon"></i> <span>Information</span></a>
+          <a data-toggle="tab" href="#tab2"  onClick={ this.initiateScrollbar }><i className="fas fa-info fa-2x tab-icon"></i> <span>Information</span></a>
         </li>
         <li>
-          <a data-toggle="tab" href="#tab3"><i className="fab fa-ethereum fa-2x tab-icon"></i> <span>Bounty</span></a>
+          <a data-toggle="tab" href="#tab3"  onClick={ this.initiateScrollbar }><i className="fab fa-ethereum fa-2x tab-icon"></i> <span>Bounty</span></a>
         </li>
         <li>
-          <a data-toggle="tab" href="#tab4"><i className="fas fa-cloud-upload-alt fa-2x tab-icon"></i> <span>Confirm</span></a>
+          <a data-toggle="tab" href="#tab4"  onClick={ this.initiateScrollbar }><i className="fas fa-cloud-upload-alt fa-2x tab-icon"></i> <span>Confirm</span></a>
         </li>
       </ul>
 
