@@ -30,15 +30,23 @@ class SearchOverlay extends Component {
   }
 
   render() {
+    let searchResultsString = "Fetching...";
     let filter = "";
     let filteredTransactions = [];
+    const maxTxShown = 5;
 
     if (this.state.fetchedTransactions) {
       filter = this.props.transactionStore.filter;
       filteredTransactions = this.props.transactionStore.filteredTransactions;
+
+      searchResultsString = "Showing ".concat(
+        filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length, 
+        " of ", 
+        filteredTransactions.length
+      )
     }
 
-    const shortList = filteredTransactions.slice(0, 4);
+    const shortList = filteredTransactions.slice(0, maxTxShown);
 
     const transactionsList = shortList.map(transaction => 
       <SearchResult
@@ -60,7 +68,7 @@ class SearchOverlay extends Component {
           <div className="container-fluid">
             <input id="overlay-search" 
               className="no-border overlay-search bg-transparent" 
-              placeholder="Search..." 
+              placeholder="Search by contract address..." 
               autoComplete="off" 
               spellCheck="false"
               value={filter || ''}
@@ -69,7 +77,7 @@ class SearchOverlay extends Component {
           </div>
           <div className="container-fluid">
             <div className="search-results m-t-40">
-              <p className="bold">ETH Alarm Clock - Search Results</p>
+              <p className="bold">{"Search Results - " + searchResultsString}</p>
                 {transactionsList}
             </div>
           </div>
