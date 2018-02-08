@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import PropTypes from 'PropTypes';
 
 @inject('store')
 @observer
@@ -20,7 +21,7 @@ class BountySettings extends Component {
      this.props.onChange(event.target.name,event.target.value)
    }
 render() {
-  const BountySettings = this.props;
+  const bountySettings = this.props;
   return (
     <div id="bountySettings">
 
@@ -53,9 +54,8 @@ render() {
   );
 }
 
+}
 BountySettings.propTypes = {
   onChange: PropTypes.func.isRequired
 }
-}
-
 export default BountySettings;
