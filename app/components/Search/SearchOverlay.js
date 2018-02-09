@@ -12,7 +12,8 @@ class SearchOverlay extends Component {
     this.state = {
       transactions: [],
       filter: '',
-      fetchedTransactions: false
+      fetchedTransactions: false,
+      updateSearchState: this.props.updateSearchState
     };
   }
 
@@ -51,8 +52,9 @@ class SearchOverlay extends Component {
     const transactionsList = shortList.map(transaction => 
       <SearchResult
         key={transaction.instance.address}
-        txHash={transaction.instance.address}
-        txResolved={transaction.resolved}
+        txAddress={transaction.instance.address}
+        txStatus={transaction.status}
+        updateSearchState={this.updateSearchState}
       />
     );
 
