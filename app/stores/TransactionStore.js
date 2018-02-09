@@ -61,7 +61,7 @@ export class TransactionStore {
 
     for (let transaction of this.allTransactions) {
       await transaction.fillData();
-      transaction.resolved = await this.isTransactionResolved(transaction);
+      transaction.status = await this.getTxStatus(transaction);
     }
   }
 

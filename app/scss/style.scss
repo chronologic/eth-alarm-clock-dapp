@@ -79,6 +79,16 @@ $primary-color: #21FFFF;
   font-size: 40px;
 }
 
+.overlay-close {
+  cursor: pointer
+}
+
+.search-link {
+  -webkit-transition: ease-in 0.3s; /* Safari */
+  transition: ease-in 0.3s;
+  cursor: pointer;
+}
+
 $titleColor: #fff;
 
 /* NEW CUSTOM CSS */

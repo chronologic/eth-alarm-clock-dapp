@@ -7,8 +7,8 @@ class SearchResult extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      txHash: props.txHash,
-      txResolved: props.txResolved ? "Executed" : "Scheduled"
+      txAddress: props.txAddress,
+      txStatus: props.txStatus
     };
   }
 
@@ -16,11 +16,18 @@ class SearchResult extends Component {
     return (
       <div>
         <div className="thumbnail-wrapper d48 circular bg-primary text-black inline m-t-10">
-          <div>{this.state.txResolved[0]}</div>
+          <div>{this.state.txStatus[0]}</div>
         </div>
         <div className="p-l-10 inline p-t-5">
-          <h5 className="m-b-5">Transaction <Link to={`/transactions/${this.state.txHash}`} className="semi-bold result-name">{this.state.txHash}</Link></h5>
-          <p className="hint-text">{this.state.txResolved}</p>
+          <h5 className="m-b-5">
+            <span>Transaction </span>
+            <Link to={`/transactions/${this.state.txAddress}`} 
+              className="semi-bold result-name"
+              onClick={() => {this.props.updateSearchState(false)}}>
+              {this.state.txAddress}
+            </Link>
+          </h5>
+          <p className="hint-text">{this.state.txStatus}</p>
         </div>
       </div>
     )
@@ -28,8 +35,9 @@ class SearchResult extends Component {
 }
 
 SearchResult.propTypes = {
-  txHash: PropTypes.string,
-  txResolved: PropTypes.bool
+  txAddress: PropTypes.string,
+  txStatus: PropTypes.string,
+  updateSearchState: PropTypes.any
 };
 
 export default SearchResult;
