@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import PropTypes from 'prop-types';
-import { Router, history } from 'react-router';
+import { Router } from 'react-router';
 import { PacmanLoader } from 'react-spinners';
 
 
@@ -44,7 +44,7 @@ class AwaitingMining extends Component {
   }
 
   async componentDidMount() {
-    console.log(history,Router,Router.history)
+    //console.log(history,Router,Router.history)
     const { query } = Router;
     if(!query){
       //history.goBack();
