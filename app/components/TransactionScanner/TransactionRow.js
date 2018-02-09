@@ -18,7 +18,7 @@ class TransactionsRow extends Component {
 
   async getPreparedState() {
     const { transaction, transactionStore } = this.props;
-    
+
     await transaction.fillData();
 
     const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
@@ -34,7 +34,7 @@ class TransactionsRow extends Component {
     }
 
     time = moment.unix(time).format('YYYY-MM-DD HH:MM');
-    
+
     let timeWindow = transaction.windowSize.toNumber();
 
     if (!isTimestamp) {

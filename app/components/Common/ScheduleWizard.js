@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
 import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
@@ -10,6 +11,10 @@ class ScheduleWizard extends Component {
     super(props);
     this.state = {};
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
+    this.goToWait = this.goToWait.bind(this);
+  }
+
+  goToWait(){
   }
 
   componentDidMount() {
@@ -84,9 +89,9 @@ render() {
               </button>
             </li>
             <li className="next finish" style={{ display: 'none' }}>
-              <button className="btn btn-primary btn-cons pull-right"  type="button">
+              <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
                 <span>Schedule</span>
-              </button>
+              </NavLink>
             </li>
             <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">

@@ -28,15 +28,15 @@ class TimeSettings extends Component {
     return (
       <div id="timeSettings">
         <div className="radio radio-primary">
-          <input type="radio" 
-            id="timeSettingsTime" 
-            name="timeSettingsType" 
+          <input type="radio"
+            id="timeSettingsTime"
+            name="timeSettingsType"
             checked={this.state.isUsingTime}
             onChange={this.toggleBlockTime} />
           <label htmlFor="timeSettingsTime">Time</label>
-          <input type="radio" 
-            id="timeSettingsBlock" 
-            name="timeSettingsType" 
+          <input type="radio"
+            id="timeSettingsBlock"
+            name="timeSettingsType"
             checked={!this.state.isUsingTime}
             onChange={this.toggleBlockTime} />
           <label htmlFor="timeSettingsBlock">Block</label>

@@ -49,7 +49,7 @@ module.exports = {
         test: /\.json$/,
         use: 'json-loader'
       },
-      
+
       {
         test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,

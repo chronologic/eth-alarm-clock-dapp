@@ -21,7 +21,7 @@ class SearchResult extends Component {
         <div className="p-l-10 inline p-t-5">
           <h5 className="m-b-5">
             <span>Transaction </span>
-            <Link to={`/transactions/${this.state.txAddress}`} 
+            <Link to={`/transactions/${this.state.txAddress}`}
               className="semi-bold result-name"
               onClick={() => {this.props.updateSearchState(false)}}>
               {this.state.txAddress}
