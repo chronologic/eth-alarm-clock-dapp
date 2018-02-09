@@ -23,7 +23,7 @@ export class TransactionStore {
 
   @observable allTransactions;
   @observable filter;
-  
+
   @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
     if (this.allTransactions) {
@@ -152,7 +152,7 @@ export class TransactionStore {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {    
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {
     const endowment = this._eacScheduler.calcEndowment(
       new BigNumber(callGas),
       new BigNumber(callValue),
@@ -160,13 +160,13 @@ export class TransactionStore {
       new BigNumber(donation),
       new BigNumber(payment)
     )
-    
+
     this._eacScheduler.initSender({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
     });
-    
+
     this._eacScheduler.blockSchedule(
       toAddress,
       this._web3.web3.fromAscii(callData),

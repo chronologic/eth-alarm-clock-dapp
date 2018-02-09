@@ -109,6 +109,16 @@ $titleColor: #fff;
 .card .card-body{
    height: 650px;
 }
+
+.loader{
+	width: 50px;
+	height: 50px;
+	background-size: 100% auto;
+	margin: 0 auto;
+	margin-top:7%;
+	margin-bottom: 24px;
+}
+
 #scheduleWizard{
   height: 100%;
 }

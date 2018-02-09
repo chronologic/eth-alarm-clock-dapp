@@ -70,7 +70,7 @@ class TransactionsTable extends Component {
   getPreviousPageButton() {
     return <i className="fa fa-angle-left"></i>;
   }
-  
+
   render() {
     const { fetchingTransactions, offset, showStatus, transactions, total } = this.props;
     const { currentPage } = this.state;
@@ -105,7 +105,7 @@ class TransactionsTable extends Component {
             </div>
             {this.state.lastPage !== 1 &&
               <div className="col-md-6 text-right">
-                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>                
+                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>
 
                 {this.state.pages.map(page => (
                   <span key={page} className={page === currentPage ? 'bold' : ''} onClick={() => this.goToPage(page)}>{page}&nbsp;</span>

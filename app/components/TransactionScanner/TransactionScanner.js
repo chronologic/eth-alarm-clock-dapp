@@ -32,7 +32,7 @@ class TransactionScanner extends Component {
     };
 
     if (this.props.includeResolved) {
-      options.resolved = true;        
+      options.resolved = true;
     }
 
     if (this.props.includeUnresolved) {
@@ -43,7 +43,7 @@ class TransactionScanner extends Component {
       options.resolved = null;
     }
 
-    return await this.props.transactionStore.getTransactionsFiltered(options);        
+    return await this.props.transactionStore.getTransactionsFiltered(options);
   }
 
   componentWillUnmount() {
