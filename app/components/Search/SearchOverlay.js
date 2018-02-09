@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import SearchResult from './SearchResult';
 
-@observer
 @inject('transactionStore')
+@observer
 class SearchOverlay extends Component {
 
   constructor(props) {
@@ -12,7 +12,8 @@ class SearchOverlay extends Component {
     this.state = {
       transactions: [],
       filter: '',
-      fetchedTransactions: false
+      fetchedTransactions: false,
+      updateSearchState: this.props.updateSearchState
     };
   }
 
@@ -51,8 +52,9 @@ class SearchOverlay extends Component {
     const transactionsList = shortList.map(transaction => 
       <SearchResult
         key={transaction.instance.address}
-        txHash={transaction.instance.address}
-        txResolved={transaction.resolved}
+        txAddress={transaction.instance.address}
+        txStatus={transaction.status}
+        updateSearchState={this.updateSearchState}
       />
     );
 
@@ -61,9 +63,9 @@ class SearchOverlay extends Component {
         <div className="overlay-content has-results m-t-20">
           <div className="container-fluid">
             <img className="overlay-brand" src="img/logo-black.png" alt="logo" data-src="img/logo-black.png" height="36" />
-            <a href="#" className="close-icon-light overlay-close text-black fs-16" onClick={() => {this.props.updateSearchState(false)}}>
+            <div className="close-icon-light overlay-close text-black fs-16" onClick={() => {this.props.updateSearchState(false)}}>
               <i className="pg-close"></i>
-            </a>
+            </div>
           </div>
           <div className="container-fluid">
             <input id="overlay-search" 

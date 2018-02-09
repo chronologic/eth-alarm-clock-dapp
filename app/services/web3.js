@@ -1,10 +1,6 @@
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
-
-// import dayTokenABI from './abi/dayTokenABI';
-// import dayFaucetABI from './abi/dayFaucetABI';
-
 import { Networks } from '../config/web3Config.js'
 
 let instance = null;
@@ -51,23 +47,14 @@ export default class Web3Service {
             return;
 
         this.accounts = web3.eth.accounts;
+
         web3.eth.defaultAccount = this.accounts[0];
-        // console.log('accounts', this.accounts);
 
         const netId =
             await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
         });
-        // console.log('netId', this.netId, this.network);
-
-        //this.tokenInstance = web3.eth.contract(dayTokenABI).at(TOKEN_CONTRACT_ADDRESS);
-        //this.deployerInstance = web3.eth.contract(Active_Deployer_ABI).at(DEPLOYER_ADDRESS);
-        //this.deployerInstance = await Bb.fromCallback(callback => web3.eth.contract(deployerABI).at(DEPLOYER_ADDRESS
-        //,callback) );
-        //this.faucetInstance = web3.eth.contract(dayFaucetABI).at(FAUCET_ADDRESS);
-        //this.debtTokenDeployerInstance = web3.eth.contract(debtTokenDeployerABI).at(DEBT_TOKEN_DEPLOYER_ADDRESS);
-
     }
 
     async awaitInitialized(){

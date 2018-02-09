@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import moment from 'moment';
 import ValueDisplay from '../Common/ValueDisplay';
-
-class TEMPORAL_UNIT {
-  static BLOCK = 1;
-  static TIMESTAMP = 2;
-}
+import { Link } from 'react-router-dom';
 
 const INITIAL_STATE = {
   time: ''
@@ -25,7 +21,7 @@ class TransactionsRow extends Component {
     
     await transaction.fillData();
 
-    const isTimestamp = transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
 
     const status = await transactionStore.getTxStatus(transaction);
 
@@ -79,7 +75,7 @@ class TransactionsRow extends Component {
 
     return (
       <tr>
-        <td className="v-align-middle semi-bold"><a href="#">{transaction.address}</a></td>
+        <td className="v-align-middle semi-bold"><Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link></td>
         <td className="v-align-middle">{time}</td>
         <td className="v-align-middle semi-bold"><ValueDisplay priceInWei={bounty}/></td>
         <td className="v-align-middle"><ValueDisplay priceInWei={value}/></td>

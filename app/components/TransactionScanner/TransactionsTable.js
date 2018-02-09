@@ -45,16 +45,16 @@ class TransactionsTable extends Component {
     this.calculatePages(newProps);
 
     this.setState(() => ({
-      currentPage: newProps.currentPage 
+      currentPage: newProps.currentPage
     }));
   }
 
   get showPreviousPageButton() {
-    return this.props.currentPage > 1;
+    return this.state.currentPage > 1;
   }
 
   get showNextPageButton() {
-    return this.props.currentPage < this.state.lastPage;
+    return this.state.currentPage < this.state.lastPage;
   }
 
   goToPage(page) {
@@ -72,7 +72,8 @@ class TransactionsTable extends Component {
   }
   
   render() {
-    const { offset, showStatus, transactions, total } = this.props;
+    const { fetchingTransactions, offset, showStatus, transactions, total } = this.props;
+    const { currentPage } = this.state;
 
     return (
       <div>
@@ -97,27 +98,31 @@ class TransactionsTable extends Component {
           </table>
         </div>
 
-        <div className={this.props.fetchingTransactions ? 'd-none' : 'mt-4'}>
+        <div className={fetchingTransactions ? 'd-none' : 'mt-4'}>
           <div className="row">
-            <div className="col-md-6">
+            <div className={transactions.length ? 'col-md-6' : 'd-none'}>
               Showing {offset + 1} to {offset + transactions.length} of {total} entries
             </div>
             {this.state.lastPage !== 1 &&
               <div className="col-md-6 text-right">
-                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(this.props.currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>                
+                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>                
 
                 {this.state.pages.map(page => (
-                  <span key={page} className={page === this.state.currentPage ? 'bold' : ''} onClick={() => this.goToPage(page)}>{page}&nbsp;</span>
+                  <span key={page} className={page === currentPage ? 'bold' : ''} onClick={() => this.goToPage(page)}>{page}&nbsp;</span>
                 ))}
 
-                <span className={this.showNextPageButton ? '' : 'd-none'}onClick={() => this.goToPage(this.props.currentPage + 1)}>{this.getNextPageButton()}</span>
+                <span className={this.showNextPageButton ? '' : 'd-none'}onClick={() => this.goToPage(currentPage + 1)}>{this.getNextPageButton()}</span>
               </div>
             }
           </div>
         </div>
 
-        <div className={this.props.fetchingTransactions ? 'mt-4' : 'd-none'}>
+        <div className={fetchingTransactions ? 'mt-4' : 'd-none'}>
             Fetching transactions...
+        </div>
+
+        <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
+            No transactions.
         </div>
 
       </div>
