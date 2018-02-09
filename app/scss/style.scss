@@ -15,10 +15,10 @@ $primary-color: #21FFFF;
 
 .page-content-wrapper {
 	background: url(../assets/img/background.png) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .header {
@@ -131,6 +131,24 @@ $titleColor: #fff;
 
 #confirmSettings table td {
   padding: 10px 20px;
+}
+
+#scheduleWizard .nav li a {
+  text-align: center;
+  font-size: 15px;
+  color: transparentize($color: #fff, $amount: 0.5);
+}
+
+#scheduleWizard .nav li a.active {
+  color: #fff;
+}
+
+#scheduleWizard .tab-content {
+  padding: 40px;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
+  border-top-color: transparent;
 }
 
 @media (max-width:589px) {
