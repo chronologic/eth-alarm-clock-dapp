@@ -63,8 +63,8 @@ class AwaitingMining extends Component {
 render() {
   return (
 
-    <div id="awaitingMining" className="horizontal-center">
-      <div className='card-body'>
+    <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
+      <div className='card card-body'>
         <div className='tabs-content'>
           <div className="loader">
             <PacmanLoader {...Object.assign({ loading:true },loaderConfig)} />
