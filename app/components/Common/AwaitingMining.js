@@ -64,7 +64,7 @@ render() {
   return (
 
     <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
-      <h1 class="view-title">...</h1>
+      <h1 className="view-title">...</h1>
       <div className='card card-body'>
         <div className='tabs-content'>
           <div className="loader">

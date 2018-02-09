@@ -47,7 +47,7 @@ class App extends Component {
     if (this.state.showSearchOverlay) {
       searchOverlayPlaceholder = <SearchOverlay updateSearchState={this.updateSearchState}/>;
     }
-    
+
     return (
       <div>
         <SidePanel />

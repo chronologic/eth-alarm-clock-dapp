@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 class SidePanel extends Component {
   componentDidMount() {
     const { jQuery } = window;
-    
+
     jQuery.Pages.init();
   }
 
@@ -31,11 +31,11 @@ class SidePanel extends Component {
               <ul className="sub-menu">
                 <li>
                   <NavLink to="/transactions/scheduled" className="title">Scheduled</NavLink>
-                  <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>              
+                  <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>
                 </li>
-                <li>                
+                <li>
                   <NavLink to="/transactions/completed" className="title">Completed</NavLink>
-                  <span className="icon-thumbnail"><i className="fa fa-check"></i></span>                                
+                  <span className="icon-thumbnail"><i className="fa fa-check"></i></span>
                 </li>
               </ul>
             </li>

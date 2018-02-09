@@ -41,15 +41,15 @@ class SearchOverlay extends Component {
       filteredTransactions = this.props.transactionStore.filteredTransactions;
 
       searchResultsString = "Showing ".concat(
-        filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length, 
-        " of ", 
+        filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length,
+        " of ",
         filteredTransactions.length
       );
     }
 
     const shortList = filteredTransactions.slice(0, maxTxShown);
 
-    const transactionsList = shortList.map(transaction => 
+    const transactionsList = shortList.map(transaction =>
       <SearchResult
         key={transaction.instance.address}
         txAddress={transaction.instance.address}
@@ -68,10 +68,10 @@ class SearchOverlay extends Component {
             </div>
           </div>
           <div className="container-fluid">
-            <input id="overlay-search" 
-              className="no-border overlay-search bg-transparent" 
-              placeholder="Search by contract address..." 
-              autoComplete="off" 
+            <input id="overlay-search"
+              className="no-border overlay-search bg-transparent"
+              placeholder="Search by contract address..."
+              autoComplete="off"
               spellCheck="false"
               value={filter || ''}
               onChange={this.filter.bind(this)}

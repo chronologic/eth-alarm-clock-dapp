@@ -66,7 +66,7 @@ export class BlockOrTimeDisplay extends Component {
       if (duration) {
         timestamp = timestamp * 15;
       } else {
-        timestamp = await this.getTimeForBlock(block);        
+        timestamp = await this.getTimeForBlock(block);
       }
     }
 
@@ -91,7 +91,7 @@ export class BlockOrTimeDisplay extends Component {
   }
 
   componentWillUnmount() {
-    this._isMounted = false;    
+    this._isMounted = false;
   }
 
   render() {

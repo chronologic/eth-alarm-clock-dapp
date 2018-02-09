@@ -88,7 +88,7 @@ render() {
                 <span>Next</span>
               </button>
             </li>
-            <li className="next finish" style={{display: 'none'}}>
+            <li className="next finish" style={{ display: 'none' }}>
               <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
                 <span>Schedule</span>
               </NavLink>

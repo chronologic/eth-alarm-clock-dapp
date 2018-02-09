@@ -33,7 +33,7 @@ class TimeComponent extends Component {
   }
 
   clearPresetExecWindow() {
-    
+
   }
 
   render() {
@@ -48,9 +48,9 @@ class TimeComponent extends Component {
             <div className="form-group form-group-default form-group-default-select2 required">
               <label className="">Timezone</label>
               <select id="timezoneSelect" className="full-width" defaultValue={localTimezone}>
-                {timezones.map((timezone, index) => 
+                {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
-                )} 
+                )}
               </select>
             </div>
           </div>
@@ -84,11 +84,11 @@ class TimeComponent extends Component {
               <label>Execution Window</label>
             </div>
             <div className="btn-group d-flex" data-toggle="buttons">
-              {this.state.execWindows.map((exeWind, index) => 
+              {this.state.execWindows.map((exeWind, index) =>
                 <label key={index} className={"btn btn-default w-100 " + (exeWind.selected ? 'active' : '')}>
                   <input type="radio" name="exeWindOptions" value={exeWind.value} defaultChecked={exeWind.selected}/>{exeWind.value} min
                 </label>
-              )} 
+              )}
             </div>
 
             <div id="customExecution" className="form-group form-group-default">

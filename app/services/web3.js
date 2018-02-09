@@ -93,8 +93,8 @@ export default class Web3Service {
       }
 
       const priceAsNumber = priceInWei.toNumber();
-      
-      let display = priceAsNumber;  
+
+      let display = priceAsNumber;
 
       if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.MWEI) {
         unit = 'WEI';
@@ -117,10 +117,10 @@ export function initWeb3Service(isServer, source) {
     if (isServer) {
       return new Web3Service(source);
     }
-     
+
     if (instance === null) {
       instance = new Web3Service(source);
     }
-    
+
     return instance;
 }
