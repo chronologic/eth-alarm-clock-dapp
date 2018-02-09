@@ -11,10 +11,10 @@ class Header extends Component {
           <div className="brand inline">
             <img src="img/eac-logo.png" alt="logo" data-src="img/eac-logo.png" />
           </div>
-          <a href="#" className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true)}}>
+          <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true)}}>
             <i className="pg-search"></i>
             Search by Address
-          </a>
+          </div>
         </div>
         <div className="d-flex align-items-center">
           <div className="brand inline">
