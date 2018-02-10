@@ -1,8 +1,9 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'PropTypes';
 
-@inject('store')
+@inject('mobxStore')
 @observer
 class InfoSettings extends Component {
   state = {}
@@ -85,9 +86,6 @@ render() {
     </div>
   );
 }
-}
-InfoSettings.propTypes = {
-  onChange: PropTypes.func.isRequired
 }
 
 export default InfoSettings;

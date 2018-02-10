@@ -1,9 +1,10 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import PropTypes from 'PropTypes';
 import { observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 
-@inject('store')
+@inject('mobxStore')
 @observer
 class BlockComponent extends Component {
 
@@ -43,7 +44,5 @@ const blockSettings = this.props;
     );
   }
 }
-BlockComponent.propTypes = {
-  onChange: PropTypes.func.isRequired
-}
+
 export default BlockComponent;

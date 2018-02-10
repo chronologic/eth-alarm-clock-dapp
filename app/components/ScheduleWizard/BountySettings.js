@@ -1,8 +1,9 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import PropTypes from 'PropTypes';
 
-@inject('store')
+
+@inject('mobxStore')
 @observer
 class BountySettings extends Component {
   state = {}
@@ -55,7 +56,5 @@ render() {
 }
 
 }
-BountySettings.propTypes = {
-  onChange: PropTypes.func.isRequired
-}
+
 export default BountySettings;

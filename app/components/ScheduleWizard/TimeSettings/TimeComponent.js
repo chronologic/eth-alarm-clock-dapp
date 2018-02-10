@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import PropTypes from 'PropTypes';
 import moment from 'moment';
@@ -10,7 +11,7 @@ const presetExecutionWindows = [
     { value: 3, selected: false },
     { value: 5, selected: false }
   ];
-@inject('store')
+@inject('mobxStore')
 @observer
 
 class TimeComponent extends Component {
@@ -112,8 +113,4 @@ class TimeComponent extends Component {
     );
   }
 }
-TimeComponent.propTypes = {
-  onChange: PropTypes.func.isRequired
-}
-
 export default TimeComponent;
