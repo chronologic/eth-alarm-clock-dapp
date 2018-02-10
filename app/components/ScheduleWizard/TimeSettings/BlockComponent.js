@@ -2,8 +2,6 @@
 import React, { Component } from 'react';
 import { inject, PropTypes } from 'mobx-react';
 
-@inject('mobxStore')
-@observer
 class BlockComponent extends Component {
 
   constructor (props) {

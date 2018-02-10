@@ -4,7 +4,9 @@ import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import { PropTypes } from 'mobx-react';
+import { PropTypes, observer } from 'mobx-react';
+
+@observer
 class ScheduleWizard extends Component {
 
   state = {
