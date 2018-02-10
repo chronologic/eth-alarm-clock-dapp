@@ -4,8 +4,12 @@ import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import { PropTypes, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
+import PropTypes from 'prop-types';
 
+const propTypes = {
+	store: PropTypes.object
+};
 @observer
 class ScheduleWizard extends Component {
 
@@ -104,8 +108,6 @@ render() {
   );
 }
 }
-const propTypes = {
-	store: PropTypes.object
-};
+
 ScheduleWizard.propTypes = propTypes;
 export default ScheduleWizard;

@@ -16,10 +16,6 @@ class BlockComponent extends Component {
      this.props.onChange(event.target.name,event.target.value)
    }
 
-@observable
-_validations = {
-  blockNumber: true,
-}
 
 getValidations() {
   return this._validations
