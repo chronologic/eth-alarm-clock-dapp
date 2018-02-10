@@ -1,8 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import PropTypes from 'PropTypes';
-import { observable } from 'mobx';
-import { inject, observer } from 'mobx-react';
+import { inject, PropTypes } from 'mobx-react';
 
 @inject('mobxStore')
 @observer

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ScheduleWizard from '../Common/ScheduleWizard';
+import { observer } from 'mobx-react';
 
+@observer
 export class ScheduleRoute extends Component {
   render() {
     return (
