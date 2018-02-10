@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 
-let store = null;
+
 class mobxStore {
   //TimeComponent
   @observable timezone = '';
@@ -25,15 +25,7 @@ class mobxStore {
 
 
 }
-export function initStore(isServer, source) {
-  if (isServer) {
-    return new mobxStore(source);
-  } else {
-    if (store === null) {
-      store = new mobxStore(source);
-    }
-    return store;
-  }
-}
+const store = new mobxStore ();
 
-export default initStore;
+export default store;
+export { mobxStore };

@@ -4,8 +4,7 @@ import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import { Provider } from 'mobx-react';
-import { initStore } from './mobxStore';
+import { PropTypes } from 'mobx-react';
 class ScheduleWizard extends Component {
 
   state = {
@@ -46,7 +45,6 @@ static async getInitialProps({ query, req }) {
 
 render() {
   return (
-<Provider store={this.store}>
 <div id="scheduleWizard">
   <ul className="nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
     <li>
@@ -101,12 +99,11 @@ render() {
     </ul>
   </div>
 </div>
-
-</Provider>
-
-
   );
 }
 }
-
+const propTypes = {
+	store: PropTypes.object
+};
+ScheduleWizard.propTypes = propTypes;
 export default ScheduleWizard;
