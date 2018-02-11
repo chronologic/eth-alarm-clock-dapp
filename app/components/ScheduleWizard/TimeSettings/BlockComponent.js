@@ -1,5 +1,4 @@
-/* eslint-disable */
-import React, { Component } from 'react';
+import React from 'react';
 import { inject, observer } from 'mobx-react';
 import AbstractSetting from '../AbstractSetting';
 
@@ -12,8 +11,7 @@ class BlockComponent extends AbstractSetting {
   }
 
   render() {
-
-  	const { scheduleStore } = this.props;
+    const { scheduleStore } = this.props;
       return (
         <div id="blockComponent">
           <div className="row">
