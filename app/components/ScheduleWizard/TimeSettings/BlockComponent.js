@@ -1,41 +1,30 @@
-/* eslint-disable */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import AbstractSetting from '../AbstractSetting';
 
-@inject('store')
+@inject('scheduleStore')
 @observer
-class BlockComponent extends Component {
+class BlockComponent extends AbstractSetting {
 
   constructor (props) {
-    super(props)
-//    this._props = this.props;
-
-    this.onChange = this.onChange.bind(this);
+    super(props);
   }
 
-
-  onChange (event) {
-     this.props.onChange(event.target.name,event.target.value)
-   }
-
-
-getValidations() {
-  return this._validations
-}
   render() {
-const blockSettings = this.props;
-    return (
-      <div id="blockComponent">
-        <div className="row">
-          <div className="col-md-4">
-            <div className="form-group form-group-default">
-              <label>Block Number</label>
-              <input type="text" placeholder="Enter a block number" value={blockSettings.value} onChange={this.onChange} className="form-control"></input>
+
+  	const { scheduleStore } = this.props;
+      return (
+        <div id="blockComponent">
+          <div className="row">
+            <div className="col-md-4">
+              <div className="form-group form-group-default">
+                <label>Block Number</label>
+                <input type="text" placeholder="Enter a block number" value={scheduleStore.blockNumber} onChange={this.onChange('blockNumber')} className="form-control"></input>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
   }
 }
 

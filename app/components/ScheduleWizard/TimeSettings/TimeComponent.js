@@ -12,7 +12,7 @@ const presetExecutionWindows = [
     { value: 5, selected: false }
   ];
 
-@inject('store')
+@inject('scheduleStore')
 @observer
 class TimeComponent extends Component {
 
