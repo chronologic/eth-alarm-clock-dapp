@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { default as AwaitingMining } from '../Common/AwaitingMining';
 import { default as TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
+import URLNotFound from '../Common/URLNotFound';
 
 class App extends Component {
 
@@ -55,9 +56,12 @@ class App extends Component {
           <Header updateSearchState={this.updateSearchState}/>
           <div className="page-content-wrapper">
             <div className="content sm-gutter">
-              <Route exact path="/" component={ScheduleRoute}/>
-              <Route path="/awaiting" component={AwaitingMining}/>
-              <Route path="/transactions" component={TransactionsRoute}/>
+              <Switch>
+                <Route exact path="/" component={ScheduleRoute}/>
+                <Route path="/awaiting" component={AwaitingMining}/>
+                <Route path="/transactions" component={TransactionsRoute}/>
+                <Route component={URLNotFound}/>
+              </Switch>
             </div>
           </div>
         </div>
