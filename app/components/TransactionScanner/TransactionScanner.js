@@ -100,6 +100,11 @@ class TransactionScanner extends Component {
           currentPage={this.state.currentPage}
           showStatus={this.props.showStatus}
         />
+        <div className="row">
+          <div className="col-md-2 mt-2">
+            <img src="img/powered-by-eac.png" alt="logo" data-src="img/powered-by-eac.png" height="36" />
+          </div>
+        </div>
       </div>
     );
   }
