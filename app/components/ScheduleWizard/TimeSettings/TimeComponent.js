@@ -24,7 +24,6 @@ class TimeComponent extends AbstractSetting {
       execWindows: presetExecutionWindows
     };
 
-    this.onChange = this.onChange.bind(this);
     momentDurationFormatSetup(moment);
   }
 
