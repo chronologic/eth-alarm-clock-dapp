@@ -1,6 +1,6 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
-import AbstractSetting from '../AbstractSetting';
+import AbstractSetting from './AbstractSetting';
 
 @inject('scheduleStore')
 @observer
