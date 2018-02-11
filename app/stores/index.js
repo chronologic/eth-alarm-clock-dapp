@@ -8,6 +8,7 @@ const { eacService, web3Service } = services;
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
+const scheduleStore = {};
 
 export const transactionStore = new TransactionStore(eacService, web3Service);
 
@@ -16,5 +17,6 @@ export const history = syncHistoryWithStore(browserHistory, routingStore);
 export const stores = {
   routing: routingStore,
   transactionStore,
+  scheduleStore,
 //  mobxStore
 };

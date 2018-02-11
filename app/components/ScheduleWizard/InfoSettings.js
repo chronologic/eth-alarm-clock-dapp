@@ -1,9 +1,9 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import PropTypes from 'PropTypes';
+import PropTypes from 'prop-types';
 
-
+@inject('scheduleStore')
 @observer
 class InfoSettings extends Component {
   state = {}
