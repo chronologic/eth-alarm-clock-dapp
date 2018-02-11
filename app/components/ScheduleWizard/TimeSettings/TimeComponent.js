@@ -1,7 +1,4 @@
-/* eslint-disable */
-import React, { Component } from 'react';
-import AbstractSetting from '../AbstractSetting';
-import PropTypes from 'PropTypes';
+import React from 'react';
 import moment from 'moment';
 import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
@@ -23,6 +20,12 @@ class TimeComponent extends AbstractSetting {
     this.state = {
       execWindows: presetExecutionWindows
     };
+
+    const { scheduleStore } = this.props;
+    const localTimezone = moment.tz.guess();
+    const defaultTime = moment().add(1, 'hours').format("hh:mm a");
+    scheduleStore.timezone = scheduleStore.timezone || localTimezone;
+    scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
 
     momentDurationFormatSetup(moment);
   }
@@ -46,15 +49,13 @@ class TimeComponent extends AbstractSetting {
   render() {
     const { scheduleStore } = this.props;
     const timezones = moment.tz.names();
-    const localTimezone = moment.tz.guess();
-    const defaultTime = moment().add(1, 'hours').format("hh:mm a");
     return (
       <div id="timeComponent">
         <div className="row">
           <div className="col-md-3">
             <div className="form-group form-group-default form-group-default-select2 required">
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onChange={this.onChange('timezone')} defaultValue={localTimezone}>
+              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onChange={this.onChange('timezone')} >
                 {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
                 )}
@@ -78,7 +79,7 @@ class TimeComponent extends AbstractSetting {
             <div className="form-group form-group-default input-group">
               <div className="form-input-group">
                 <label>Transaction Time</label>
-              <input id="timepicker" type="text" className="form-control" value={scheduleStore.transactionTime} onChange={this.onChange('transactionTime')} defaultValue={defaultTime}/>
+              <input id="timepicker" type="text" className="form-control" value={scheduleStore.transactionTime} onChange={this.onChange('transactionTime')} />
               </div>
               <div className="input-group-addon">
                 <i className="pg-clock"></i>
