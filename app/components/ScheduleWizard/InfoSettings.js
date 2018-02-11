@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import AbstractSetting from '../AbstractSetting';
+import AbstractSetting from './AbstractSetting';
 
 @inject('scheduleStore')
 @observer
@@ -15,14 +15,8 @@ class InfoSettings extends AbstractSetting {
 
     constructor (props) {
       super(props)
-  //    this._props = this.props;
 
-      this.onChange = this.onChange.bind(this);
     }
-
-    onChange (event) {
-       this.props.onChange(event.target.name,event.target.value)
-     }
 
 render() {
   const {scheduleStore} = this.props;

@@ -61,10 +61,6 @@ render() {
                 <td>{scheduleStore.timeBounty}</td>
               </tr>
               <tr>
-                <td>Donation</td>
-                <td>{scheduleStore.donation}</td>
-              </tr>
-              <tr>
                 <td>Deposit</td>
                 <td>{scheduleStore.deposit}</td>
               </tr>
