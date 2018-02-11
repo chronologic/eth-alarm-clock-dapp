@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 
 
-export class mobxStore {
+export default class mobxStore {
   //TimeComponent
   @observable timezone = '';
   @observable transactionDate = '';
@@ -23,6 +23,10 @@ export class mobxStore {
 @observable gasPrice = '';
 @observable yourData = '';
 
+constructor(source) {
+    Object.assign(this, source);
+  }
+}
 
 }
 
