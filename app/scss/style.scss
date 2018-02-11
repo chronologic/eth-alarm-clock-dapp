@@ -4,7 +4,7 @@ $primary-color: #21FFFF;
 /* PAGES TEMPLATE OVERRIDES */
 
 .brand {
-	margin-left: 80px;
+	margin-left: 20px;
 }
 
 .page-container {
@@ -23,7 +23,8 @@ $primary-color: #21FFFF;
 
 .header {
 	background: transparent;
-	border-bottom: none;
+  border-bottom: none;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .pages-sidebar {
