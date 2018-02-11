@@ -1,11 +1,12 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { inject, PropTypes } from 'mobx-react';
-import { observer } from 'mobx';
+import AbstractSetting from '../AbstractSetting';
+import { observer, inject } from 'mobx-react';
 
+@inject('scheduleStore')
+@observer
 
-
-class BountySettings extends Component {
+class BountySettings extends AbstractSetting {
   state = {}
 
   componentDidMount() {
@@ -14,15 +15,10 @@ class BountySettings extends Component {
 
   constructor (props) {
     super(props)
-//    this._props = this.props;
 
-    this.onChange = this.onChange.bind(this);
   }
-  onChange (event) {
-     this.props.onChange(event.target.name,event.target.value)
-   }
 render() {
-  const bountySettings = this.props;
+  const { scheduleStore } = this.props;
   return (
     <div id="bountySettings">
 
@@ -31,14 +27,14 @@ render() {
 
           <div className="form-group form-group-default">
             <label>Time Bounty</label>
-            <input type="text" placeholder="Enter Time Bounty" value={bountySettings.timeBounty} onChange={this.onChange} className="form-control"></input>
+            <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onChange={this.onChange('timeBounty')} className="form-control"></input>
           </div>
 
         </div>
       </div>
 
       <div className="checkbox check-primary">
-        <input type="checkbox" value={bountySettings.depositRequired} onChange={this.onChange} id="checkboxRequireDeposit" defaultChecked />
+        <input type="checkbox" id="checkboxRequireDeposit" defaultChecked />
         <label htmlFor="checkboxRequireDeposit">Require Deposit</label>
       </div>
 
@@ -46,7 +42,7 @@ render() {
         <div className="col-md-4">
           <div className="form-group form-group-default">
             <label>Deposit</label>
-            <input type="text" value={bountySettings.deposit} onChange={this.onChange} placeholder="Enter Deposit" className="form-control"></input>
+            <input type="text" value={scheduleStore.deposit} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className="form-control"></input>
           </div>
         </div>
       </div>

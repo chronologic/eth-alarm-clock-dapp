@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import AbstractSetting from '../AbstractSetting';
 import PropTypes from 'PropTypes';
 import moment from 'moment';
 import 'moment-timezone';
