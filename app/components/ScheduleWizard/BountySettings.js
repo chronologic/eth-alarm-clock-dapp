@@ -1,10 +1,10 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { inject, PropTypes } from 'mobx-react';
+import { observer } from 'mobx';
 
 
-@inject('mobxStore')
-@observer
+
 class BountySettings extends Component {
   state = {}
 
