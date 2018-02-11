@@ -12,8 +12,8 @@ const presetExecutionWindows = [
     { value: 5, selected: false }
   ];
 
+@inject('store')
 @observer
-
 class TimeComponent extends Component {
 
   constructor(props) {

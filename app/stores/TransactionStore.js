@@ -1,11 +1,35 @@
 import BigNumber from 'bignumber.js';
+import { observable, computed } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
+
+export class TRANSACTION_STATUS {
+  static SCHEDULED = 'Scheduled';
+  static EXECUTED = 'Executed';
+  static FAILED = 'Failed';
+  static CANCELLED = 'Cancelled';
+  static MISSED = 'Not executed';
+}
+
+export class TEMPORAL_UNIT {
+  static BLOCK = 1;
+  static TIMESTAMP = 2;
+}
 
 export class TransactionStore {
   _eac = null;
   _web3 = null;
   _eacScheduler = null;
+
+  @observable allTransactions;
+  @observable filter;
+
+  @computed get filteredTransactions() {
+    const matchesFilter = new RegExp(this.filter, 'i');
+    if (this.allTransactions) {
+      return this.allTransactions.filter(transaction => !this.filter || matchesFilter.test(transaction.instance.address));
+    }
+  }
 
   requestFactoryStartBlock = '5555500';
 
@@ -30,6 +54,15 @@ export class TransactionStore {
     requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
 
     return requestsCreated;
+  }
+
+  async getAllTransactions() {
+    this.allTransactions = await this.getTransactions({});
+
+    for (let transaction of this.allTransactions) {
+      await transaction.fillData();
+      transaction.status = await this.getTxStatus(transaction);
+    }
   }
 
   async queryTransactions({ transactions, offset, limit, resolved }) {
@@ -80,18 +113,18 @@ export class TransactionStore {
   }
 
   async getTxStatus(transaction) {
-    let status = 'Scheduled';
+    let status = TRANSACTION_STATUS.SCHEDULED;
 
     if (transaction.wasCalled) {
-      status = transaction.data.meta.wasSuccessful ? 'Executed' : 'Failed';
+      status = transaction.data.meta.wasSuccessful ? TRANSACTION_STATUS.EXECUTED : TRANSACTION_STATUS.FAILED;
     }
 
     if (transaction.isCancelled) {
-      status = 'Cancelled';
+      status = TRANSACTION_STATUS.CANCELLED;
     }
 
     if (await this.isTransactionMissed(transaction)) {
-      status = 'Not executed';
+      status = TRANSACTION_STATUS.MISSED;
     }
 
     return status;
@@ -109,7 +142,17 @@ export class TransactionStore {
     return executionWindowClosed && !transaction.wasCalled;
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {    
+  async getTransactionByAddress(address) {
+    const txRequest = this._eac.transactionRequest(address, this._web3);
+
+    return txRequest;
+  }
+
+  isTxUnitTimestamp(transaction) {
+    return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+  }
+
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {
     const endowment = this._eacScheduler.calcEndowment(
       new BigNumber(callGas),
       new BigNumber(callValue),
@@ -117,13 +160,13 @@ export class TransactionStore {
       new BigNumber(donation),
       new BigNumber(payment)
     )
-    
+
     this._eacScheduler.initSender({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
     });
-    
+
     this._eacScheduler.blockSchedule(
       toAddress,
       this._web3.web3.fromAscii(callData),

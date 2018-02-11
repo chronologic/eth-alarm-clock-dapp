@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Route, Redirect, Switch } from 'react-router';
 import TransactionsCompleted from './TransactionsCompleted';
 import TransactionsScheduled from './TransactionsScheduled';
+import TransactionDetailsRoute from './TransactionDetailsRoute';
 
 class TransactionsRoute extends Component {
   render() {
@@ -12,6 +13,7 @@ class TransactionsRoute extends Component {
           <Redirect exact path="/transactions" to="/transactions/completed"/>
           <Route path="/transactions/completed" component={TransactionsCompleted}/>
           <Route path="/transactions/scheduled" component={TransactionsScheduled}/>
+          <Route path="/transactions/:txAddress" component={TransactionDetailsRoute}/>
         </Switch>
       </div>
     );

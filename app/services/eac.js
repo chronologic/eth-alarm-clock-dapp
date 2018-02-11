@@ -1,10 +1,19 @@
 import EAC from 'eac.js';
+import RequestLib from '../abi/RequestLib';
 
 let instance = null;
+let web3 = null;
+
+const additionalMethods = {
+  getRequestLibInstance(address) {
+    return web3.eth.contract(RequestLib, address).at(address);
+  }
+};
 
 export function initEacService(web3Service) {
   if (!instance) {
-    instance = EAC(web3Service);
+    web3 = web3Service;
+    instance = Object.assign(EAC(web3Service), additionalMethods);
   }
 
   return instance;

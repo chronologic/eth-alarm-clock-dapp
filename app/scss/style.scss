@@ -15,10 +15,10 @@ $primary-color: #21FFFF;
 
 .page-content-wrapper {
 	background: url(../assets/img/background.png) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .header {
@@ -58,12 +58,48 @@ $primary-color: #21FFFF;
   color: #fff;
 }
 
+[data-toggle=buttons] > .btn input[type=radio], 
+[data-toggle=buttons] > .btn-group > .btn input[type=radio] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.input-group {
+  flex-wrap: nowrap;
+}
+
+.input-group-addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#overlay-search {
+  font-size: 40px;
+}
+
+.overlay-close {
+  cursor: pointer
+}
+
+.search-link {
+  -webkit-transition: ease-in 0.3s; /* Safari */
+  transition: ease-in 0.3s;
+  cursor: pointer;
+}
+
+$titleColor: #fff;
 
 /* NEW CUSTOM CSS */
 .view-title {
-	color: #fff;
+	color: $titleColor;
 	font-size: 32px;
 	font-weight: normal;
+}
+
+.view-subtitle {
+	color: transparentize($color: $titleColor, $amount: 0.35);
 }
 
 .horizontal-center {
@@ -73,6 +109,16 @@ $primary-color: #21FFFF;
 .card .card-body{
    height: 650px;
 }
+
+.loader{
+	width: 50px;
+	height: 50px;
+	background-size: 100% auto;
+	margin: 0 auto;
+	margin-top:7%;
+	margin-bottom: 24px;
+}
+
 #scheduleWizard{
   height: 100%;
 }
@@ -95,4 +141,28 @@ $primary-color: #21FFFF;
 
 #confirmSettings table td {
   padding: 10px 20px;
+}
+
+#scheduleWizard .nav li a {
+  text-align: center;
+  font-size: 15px;
+  color: transparentize($color: #fff, $amount: 0.5);
+}
+
+#scheduleWizard .nav li a.active {
+  color: #fff;
+}
+
+#scheduleWizard .tab-content {
+  padding: 40px;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
+  border-top-color: transparent;
+}
+
+@media (max-width:589px) {
+	#scheduleWizard .tab-content{
+	    height: 500px;
+	}
 }
