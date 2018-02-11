@@ -2,10 +2,11 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import AbstractSetting from '../AbstractSetting';
 
 @inject('scheduleStore')
 @observer
-class InfoSettings extends Component {
+class InfoSettings extends AbstractSetting {
   state = {}
 
   componentDidMount() {
@@ -24,7 +25,7 @@ class InfoSettings extends Component {
      }
 
 render() {
-  const infoSettings = this.props;
+  const {scheduleStore} = this.props;
   return (
 
     <div id="infoSettings">
@@ -34,7 +35,7 @@ render() {
 
           <div className="form-group form-group-default">
             <label>To Address</label>
-            <input type="text" placeholder="Enter address" value={infoSettings.address} onChange={this.onChange} className="form-control"></input>
+            <input type="text" placeholder="Enter address" value={scheduleStore.toAddress} onChange={this.onChange('toAddress')} className="form-control"></input>
           </div>
 
         </div>
@@ -43,7 +44,7 @@ render() {
 
           <div className="form-group form-group-default">
             <label>Gas Amount</label>
-            <input type="text" placeholder="Enter Gas Amount" className="form-control" value={infoSettings.gasAmount} onChange={this.onChange}></input>
+            <input type="text" placeholder="Enter Gas Amount" className="form-control" value={scheduleStore.gasAmount} onChange={this.onChange('gasAmount')}></input>
           </div>
 
         </div>
@@ -54,7 +55,7 @@ render() {
 
           <div className="form-group form-group-default">
             <label>Value/Amount to Send</label>
-            <input type="text" placeholder="Enter Value/Amount in ETH" className="form-control" value={infoSettings.amountToSend} onChange={this.onChange}></input>
+            <input type="text" placeholder="Enter Value/Amount in ETH" className="form-control" value={scheduleStore.amountToSend} onChange={this.onChange('amountToSend')}></input>
           </div>
 
         </div>
@@ -63,7 +64,7 @@ render() {
 
           <div className="form-group form-group-default">
             <label>Gas Price</label>
-            <input type="text" placeholder="Enter Gas Price" className="form-control" value={infoSettings.gasPrice} onChange={this.onChange}></input>
+            <input type="text" placeholder="Enter Gas Price" className="form-control" value={scheduleStore.gasPrice} onChange={this.onChange('gasPrice')}></input>
           </div>
 
         </div>
@@ -78,7 +79,7 @@ render() {
         <div className="col-md-4">
           <div className="form-group form-group-default">
             <label>Your Data</label>
-            <input type="text" placeholder="Enter Your Data" className="form-control" value={infoSettings.yourData} onChange={this.onChange}></input>
+            <input type="text" placeholder="Enter Your Data" className="form-control" value={scheduleStore.yourData} onChange={this.onChange('yourData')}></input>
           </div>
         </div>
       </div>
