@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { inject,observer } from 'mobx-react';
 
 @inject('scheduleStore')
+@inject('eacService')
 @observer
 class ConfirmSettings extends Component {
   constructor(props){
