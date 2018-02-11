@@ -1,7 +1,9 @@
 /* eslint-disable */
 import React, { Component } from 'react';
-import { inject, PropTypes } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 
+@inject('store')
+@observer
 class BlockComponent extends Component {
 
   constructor (props) {

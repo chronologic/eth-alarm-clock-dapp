@@ -8,18 +8,18 @@ class ConfirmSettings extends Component {
   }
   state = {}
 
-  componentDidMount() {
+    componentDidMount() {
 
-  }
+    }
 
 render() {
   const props = this.props;
   return (
 
-    <div id="confirmSettings">
+        <div id="confirmSettings">
 
-      <div className="row">
-        <div className="col-md-6">
+          <div className="row">
+            <div className="col-md-6">
 
           <table className="table">
             <thead>
@@ -74,9 +74,9 @@ render() {
         </div>
       </div>
 
-    </div>
-  );
-}
+        </div>
+      );
+    }
 }
 
 export default ConfirmSettings;

@@ -3,8 +3,9 @@ import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
 import { Route } from 'react-router-dom';
+import { default as AwaitingMining } from '../Common/AwaitingMining';
+import { default as TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
-import TransactionsRoute from '../TransactionsRoute/TransactionsRoute';
 
 class App extends Component {
 
@@ -55,6 +56,7 @@ class App extends Component {
           <div className="page-content-wrapper">
             <div className="content sm-gutter">
               <Route exact path="/" component={ScheduleRoute}/>
+              <Route path="/awaiting" component={AwaitingMining}/>
               <Route path="/transactions" component={TransactionsRoute}/>
             </div>
           </div>

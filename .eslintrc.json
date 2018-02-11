@@ -15,6 +15,7 @@
      },
     "rules": {
         "linebreak-style": 0,
-        "object-curly-spacing": ["error", "always"]
+        "object-curly-spacing": ["error", "always"],
+        "no-trailing-spaces": "warn"
     }
 }

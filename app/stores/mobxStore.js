@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 
 
-class mobxStore {
+export class mobxStore {
   //TimeComponent
   @observable timezone = '';
   @observable transactionDate = '';
@@ -25,7 +25,5 @@ class mobxStore {
 
 
 }
-const store = new mobxStore ();
 
-export default store;
 //export { mobxStore };
