@@ -1,7 +1,10 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { inject,observer } from 'mobx-react';
 
+@inject('store')
+@observer
 class ConfirmSettings extends Component {
   constructor(props){
     super(props);
