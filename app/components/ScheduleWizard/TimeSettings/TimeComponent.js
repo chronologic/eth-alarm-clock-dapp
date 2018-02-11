@@ -6,6 +6,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
 import { inject, observer } from 'mobx-react';
+import AbstractSetting from '../AbstractSetting';
 
 const presetExecutionWindows = [
     { value: 1, selected: false },
@@ -54,7 +55,7 @@ class TimeComponent extends AbstractSetting {
           <div className="col-md-3">
             <div className="form-group form-group-default form-group-default-select2 required">
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onChange={th.s.onChange('timezone')} defaultValue={localTimezone}>
+              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onChange={this.onChange('timezone')} defaultValue={localTimezone}>
                 {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
                 )}
