@@ -28,6 +28,4 @@ constructor(source) {
   }
 }
 
-}
-
 //export { mobxStore };
