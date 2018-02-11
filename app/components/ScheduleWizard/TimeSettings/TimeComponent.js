@@ -11,7 +11,6 @@ const presetExecutionWindows = [
     { value: 3, selected: false },
     { value: 5, selected: false }
   ];
-@inject('mobxStore')
 @observer
 
 class TimeComponent extends Component {
@@ -70,7 +69,7 @@ class TimeComponent extends Component {
             <div className="form-group form-group-default input-group">
               <div className="form-input-group">
                 <label>Transaction Date</label>
-                <input type="email" className="form-control" Value={timeSettings.transactionDate} onChange={this.onChange} placeholder="Pick a date" id="datepicker-component"/>
+                <input type="email" className="form-control" value={timeSettings.transactionDate} onChange={this.onChange} placeholder="Pick a date" id="datepicker-component"/>
               </div>
               <div className="input-group-addon">
                 <i className="fa fa-calendar"></i>

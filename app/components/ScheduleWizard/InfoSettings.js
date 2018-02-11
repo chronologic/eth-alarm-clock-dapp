@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'PropTypes';
 
-@inject('mobxStore')
+
 @observer
 class InfoSettings extends Component {
   state = {}

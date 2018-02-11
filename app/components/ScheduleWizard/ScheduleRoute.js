@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ScheduleWizard from '../Common/ScheduleWizard';
-import mobxStore from './mobxStore';
+import { Provider } from 'mobx-react';
+import { store } from './mobxStore';
 
 export class ScheduleRoute extends Component {
   render() {
@@ -9,7 +10,9 @@ export class ScheduleRoute extends Component {
         <h1 className="view-title">Schedule Transaction</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           <div className="card-body">
-            <ScheduleWizard store={mobxStore}/>
+          <Provider userStore={store}>
+            <ScheduleWizard/>
+          </Provider>
           </div>
         </div>
       </div>

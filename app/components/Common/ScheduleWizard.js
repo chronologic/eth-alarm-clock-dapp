@@ -17,7 +17,7 @@ class ScheduleWizard extends Component {
   }
     constructor(props) {
   super(props);
-//console.log("mobxStore: "+initStore,mobxStore);
+
 //this.setState( {store:initStore(true,props.store)} );
 //  this.store = initStore(true, props.store);
 }

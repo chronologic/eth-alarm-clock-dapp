@@ -28,4 +28,4 @@ class mobxStore {
 const store = new mobxStore ();
 
 export default store;
-export { mobxStore };
+//export { mobxStore };
