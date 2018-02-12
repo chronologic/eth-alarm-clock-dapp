@@ -81,34 +81,29 @@ render() {
           />
         </div>
 
-        <div className="row">
-          <div className="col-md-2 footer-buttons">
-            <img src="img/powered-by-eac.png" alt="logo" data-src="img/powered-by-eac.png" height="36" />
-          </div>
-          <div className="footer-buttons col-md-10">
-            <ul className="pager wizard no-style">
-              <li className="next">
-                <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                  <span>Next</span>
-                </button>
+        <div className="footer-buttons">
+          <ul className="pager wizard no-style">
+            <li className="next">
+              <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <span>Next</span>
+              </button>
+            </li>
+            <li className="next finish" style={{ display: 'none' }}>
+              <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
+                <span>Schedule</span>
+              </NavLink>
+            </li>
+            <li className="previous first" style={{ display: 'none' }}>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                      <span>First</span>
+                  </button>
               </li>
-              <li className="next finish" style={{ display: 'none' }}>
-                <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
-                  <span>Schedule</span>
-                </NavLink>
-              </li>
-              <li className="previous first" style={{ display: 'none' }}>
-                    <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                        <span>First</span>
-                    </button>
-                </li>
-              <li className="previous">
-                <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                  <span>Previous</span>
-                </button>
-              </li>
-            </ul>
-          </div>
+            <li className="previous">
+              <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <span>Previous</span>
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
