@@ -36,7 +36,7 @@ class BountySettings extends AbstractSetting {
           <div className="col-md-4">
             <div className={"form-group form-group-default required "+(_validations.timeBounty?"":" has-error")}>
               <label>Time Bounty</label>
-              <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className={"form-control"+(_validations.timeBounty?"":" error")}></input>
+              <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className="form-control"></input>
             </div>
             {!_validations.timeBounty &&
               <label className="error">{_validationsErrors.timeBounty}</label>
@@ -44,7 +44,7 @@ class BountySettings extends AbstractSetting {
           </div>
         </div>
         <div className={"checkbox check-primary"+(_validations.requireDeposit?"":" has-error")}>
-          <input type="checkbox" id="checkboxRequireDeposit" onChange={this.toggleRequiredDeposit} checked={scheduleStore.requireDeposit} className={(_validations.requireDeposit?"":" error")} />
+          <input type="checkbox" id="checkboxRequireDeposit" onChange={this.toggleRequiredDeposit} checked={scheduleStore.requireDeposit} />
           <label htmlFor="checkboxRequireDeposit">Require Deposit</label>
         </div>
         {scheduleStore.requireDeposit &&
@@ -52,7 +52,7 @@ class BountySettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required "+(_validations.deposit?"":" has-error")}>
                 <label>Deposit</label>
-                <input type="text" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className={"form-control"+(_validations.deposit?"":" error")}></input>
+                <input type="text" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className="form-control"></input>
               </div>
               {!_validations.timeBounty &&
                 <label className="error">{_validationsErrors.deposit}</label>
