@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { Component } from 'react';
 import TimeComponent from './TimeSettings/TimeComponent';
 import BlockComponent from './TimeSettings/BlockComponent';
@@ -54,5 +53,7 @@ class TimeSettings extends Component {
     );
   }
 }
-
+TimeSettings.propTypes = {
+  scheduleStore: PropTypes.any
+};
 export default TimeSettings;
