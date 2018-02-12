@@ -103,8 +103,26 @@ $titleColor: #fff;
 	color: transparentize($color: $titleColor, $amount: 0.35);
 }
 
+.text-grey {
+  color: #ccc;
+}
+
 .horizontal-center {
 	text-align: center;
+}
+
+.absolute-center { 
+    height: 200px;
+    position: relative;
+    text-align: center;
+}
+
+.absolute-center span {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .card .card-body{
