@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 class URLNotFound extends Component {
   render() {
     return (
-      <div className="container-fluid padding-25 sm-padding-10">
-        <div className="widget-12 card no-border widget-loader-circle no-margin">
+      <div className="container-fluid">
+        <div className="card">
           <div className="card-body absolute-center">
             <span>
               <h1 className="error-number">404</h1>
