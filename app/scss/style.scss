@@ -107,6 +107,20 @@ $titleColor: #fff;
 	text-align: center;
 }
 
+.absolute-center { 
+    height: 200px;
+    position: relative;
+    text-align: center;
+}
+
+.absolute-center span {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .card .card-body{
    height: 650px;
 }
