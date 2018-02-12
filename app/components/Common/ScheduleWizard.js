@@ -148,7 +148,7 @@ class ScheduleWizard extends Component {
 
         <div className="tab-content">
           <div className="tab-pane active slide" id="tab1">
-            <TimeSettings />
+            <TimeSettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab2">
             <InfoSettings {..._validationProps}/>

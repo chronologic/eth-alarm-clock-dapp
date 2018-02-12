@@ -71,7 +71,7 @@ class AbstractSetting extends Component {
   @action
   validate = (property) => () => {
     const { props: { scheduleStore,services },_validationsErrors } = this;
-    const validations = this.getValidations();
+    const { _validations } = this;
     const { validator,errors } = this.validators[property];
     const value = scheduleStore[property];
     let Web3;
@@ -82,14 +82,14 @@ class AbstractSetting extends Component {
     }
     const errorState = validator(value,Web3);
     if(errorState == 0){
-      validations[property] = true;
+      _validations[property] = true;
       _validationsErrors[property] = '';
     }
     else{
-      validations[property] = false;
+      _validations[property] = false;
       _validationsErrors[property] = errors[errorState-1];
     }
-    return validations[property];
+    return _validations[property];
   }
 
 	onChange = (name) => (event)=> {
