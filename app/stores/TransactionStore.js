@@ -167,7 +167,7 @@ export class TransactionStore {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit) {
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, which) {
     const endowment = this._eacScheduler.calcEndowment(
       new BigNumber(callGas),
       new BigNumber(callValue),
@@ -182,7 +182,21 @@ export class TransactionStore {
       value: endowment
     });
 
-    this._eacScheduler.blockSchedule(
+  this._eacScheduler.blockSchedule(
+    toAddress,
+    this._web3.web3.fromAscii(callData),
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    donation,
+    payment,
+    requiredDeposit
+  )
+
+  if(which){
+    this._eacScheduler.timeStampSchedule(
       toAddress,
       this._web3.web3.fromAscii(callData),
       callGas,
@@ -195,4 +209,8 @@ export class TransactionStore {
       requiredDeposit
     )
   }
+
+
 }
+
+  }
