@@ -5,6 +5,7 @@ import Header from '../Header/Header';
 import { Route, Switch } from 'react-router-dom';
 import { default as AwaitingMining } from '../Common/AwaitingMining';
 import { default as TransactionsRoute } from '../TransactionsRoute/TransactionsRoute';
+import { default as TimeNodeRoute } from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
@@ -60,6 +61,7 @@ class App extends Component {
                 <Route exact path="/" component={ScheduleRoute}/>
                 <Route path="/awaiting" component={AwaitingMining}/>
                 <Route path="/transactions" component={TransactionsRoute}/>
+                <Route path="/timenode" component={TimeNodeRoute}/>
                 <Route component={URLNotFound}/>
               </Switch>
             </div>

@@ -11,6 +11,16 @@ class Header extends Component {
           <div className="brand inline">
             <img src="img/logo-white.png" alt="logo" data-src="img/logo-white.png" height="36" />
           </div>
+        </div>
+        <div className="d-flex align-items-center">
+          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+            <span className="active-timenodes">
+              <i className="fa fa-sitemap"/>&nbsp;Active TimeNodes:&nbsp;
+            </span>
+            <span className="timenode-count">1000</span>
+          </div>
+        </div>
+        <div className="d-flex">
           <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true)}}>
             <i className="pg-search"></i>
             Search by Address
