@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject } from 'mobx-react';
 import PropTypes from 'prop-types';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 const INITIAL_STATE = {
   transactions: [],
@@ -101,9 +102,7 @@ class TransactionScanner extends Component {
           showStatus={this.props.showStatus}
         />
         <div className="row">
-          <div className="col-md-2 mt-2">
-            <img src="img/powered-by-eac.png" alt="logo" data-src="img/powered-by-eac.png" height="36" />
-          </div>
+          <PoweredByEAC className="col-md-2 mt-2" />
         </div>
       </div>
     );
