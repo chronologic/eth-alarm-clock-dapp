@@ -103,6 +103,10 @@ $titleColor: #fff;
 	color: transparentize($color: $titleColor, $amount: 0.35);
 }
 
+.text-grey {
+  color: #ccc;
+}
+
 .horizontal-center {
 	text-align: center;
 }

@@ -24,11 +24,26 @@ export class TransactionStore {
   @observable allTransactions;
   @observable filter;
 
+  // Returns an array of transactions based on the current
+  // state of the filter variable
   @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
     if (this.allTransactions) {
-      return this.allTransactions.filter(transaction => !this.filter || matchesFilter.test(transaction.instance.address));
+      return this.allTransactions.filter(
+        transaction => !this.filter || matchesFilter.test(transaction.instance.address)
+      );
     }
+  }
+
+  // Returns an array of only the addresses of all transactions
+  @computed get allTransactionsAddresses() {
+    let addresses = [];
+    if (this.allTransactions) {
+      addresses = this.allTransactions.map(
+        transaction => transaction.instance.address
+      );
+    }
+    return addresses;
   }
 
   requestFactoryStartBlock = '5555500';
