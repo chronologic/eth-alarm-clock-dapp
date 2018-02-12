@@ -15,14 +15,7 @@ class ConfirmSettings extends Component {
 
     }
 
- scheduleTransaction(){
-   const {scheduleStore } = this.props;
-   if(scheduleStore.isUsingTime){
 
-   } else{
-
-   }
- }
 render() {
   const { scheduleStore } = this.props;
   return (
