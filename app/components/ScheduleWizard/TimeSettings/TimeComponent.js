@@ -1,12 +1,9 @@
-/* eslint-disable */
-import React, { Component } from 'react';
+import React from 'react';
 import AbstractSetting from '../AbstractSetting';
-import PropTypes from 'PropTypes';
 import moment from 'moment';
 import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
 import { inject, observer } from 'mobx-react';
-import AbstractSetting from '../AbstractSetting';
 
 const presetExecutionWindows = [
     { value: 1, selected: false },
