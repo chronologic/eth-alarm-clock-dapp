@@ -29,18 +29,22 @@ class TransactionDetailsRoute extends Component {
     const { txAddress } = this.props.match.params;
 
     let content = null;
-    if (!this.state.fetchedTransactions) {
-      content = <div className='sweet-loading horizontal-center'>
-          <BeatLoader loading={!this.state.fetchedTransactions}/>
-        </div>;
-    } else {
+
+    // If the list of transactions has been fetched
+    if (this.state.fetchedTransactions) {
+      // Check if the address exists in the transactions list
       if (this.props.transactionStore.allTransactionsAddresses.includes(txAddress)) {
         content = <TransactionDetails address={txAddress} />;
       } else {
+        // Throw a 404 if the transaction with that address does not exist
         content = <TransactionNotFound address={txAddress}/>
       }
+    } else {
+      // Display a loader spinner
+      content = <div className='sweet-loading horizontal-center'>
+          <BeatLoader loading={!this.state.fetchedTransactions}/>
+        </div>;
     }
-    window.transactionStore = this.props.transactionStore;
 
     return (
       <div>
