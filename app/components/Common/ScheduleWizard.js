@@ -5,17 +5,17 @@ import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import PoweredByEAC from './PoweredByEAC';
+import { inject,observer } from 'mobx-react';
 
+@inject('scheduleStore')
+@inject('transactionStore')
+@observer
 class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.goToWait = this.goToWait.bind(this);
-  }
-
-  goToWait(){
   }
 
   componentDidMount() {
@@ -46,6 +46,22 @@ class ScheduleWizard extends Component {
     if(element){
       Scrollbar.init(element, options)
     }
+   }
+
+   async scheduleTransaction(){
+     const { scheduleStore } = this.props;
+     const { transactionStore } = this.props;
+     if(scheduleStore.isUsingTime){
+
+     } else{
+      await transactionStore.schedule(scheduleStore.toAddress,
+                                 scheduleStore.yourData,
+                                 scheduleStore.gasAmount,
+                                 scheduleStore.gasPrice,
+                                 scheduleStore.donation,
+                                 scheduleStore.amountToSend,
+                                 scheduleStore)
+     }
    }
 
 render() {
@@ -82,32 +98,29 @@ render() {
           />
         </div>
 
-        <div className="row">
-          <PoweredByEAC className="col-md-2 footer-buttons"/>
-          <div className="footer-buttons col-md-10">
-            <ul className="pager wizard no-style">
-              <li className="next">
-                <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                  <span>Next</span>
-                </button>
+        <div className="footer-buttons">
+          <ul className="pager wizard no-style">
+            <li className="next">
+              <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <span>Next</span>
+              </button>
+            </li>
+            <li className="next finish" style={{ display: 'none' }}>
+              <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
+                <span>Schedule</span>
+              </NavLink>
+            </li>
+            <li className="previous first" style={{ display: 'none' }}>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                      <span>First</span>
+                  </button>
               </li>
-              <li className="next finish" style={{ display: 'none' }}>
-                <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
-                  <span>Schedule</span>
-                </NavLink>
-              </li>
-              <li className="previous first" style={{ display: 'none' }}>
-                    <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                        <span>First</span>
-                    </button>
-                </li>
-              <li className="previous">
-                <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                  <span>Previous</span>
-                </button>
-              </li>
-            </ul>
-          </div>
+            <li className="previous">
+              <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <span>Previous</span>
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
