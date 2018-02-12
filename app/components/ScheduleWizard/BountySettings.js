@@ -8,35 +8,58 @@ import AbstractSetting from './AbstractSetting';
 class BountySettings extends AbstractSetting {
 
   constructor (props) {
-    super(props)
-    this.state = {}
+    super(props);
+    const { _validations,_validationsErrors } = this.props;
+    this._validations = _validations.BountySettings;
+    this._validationsErrors = _validationsErrors.BountySettings;
+
+    this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
+  }
+
+  validators = {
+    timeBounty: this.integerValidator(),
+    deposit: this.decimalValidator(),
+    requireDeposit: this.booleanValidator()
+  }
+
+  toggleRequiredDeposit(){
+    const { scheduleStore } = this.props;
+    scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
   }
 
   render() {
-    const { scheduleStore } = this.props;
+    const { scheduleStore, } = this.props;
+    const { _validations,_validationsErrors } = this;
     return (
       <div id="bountySettings">
         <div className="row">
           <div className="col-md-4">
-
-            <div className="form-group form-group-default">
+            <div className={"form-group form-group-default required "+(_validations.timeBounty?"":" has-error")}>
               <label>Time Bounty</label>
-              <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onChange={this.onChange('timeBounty')} className="form-control"></input>
+              <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className={"form-control"+(_validations.timeBounty?"":" error")}></input>
             </div>
+            {!_validations.timeBounty &&
+              <label className="error">{_validationsErrors.timeBounty}</label>
+              }
           </div>
         </div>
-        <div className="checkbox check-primary">
-          <input type="checkbox" id="checkboxRequireDeposit" defaultChecked />
+        <div className={"checkbox check-primary"+(_validations.requireDeposit?"":" has-error")}>
+          <input type="checkbox" id="checkboxRequireDeposit" onChange={this.toggleRequiredDeposit} checked={scheduleStore.requireDeposit} className={(_validations.requireDeposit?"":" error")} />
           <label htmlFor="checkboxRequireDeposit">Require Deposit</label>
         </div>
-        <div className="row">
-          <div className="col-md-4">
-            <div className="form-group form-group-default">
-              <label>Deposit</label>
-              <input type="text" value={scheduleStore.deposit} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className="form-control"></input>
+        {scheduleStore.requireDeposit &&
+          <div className="row">
+            <div className="col-md-4">
+              <div className={"form-group form-group-default required "+(_validations.deposit?"":" has-error")}>
+                <label>Deposit</label>
+                <input type="text" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className={"form-control"+(_validations.deposit?"":" error")}></input>
+              </div>
+              {!_validations.timeBounty &&
+                <label className="error">{_validationsErrors.deposit}</label>
+                }
             </div>
           </div>
-        </div>
+        }
       </div>
     );
   }
