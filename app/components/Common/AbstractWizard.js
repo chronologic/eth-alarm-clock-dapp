@@ -1,4 +1,3 @@
-/* eslint-disable react/require-render-return */
 import React from 'react';
 
 import { NAVIGATION_STEPS, PROPERTIES as ALL_PROPERTIES } from '../lib/consts';

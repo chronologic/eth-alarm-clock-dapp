@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import PropTypes from 'prop-types';
 import { Router } from 'react-router';
 import { PacmanLoader } from 'react-spinners';
 
@@ -61,6 +60,7 @@ class AwaitingMining extends Component {
   }
 
 render() {
+//  const props = this.props; .....uncomment when props is needed on this page
   return (
 
     <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
@@ -80,10 +80,6 @@ render() {
 }
 }
 
-AwaitingMining.propTypes = {
-  //contractAddress: PropTypes.any
-  //transactionHash: PropTypes.any
-  //destination: PropTypes.any
-};
+
 
 export default AwaitingMining;

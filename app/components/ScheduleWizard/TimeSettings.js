@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import TimeComponent from './TimeSettings/TimeComponent'
-import BlockComponent from './TimeSettings/BlockComponent'
+import TimeComponent from './TimeSettings/TimeComponent';
+import BlockComponent from './TimeSettings/BlockComponent';
+import PropTypes from 'prop-types';
+import { observer,inject } from 'mobx-react';
 
+@inject('scheduleStore')
+@observer
 class TimeSettings extends Component {
 
   constructor(props) {
@@ -18,10 +22,12 @@ class TimeSettings extends Component {
   }
 
   render() {
+    const { scheduleStore } = this.props;
     let componentToRender = null;
     if (this.state.isUsingTime) {
       componentToRender = <TimeComponent />;
     } else {
+      scheduleStore.isUsingTime = false;
       componentToRender = <BlockComponent />;
     }
 
@@ -48,5 +54,7 @@ class TimeSettings extends Component {
     );
   }
 }
-
+TimeSettings.propTypes = {
+  scheduleStore: PropTypes.any
+};
 export default TimeSettings;
