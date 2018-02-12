@@ -24,6 +24,8 @@ export default class mobxStore {
 @observable gasPrice = '';
 @observable yourData = '';
 
+@observable isUsingTime = true;
+
 constructor(source) {
     Object.assign(this, source);
   }
