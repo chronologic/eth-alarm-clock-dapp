@@ -4,6 +4,7 @@ import { inject } from 'mobx-react';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 const INITIAL_STATE = {
   callData: '',
@@ -134,6 +135,9 @@ class TransactionDetails extends Component {
               </tbody>
             </table>
           </div>
+        </div>
+        <div className="row">
+          <PoweredByEAC className="col-md-2 mt-2" />
         </div>
       </div>
     );
