@@ -12,9 +12,6 @@ class BountySettings extends AbstractSetting {
     this.state = {}
   }
 
-  componentDidMount() {
-  }
-
   render() {
     const { scheduleStore } = this.props;
     return (
