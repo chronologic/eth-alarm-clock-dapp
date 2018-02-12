@@ -39,6 +39,10 @@ class SidePanel extends Component {
                 </li>
               </ul>
             </li>
+            <li>
+              <NavLink to="/timenode" className="title">TimeNode</NavLink>
+              <span className="icon-thumbnail"><i className="fa fa-sitemap"></i></span>
+            </li>
           </ul>
           <div className="clearfix"></div>
         </div>

@@ -49,7 +49,6 @@ $primary-color: #21FFFF;
 
 .header .search-link {
   padding-left: 20px;
-  border-left: solid 2px white;
   color: #fff;
   font-size: 15px;
   margin-left: 30px;
@@ -90,6 +89,10 @@ $primary-color: #21FFFF;
   cursor: pointer;
 }
 
+.nav-tabs-simple > li > a:after {
+  background-color: $primary-color;
+}
+
 $titleColor: #fff;
 
 /* NEW CUSTOM CSS */
@@ -125,10 +128,6 @@ $titleColor: #fff;
     transform: translate(-50%, -50%);
 }
 
-.card .card-body{
-   height: 650px;
-}
-
 .loader{
 	width: 50px;
 	height: 50px;
@@ -138,15 +137,15 @@ $titleColor: #fff;
 	margin-bottom: 24px;
 }
 
-#scheduleWizard{
+.subsection {
   height: 100%;
 }
 
-#scheduleWizard .tab-content{
+.subsection .tab-content {
   height: 570px;
 }
 
-#scheduleWizard .tab-pane.active{
+.subsection .tab-pane.active {
 	overflow: hidden;
 	overflow-y: auto;
 	height:90%;
@@ -184,4 +183,12 @@ $titleColor: #fff;
 	#scheduleWizard .tab-content{
 	    height: 500px;
 	}
+}
+
+.active-timenodes {
+  color: $primary-color;
+}
+
+.timenode-count {
+  color: #fff;
 }
