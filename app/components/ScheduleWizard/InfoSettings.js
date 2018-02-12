@@ -8,7 +8,6 @@ import AbstractSetting from './AbstractSetting';
 class InfoSettings extends AbstractSetting {
     constructor (props) {
       super(props)
-      console.log(this.props)
 
       this.state = {}
       const { _validations,_validationsErrors } = this.props;
