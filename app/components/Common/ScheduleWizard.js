@@ -5,6 +5,7 @@ import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
+import PoweredByEAC from './PoweredByEAC';
 
 class ScheduleWizard extends Component {
   constructor(props){
@@ -82,9 +83,7 @@ render() {
         </div>
 
         <div className="row">
-          <div className="col-md-2 footer-buttons">
-            <img src="img/powered-by-eac.png" alt="logo" data-src="img/powered-by-eac.png" height="36" />
-          </div>
+          <PoweredByEAC className="col-md-2 footer-buttons"/>
           <div className="footer-buttons col-md-10">
             <ul className="pager wizard no-style">
               <li className="next">
