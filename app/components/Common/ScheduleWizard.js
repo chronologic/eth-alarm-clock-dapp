@@ -127,6 +127,7 @@ class ScheduleWizard extends Component {
    }
 
   render() {
+    const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
 
     return (
       <div id="scheduleWizard">
@@ -150,10 +151,10 @@ class ScheduleWizard extends Component {
             <TimeSettings />
           </div>
           <div className="tab-pane slide" id="tab2">
-            <InfoSettings />
+            <InfoSettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab3">
-            <BountySettings {...{ _validations:this._validations,_validationsErrors:this._validationsErrors }}/>
+            <BountySettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab4">
             <ConfirmSettings

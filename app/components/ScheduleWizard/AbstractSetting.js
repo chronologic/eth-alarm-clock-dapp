@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import web3 from 'web3';
 
 @observer
 class AbstractSetting extends Component {
@@ -56,17 +55,32 @@ class AbstractSetting extends Component {
     }
   }
 
+  ethereumAddressValidator(){
+      return{
+        validator:(value,web3)=>web3.isAddress(value)?0:1,
+        errors: [
+          'Kindly provide valid address'
+        ]
+      }
+  }
+
   getValidations() {
     return this._validations
   }
 
   @action
   validate = (property) => () => {
-    const { props: { scheduleStore },_validationsErrors } = this;
+    const { props: { scheduleStore,services },_validationsErrors } = this;
     const validations = this.getValidations();
     const { validator,errors } = this.validators[property];
     const value = scheduleStore[property];
-    const errorState = validator(value,web3);
+    let Web3;
+    if(services){
+      const { web3Service } = services;
+      const { web3 } = web3Service;
+      Web3 = web3;
+    }
+    const errorState = validator(value,Web3);
     if(errorState == 0){
       validations[property] = true;
       _validationsErrors[property] = '';
@@ -89,6 +103,7 @@ class AbstractSetting extends Component {
 
 AbstractSetting.propTypes = {
   scheduleStore: PropTypes.any,
+  services: PropTypes.any,
   _validations: PropTypes.any,
   _validationsErrors: PropTypes.any
 };
