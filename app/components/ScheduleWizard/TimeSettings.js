@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TimeComponent from './TimeSettings/TimeComponent';
 import BlockComponent from './TimeSettings/BlockComponent';
+import PropTypes from 'prop-types';
 import { observer,inject } from 'mobx-react';
 
 @inject('scheduleStore')
