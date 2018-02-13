@@ -22,6 +22,9 @@ class TimeNodeWallet extends Component {
       const reader = new FileReader();
       reader.onload = function() {
         const keystore = reader.result;
+
+        // TEMPORARY
+        // Replace this logic with a proper wallet import
         if (keystore && password) {
           Cookies.set('verifiedWallet', true);
           timeNodeStore.verifiedWallet = true;
