@@ -93,9 +93,9 @@ class AbstractSetting extends Component {
   }
 
 	onChange = (name) => (event)=> {
-		const { target } = event;
-		const { scheduleStore } = this.props;
-		scheduleStore[name] = target.value;
+    const { target } = event;
+    const { scheduleStore } = this.props;
+    scheduleStore[name] = target.value;
     this.validate(name)(event);
   }
 
