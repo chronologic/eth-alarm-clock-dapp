@@ -1,6 +1,35 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import { inject, observer } from 'mobx-react';
 
+const INITIAL_STATE = {
+  logs: []
+};
+
+@inject('timeNodeStore')
+@observer
 class TimeNodeLogs extends Component {
+  constructor() {
+    super();
+
+    this.state = INITIAL_STATE;
+  }
+
+  componentDidMount() {
+    const logsArrayUpdated = (newLogsArray) => {
+      this.setState({
+        logs: newLogsArray
+      });
+    };
+
+    this.props.timeNodeStore.startClient(logsArrayUpdated);
+  }
+
+  formatUnix(unix) {
+    return moment.unix(unix).format('DD/MM/YYYY HH:MM:SS');
+  }
+
   render() {
     return (
       <div id="timeNodeLogs">
@@ -16,14 +45,20 @@ class TimeNodeLogs extends Component {
             </div>
           </div>
           <div className="card-body">
-            <p className="no-margin"><span>01/01/2018 00:00:00</span> Wallet support: Disabled</p>
-            <p className="no-margin"><span>01/01/2018 00:00:01</span> Executing from account:</p>
-            <p className="no-margin"><span>01/01/2018 00:00:02</span> 0xf9fcacad8c20b15c891a9cbe2dadaf5c4a55eb62 | Balance: 19.965403334740745878</p>
+            {this.state.logs.map(([ timestamp, message ], index) => {
+              return (
+                <p key={index} className="no-margin"><span>{this.formatUnix(timestamp)}</span> {message}</p>
+              )
+            })}
           </div>
         </div>
       </div>
     );
   }
 }
+
+TimeNodeLogs.propTypes = {
+  timeNodeStore: PropTypes.any
+};
 
 export default TimeNodeLogs;
