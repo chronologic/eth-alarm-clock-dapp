@@ -58,22 +58,30 @@ goToWait(){
 
 
 
-   async scheduleTransaction(){
-     const { scheduleStore } = this.props;
-     const { transactionStore } = this.props;
-    const txRpt = await transactionStore.schedule(scheduleStore.toAddress,
-                                  scheduleStore.yourData,
-                                  scheduleStore.gasAmount,
-                                  scheduleStore.amountToSend,
-                                  scheduleStore.executionWindow,
-                                  scheduleStore.customWindow,
-                                  scheduleStore.gasPrice,
-                                  scheduleStore.timeBounty,
-                                  scheduleStore.deposit,
-                                  true
-                                );
-              return txRpt;
-   }
+async scheduleTransaction() {
+  const { scheduleStore } = this.props;
+  const { transactionStore } = this.props;
+  if(scheduleStore.isUsingTime) {
+    await transactionStore.schedule(scheduleStore.toAddress,
+                               scheduleStore.yourData,
+                               scheduleStore.gasAmount,
+                               scheduleStore.gasPrice,
+                               scheduleStore.executionWindow,
+                               scheduleStore.customWindow,
+                               scheduleStore.donation,
+                               scheduleStore.amountToSend,
+                               true
+                             );
+  } else {
+   await transactionStore.schedule(scheduleStore.toAddress,
+                              scheduleStore.yourData,
+                              scheduleStore.gasAmount,
+                              scheduleStore.gasPrice,
+                              scheduleStore.donation,
+                              scheduleStore.amountToSend,
+                              scheduleStore);
+  }
+}
 
 render() {
 
