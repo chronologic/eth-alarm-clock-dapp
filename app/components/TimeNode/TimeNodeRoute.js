@@ -17,19 +17,16 @@ class TimeNodeRoute extends Component {
     this.refresh = this.refresh.bind(this);
   }
 
+  componentWillMount() {
+    if (Cookies.get('verifiedWallet')) this.props.timeNodeStore.verifiedWallet = true;
+    if (Cookies.get('hasDayTokens')) this.props.timeNodeStore.hasDayTokens = true;
+  }
+
   refresh() {
     this.setState(this.state);
   }
 
   render() {
-    if (Cookies.get('verifiedWallet')) {
-      this.props.timeNodeStore.verifiedWallet = true;
-    }
-
-    if (Cookies.get('hasDayTokens')) {
-      this.props.timeNodeStore.hasDayTokens = true;
-    }
-
     let componentToShow = null;
     if (this.props.timeNodeStore.verifiedWallet) {
       if (this.props.timeNodeStore.hasDayTokens) {
