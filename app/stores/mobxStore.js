@@ -1,11 +1,12 @@
 import { observable } from 'mobx';
-
+import moment from 'moment';
+import 'moment-timezone';
 
 export default class mobxStore {
   //TimeComponent
-  @observable timezone = '';
+  @observable timezone = moment.tz.guess();
   @observable transactionDate = '';
-  @observable transactionTime = '';
+  @observable transactionTime = moment().add(1, 'hours').format("hh:mm a");
   @observable executionWindow = '';
   @observable customWindow = '';
   @observable donation = '';

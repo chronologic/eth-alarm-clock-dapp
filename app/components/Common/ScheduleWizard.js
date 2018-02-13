@@ -118,9 +118,9 @@ render() {
               </button>
             </li>
             <li className="next finish" style={{ display: 'none' }}>
-            <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction}>
+            <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction}>
               <span>Schedule</span>
-            </NavLink>
+            </button>
             </li>
             <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">

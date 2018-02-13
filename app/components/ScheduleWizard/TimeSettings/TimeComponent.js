@@ -1,10 +1,9 @@
 import React from 'react';
 import AbstractSetting from '../AbstractSetting';
-import moment from 'moment';
-import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
 import { inject, observer } from 'mobx-react';
-
+import moment from 'moment';
+import 'moment-timezone';
 const presetExecutionWindows = [
     { value: 1, selected: false },
     { value: 3, selected: false },
@@ -42,8 +41,7 @@ class TimeComponent extends AbstractSetting {
   render() {
     const { scheduleStore } = this.props;
     const timezones = moment.tz.names();
-    //const localTimezone = moment.tz.guess();
-    //const defaultTime = moment().add(1, 'hours').format("hh:mm a");
+
     return (
       <div id="timeComponent">
         <div className="row">
