@@ -57,21 +57,12 @@ goToWait(){
    return mined;
 }
 
-async contractDeployed( transaction ){
-  const { web3Service } = this.props;
-  this.setState( Object.assign(this._state,{ transactionHash:transaction,notReady:true }) );
-  const mined = await this.awaitMined(transaction);
-  this.setState( Object.assign(this._state,{ transactionReceipt:mined }) );
-  this.setState( Object.assign(this._state,{ notReady:false }) );
-  const contract = await web3Service.fetchNewChild(transaction);
-  return contract;
-}
+
 
    async scheduleTransaction(){
      const { scheduleStore } = this.props;
      const { transactionStore } = this.props;
-     if(scheduleStore.isUsingTime){
-       await transactionStore.schedule(scheduleStore.toAddress,
+    const txRpt = await transactionStore.schedule(scheduleStore.toAddress,
                                   scheduleStore.yourData,
                                   scheduleStore.gasAmount,
                                   scheduleStore.gasPrice,
@@ -79,17 +70,9 @@ async contractDeployed( transaction ){
                                   scheduleStore.customWindow,
                                   scheduleStore.donation,
                                   scheduleStore.amountToSend,
-                                  true
+                                  scheduleStore.isUsingTime
                                 );
-     } else{
-      await transactionStore.schedule(scheduleStore.toAddress,
-                                 scheduleStore.yourData,
-                                 scheduleStore.gasAmount,
-                                 scheduleStore.gasPrice,
-                                 scheduleStore.donation,
-                                 scheduleStore.amountToSend,
-                                 scheduleStore);
-     }
+              return txRpt;                  
    }
 
 render() {
