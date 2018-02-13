@@ -17,9 +17,10 @@ class ScheduleWizard extends Component {
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.goToWait = this.goToWait.bind(this);
   }
-goToWait(){
 
-}
+  goToWait(){
+
+  }
   componentDidMount() {
     const { jQuery } = window;
 
@@ -50,10 +51,10 @@ goToWait(){
     }
    }
 
-   async scheduleTransaction(){
+   async scheduleTransaction() {
      const { scheduleStore } = this.props;
      const { transactionStore } = this.props;
-     if(scheduleStore.isUsingTime){
+     if(scheduleStore.isUsingTime) {
        await transactionStore.schedule(scheduleStore.toAddress,
                                   scheduleStore.yourData,
                                   scheduleStore.gasAmount,
@@ -64,7 +65,7 @@ goToWait(){
                                   scheduleStore.amountToSend,
                                   true
                                 );
-     } else{
+     } else {
       await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
                                  scheduleStore.gasAmount,

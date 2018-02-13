@@ -42,10 +42,10 @@ class TimeComponent extends AbstractSetting {
   render() {
     const { scheduleStore } = this.props;
     const timezones = moment.tz.names();
-  const localTimezone = moment.tz.guess();
-  const defaultTime = moment().add(1, 'hours').format("hh:mm a");
-  scheduleStore.timezone = localTimezone;
-  scheduleStore.transactionTime = defaultTime;
+    const localTimezone = moment.tz.guess();
+    const defaultTime = moment().add(1, 'hours').format("hh:mm a");
+    scheduleStore.timezone = localTimezone;
+    scheduleStore.transactionTime = defaultTime;
     return (
       <div id="timeComponent">
         <div className="row">
