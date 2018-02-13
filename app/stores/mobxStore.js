@@ -8,6 +8,7 @@ export default class mobxStore {
   @observable transactionTime = '';
   @observable executionWindow = '';
   @observable customWindow = '';
+  @observable donation = '';
 
 //BlockComponent
   @observable blockNumber = '';

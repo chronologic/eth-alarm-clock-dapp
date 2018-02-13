@@ -6,10 +6,12 @@ import { inject,observer } from 'mobx-react';
 @inject('transactionStore')
 @observer
 class ConfirmSettings extends Component {
+
   constructor(props){
     super(props);
   }
   state = {}
+
 
   render() {
     const { scheduleStore } = this.props;
@@ -68,7 +70,7 @@ class ConfirmSettings extends Component {
           </div>
         );
       }
-}
+  }
 
 ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any
