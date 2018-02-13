@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js';
 import { observable, computed } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;

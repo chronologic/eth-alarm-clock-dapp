@@ -92,13 +92,37 @@ class ScheduleWizard extends Component {
     }
   }
 
-  componentDidMount() {
-    const { jQuery } = window;
+async scheduleTransaction() {
+  const { scheduleStore } = this.props;
+  const { transactionStore } = this.props;
+  if(scheduleStore.isUsingTime) {
+    await transactionStore.schedule(scheduleStore.toAddress,
+                                 scheduleStore.yourData,
+                                 scheduleStore.gasAmount,
+                                 scheduleStore.gasPrice,
+                                 scheduleStore.executionWindow,
+                                 scheduleStore.customWindow,
+                                 scheduleStore.donation,
+                                 scheduleStore.amountToSend,
+                                 true
+                               );
+  } else {
+     await transactionStore.schedule(scheduleStore.toAddress,
+                                scheduleStore.yourData,
+                                scheduleStore.gasAmount,
+                                scheduleStore.gasPrice,
+                                scheduleStore.donation,
+                                scheduleStore.amountToSend,
+                                scheduleStore);
+    }
+  }
 
-    jQuery('#scheduleWizard').bootstrapWizard({
-      onTabShow: function (tab, navigation, index) {
-        var $total = navigation.find('li').length;
-        var $current = index + 1;
+componentDidMount() {
+  const { jQuery } = window;
+  jQuery('#scheduleWizard').bootstrapWizard({
+    onTabShow: function (tab, navigation, index) {
+      var $total = navigation.find('li').length;
+      var $current = index + 1;
 
         // If it's the last tab then hide the last button and show the finish instead
         if ($current >= $total) {

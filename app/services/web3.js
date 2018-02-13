@@ -1,4 +1,3 @@
-/* eslint-disable */
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
@@ -31,11 +30,8 @@ if (!this.initialized) {
 
 @action
 async trackTransaction(hash) {
-  let receipt;
-
-
-  if (!(receipt = await this.fetchReceipt(hash))) {
-      const txReceipt = new Promise((resolve, reject) => {
+  if (!(await this.fetchReceipt(hash))) {
+      const txReceipt = new Promise((resolve) => {
         setTimeout(async () => {
           resolve(await this.trackTransaction(hash));
         }, 2000);
