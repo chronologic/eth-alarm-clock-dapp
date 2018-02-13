@@ -9,10 +9,10 @@ class TimeNodeWallet extends Component {
 
   constructor(props) {
     super(props);
-    this.handleWalletFile = this.handleWalletFile.bind(this);
+    this.verifyKeystore = this.verifyKeystore.bind(this);
   }
 
-  handleWalletFile() {
+  verifyKeystore() {
     const file = this.walletFileRef.files[0];
     const password = this.passwdRef.value;
     const refreshParent = this.props.refreshParent;
@@ -22,10 +22,11 @@ class TimeNodeWallet extends Component {
       const reader = new FileReader();
       reader.onload = function() {
         const keystore = reader.result;
-        Cookies.set('keystore', keystore);
-        Cookies.set('password', password);
-        timeNodeStore.verifiedWallet = true;
-        refreshParent();
+        if (keystore && password) {
+          Cookies.set('verifiedWallet', true);
+          timeNodeStore.verifiedWallet = true;
+          refreshParent();
+        }
       }
       reader.readAsText(file, "utf-8");
     }
@@ -57,7 +58,7 @@ class TimeNodeWallet extends Component {
           <div className="col-md-12">
             <button className="btn btn-primary pull-right mr-4 px-5"
               type="button"
-              onClick={this.handleWalletFile} >Unlock</button>
+              onClick={this.verifyKeystore}>Unlock</button>
           </div>
         </div>
       </div>
