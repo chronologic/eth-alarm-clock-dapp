@@ -18,6 +18,5 @@ export const stores = {
   routing: routingStore,
   transactionStore,
   //scheduleStore
-  scheduleStore:scheduleStores,
-  services
+  scheduleStore:scheduleStores
 };

@@ -4,7 +4,7 @@ import Bb from 'bluebird';
 import AbstractSetting from '../AbstractSetting';
 
 @inject('scheduleStore')
-@inject('services')
+@inject('web3Service')
 @observer
 class BlockComponent extends AbstractSetting {
 
@@ -17,7 +17,7 @@ class BlockComponent extends AbstractSetting {
   }
 
   async componentDidMount(){
-    const { services: { web3Service: { web3 } } } = this.props;
+    const { web3Service: { web3 } } = this.props;
     this.state = {
       blockNumber : (await Bb.fromCallback( callback => web3.eth.getBlockNumber(callback) ) ).valueOf()
     }

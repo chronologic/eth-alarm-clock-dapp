@@ -70,13 +70,12 @@ class AbstractSetting extends Component {
 
   @action
   validate = (property) => () => {
-    const { props: { scheduleStore,services },_validationsErrors } = this;
+    const { props: { scheduleStore,web3Service },_validationsErrors } = this;
     const { _validations } = this;
     const { validator,errors } = this.validators[property];
     const value = scheduleStore[property];
     let Web3;
-    if(services){
-      const { web3Service } = services;
+    if(web3Service){
       const { web3 } = web3Service;
       Web3 = web3;
     }
@@ -103,7 +102,7 @@ class AbstractSetting extends Component {
 
 AbstractSetting.propTypes = {
   scheduleStore: PropTypes.any,
-  services: PropTypes.any,
+  web3Service: PropTypes.any,
   _validations: PropTypes.any,
   _validationsErrors: PropTypes.any
 };

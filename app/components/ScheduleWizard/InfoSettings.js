@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import AbstractSetting from './AbstractSetting';
 
 @inject('scheduleStore')
-@inject('services')
+@inject('web3Service')
 @observer
 class InfoSettings extends AbstractSetting {
     constructor (props) {
