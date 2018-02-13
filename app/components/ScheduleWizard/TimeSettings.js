@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import TimeComponent from './TimeSettings/TimeComponent';
 import BlockComponent from './TimeSettings/BlockComponent';
 import PropTypes from 'prop-types';
+import { observer,inject } from 'mobx-react';
 
+@inject('scheduleStore')
+@observer
 class TimeSettings extends Component {
 
   constructor(props) {
@@ -16,17 +19,16 @@ class TimeSettings extends Component {
     this.setState({
       isUsingTime: !this.state.isUsingTime
     });
-
   }
 
   render() {
-
+    const { scheduleStore } = this.props;
     let componentToRender = null;
     if (this.state.isUsingTime) {
-      componentToRender = <TimeComponent />;
+      componentToRender = <TimeComponent {...this.props}/>;
     } else {
-      componentToRender = <BlockComponent />;
-
+      scheduleStore.isUsingTime = false;
+      componentToRender = <BlockComponent {...this.props}/>;
     }
 
     return (
