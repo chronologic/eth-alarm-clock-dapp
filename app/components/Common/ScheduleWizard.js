@@ -5,12 +5,17 @@ import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
+import { observer, inject } from 'mobx-react';
 
+@inject('scheduleStore')
+@inject('transactionStore')
+@observer
 class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
+    this.scheduleTransaction = this.scheduleTransaction.bind(this);
   }
 
   _validations = {
@@ -91,9 +96,8 @@ class ScheduleWizard extends Component {
     }
   }
 
-async scheduleTransaction() {
-  const { scheduleStore } = this.props;
-  const { transactionStore } = this.props;
+  async scheduleTransaction() {
+  const { scheduleStore,transactionStore } = this.props;
   if(scheduleStore.isUsingTime) {
     await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
