@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { observable, computed } from 'mobx';
+import Bb from 'bluebird';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -183,7 +184,23 @@ export class TransactionStore {
     });
 
     if(which){
-    await this._eacScheduler.timeStampSchedule(
+    const timestampTx = await Bb.fromCallback(callback =>  this._eacScheduler.timeStampSchedule(
+          toAddress,
+          this._web3.web3.fromAscii(callData),
+          callGas,
+          callValue,
+          windowSize,
+          windowStart,
+          gasPrice,
+          donation,
+          payment,
+          requiredDeposit,
+          callback
+        ))
+        return timestampTx;
+    }
+
+    const blocknoTx = await Bb.fromCallback(callback => this._eacScheduler.blockSchedule(
         toAddress,
         this._web3.web3.fromAscii(callData),
         callGas,
@@ -193,25 +210,10 @@ export class TransactionStore {
         gasPrice,
         donation,
         payment,
-        requiredDeposit
-      )
-    }
-await this._eacScheduler.blockSchedule(
-    toAddress,
-    this._web3.web3.fromAscii(callData),
-    callGas,
-    callValue,
-    windowSize,
-    windowStart,
-    gasPrice,
-    donation,
-    payment,
-    requiredDeposit
-  )
-
-
-
-
+        requiredDeposit,
+        callback
+      ))
+      return blocknoTx;
 }
 
   }

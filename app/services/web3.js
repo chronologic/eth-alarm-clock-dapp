@@ -67,6 +67,7 @@ async fetchConfirmations(transaction) {
     }
   }
 
+
 @action
 async fetchBlockNumber() {
       const { web3 } = this;

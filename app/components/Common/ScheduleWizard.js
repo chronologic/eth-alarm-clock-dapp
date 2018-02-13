@@ -57,6 +57,16 @@ goToWait(){
    return mined;
 }
 
+async contractDeployed( transaction ){
+  const { web3Service } = this.props;
+  this.setState( Object.assign(this._state,{ transactionHash:transaction,notReady:true }) );
+  const mined = await this.awaitMined(transaction);
+  this.setState( Object.assign(this._state,{ transactionReceipt:mined }) );
+  this.setState( Object.assign(this._state,{ notReady:false }) );
+  const contract = await web3Service.fetchNewChild(transaction);
+  return contract;
+}
+
    async scheduleTransaction(){
      const { scheduleStore } = this.props;
      const { transactionStore } = this.props;
