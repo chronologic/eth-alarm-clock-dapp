@@ -24,6 +24,10 @@ class TimeComponent extends AbstractSetting {
     const { _validations,_validationsErrors } = this.props;
     this._validations = _validations.TimeSettings.TimeComponent;
     this._validationsErrors = _validationsErrors.TimeSettings.TimeComponent;
+
+    this.timeValidator = this.timeValidator.bind(this);
+    this.dateValidator = this.dateValidator.bind(this);
+    this.onRadioChange = this.onRadioChange.bind(this);
   }
 
   componentDidMount() {
@@ -102,6 +106,12 @@ class TimeComponent extends AbstractSetting {
     customWindow:this.integerValidator(),
   }
 
+  onRadioChange = (property) => (event) => {
+    const { scheduleStore } = this.props;
+    const { target } = event;
+    scheduleStore[property] = target.value;
+  }
+
   render() {
     const { scheduleStore } = this.props;
     const timezones = moment.tz.names();
@@ -163,9 +173,8 @@ class TimeComponent extends AbstractSetting {
             </div>
             <div data-toggle="buttons" className={"btn-group d-flex"+(_validations.executionWindow?"":" has-error")}>
               {this.state.execWindows.map((exeWind, index) =>
-                console.log(scheduleStore.executionWindow,exeWind.selected) ||
-                <label key={index} className={"btn btn-default w-100 " + (exeWind.selected ? 'active' : '')}>
-                  <input type="radio" name="exeWindOptions" value={scheduleStore.executionWindow} checked={scheduleStore.executionWindow==exeWind.selected} onBlur={this.validate('executionWindow')} onChange={this.onChange('executionWindow')} />{exeWind.value} min
+                <label key={index} className={"btn btn-default w-100 " + (exeWind.value==scheduleStore.executionWindow ? 'active' : '')}>
+                  <input type="radio" name="exeWindOptions" value={exeWind.value} checked={exeWind.value == scheduleStore.executionWindow} onBlur={this.validate('executionWindow')} onChange={this.onRadioChange('executionWindow')} />{exeWind.value} min
                 </label>
               )}
             </div>
