@@ -12,7 +12,7 @@ const routingStore = new RouterStore();
 const scheduleStores = new scheduleStore(false,scheduleStore);
 
 export const transactionStore = new TransactionStore(eacService, web3Service);
-export const timeNodeStore = new TimeNodeStore();
+export const timeNodeStore = new TimeNodeStore(eacService);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 //export const mobx_store = initStore()
