@@ -17,7 +17,9 @@ class ScheduleWizard extends Component {
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.goToWait = this.goToWait.bind(this);
   }
+goToWait(){
 
+}
   componentDidMount() {
     const { jQuery } = window;
 
@@ -52,7 +54,16 @@ class ScheduleWizard extends Component {
      const { scheduleStore } = this.props;
      const { transactionStore } = this.props;
      if(scheduleStore.isUsingTime){
-
+       await transactionStore.schedule(scheduleStore.toAddress,
+                                  scheduleStore.yourData,
+                                  scheduleStore.gasAmount,
+                                  scheduleStore.gasPrice,
+                                  scheduleStore.executionWindow,
+                                  scheduleStore.customWindow,
+                                  scheduleStore.donation,
+                                  scheduleStore.amountToSend,
+                                  true
+                                );
      } else{
       await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
@@ -60,7 +71,7 @@ class ScheduleWizard extends Component {
                                  scheduleStore.gasPrice,
                                  scheduleStore.donation,
                                  scheduleStore.amountToSend,
-                                 scheduleStore)
+                                 scheduleStore);
      }
    }
 
@@ -106,9 +117,9 @@ render() {
               </button>
             </li>
             <li className="next finish" style={{ display: 'none' }}>
-              <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
-                <span>Schedule</span>
-              </NavLink>
+            <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction}>
+              <span>Schedule</span>
+            </NavLink>
             </li>
             <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
