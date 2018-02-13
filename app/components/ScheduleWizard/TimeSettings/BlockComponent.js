@@ -27,7 +27,7 @@ class BlockComponent extends AbstractSetting {
   blockNumberValidator (){
     const { blockNumber } = this.state;
     return{
-      validator:(value,web3)=>{
+      validator:(value)=>{
         if(!Number(value) > 0)return 1;
         if(Number(value) <= Number(blockNumber))
           return 2;
