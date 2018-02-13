@@ -7,7 +7,7 @@ export default class TransactionsCompleted extends Component {
       <div>
         <h1 className="view-title">Transaction Scanner - Completed</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <div className="p-4">
+          <div className="tab-content p-4">
             <TransactionScanner showStatus={true} includeResolved={true} includeUnresolved={false} />
           </div>
         </div>

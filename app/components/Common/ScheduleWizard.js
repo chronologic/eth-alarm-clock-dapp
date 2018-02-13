@@ -12,7 +12,6 @@ class ScheduleWizard extends Component {
     super(props);
     this.state = {};
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
-    this.goToWait = this.goToWait.bind(this);
   }
 
   _validations = {
@@ -121,9 +120,6 @@ class ScheduleWizard extends Component {
     if(element){
       Scrollbar.init(element, options)
     }
-   }
-
-   goToWait(){
    }
 
   render() {

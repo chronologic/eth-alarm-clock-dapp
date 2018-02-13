@@ -82,7 +82,7 @@ class TransactionDetails extends Component {
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
 
     return (
-      <div>
+      <div className="tab-pane slide active show">
         <div className="row">
           <div className="col-md-8">
 

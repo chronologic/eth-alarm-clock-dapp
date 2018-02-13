@@ -90,7 +90,7 @@ class TransactionScanner extends Component {
 
   render() {
     return (
-      <div>
+      <div className="tab-pane slide active show">
         <TransactionsTable
           transactions={this.state.transactions}
           fetchingTransactions={this.state.fetchingTransactions}
