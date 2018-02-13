@@ -48,7 +48,7 @@ async trackTransaction(hash) {
       return receipt;
     }
   }
-  
+
 @action
 async fetchConfirmations(transaction) {
     const mined = await this.trackTransaction(transaction);
@@ -66,6 +66,14 @@ async fetchConfirmations(transaction) {
       return (block - mined.blockNumber);
     }
   }
+
+@action
+async fetchBlockNumber() {
+      const { web3 } = this;
+      const block = await Bb.fromCallback(callback =>
+        web3.eth.getBlockNumber(callback));
+      return block;
+    }
 
     @action
     async connect() {
