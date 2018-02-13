@@ -78,7 +78,7 @@ goToWait(){
 render() {
 
   return (
-    <div id="scheduleWizard">
+    <div id="scheduleWizard" className="subsection">
       <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
         <li className="col-md-3">
           <a data-toggle="tab" href="#tab1"  onClick={ this.initiateScrollbar }><i className="far fa-clock tab-icon"></i> <span>Date & Time</span></a>
