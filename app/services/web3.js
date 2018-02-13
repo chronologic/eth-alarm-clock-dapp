@@ -41,7 +41,7 @@ async trackTransaction(hash) {
         setTimeout(async () => {
           resolve(await that.trackTransaction(hash));
         }, 2000);
-        if (reject) console.log(reject);
+
       });
       return Promises;
     } else {
@@ -59,7 +59,7 @@ async fetchConfirmations(transaction) {
         setTimeout(async () => {
           resolve(await that.fetchConfirmations(transaction));
         }, 2000);
-        reject(console.log(reject.error));
+        reject();
       });
       return Promises;
     } else {
