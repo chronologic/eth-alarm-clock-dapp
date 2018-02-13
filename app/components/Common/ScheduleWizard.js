@@ -65,14 +65,15 @@ goToWait(){
     const txRpt = await transactionStore.schedule(scheduleStore.toAddress,
                                   scheduleStore.yourData,
                                   scheduleStore.gasAmount,
-                                  scheduleStore.gasPrice,
+                                  scheduleStore.amountToSend,
                                   scheduleStore.executionWindow,
                                   scheduleStore.customWindow,
-                                  scheduleStore.donation,
-                                  scheduleStore.amountToSend,
-                                  scheduleStore.isUsingTime
+                                  scheduleStore.gasPrice,
+                                  scheduleStore.timeBounty,
+                                  scheduleStore.deposit,
+                                  true
                                 );
-              return txRpt;                  
+              return txRpt;
    }
 
 render() {

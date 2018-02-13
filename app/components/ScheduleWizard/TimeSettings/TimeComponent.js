@@ -42,10 +42,8 @@ class TimeComponent extends AbstractSetting {
   render() {
     const { scheduleStore } = this.props;
     const timezones = moment.tz.names();
-  const localTimezone = moment.tz.guess();
-  const defaultTime = moment().add(1, 'hours').format("hh:mm a");
-  scheduleStore.timezone = localTimezone;
-  scheduleStore.transactionTime = defaultTime;
+    //const localTimezone = moment.tz.guess();
+    //const defaultTime = moment().add(1, 'hours').format("hh:mm a");
     return (
       <div id="timeComponent">
         <div className="row">
@@ -91,7 +89,7 @@ class TimeComponent extends AbstractSetting {
             <div className="btn-group d-flex" data-toggle="buttons">
               {this.state.execWindows.map((exeWind, index) =>
                 <label key={index} className={"btn btn-default w-100 " + (exeWind.selected ? 'active' : '')}>
-                  <input type="radio" name="exeWindOptions" value={scheduleStore.executionWindow} onChange={this.onChange('executionWindow')} defaultChecked={exeWind.selected}/>{exeWind.value} min
+                  <input type="radio" name="exeWindOptions" value={scheduleStore.executionWindow} onChange={this.onChange('executionWindow')} />{exeWind.value} min
                 </label>
               )}
             </div>
