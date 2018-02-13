@@ -60,8 +60,8 @@ class TimeComponent extends AbstractSetting {
     });
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
-      startDate:new Date(),
-      language:moment.locale()
+      startDate: new Date(),
+      language: moment.locale()
     });
     jQuery('#timezoneSelect').select2();
   }
