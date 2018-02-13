@@ -70,7 +70,7 @@ class TimeComponent extends AbstractSetting {
   timeValidator (){
     const { scheduleStore } = this.props;
     return{
-      validator:(value)=>{
+      validator: (value)=>{
         const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timezone);
          return newdate.isValid()?0:1
        },
@@ -83,7 +83,7 @@ class TimeComponent extends AbstractSetting {
   dateValidator (){
     const { scheduleStore } = this.props;
     return{
-      validator:(value)=>{
+      validator: (value)=>{
         const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timezone);
          return newdate.isValid()?0:1
        },
@@ -95,15 +95,15 @@ class TimeComponent extends AbstractSetting {
 
   validators = {
     timezone:{
-      validator:(value)=> typeof moment.tz.zone(value) == 'object'?0:1,
+      validator: (value)=> typeof moment.tz.zone(value) == 'object'?0:1,
       errors: [
         'Kindly indicate Valid Timezone'
       ]
     },
-    transactionDate:'',
-    transactionTime:'',
-    executionWindow:this.integerValidator(),
-    customWindow:this.integerValidator(),
+    transactionDate: '',
+    transactionTime: '',
+    executionWindow: this.integerValidator(),
+    customWindow: this.integerValidator(),
   }
 
   onRadioChange = (property) => (event) => {

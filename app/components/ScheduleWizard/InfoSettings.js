@@ -18,11 +18,11 @@ class InfoSettings extends AbstractSetting {
     }
 
     validators = {
-      toAddress:this.ethereumAddressValidator(),
-      gasAmount:this.integerValidator(),
-      amountToSend:this.decimalValidator(),
-      gasPrice:this.integerValidator(),
-      yourData:{
+      toAddress: this.ethereumAddressValidator(),
+      gasAmount: this.integerValidator(),
+      amountToSend: this.decimalValidator(),
+      gasPrice: this.integerValidator(),
+      yourData: {
         validator: value => typeof value === 'string'?0:1,
         errors: [
           'Kindly provide valid input Data'

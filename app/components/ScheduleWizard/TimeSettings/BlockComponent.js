@@ -10,7 +10,7 @@ class BlockComponent extends AbstractSetting {
 
   constructor (props) {
     super(props);
-    const { _validations,_validationsErrors } = this.props;
+    const { _validations,_validationsErrors } = this.props ;
     this._validations = _validations.TimeSettings.BlockComponent;
     this._validationsErrors = _validationsErrors.TimeSettings.BlockComponent;
     this.blockNumberValidator = this.blockNumberValidator.bind(this);
@@ -44,7 +44,7 @@ class BlockComponent extends AbstractSetting {
   }
 
   validators = {
-    blockNumber:''
+    blockNumber: ''
   }
 
   render() {

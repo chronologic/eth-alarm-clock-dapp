@@ -15,48 +15,48 @@ class ScheduleWizard extends Component {
   }
 
   _validations = {
-    TimeSettings:{
-      TimeComponent:{
-        timezone:true,
-        transactionDate:true,
-        transactionTime:true,
-        executionWindow:true,
-        customWindow:true,
+    TimeSettings: {
+      TimeComponent: {
+        timezone: true,
+        transactionDate: true,
+        transactionTime: true,
+        executionWindow: true,
+        customWindow: true,
       },
-      BlockComponent:{
-        blockNumber:true,
+      BlockComponent: {
+        blockNumber: true,
       }
     },
-    BountySettings:{
-      requireDeposit:true,
-      timeBounty:true,
-      deposit:true
+    BountySettings: {
+      requireDeposit: true,
+      timeBounty: true,
+      deposit: true
     },
-    InfoSettings:{
-      toAddress:true,
-      gasAmount:true,
-      amountToSend:true,
-      gasPrice:true,
-      yourData:true
+    InfoSettings: {
+      toAddress: true,
+      gasAmount: true,
+      amountToSend: true,
+      gasPrice: true,
+      yourData: true
     },
-    ConfirmSettings:{
-      timezone:true,
-      transactionDate:true,
-      transactionTime:true,
-      executionWindow:true,
-      customWindow:true,
+    ConfirmSettings: {
+      timezone: true,
+      transactionDate: true,
+      transactionTime: true,
+      executionWindow: true,
+      customWindow: true,
 
-      blockNumber:true,
+      blockNumber: true,
 
-      requireDeposit:true,
-      timeBounty:true,
-      deposit:true,
+      requireDeposit: true,
+      timeBounty: true,
+      deposit: true,
 
-      toAddress:true,
-      gasAmount:true,
-      amountToSend:true,
-      gasPrice:true,
-      yourData:true,
+      toAddress: true,
+      gasAmount: true,
+      amountToSend: true,
+      gasPrice: true,
+      yourData: true,
     },
     Errors:{
       numeric:'Please enter valid value/amount',

@@ -16,7 +16,7 @@ class AbstractSetting extends Component {
   integerValidator (){
     const { _validations } = this.props;
     return{
-      validator:(value)=> {
+      validator: (value)=> {
         if(!new RegExp('^\\d+$').test(value))return 1
         if(!Number(value) > 0)return 2
         return 0;
@@ -31,7 +31,7 @@ class AbstractSetting extends Component {
   decimalValidator (){
     const { _validations } = this.props;
     return{
-      validator:(value)=> {
+      validator: (value)=> {
         if(!new RegExp('^\\d+\\.?\\d*$').test(value))return 1
         if(!Number(value) > 0)return 2
         return 0;
@@ -45,7 +45,7 @@ class AbstractSetting extends Component {
 
   booleanValidator (){
     return{
-      validator:(value)=> {
+      validator: (value)=> {
         if(!value && value !== true) return 1;
         return 0;
       },
@@ -57,7 +57,7 @@ class AbstractSetting extends Component {
 
   ethereumAddressValidator(){
       return{
-        validator:(value,web3)=>web3.isAddress(value)?0:1,
+        validator: (value,web3)=>web3.isAddress(value)?0:1,
         errors: [
           'Kindly provide valid address'
         ]
