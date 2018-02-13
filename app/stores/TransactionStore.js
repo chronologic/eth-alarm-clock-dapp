@@ -176,14 +176,14 @@ export class TransactionStore {
       new BigNumber(payment)
     )
 
-  await this._eacScheduler.initSender({
+    await this._eacScheduler.initSender ({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
     });
 
-    if(timestamp){
-    await this._eacScheduler.timeStampSchedule(
+    if(timestamp) {
+      await this._eacScheduler.timeStampSchedule (
         toAddress,
         this._web3.web3.fromAscii(callData),
         callGas,
@@ -196,7 +196,8 @@ export class TransactionStore {
         requiredDeposit
       )
     }
-await this._eacScheduler.blockSchedule(
+
+    await this._eacScheduler.blockSchedule (
     toAddress,
     this._web3.web3.fromAscii(callData),
     callGas,
@@ -207,11 +208,7 @@ await this._eacScheduler.blockSchedule(
     donation,
     payment,
     requiredDeposit
-  )
-
-
-
-
+    )
 }
 
   }
