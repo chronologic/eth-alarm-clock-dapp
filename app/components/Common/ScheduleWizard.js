@@ -66,29 +66,29 @@ class ScheduleWizard extends Component {
   }
 
   _validationsErrors = {
-    TimeSettings:{
-      TimeComponent:{
-        timezone:'',
-        transactionDate:'',
-        transactionTime:'',
-        executionWindow:'',
-        customWindow:'',
+    TimeSettings: {
+      TimeComponent: {
+        timezone: '',
+        transactionDate: '',
+        transactionTime: '',
+        executionWindow: '',
+        customWindow: '',
       },
-      BlockComponent:{
-        blockNumber:'',
+      BlockComponent: {
+        blockNumber: '',
       }
     },
-    BountySettings:{
-      requireDeposit:'',
-      timeBounty:'',
-      deposit:''
+    BountySettings: {
+      requireDeposit: '',
+      timeBounty: '',
+      deposit: ''
     },
-    InfoSettings:{
-      toAddress:'',
-      gasAmount:'',
-      amountToSend:'',
-      gasPrice:'',
-      yourData:''
+    InfoSettings: {
+      toAddress: '',
+      gasAmount: '',
+      amountToSend: '',
+      gasPrice: '',
+      yourData: ''
     }
   }
 
