@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { observable, computed } from 'mobx';
-import Bb from 'bluebird';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -168,7 +167,7 @@ export class TransactionStore {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
-  async schedule(toAddress, callData, callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, which) {
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, timestamp) {
     const endowment = await this._eacScheduler.calcEndowment(
       new BigNumber(callGas),
       new BigNumber(callValue),
@@ -177,30 +176,14 @@ export class TransactionStore {
       new BigNumber(payment)
     )
 
-  await this._eacScheduler.initSender({
+    await this._eacScheduler.initSender ({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
     });
 
-    if(which){
-    const timestampTx = await Bb.fromCallback(callback =>  this._eacScheduler.timeStampSchedule(
-          toAddress,
-          this._web3.web3.fromAscii(callData),
-          callGas,
-          callValue,
-          windowSize,
-          windowStart,
-          gasPrice,
-          donation,
-          payment,
-          requiredDeposit,
-          callback
-        ))
-        return timestampTx;
-    }
-
-    const blocknoTx = await Bb.fromCallback(callback => this._eacScheduler.blockSchedule(
+    if(timestamp) {
+      await this._eacScheduler.timeStampSchedule (
         toAddress,
         this._web3.web3.fromAscii(callData),
         callGas,
@@ -210,10 +193,22 @@ export class TransactionStore {
         gasPrice,
         donation,
         payment,
-        requiredDeposit,
-        callback
-      ))
-      return blocknoTx;
+        requiredDeposit
+      )
+    }
+
+    await this._eacScheduler.blockSchedule (
+    toAddress,
+    this._web3.web3.fromAscii(callData),
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    donation,
+    payment,
+    requiredDeposit
+    )
 }
 
   }
