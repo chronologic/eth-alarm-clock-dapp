@@ -9,6 +9,7 @@ import { inject,observer } from 'mobx-react';
 
 @inject('scheduleStore')
 @inject('transactionStore')
+@inject('web3Service')
 @observer
 class ScheduleWizard extends Component {
   constructor(props){
@@ -49,6 +50,12 @@ goToWait(){
       Scrollbar.init(element, options)
     }
    }
+
+   async awaitMined (transaction){
+   const { web3Service } = this.props;
+   const mined = await web3Service.trackTransaction(transaction);
+   return mined;
+}
 
    async scheduleTransaction(){
      const { scheduleStore } = this.props;

@@ -17,6 +17,6 @@ export const history = syncHistoryWithStore(browserHistory, routingStore);
 export const stores = {
   routing: routingStore,
   transactionStore,
-  //scheduleStore
+  web3Service,
   scheduleStore:scheduleStores
 };
