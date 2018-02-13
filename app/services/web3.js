@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
@@ -29,6 +30,25 @@ export default class Web3Service {
         }
     }
 
+@action
+async trackTransaction(hash) {
+    // let {deployerInstance,trackTransaction} = this;
+    let receipt;
+    const that = this;
+
+    if (!(receipt = await this.fetchReceipt(hash))) {
+      const Promises = new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          resolve(await that.trackTransaction(hash));
+        }, 2000);
+        if (reject) console.log(reject);
+      });
+      return Promises;
+    } else {
+      return receipt;
+    }
+  }
+  
 @action
 async fetchConfirmations(transaction) {
     const mined = await this.trackTransaction(transaction);
