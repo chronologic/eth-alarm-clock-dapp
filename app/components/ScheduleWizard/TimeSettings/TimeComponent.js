@@ -35,8 +35,8 @@ class TimeComponent extends AbstractSetting {
 
     const { scheduleStore } = this.props;
     const that = this;
-    const defaultTime = moment().add(1, 'hours').format("hh:mm");
-    const defaultDate = moment().add(1, 'hours').format("MM/DD/YYYY");
+    const defaultTime = moment().add(1, 'hours').format('HH:mm');
+    const defaultDate = moment().add(1, 'hours').toDate().toLocaleDateString();
     const localTimezone = moment.tz.guess();
     scheduleStore.timezone = scheduleStore.timezone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
@@ -48,7 +48,9 @@ class TimeComponent extends AbstractSetting {
     jQuery('#timepicker').val(scheduleStore.transactionTime);
     jQuery('#timezoneSelect').val(scheduleStore.timezone);
 
-    jQuery('#timepicker').timepicker().on('show.timepicker', function() {
+    jQuery('#timepicker').timepicker({
+      showMeridian: false,
+    }).on('show.timepicker', function() {
         const widget = jQuery('.bootstrap-timepicker-widget');
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
@@ -58,7 +60,8 @@ class TimeComponent extends AbstractSetting {
     });
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
-      startDate:new Date()
+      startDate:new Date(),
+      language:moment.locale()
     });
     jQuery('#timezoneSelect').select2();
   }
