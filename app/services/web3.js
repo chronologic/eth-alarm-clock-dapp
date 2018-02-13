@@ -29,6 +29,24 @@ export default class Web3Service {
         }
     }
 
+@action
+async fetchConfirmations(transaction) {
+    const mined = await this.trackTransaction(transaction);
+    const block = await this.fetchBlockNumber();
+    const that = this;
+    if (!mined.blockNumber) {
+      const Promises = new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          resolve(await that.fetchConfirmations(transaction));
+        }, 2000);
+        reject(console.log(reject.error));
+      });
+      return Promises;
+    } else {
+      return (block - mined.blockNumber);
+    }
+  }
+
     @action
     async connect() {
         let { web3 } = this;
