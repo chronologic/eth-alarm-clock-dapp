@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { inject, observer } from 'mobx-react';
 
+@inject('timeNodeStore')
+@observer
 class TimeNodeWallet extends Component {
   render() {
     return (
@@ -22,5 +26,9 @@ class TimeNodeWallet extends Component {
     );
   }
 }
+
+TimeNodeWallet.propTypes = {
+  timeNodeStore: PropTypes.any
+};
 
 export default TimeNodeWallet;

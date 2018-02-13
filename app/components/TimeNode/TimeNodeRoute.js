@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
+import PropTypes from 'prop-types';
 import TimeNodeMain from './TimeNodeMain';
+import TimeNodeWallet from './TimeNodeWallet';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
+@inject('timeNodeStore')
+@observer
 class TimeNodeRoute extends Component {
   render() {
     return (
       <div className="container-fluid padding-25 sm-padding-10 subsection">
         <h1 className="view-title">TimeNode&nbsp;<span className="view-subtitle">x09s0a9sx09</span></h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <TimeNodeMain/>
+          {this.props.timeNodeStore.wallet ? <TimeNodeMain/> : <TimeNodeWallet/>}
           <div className="p-4">
             <div className="row">
               <PoweredByEAC className="col-md-2 mt-2" />
@@ -19,5 +24,9 @@ class TimeNodeRoute extends Component {
     );
   }
 }
+
+TimeNodeRoute.propTypes = {
+  timeNodeStore: PropTypes.any
+};
 
 export default TimeNodeRoute;
