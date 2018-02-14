@@ -22,7 +22,7 @@ export default class TimeNodeStore {
 
     const web3 = this._web3Service.web3;
 
-    const alarmClient = this._eacService.alarmClient;
+    const AlarmClient = this._eacService.AlarmClient;
 
     const program = {
       provider: 'http://localhost:8545',
@@ -36,7 +36,7 @@ export default class TimeNodeStore {
 
     const logger = new MemoryLogger(program.logLevel, logsArrayUpdated);
 
-    await alarmClient(
+    await AlarmClient(
       web3,
       this._eacService,
       program.provider,
