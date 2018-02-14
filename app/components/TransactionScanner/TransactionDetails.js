@@ -26,6 +26,7 @@ class TransactionDetails extends ScrollbarComponent {
     super(...arguments);
 
     this.state = INITIAL_STATE;
+    this.cancelTransaction = this.cancelTransaction.bind(this);
   }
 
   getExecutedEvents(requestLib) {
@@ -75,6 +76,12 @@ class TransactionDetails extends ScrollbarComponent {
     }
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
     this.setState( { isFrozen: isFrozen || transaction.isCancelled } );
+  }
+
+  async cancelTransaction(){
+    const { transactionStore } = this.props;
+    const { transaction } = this.state;
+    return await transactionStore.cancel(transaction);
   }
 
   async componentWillMount() {
@@ -156,7 +163,7 @@ class TransactionDetails extends ScrollbarComponent {
             <div className="footer-buttons col-md-10">
               <ul className="pager wizard no-style">
                 <li className="next">
-                  <button className="btn btn-danger btn-cons pull-right" disabled={isFrozen !== false} onClick="" type="button">
+                  <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
                     <span>Cancel</span>
                   </button>
                 </li>

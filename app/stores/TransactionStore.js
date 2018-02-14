@@ -171,6 +171,10 @@ export class TransactionStore {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
+  async cancel(transaction,txParameters) {
+    return await transaction.cancel(txParameters);
+  }
+
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, timestamp) {
     const endowment = await this._eacScheduler.calcEndowment(
       new BigNumber(callGas),
