@@ -19,6 +19,10 @@ class ScrollbarComponent extends Component {
      this.initiateScrollbar();
    }
 
+   componentWillUnmount() {
+     Scrollbar.destroy();
+   }
+
 }
 
 export default ScrollbarComponent;
