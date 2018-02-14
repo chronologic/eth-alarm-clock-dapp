@@ -82,11 +82,11 @@ class BlockComponent extends AbstractSetting {
                 }
             </div>
             <div className="col-md-4">
-              <div className={"form-group form-group-default required" + (_validations.blockNumber ? "" : " has-error")}>
+              <div className={"form-group form-group-default required" + (_validations.blockSize ? "" : " has-error")}>
                 <label>Window Size</label>
                 <input type="text" placeholder="Enter window size" value={scheduleStore.blockSize} onBlur={this.validate('blockSize')} onChange={this.onChange('blockSize')} className="form-control"></input>
               </div>
-              {!_validations.blockNumber &&
+              {!_validations.blockSize &&
                 <label className="error">{_validationsErrors.blockSize}</label>
               }
             </div>
