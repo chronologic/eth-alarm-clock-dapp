@@ -17,6 +17,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 @inject('eacService')
+@inject('web3Service')
 class TransactionDetails extends ScrollbarComponent {
   state = INITIAL_STATE;
 
@@ -88,6 +89,13 @@ class TransactionDetails extends ScrollbarComponent {
     await this.fetchData();
   }
 
+  isOwner( transaction){
+    const { owner } = transaction;
+    const { web3Service: { eth: { accounts } } } = this.props;
+    const isOwner = accounts[0] == owner;
+    return isOwner;
+  }
+
   componentDidMount() {
     super.componentDidMount();
     this._isMounted = true;
@@ -102,6 +110,7 @@ class TransactionDetails extends ScrollbarComponent {
     this.getFrozenStatus();
     const { callData, executedAt, isTimestamp, status, transaction, isFrozen } = this.state;
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
+    const isOwner = this.isOwner(transaction);
 
     return (
       <div className="tab-pane slide active show">
@@ -158,7 +167,7 @@ class TransactionDetails extends ScrollbarComponent {
             </table>
           </div>
         </div>
-        { !isFrozen &&
+        { isOwner && !isFrozen &&
           <div className="row">
             <div className="footer-buttons col-md-10">
               <ul className="pager wizard no-style">
