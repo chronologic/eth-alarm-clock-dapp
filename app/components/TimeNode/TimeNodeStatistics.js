@@ -21,19 +21,19 @@ class TimeNodeStatistics extends Component {
   }
 
   startTimeNode() {
-    this.props.timeNodeStore.start();
+    this.props.timeNodeStore.startScanning();
   }
 
   stopTimeNode() {
-    this.props.timeNodeStore.stop();
+    this.props.timeNodeStore.stopScanning();
   }
 
   render() {
     return (
       <div id="timeNodeStatistics">
         <h2 className="py-4">
-          Your TimeNode is currently {this.props.timeNodeStore.started ? 'running' : 'stopped'}
-          <span className="ml-2">{this.props.timeNodeStore.started ? this.getStopButton() : this.getStartButton()}</span>
+          Your TimeNode is currently {this.props.timeNodeStore.scanningStarted ? 'running' : 'stopped'}
+          <span className="ml-2">{this.props.timeNodeStore.scanningStarted ? this.getStopButton() : this.getStartButton()}</span>
         </h2>
 
         <div className="row">
