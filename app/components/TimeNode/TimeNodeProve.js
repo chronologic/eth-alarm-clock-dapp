@@ -1,6 +1,32 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { inject, observer } from 'mobx-react';
+import Cookies from 'js-cookie';
 
+@inject('timeNodeStore')
+@observer
 class TimeNodeProve extends Component {
+
+  constructor(props) {
+    super(props);
+    this.verifyDayTokens = this.verifyDayTokens.bind(this);
+  }
+
+  verifyDayTokens() {
+    const signature = this.signature.value;
+    const ethAddress = this.ethAddress.value;
+    const refreshParent = this.props.refreshParent;
+    const timeNodeStore = this.props.timeNodeStore;
+
+    // TEMPORARY
+    // Replace this logic with a proper signature check
+    if (signature && ethAddress) {
+      Cookies.set('hasDayTokens', true);
+      timeNodeStore.hasDayTokens = true;
+      refreshParent();
+    }
+  }
+
   render() {
     return (
       <div id="timeNodeProve" className="tab-content">
@@ -21,12 +47,18 @@ class TimeNodeProve extends Component {
             <div className="col-md-6">
               <div className="form-group form-group-default">
                 <label>Your ETH Address Holding Day</label>
-                <input type="text" placeholder="Enter Your ETH Address" className="form-control"></input>
+                <input type="text"
+                  placeholder="Enter Your ETH Address"
+                  className="form-control"
+                  ref={(el) => this.ethAddress = el} />
               </div>
 
               <div className="form-group form-group-default">
                 <label>Signature from MyEtherWallet</label>
-                <input type="text" placeholder="Enter Your Signature" className="form-control"></input>
+                <input type="text"
+                  placeholder="Enter Your Signature"
+                  className="form-control"
+                  ref={(el) => this.signature = el} />
               </div>
             </div>
 
@@ -35,7 +67,9 @@ class TimeNodeProve extends Component {
 
         <div className="row">
           <div className="col-md-12">
-            <button className="btn btn-primary pull-right mr-4 px-5" type="button">Verify</button>
+            <button className="btn btn-primary pull-right mr-4 px-5" 
+              type="button"
+              onClick={this.verifyDayTokens}>Verify</button>
           </div>
         </div>
 
@@ -43,5 +77,10 @@ class TimeNodeProve extends Component {
     );
   }
 }
+
+TimeNodeProve.propTypes = {
+  timeNodeStore: PropTypes.any,
+  refreshParent: PropTypes.any
+};
 
 export default TimeNodeProve;
