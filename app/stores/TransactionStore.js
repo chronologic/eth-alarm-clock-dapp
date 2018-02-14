@@ -158,7 +158,7 @@ export class TransactionStore {
   }
 
   async getTransactionByAddress(address) {
-    const txRequest = this._eac.transactionRequest(address, this._web3);
+    const txRequest = await this._eac.transactionRequest(address, this._web3);
 
     return txRequest;
   }
