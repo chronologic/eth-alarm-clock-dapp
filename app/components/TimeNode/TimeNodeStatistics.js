@@ -1,10 +1,40 @@
 import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
+import PropTypes from 'prop-types';
 
+@inject('timeNodeStore')
+@observer
 class TimeNodeStatistics extends Component {
+  constructor() {
+    super();
+
+    this.startTimeNode = this.startTimeNode.bind(this);
+    this.stopTimeNode = this.stopTimeNode.bind(this);
+  }
+
+  getStopButton() {
+    return <button className="btn btn-danger" onClick={this.stopTimeNode}>Stop</button>;
+  }
+
+  getStartButton() {
+    return <button className="btn btn-primary" onClick={this.startTimeNode}>Start</button>;
+  }
+
+  startTimeNode() {
+    this.props.timeNodeStore.startScanning();
+  }
+
+  stopTimeNode() {
+    this.props.timeNodeStore.stopScanning();
+  }
+
   render() {
     return (
       <div id="timeNodeStatistics">
-        <h2 className="py-4">Your TimeNode is currently running <button className="btn btn-danger">Stop</button></h2>
+        <h2 className="py-4">
+          Your TimeNode is currently {this.props.timeNodeStore.scanningStarted ? 'running' : 'stopped'}
+          <span className="ml-2">{this.props.timeNodeStore.scanningStarted ? this.getStopButton() : this.getStartButton()}</span>
+        </h2>
 
         <div className="row">
 
@@ -75,5 +105,9 @@ class TimeNodeStatistics extends Component {
     );
   }
 }
+
+TimeNodeStatistics.propTypes = {
+  timeNodeStore: PropTypes.any
+};
 
 export default TimeNodeStatistics;

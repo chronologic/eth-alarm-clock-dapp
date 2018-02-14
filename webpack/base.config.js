@@ -23,6 +23,11 @@ module.exports = {
     filename: './js/app.bundle.js'
   },
 
+  node: {
+    fs: 'empty',
+    repl: 'empty'
+  },
+
   module: {
 
     rules: [
