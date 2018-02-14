@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
+import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
@@ -16,7 +17,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 @inject('eacService')
-class TransactionDetails extends Component {
+class TransactionDetails extends ScrollbarComponent {
   state = INITIAL_STATE;
 
   _isMounted = false;
@@ -70,10 +71,12 @@ class TransactionDetails extends Component {
   }
 
   componentDidMount() {
+    super.componentDidMount();
     this._isMounted = true;
   }
 
   componentWillUnmount() {
+    super.componentWillUnmount();
     this._isMounted = false;
   }
 
