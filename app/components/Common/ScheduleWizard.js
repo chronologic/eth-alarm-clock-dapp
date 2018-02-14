@@ -97,8 +97,7 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
-  const { scheduleStore,transactionStore } = this.props;
-  if(scheduleStore.isUsingTime) {
+    const { scheduleStore,transactionStore } = this.props;
     await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
                                  scheduleStore.gasAmount,
@@ -107,17 +106,8 @@ class ScheduleWizard extends Component {
                                  scheduleStore.customWindow,
                                  scheduleStore.donation,
                                  scheduleStore.amountToSend,
-                                 true
+                                 scheduleStore.isUsingTime
                                );
-  } else {
-     await transactionStore.schedule(scheduleStore.toAddress,
-                                scheduleStore.yourData,
-                                scheduleStore.gasAmount,
-                                scheduleStore.gasPrice,
-                                scheduleStore.donation,
-                                scheduleStore.amountToSend,
-                                scheduleStore);
-    }
   }
 
 componentDidMount() {

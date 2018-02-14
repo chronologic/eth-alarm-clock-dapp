@@ -56,7 +56,7 @@ class BlockComponent extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.blockNumber?"":" has-error")}>
                 <label>Block Number</label>
-                <input type="text" placeholder="Enter a block number" value={scheduleStore.blockNumber} onBlur={this.validate('blockNumber')} onChange={this.onChange('blockNumber')} className="form-control"></input>
+                <input type="number" placeholder="Enter a block number" value={scheduleStore.blockNumber} onBlur={this.validate('blockNumber')} onChange={this.onChange('blockNumber')} className="form-control"></input>
               </div>
               {!_validations.blockNumber &&
                 <label className="error">{_validationsErrors.blockNumber}</label>
