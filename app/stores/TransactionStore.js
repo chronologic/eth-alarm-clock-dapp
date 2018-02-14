@@ -61,7 +61,7 @@ export class TransactionStore {
     await this._web3.connect();
   }
 
-  async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }) {
+  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
     const requestFactory = await this._eac.requestFactory();
 
     let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
@@ -80,7 +80,7 @@ export class TransactionStore {
     }
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved }) {
+  async queryTransactions( { transactions, offset, limit, resolved } ) {
     const processed = [];
 
     for (let transaction of transactions) {
@@ -105,16 +105,16 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered({ startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock });
+  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
+    let transactions = await this.getTransactions( { startBlock, endBlock } );
 
     if (typeof(resolved) !== 'undefined') {
-      return this.queryTransactions({
+      return this.queryTransactions( {
         transactions,
         offset,
         limit,
         resolved
-      });
+      } );
     }
 
     const total = transactions.length;
@@ -184,11 +184,11 @@ export class TransactionStore {
       new BigNumber(payment)
     )
 
-    await this._eacScheduler.initSender ({
+    await this._eacScheduler.initSender ( {
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
-    });
+    } );
 
     if(timestamp) {
       await this._eacScheduler.timeStampSchedule (

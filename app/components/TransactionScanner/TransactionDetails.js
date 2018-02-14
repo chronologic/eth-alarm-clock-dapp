@@ -68,7 +68,7 @@ class TransactionDetails extends ScrollbarComponent {
     } );
   }
 
-  async getFrozenStatus(){
+  async getFrozenStatus() {
     const { transactionStore } = this.props;
     const { transaction } = this.state;
     if (!transaction || !transaction.inFreezePeriod) {
