@@ -168,14 +168,14 @@ export class TransactionStore {
   }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, isTimestamp) {
-    const endowment = await this._eacScheduler.calcEndowment(
+ 
+    const endowment = await this._eac.Util.calcEndowment(
       new BigNumber(callGas),
       new BigNumber(callValue),
       new BigNumber(gasPrice),
       new BigNumber(donation),
       new BigNumber(payment)
     )
-
     await this._eacScheduler.initSender ({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
@@ -183,7 +183,22 @@ export class TransactionStore {
     });
 
     if(isTimestamp) {
-      await this._eacScheduler.timeStampSchedule (
+        const receipt = await this._eacScheduler.timeStampSchedule (
+          toAddress,
+          this._web3.web3.fromAscii(callData),
+          callGas,
+          callValue,
+          windowSize,
+          windowStart,
+          gasPrice,
+          donation,
+          payment,
+          requiredDeposit
+      )
+        return receipt;
+    }
+
+      const receipt = await this._eacScheduler.blockSchedule (
         toAddress,
         this._web3.web3.fromAscii(callData),
         callGas,
@@ -194,21 +209,8 @@ export class TransactionStore {
         donation,
         payment,
         requiredDeposit
-      )
-    }
-
-    await this._eacScheduler.blockSchedule (
-    toAddress,
-    this._web3.web3.fromAscii(callData),
-    callGas,
-    callValue,
-    windowSize,
-    windowStart,
-    gasPrice,
-    donation,
-    payment,
-    requiredDeposit
     )
+      return receipt;
 }
 
   }
