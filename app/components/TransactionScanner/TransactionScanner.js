@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject } from 'mobx-react';
 import PropTypes from 'prop-types';
