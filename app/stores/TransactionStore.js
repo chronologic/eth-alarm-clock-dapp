@@ -203,8 +203,7 @@ export class TransactionStore {
         payment,
         requiredDeposit
       )
-    }
-    else{
+    } else {
       await this._eacScheduler.blockSchedule (
         toAddress,
         this._web3.web3.fromAscii(callData),

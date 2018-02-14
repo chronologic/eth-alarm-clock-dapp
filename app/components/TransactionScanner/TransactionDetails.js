@@ -58,27 +58,27 @@ class TransactionDetails extends ScrollbarComponent {
       executedAt = events[0].transactionHash;
     }
 
-    this.setState({
+    this.setState( {
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
       status: await transactionStore.getTxStatus(transaction),
       transaction,
       executedAt,
       isFrozen: ''
-    });
+    } );
   }
 
   async getFrozenStatus(){
     const { transactionStore } = this.props;
     const { transaction } = this.state;
-    if(!transaction || !transaction.inFreezePeriod) {
+    if (!transaction || !transaction.inFreezePeriod) {
       return;
     }
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
     this.setState( { isFrozen: isFrozen || transaction.isCancelled } );
   }
 
-  async cancelTransaction(){
+  async cancelTransaction() {
     const { transactionStore } = this.props;
     const { transaction } = this.state;
     return await transactionStore.cancel(transaction);
