@@ -76,6 +76,7 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   componentWillUnmount() {
+    super.componentWillUnmount();
     this._isMounted = false;
   }
 
