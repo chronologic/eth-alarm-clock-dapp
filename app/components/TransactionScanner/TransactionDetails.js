@@ -86,7 +86,7 @@ class TransactionDetails extends ScrollbarComponent {
     return (
       <div className="tab-pane slide active show">
         <div className="row">
-          <div className="col-md-8">
+          <div className="col-md-10">
 
             <table className="table">
               <tbody>
@@ -136,6 +136,17 @@ class TransactionDetails extends ScrollbarComponent {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+        <div className="row">
+          <div className="footer-buttons col-md-10">
+            <ul className="pager wizard no-style">
+              <li className="next">
+                <button className="btn btn-danger btn-cons pull-right" onClick="" type="button">
+                  <span>Cancel</span>
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="row">
