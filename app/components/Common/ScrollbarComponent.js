@@ -2,20 +2,20 @@ import { Component } from 'react';
 import Scrollbar from 'smooth-scrollbar';
 
 class ScrollbarComponent extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
   }
 
-  initiateScrollbar(){
+  initiateScrollbar() {
     const options = {};
     const element = document.querySelector('.tab-pane.active');
-    if(element){
+    if (element) {
       Scrollbar.init(element, options)
     }
    }
 
-   componentDidMount(){
+   componentDidMount() {
      this.initiateScrollbar();
    }
 
