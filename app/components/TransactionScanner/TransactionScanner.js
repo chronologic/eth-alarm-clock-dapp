@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject } from 'mobx-react';
 import PropTypes from 'prop-types';
+import ScrollbarComponent from '../Common/ScrollbarComponent';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
 const INITIAL_STATE = {
@@ -13,7 +14,7 @@ const INITIAL_STATE = {
 };
 
 @inject('transactionStore')
-class TransactionScanner extends Component {
+class TransactionScanner extends ScrollbarComponent {
   state = INITIAL_STATE
 
   _isMounted = false;
@@ -48,10 +49,12 @@ class TransactionScanner extends Component {
   }
 
   componentWillUnmount() {
+    super.componentWillUnmount();
     this._isMounted = false;
   }
 
   componentDidMount() {
+    super.componentDidMount();
     this._isMounted = true;
   }
 
