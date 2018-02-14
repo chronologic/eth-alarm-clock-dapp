@@ -139,17 +139,6 @@ class TransactionDetails extends ScrollbarComponent {
           </div>
         </div>
         <div className="row">
-          <div className="footer-buttons col-md-8">
-            <ul className="pager wizard no-style">
-              <li className="next">
-                <button className="btn btn-danger btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                  <span>Cancel</span>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="row">
           <PoweredByEAC className="col-md-2 mt-2" />
         </div>
       </div>
