@@ -157,14 +157,18 @@ export class TransactionStore {
     return executionWindowClosed && !transaction.wasCalled;
   }
 
-  async getTransactionByAddress(address) {
-    const txRequest = await this._eac.transactionRequest(address, this._web3);
-
-    return txRequest;
+  async isTransactionFrozen(transaction) {
+    const isFrozen = await transaction.inFreezePeriod();
+    return isFrozen;
   }
 
   isTxUnitTimestamp(transaction) {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+  }
+
+  async getTransactionByAddress(address) {
+    const txRequest = await this._eac.transactionRequest(address, this._web3);
+    return txRequest;
   }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, timestamp) {
