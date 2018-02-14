@@ -22,7 +22,6 @@ class BlockComponent extends AbstractSetting {
       blockNumber : (await Bb.fromCallback( callback => web3.eth.getBlockNumber(callback) ) ).valueOf()
     }
     this.validators.blockNumber = this.blockNumberValidator();
-    this.validators.blockSize = this.blockSizeValidator();
   }
 
   blockNumberValidator() {
@@ -44,26 +43,18 @@ class BlockComponent extends AbstractSetting {
     }
   }
 
-  blockSizeValidator() {
-    const { blockSize } = this.state;
-    return {
-      validator: (value) => {
-        if (!Number(value) > 0) return 1;
-        if (Number(value) <= Number(blockSize))
-          return 2;
-        else if (Number(value) - 60 <= Number(blockSize))
-          return 3;
-        return 0;
-      },
-      errors: [
-        'Please enter a valid window size',
-      ]
-    }
-  }
 
   validators = {
     blockNumber: '',
-    blockSize: '',
+    blockSize: {
+      validator: (value) => {
+      if (Number(value) < 2) return 1;
+      return 0;
+    },
+    errors: [
+      'Please enter a valid window size, minimum 2'
+    ]
+  },
   }
 
   render() {
