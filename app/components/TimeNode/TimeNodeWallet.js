@@ -41,7 +41,7 @@ class TimeNodeWallet extends Component {
         <div className="tab-pane active show padding-25">
           <h2>Select Your Wallet File</h2>
           <p>We support MyEtherWallet keystore files</p>
-          <p>If you don't have the wallet yet, please visit <a href="https://myetherwallet.com" target="_blank" rel="noopener noreferrer">https://myetherwallet.com</a> and create a new wallet.</p>
+          <p>If you don&#39;t have the wallet yet, please visit <a href="https://myetherwallet.com" target="_blank" rel="noopener noreferrer">https://myetherwallet.com</a> and create a new wallet.</p>
           <input type="file"
             className="my-3"
             ref={(el) => this.walletFileRef = el} />
