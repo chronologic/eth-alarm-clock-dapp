@@ -6,7 +6,8 @@ import {
     runInAction
 } from 'mobx';
 import {
-    Networks
+    Networks,
+    Explorers
 } from '../config/web3Config.js'
 
 let instance = null;
@@ -18,6 +19,7 @@ export default class Web3Service {
     @observable connectedToMetaMask = null;
     @observable accounts = null;
     @observable netId = null;
+    @observable explorer = null;
 
     constructor(props) {
         Object.assign(this, props);
@@ -96,6 +98,7 @@ export default class Web3Service {
         const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
+            this.explorer = Explorers[this.netId]
         });
     }
 
