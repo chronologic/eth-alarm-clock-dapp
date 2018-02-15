@@ -5,6 +5,7 @@ export default class TimeNodeStore {
   @observable verifiedWallet = false;
   @observable hasDayTokens = false;
   @observable scanningStarted = false;
+  @observable logs = [];
 
   _eacService
   _web3Service
@@ -17,7 +18,7 @@ export default class TimeNodeStore {
     this.scanningStarted = false;
   }
 
-  async startClient(logsArrayUpdated) {
+  async startClient(keystore, password) {
     await this._web3Service.init();
 
     const web3 = this._web3Service.web3;
@@ -25,6 +26,8 @@ export default class TimeNodeStore {
     const AlarmClient = this._eacService.AlarmClient;
 
     const program = {
+      wallet: keystore,
+      password: password,
       provider: 'http://localhost:8545',
       logfile: 'console',
       milliseconds: 4000,
@@ -34,7 +37,7 @@ export default class TimeNodeStore {
       browserDB: true
     }
 
-    const logger = new MemoryLogger(program.logLevel, logsArrayUpdated);
+    const logger = new MemoryLogger(program.logLevel);
 
     await AlarmClient(
       web3,
@@ -52,7 +55,10 @@ export default class TimeNodeStore {
       program.browserDB
     ).catch((err) => {
       throw err
-    })
+    });
+
+    this.verifiedWallet = true;
+    return true;
   }
 
   constructor(eacService, web3Service) {

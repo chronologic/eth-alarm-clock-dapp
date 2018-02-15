@@ -15,7 +15,6 @@ class TimeNodeWallet extends Component {
   verifyKeystore() {
     const file = this.walletFileRef.files[0];
     const password = this.passwdRef.value;
-    const refreshParent = this.props.refreshParent;
     const timeNodeStore = this.props.timeNodeStore;
 
     if (file) {
@@ -26,9 +25,9 @@ class TimeNodeWallet extends Component {
         // TEMPORARY
         // Replace this logic with a proper wallet import
         if (keystore && password) {
-          Cookies.set('verifiedWallet', true);
-          timeNodeStore.verifiedWallet = true;
-          refreshParent();
+          timeNodeStore.startClient(keystore, password).then(() => {
+            Cookies.set('verifiedWallet', true);
+          });
         }
       }
       reader.readAsText(file, "utf-8");
