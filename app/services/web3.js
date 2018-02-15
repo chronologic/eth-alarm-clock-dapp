@@ -76,6 +76,11 @@ export default class Web3Service {
         return block;
     }
 
+    async hasCode ( address ) {
+      const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
+      return code.toString() != '0x0';
+    }
+
     @action
     async connect() {
         let {
