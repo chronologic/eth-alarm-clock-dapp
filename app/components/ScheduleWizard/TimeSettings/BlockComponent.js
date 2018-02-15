@@ -18,10 +18,13 @@ class BlockComponent extends AbstractSetting {
 
   async componentDidMount() {
     const { web3Service: { web3 } } = this.props;
+    const { scheduleStore } = this.props;
     this.state = {
       blockNumber : (await Bb.fromCallback( callback => web3.eth.getBlockNumber(callback) ) ).valueOf()
     }
     this.validators.blockNumber = this.blockNumberValidator();
+    scheduleStore.isUsingTime = false;
+    
   }
 
   blockNumberValidator() {

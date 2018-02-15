@@ -61,7 +61,7 @@ export class TransactionStore {
     await this._web3.connect();
   }
 
-  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
+  async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }) {
     const requestFactory = await this._eac.requestFactory();
 
     let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
@@ -80,7 +80,7 @@ export class TransactionStore {
     }
   }
 
-  async queryTransactions( { transactions, offset, limit, resolved } ) {
+  async queryTransactions({ transactions, offset, limit, resolved }) {
     const processed = [];
 
     for (let transaction of transactions) {
@@ -105,16 +105,16 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
-    let transactions = await this.getTransactions( { startBlock, endBlock } );
+  async getTransactionsFiltered({ startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved }) {
+    let transactions = await this.getTransactions({ startBlock, endBlock });
 
     if (typeof(resolved) !== 'undefined') {
-      return this.queryTransactions( {
+      return this.queryTransactions({
         transactions,
         offset,
         limit,
         resolved
-      } );
+      });
     }
 
     const total = transactions.length;
@@ -145,11 +145,6 @@ export class TransactionStore {
     return status;
   }
 
-  async getTransactionByAddress(address) {
-    const txRequest = await this._eac.transactionRequest(address, this._web3);
-    return txRequest;
-  }
-
   async isTransactionResolved(transaction) {
     const isMissed = await this.isTransactionMissed(transaction);
 
@@ -162,61 +157,59 @@ export class TransactionStore {
     return executionWindowClosed && !transaction.wasCalled;
   }
 
-  async isTransactionFrozen(transaction) {
-    const isFrozen = await transaction.inFreezePeriod();
-    return isFrozen;
+  async getTransactionByAddress(address) {
+    const txRequest = this._eac.transactionRequest(address, this._web3);
+
+    return txRequest;
   }
 
   isTxUnitTimestamp(transaction) {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
-  async cancel(transaction,txParameters) {
-    return await transaction.cancel(txParameters);
-  }
-
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, timestamp) {
-    const endowment = await this._eacScheduler.calcEndowment(
-      new BigNumber(callGas),
-      new BigNumber(callValue),
-      new BigNumber(gasPrice),
-      new BigNumber(donation),
-      new BigNumber(payment)
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, isTimestamp) {
+    const endowment = await this._eac.Util.calcEndowment(
+      new BigNumber(Number(callGas)),
+      new BigNumber(Number(callValue)),
+      new BigNumber(Number(gasPrice)),
+      new BigNumber(Number(donation)),
+      new BigNumber(Number(payment))
     )
-
-    await this._eacScheduler.initSender ( {
+    await this._eacScheduler.initSender ({
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
-    } );
+    });
 
-    if(timestamp) {
-      await this._eacScheduler.timeStampSchedule (
-        toAddress,
-        this._web3.web3.fromAscii(callData),
-        callGas,
-        callValue,
-        windowSize,
-        windowStart,
-        gasPrice,
-        donation,
-        payment,
-        requiredDeposit
+    if(isTimestamp) {
+        const receipt = await this._eacScheduler.timestampSchedule (
+          toAddress,
+          callData,
+          callGas,
+          callValue,
+          windowSize,
+          windowStart,
+          gasPrice,
+          donation,
+          payment,
+          requiredDeposit
       )
-    } else {
-      await this._eacScheduler.blockSchedule (
-        toAddress,
-        this._web3.web3.fromAscii(callData),
-        callGas,
-        callValue,
-        windowSize,
-        windowStart,
-        gasPrice,
-        donation,
-        payment,
-        requiredDeposit
-      )
+        return receipt;
     }
-  }
 
+      const receipt = await this._eacScheduler.blockSchedule (
+        toAddress,
+        this._web3.web3.fromAscii(callData),
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        donation,
+        payment,
+        requiredDeposit
+    )
+      return receipt;
 }
+
+  }
