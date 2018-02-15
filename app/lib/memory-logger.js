@@ -1,18 +1,13 @@
 import moment from 'moment';
-import PropTypes from 'prop-types';
-import { inject, observer } from 'mobx-react';
 
-@inject('timeNodeStore')
-@observer
-class MemoryLogger {
+export default class MemoryLogger {
   // 1 - debug / cache
   // 2 - info
   // 3 - error
 
-  logLevel = 1
-
-  constructor(logLevel) {
+  constructor(logLevel, logs) {
     this.logLevel = logLevel;
+    this.logs = logs;
   }
 
   cache(message) {
@@ -33,12 +28,6 @@ class MemoryLogger {
 
   log(message) {
     const timestamp = moment().unix();
-    this.props.timeNodeStore.logs.push([timestamp, message]);
+    this.logs.push([timestamp, message]);
   }
 }
-
-MemoryLogger.propTypes = {
-  timeNodeStore: PropTypes.any
-};
-
-export default MemoryLogger;

@@ -27,9 +27,10 @@ export default class TimeNodeStore {
 
     const program = {
       wallet: keystore,
-      password: password,
+      password,
       provider: 'http://localhost:8545',
       logfile: 'console',
+      logLevel: 1,
       milliseconds: 4000,
       autostart: false,
       scan: 75,
@@ -37,7 +38,7 @@ export default class TimeNodeStore {
       browserDB: true
     }
 
-    const logger = new MemoryLogger(program.logLevel);
+    const logger = new MemoryLogger(program.logLevel, this.logs);
 
     await AlarmClient(
       web3,

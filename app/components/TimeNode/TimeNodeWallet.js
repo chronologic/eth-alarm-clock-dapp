@@ -19,15 +19,14 @@ class TimeNodeWallet extends Component {
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = function() {
+      reader.onload = async function() {
         const keystore = reader.result;
 
         // TEMPORARY
         // Replace this logic with a proper wallet import
         if (keystore && password) {
-          timeNodeStore.startClient(keystore, password).then(() => {
-            Cookies.set('verifiedWallet', true);
-          });
+          const success = await timeNodeStore.startClient(keystore, password);
+          if (success) Cookies.set('verifiedWallet', true);
         }
       }
       reader.readAsText(file, "utf-8");
