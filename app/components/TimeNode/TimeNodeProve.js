@@ -15,7 +15,6 @@ class TimeNodeProve extends Component {
   verifyDayTokens() {
     const signature = this.signature.value;
     const ethAddress = this.ethAddress.value;
-    const refreshParent = this.props.refreshParent;
     const timeNodeStore = this.props.timeNodeStore;
 
     // TEMPORARY
@@ -23,7 +22,6 @@ class TimeNodeProve extends Component {
     if (signature && ethAddress) {
       Cookies.set('hasDayTokens', true);
       timeNodeStore.hasDayTokens = true;
-      refreshParent();
     }
   }
 
