@@ -3,29 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { inject, observer } from 'mobx-react';
 
-const INITIAL_STATE = {
-  logs: []
-};
-
 @inject('timeNodeStore')
 @observer
 class TimeNodeLogs extends Component {
-  constructor() {
-    super();
-
-    this.state = INITIAL_STATE;
-  }
-
-  componentDidMount() {
-    const logsArrayUpdated = (newLogsArray) => {
-      this.setState({
-        logs: newLogsArray
-      });
-    };
-
-    this.props.timeNodeStore.startClient(logsArrayUpdated);
-  }
-
   formatUnix(unix) {
     return moment.unix(unix).format('DD/MM/YYYY HH:MM:SS');
   }
@@ -45,7 +25,7 @@ class TimeNodeLogs extends Component {
             </div>
           </div>
           <div className="card-body">
-            {this.state.logs.map(([ timestamp, message ], index) => {
+            {this.props.timeNodeStore.logs.map(([ timestamp, message ], index) => {
               return (
                 <p key={index} className="no-margin"><span>{this.formatUnix(timestamp)}</span> {message}</p>
               )

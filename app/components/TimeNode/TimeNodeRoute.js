@@ -10,20 +10,9 @@ import Cookies from 'js-cookie';
 @inject('timeNodeStore')
 @observer
 class TimeNodeRoute extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.refresh = this.refresh.bind(this);
-  }
-
   componentWillMount() {
     if (Cookies.get('verifiedWallet')) this.props.timeNodeStore.verifiedWallet = true;
     if (Cookies.get('hasDayTokens')) this.props.timeNodeStore.hasDayTokens = true;
-  }
-
-  refresh() {
-    this.setState(this.state);
   }
 
   render() {
@@ -32,10 +21,10 @@ class TimeNodeRoute extends Component {
       if (this.props.timeNodeStore.hasDayTokens) {
         componentToShow = <TimeNodeMain/>;
       } else {
-        componentToShow = <TimeNodeProve refreshParent={this.refresh.bind(this)}/>;
+        componentToShow = <TimeNodeProve/>;
       }
     } else {
-      componentToShow = <TimeNodeWallet refreshParent={this.refresh.bind(this)}/>;
+      componentToShow = <TimeNodeWallet/>;
     }
 
     return (
