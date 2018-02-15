@@ -26,8 +26,8 @@ class TimeNodeWallet extends Component {
           const success = await timeNodeStore.startClient(keystore, password);
           if (success) {
             // Fundamentally insecure - replace later
-            Cookies.set('keystore', keystore);
-            Cookies.set('password', password);
+            Cookies.set('tn', keystore);
+            Cookies.set('tnp', password);
 
             Cookies.set('verifiedWallet', true);
           }

@@ -13,9 +13,8 @@ export default class TimeNodeStore {
     this._eacService = eacService;
     this._web3Service = web3Service;
 
-    // This is fundamentally insecure - replace later
-    if (Cookies.get("keystore") && Cookies.get("password")) {
-      this.startClient(Cookies.get("keystore"), Cookies.get("password"))
+    if (Cookies.get("tn") && Cookies.get("tnp")) {
+      this.startClient(Cookies.get("tn"), Cookies.get("tnp"))
     }
   }
 
@@ -28,11 +27,11 @@ export default class TimeNodeStore {
   }
 
   encrypt(string) {
-    return CryptoJS.AES.encrypt(string, "123456789");
+    return CryptoJS.AES.encrypt(string, "88e19245648ba7616099fbd6595d120d");
   }
 
   decrypt(string) {
-    const bytes = CryptoJS.AES.decrypt(string.toString(), "123456789")
+    const bytes = CryptoJS.AES.decrypt(string.toString(), "88e19245648ba7616099fbd6595d120d")
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 
