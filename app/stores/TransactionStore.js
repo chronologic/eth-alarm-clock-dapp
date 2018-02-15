@@ -58,7 +58,7 @@ export class TransactionStore {
   async setup() {
     this._eacScheduler = await this._eac.scheduler();
 
-    await this._web3.connect();
+    await this._web3.awaitInitialized();
   }
 
   async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
