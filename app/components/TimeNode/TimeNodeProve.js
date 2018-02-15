@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
 @observer
@@ -16,8 +15,7 @@ class TimeNodeProve extends Component {
     const signature = this.signature.value;
 
     if (signature) {
-      const hasDay = this.props.timeNodeStore.checkHasDayTokens(signature);
-      Cookies.set('hasDayTokens', hasDay);
+      this.props.timeNodeStore.checkHasDayTokens(signature);
     }
   }
 

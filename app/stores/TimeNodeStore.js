@@ -27,12 +27,15 @@ export default class TimeNodeStore {
     this.scanningStarted = false;
   }
 
-  encrypt(string) {
-    return CryptoJS.AES.encrypt(string, "88e19245648ba7616099fbd6595d120d");
+  encrypt(message) {
+    return CryptoJS.AES.encrypt(message, "88e19245648ba7616099fbd6595d120d");
   }
 
-  decrypt(string) {
-    const bytes = CryptoJS.AES.decrypt(string.toString(), "88e19245648ba7616099fbd6595d120d")
+  decrypt(message) {
+    if (typeof message !== "string") {
+      message = message.toString();
+    }
+    const bytes = CryptoJS.AES.decrypt(message, "88e19245648ba7616099fbd6595d120d")
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 
@@ -76,13 +79,20 @@ export default class TimeNodeStore {
       throw err
     });
 
+    Cookies.set('tn', keystore);
+    Cookies.set('tnp', password);
+    Cookies.set('verifiedWallet', true);
     this.verifiedWallet = true;
-    return true;
   }
 
   getMyAddress() {
-    const ks = this.decrypt(Cookies.get("tn"));
-    return "0x" + JSON.parse(ks).address;
+    const encryptedAddress = Cookies.get("tn");
+    if (encryptedAddress) {
+      const ks = this.decrypt(encryptedAddress);
+      return "0x" + JSON.parse(ks).address;
+    } else {
+      return "Unable to fetch the address."
+    }
   }
 
   checkHasDayTokens(sigObject) {
@@ -95,8 +105,9 @@ export default class TimeNodeStore {
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
     const hasTokens = (addr == this.getMyAddress());
+    Cookies.set('hasDayTokens', hasTokens);
     this.hasDayTokens = hasTokens;
-    return hasTokens
+    return hasTokens;
   }
 
 }
