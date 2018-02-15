@@ -3,23 +3,22 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { TransactionStore } from './TransactionStore';
 import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
-import { default as scheduleStore } from './mobxStore';
+import ScheduleStore from './mobxStore';
 
 const { eacService, web3Service } = services;
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
-const scheduleStores = new scheduleStore(false,scheduleStore);
+const scheduleStore = new ScheduleStore(false);
 
 export const transactionStore = new TransactionStore(eacService, web3Service);
-export const timeNodeStore = new TimeNodeStore(eacService);
+export const timeNodeStore = new TimeNodeStore(eacService, web3Service);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
-//export const mobx_store = initStore()
+
 export const stores = {
   routing: routingStore,
   transactionStore,
   timeNodeStore,
-  //scheduleStore
-  scheduleStore:scheduleStores
+  scheduleStore
 };

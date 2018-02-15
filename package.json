@@ -50,7 +50,7 @@
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-datepicker": "^1.7.1",
     "bootstrap-timepicker": "^0.5.2",
-    "eac.js": "^1.3.0",
+    "eac.js": "ethereum-alarm-clock/eac.js#stable",
     "font-awesome": "^4.7.0",
     "jquery": "^1.11.1",
     "jquery.scrollbar": "^0.2.11",
