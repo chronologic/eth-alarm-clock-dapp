@@ -12,20 +12,23 @@ class BountySettings extends AbstractSetting {
     const { _validations,_validationsErrors } = this.props;
     this._validations = _validations.BountySettings;
     this._validationsErrors = _validationsErrors.BountySettings;
-
     this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
   }
-
   validators = {
     timeBounty: this.integerValidator(),
     deposit: this.decimalValidator(),
     requireDeposit: this.booleanValidator()
   }
+  componentDidMount(){
+    const { scheduleStore } = this.props;
+    scheduleStore.donation = 0.05 * scheduleStore.deposit;
+  }
+
 
   toggleRequiredDeposit(){
     const { scheduleStore } = this.props;
     scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
-  }
+    }
 
   render() {
     const { scheduleStore, } = this.props;
