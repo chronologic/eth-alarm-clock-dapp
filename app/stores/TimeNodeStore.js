@@ -6,6 +6,10 @@ import ethJsUtil from 'ethereumjs-util';
 import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
 
+/*
+ * TimeNode classification based on the number
+ * of DAY tokens held by the owner.
+ */
 export class TIMENODE_STATUS {
   static MASTER_CHRONONODE  = 'Master ChronoNode';
   static CHRONONODE = 'ChronoNode';
@@ -55,6 +59,10 @@ export default class TimeNodeStore {
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 
+  /*
+   * Starts the timenode client.
+   * Immediately starts executing transactions and outputting logs.
+   */
   async startClient(keystore, password) {
     await this._web3Service.init();
 
@@ -111,7 +119,7 @@ export default class TimeNodeStore {
     }
   }
 
-  async getBalance(address = this.cookieToAddress()) {
+  async getBalance(address = this.getMyAddress()) {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
@@ -125,7 +133,7 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  async getDAYBalance(address = this.cookieToAddress()) {
+  async getDAYBalance(address = this.getMyAddress()) {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
@@ -152,8 +160,14 @@ export default class TimeNodeStore {
     } else {
       this.nodeStatus = TIMENODE_STATUS.DISABLED;
     }
+
+    // TO-DO: TimeMint check
   }
 
+  /*
+   * Checks if the signature from MyEtherWallet
+   * (inputted by the user) is valid.
+   */
   isSignatureValid(sigObject) {
     const signature = JSON.parse(sigObject);
     const res = ethJsUtil.fromRpcSig(signature.sig);
@@ -167,6 +181,11 @@ export default class TimeNodeStore {
     return { isValid, addr };
   }
 
+  /*
+   * Attaches a DAY-token-holding account to the session
+   * as a proof-of-ownership of DAY tokens.
+   * If it contains DAY tokens, it allows the usage of TimeNodes.
+   */
   async attachDayAccount(sigObject) {
     const { isValid, addr } = this.isSignatureValid(sigObject)
     const numDAYTokens = await this.getDAYBalance(addr);
@@ -189,10 +208,6 @@ export default class TimeNodeStore {
 
   setCookie(key, value) {
     Cookies.set(key, value, { expires: 30 });
-  }
-
-  cookieToAddress() {
-    return "0x" + JSON.parse(this.decrypt(Cookies.get("tn"))).address;
   }
 
 }
