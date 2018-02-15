@@ -25,11 +25,11 @@ class TimeNodeProve extends Component {
     this.signatureRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
-  verifyDayTokens() {
+  async verifyDayTokens() {
     const signature = this.signatureRef.value;
 
     if (signature) {
-      this.props.timeNodeStore.attachDayAccount(signature);
+      await this.props.timeNodeStore.attachDayAccount(signature);
     }
   }
 

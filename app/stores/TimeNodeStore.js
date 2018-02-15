@@ -3,19 +3,33 @@ import MemoryLogger from '../lib/memory-logger';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
+import dayTokenABI from '../abi/dayTokenABI';
+import Bb from 'bluebird';
+
+export class TIMENODE_STATUS {
+  static MASTER_CHRONONODE  = 'Master ChronoNode';
+  static CHRONONODE = 'ChronoNode';
+  static TIMENODE = 'TimeNode';
+  static DISABLED = 'Disabled';
+}
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
-  @observable attachedDayAccount = '';
+  @observable attachedDAYAccount = '';
   @observable hasDayTokens = false;
   @observable scanningStarted = false;
   @observable logs = [];
+
+  @observable balanceETH = 0;
+  @observable balanceDAY = 0;
+
+  @observable nodeStatus = null;
 
   constructor(eacService, web3Service) {
     this._eacService = eacService;
     this._web3Service = web3Service;
 
-    if (Cookies.get("attachedDayAccount")) this.attachedDayAccount = true;
+    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = true;
     if (Cookies.get("hasWallet")) this.hasWallet = true;
 
     if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
@@ -97,6 +111,49 @@ export default class TimeNodeStore {
     }
   }
 
+  async getBalance(address = this.cookieToAddress()) {
+    await this._web3Service.init();
+    const web3 = this._web3Service.web3;
+
+    const balanceNum = await Bb.fromCallback((callback) => {
+      web3.eth.getBalance(address, callback);
+    });
+
+    const balance = parseInt(balanceNum);
+    this.balanceETH = balance;
+
+    return balance;
+  }
+
+  async getDAYBalance(address = this.cookieToAddress()) {
+    await this._web3Service.init();
+    const web3 = this._web3Service.web3;
+
+    const contract = web3.eth.contract(dayTokenABI).at(contract);
+    const balanceNum = await Bb.fromCallback((callback) => {
+      contract.balanceOf.call(address, callback);
+    });
+
+    const balance = parseInt(balanceNum);
+
+    this.updateNodeStatus(balance)
+    this.balanceDAY = balance;
+
+    return balance;
+  }
+
+  updateNodeStatus(balance) {
+    if (balance >= 3333) {
+      this.nodeStatus = TIMENODE_STATUS.MASTER_CHRONONODE;
+    } else if (balance >= 888) {
+      this.nodeStatus = TIMENODE_STATUS.CHRONONODE;
+    } else if (balance >= 333) {
+      this.nodeStatus = TIMENODE_STATUS.TIMENODE;
+    } else {
+      this.nodeStatus = TIMENODE_STATUS.DISABLED;
+    }
+  }
+
   isSignatureValid(sigObject) {
     const signature = JSON.parse(sigObject);
     const res = ethJsUtil.fromRpcSig(signature.sig);
@@ -110,13 +167,16 @@ export default class TimeNodeStore {
     return { isValid, addr };
   }
 
-  attachDayAccount(sigObject) {
+  async attachDayAccount(sigObject) {
     const { isValid, addr } = this.isSignatureValid(sigObject)
+    const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid) {
-      this.setCookie('attachedDayAccount', encryptedAttachedAddress);
-      this.attachedDayAccount = encryptedAttachedAddress;
+    if (isValid && numDAYTokens == 0) {
+      this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+      this.attachedDAYAccount = encryptedAttachedAddress;
+    } else {
+      alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
     }
   }
 
@@ -129,6 +189,10 @@ export default class TimeNodeStore {
 
   setCookie(key, value) {
     Cookies.set(key, value, { expires: 30 });
+  }
+
+  cookieToAddress() {
+    return "0x" + JSON.parse(this.decrypt(Cookies.get("tn"))).address;
   }
 
 }
