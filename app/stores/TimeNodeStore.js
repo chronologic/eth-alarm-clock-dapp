@@ -27,7 +27,7 @@ export default class TimeNodeStore {
   @observable balanceETH = 0;
   @observable balanceDAY = 0;
 
-  @observable nodeStatus = null;
+  @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   constructor(eacService, web3Service) {
     this._eacService = eacService;
@@ -115,7 +115,7 @@ export default class TimeNodeStore {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
     } else {
-      return "Unable to fetch the address."
+      return ""
     }
   }
 
