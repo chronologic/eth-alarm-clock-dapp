@@ -4,9 +4,16 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { PacmanLoader } from 'react-spinners';
 
-
 const loaderConfig = {
   color:'#21ffff'
+}
+
+const mineDestinations = {
+  scheduler:{
+    path: 'transaction',
+    prop: 'newContract',
+    logEvent:''
+  }
 }
 
 @inject('web3Service')
@@ -15,72 +22,83 @@ class AwaitingMining extends Component {
   constructor(props){
     super(props);
 
-    const { hash } = this.props.match.params;
+    const { type } = this.props.match.params;
 
     this.state = {
-      transactionHash:hash,
+      waitType: type,
+      transactionHash: '',
       newContract: '',
-      destination:'',
-      deploying:true,
-      minning:false,
+      deploying: false,
+      minning: false,
     }
-
   }
 
   async loadUp (){
+    const { web3Service } = this.props;
+    const { hash } = this.props.match.params;
 
+    await web3Service.awaitInitialized();
 
+    if (web3.isAddress(hash)) {
+      this.state.newContract = hash;
+    } else {
+      this.state.transactionHash = hash;
+    }
+
+    if ( this.state.newContract ) {
+        return this.next();
+    }
+  }
+
+  getDestination () {
+    const { type } = this.props.match.params;
+    const { newContract } = this.state;
+    return '/'+mineDestinations[type].path+'/'+this.state[mineDestinations[type].prop];
   }
 
   next (){
-    const { destination } = this.state;
-    let that = this;
-    const PROPERTIES = ['transactionHash','newContract','destination'];
-    const query = PROPERTIES.reduce((result, name) => {
-      result[name] = that.state[name];
-      return result;
-    }, {});
-
-    Router.push({
-      pathname: destination,
-      query,
-    });
+    const { history } = this.props;
+    const destination = this.getDestination();
+    history.push( {
+      pathname: destination
+    } );
   }
 
   async componentDidMount() {
-    //console.log(history,Router,Router.history)
-    const { query } = Router;
-    if(!query){
-      //history.goBack();
-      return;
-    }
-    let { query:{ newContract,transactionHash,destination } } = Router;
-    if((!newContract && !transactionHash) || !destination){
-      //history.goBack();
-      return;
-    }
-
-    this.setState(Object.assign(this.state,{ newContract:newContract,transactionHash:transactionHash,destination:destination }));
     await this.loadUp();
   }
 
   render() {
-  //  const props = this.props; .....uncomment when props is needed on this page
-    return (
+    const { web3Service: { explorer } } = this.props;
 
+    return (
       <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
-        <h1 className="view-title">...</h1>
+        { this.state.deploying &&
+          <h1 className="view-title">Deploying</h1>
+        }
+        { this.state.minning &&
+          <h1 className="view-title">Awaiting Mining</h1>
+        }
+        { !this.state.deploying && !this.state.minning &&
+          <h1 className="view-title"> ... </h1>
+        }
         <div className='card card-body'>
           <div className='tabs-content'>
             <div className="loader">
-              <PacmanLoader {...Object.assign({ loading:true },loaderConfig)} />
+              <PacmanLoader { ...Object.assign( { loading:true } ,loaderConfig) } />
             </div>
-            <p className="horizontal-center">Awaiting Mining</p>
-
-            <p className="horizontal-center">
-              Transation Hash: <br/>
-              <a target="_blank" href="#">{this.state.transactionHash}</a>
-            </p>
+            { this.state.transactionHash &&
+              <p className="horizontal-center">
+                Transation Hash: <br/>
+                <a target="_blank" href= { explorer+'/tx/' } > { this.state.transactionHash } </a>
+              </p>
+            }
+            { this.state.newContract &&
+              <p className="horizontal-center">
+                Contract Address: <br/>
+                <a target="_blank" href= { explorer+'/address/' } > { this.state.newContract } </a>
+              </p>
+            }
           </div>
         </div>
       </div>
@@ -90,9 +108,10 @@ class AwaitingMining extends Component {
 
 AwaitingMining.propTypes = {
   match: PropTypes.any,
-  transactionStore: PropTypes.any
+  transactionStore: PropTypes.any,
+  match: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
 };
-
 
 
 export default AwaitingMining;
