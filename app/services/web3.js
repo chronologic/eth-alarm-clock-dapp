@@ -35,6 +35,12 @@ export default class Web3Service {
     }
 
     @action
+     toEth(_wei){
+        const ethValue = window.web3.fromWei(_wei,'gwei');
+        return ethValue;
+    }
+
+    @action
     async trackTransaction(hash) {
         if (!(await this.fetchReceipt(hash))) {
             const txReceipt = new Promise((resolve) => {
