@@ -2,6 +2,7 @@ import { observable } from 'mobx';
 import MemoryLogger from '../lib/memory-logger';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
+import ethJsUtil from 'ethereumjs-util';
 
 export default class TimeNodeStore {
   @observable verifiedWallet = false;
@@ -77,6 +78,25 @@ export default class TimeNodeStore {
 
     this.verifiedWallet = true;
     return true;
+  }
+
+  getMyAddress() {
+    const ks = this.decrypt(Cookies.get("tn"));
+    return "0x" + JSON.parse(ks).address;
+  }
+
+  checkHasDayTokens(sigObject) {
+    const signature = JSON.parse(sigObject);
+    const res = ethJsUtil.fromRpcSig(signature.sig);
+    const msgBuffer = ethJsUtil.toBuffer(signature.msg)
+    const msgHash = ethJsUtil.hashPersonalMessage(msgBuffer);
+    const pub = ethJsUtil.ecrecover(msgHash, res.v, res.r, res.s);
+    const addrBuf = ethJsUtil.pubToAddress(pub);
+    const addr = ethJsUtil.bufferToHex(addrBuf);
+
+    const hasTokens = (addr == this.getMyAddress());
+    this.hasDayTokens = hasTokens;
+    return hasTokens
   }
 
 }
