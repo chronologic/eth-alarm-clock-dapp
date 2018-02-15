@@ -16,7 +16,7 @@ class BlockComponent extends AbstractSetting {
     this.blockNumberValidator = this.blockNumberValidator.bind(this);
   }
 
-  async componentDidMount(){
+  async componentDidMount() {
     const { web3Service: { web3 } } = this.props;
     this.state = {
       blockNumber : (await Bb.fromCallback( callback => web3.eth.getBlockNumber(callback) ) ).valueOf()
@@ -24,7 +24,7 @@ class BlockComponent extends AbstractSetting {
     this.validators.blockNumber = this.blockNumberValidator();
   }
 
-  blockNumberValidator (){
+  blockNumberValidator() {
     const { blockNumber } = this.state;
     return{
       validator:(value)=>{
@@ -43,8 +43,18 @@ class BlockComponent extends AbstractSetting {
     }
   }
 
+
   validators = {
-    blockNumber: ''
+    blockNumber: '',
+    blockSize: {
+      validator: (value) => {
+      if (Number(value) < 2) return 1;
+      return 0;
+    },
+    errors: [
+      'Please enter a valid window size, minimum 2'
+    ]
+  },
   }
 
   render() {
@@ -61,6 +71,15 @@ class BlockComponent extends AbstractSetting {
               {!_validations.blockNumber &&
                 <label className="error">{_validationsErrors.blockNumber}</label>
                 }
+            </div>
+            <div className="col-md-4">
+              <div className={"form-group form-group-default required" + (_validations.blockSize ? "" : " has-error")}>
+                <label>Window Size</label>
+                <input type="text" placeholder="Enter window size" value={scheduleStore.blockSize} onBlur={this.validate('blockSize')} onChange={this.onChange('blockSize')} className="form-control"></input>
+              </div>
+              {!_validations.blockSize &&
+                <label className="error">{_validationsErrors.blockSize}</label>
+              }
             </div>
           </div>
         </div>
