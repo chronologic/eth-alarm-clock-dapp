@@ -6,7 +6,7 @@ import ethJsUtil from 'ethereumjs-util';
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
-  @observable attachedDayAccount = false;
+  @observable attachedDayAccount = '';
   @observable hasDayTokens = false;
   @observable scanningStarted = false;
   @observable logs = [];
@@ -81,9 +81,9 @@ export default class TimeNodeStore {
       throw err
     });
 
-    Cookies.set('tn', keystore);
-    Cookies.set('tnp', password);
-    Cookies.set('hasWallet', true);
+    this.setCookie('tn', keystore);
+    this.setCookie('tnp', password);
+    this.setCookie('hasWallet', true);
     this.hasWallet = true;
   }
 
@@ -97,7 +97,7 @@ export default class TimeNodeStore {
     }
   }
 
-  checkSignature(sigObject) {
+  isSignatureValid(sigObject) {
     const signature = JSON.parse(sigObject);
     const res = ethJsUtil.fromRpcSig(signature.sig);
     const msgBuffer = ethJsUtil.toBuffer(signature.msg)
@@ -106,13 +106,18 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    return (addr == signature.address);
+    const isValid = (addr == signature.address);
+    return { isValid, addr };
   }
 
   attachDayAccount(sigObject) {
-    const attached = this.checkSignature(sigObject)
-    Cookies.set('attachedDayAccount', attached);
-    this.attachedDayAccount = attached;
+    const { isValid, addr } = this.isSignatureValid(sigObject)
+    const encryptedAttachedAddress = this.encrypt(addr);
+
+    if (isValid) {
+      this.setCookie('attachedDayAccount', encryptedAttachedAddress);
+      this.attachedDayAccount = encryptedAttachedAddress;
+    }
   }
 
   hasCookies(cookiesList) {
@@ -120,6 +125,10 @@ export default class TimeNodeStore {
       if (!Cookies.get(cookie)) return false;
     }
     return true;
+  }
+
+  setCookie(key, value) {
+    Cookies.set(key, value, { expires: 30 });
   }
 
 }
