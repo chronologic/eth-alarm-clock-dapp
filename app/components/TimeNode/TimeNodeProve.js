@@ -29,7 +29,7 @@ class TimeNodeProve extends Component {
     const signature = this.signatureRef.value;
 
     if (signature) {
-      this.props.timeNodeStore.checkHasDayTokens(signature);
+      this.props.timeNodeStore.attachDayAccount(signature);
     }
   }
 

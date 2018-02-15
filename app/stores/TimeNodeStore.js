@@ -5,7 +5,8 @@ import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
 
 export default class TimeNodeStore {
-  @observable verifiedWallet = false;
+  @observable hasWallet = false;
+  @observable attachedDayAccount = false;
   @observable hasDayTokens = false;
   @observable scanningStarted = false;
   @observable logs = [];
@@ -14,9 +15,10 @@ export default class TimeNodeStore {
     this._eacService = eacService;
     this._web3Service = web3Service;
 
-    if (Cookies.get("tn") && Cookies.get("tnp")) {
-      this.startClient(Cookies.get("tn"), Cookies.get("tnp"))
-    }
+    if (Cookies.get("attachedDayAccount")) this.attachedDayAccount = true;
+    if (Cookies.get("hasWallet")) this.hasWallet = true;
+
+    if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
   }
 
   startScanning() {
@@ -81,8 +83,8 @@ export default class TimeNodeStore {
 
     Cookies.set('tn', keystore);
     Cookies.set('tnp', password);
-    Cookies.set('verifiedWallet', true);
-    this.verifiedWallet = true;
+    Cookies.set('hasWallet', true);
+    this.hasWallet = true;
   }
 
   getMyAddress() {
@@ -95,7 +97,7 @@ export default class TimeNodeStore {
     }
   }
 
-  checkHasDayTokens(sigObject) {
+  checkSignature(sigObject) {
     const signature = JSON.parse(sigObject);
     const res = ethJsUtil.fromRpcSig(signature.sig);
     const msgBuffer = ethJsUtil.toBuffer(signature.msg)
@@ -104,10 +106,20 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const hasTokens = (addr == this.getMyAddress());
-    Cookies.set('hasDayTokens', hasTokens);
-    this.hasDayTokens = hasTokens;
-    return hasTokens;
+    return (addr == signature.address);
+  }
+
+  attachDayAccount(sigObject) {
+    const attached = this.checkSignature(sigObject)
+    Cookies.set('attachedDayAccount', attached);
+    this.attachedDayAccount = attached;
+  }
+
+  hasCookies(cookiesList) {
+    for (let cookie in cookiesList) {
+      if (!Cookies.get(cookie)) return false;
+    }
+    return true;
   }
 
 }

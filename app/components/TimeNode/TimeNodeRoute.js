@@ -5,20 +5,14 @@ import TimeNodeMain from './TimeNodeMain';
 import TimeNodeWallet from './TimeNodeWallet';
 import TimeNodeProve from './TimeNodeProve';
 import PoweredByEAC from '../Common/PoweredByEAC';
-import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
 @observer
 class TimeNodeRoute extends Component {
-  componentWillMount() {
-    if (Cookies.get('verifiedWallet')) this.props.timeNodeStore.verifiedWallet = true;
-    if (Cookies.get('hasDayTokens')) this.props.timeNodeStore.hasDayTokens = true;
-  }
-
   render() {
     let componentToShow = null;
-    if (this.props.timeNodeStore.verifiedWallet) {
-      if (this.props.timeNodeStore.hasDayTokens) {
+    if (this.props.timeNodeStore.hasWallet) {
+      if (this.props.timeNodeStore.attachedDayAccount) {
         componentToShow = <TimeNodeMain/>;
       } else {
         componentToShow = <TimeNodeProve/>;
