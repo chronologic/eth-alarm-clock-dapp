@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Router } from 'react-router';
+import PropTypes from 'prop-types';
+import { inject, observer } from 'mobx-react';
 import { PacmanLoader } from 'react-spinners';
 
 
@@ -7,13 +9,16 @@ const loaderConfig = {
   color:'#21ffff'
 }
 
+@inject('web3Service')
+@observer
 class AwaitingMining extends Component {
   constructor(props){
     super(props);
-    this.props = Object.assign({},this.props,props);
+
+    const { hash } = this.props.match.params;
 
     this.state = {
-      transactionHash:'',
+      transactionHash:hash,
       newContract: '',
       destination:'',
       deploying:true,
@@ -59,26 +64,34 @@ class AwaitingMining extends Component {
     await this.loadUp();
   }
 
-render() {
-//  const props = this.props; .....uncomment when props is needed on this page
-  return (
+  render() {
+  //  const props = this.props; .....uncomment when props is needed on this page
+    return (
 
-    <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
-      <h1 className="view-title">...</h1>
-      <div className='card card-body'>
-        <div className='tabs-content'>
-          <div className="loader">
-            <PacmanLoader {...Object.assign({ loading:true },loaderConfig)} />
+      <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
+        <h1 className="view-title">...</h1>
+        <div className='card card-body'>
+          <div className='tabs-content'>
+            <div className="loader">
+              <PacmanLoader {...Object.assign({ loading:true },loaderConfig)} />
+            </div>
+            <p className="horizontal-center">Awaiting Mining</p>
+
+            <p className="horizontal-center">
+              Transation Hash: <br/>
+              <a target="_blank" href="#">{this.state.transactionHash}</a>
+            </p>
           </div>
-          <p className="horizontal-center">Awaiting Mining</p>
-
-          <p className="horizontal-center">Transation Hash: <a href="#">{this.state.transactionHash}</a></p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
-}
+
+AwaitingMining.propTypes = {
+  match: PropTypes.any,
+  transactionStore: PropTypes.any
+};
 
 
 
