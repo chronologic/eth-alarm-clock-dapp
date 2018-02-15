@@ -17,6 +17,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 @inject('eacService')
+@inject('web3Service')
 class TransactionDetails extends ScrollbarComponent {
   state = INITIAL_STATE;
 
@@ -26,6 +27,7 @@ class TransactionDetails extends ScrollbarComponent {
     super(...arguments);
 
     this.state = INITIAL_STATE;
+    this.cancelTransaction = this.cancelTransaction.bind(this);
   }
 
   getExecutedEvents(requestLib) {
@@ -57,17 +59,41 @@ class TransactionDetails extends ScrollbarComponent {
       executedAt = events[0].transactionHash;
     }
 
-    this.setState({
+    this.setState( {
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
       status: await transactionStore.getTxStatus(transaction),
       transaction,
-      executedAt
-    });
+      executedAt,
+      isFrozen: ''
+    } );
+  }
+
+  async getFrozenStatus() {
+    const { transactionStore } = this.props;
+    const { transaction } = this.state;
+    if (!transaction || !transaction.inFreezePeriod) {
+      return;
+    }
+    const isFrozen = await transactionStore.isTransactionFrozen(transaction);
+    this.setState( { isFrozen: isFrozen || transaction.isCancelled } );
+  }
+
+  async cancelTransaction() {
+    const { transactionStore } = this.props;
+    const { transaction } = this.state;
+    return await transactionStore.cancel(transaction);
   }
 
   async componentWillMount() {
     await this.fetchData();
+  }
+
+  isOwner( transaction){
+    const { owner } = transaction;
+    const { web3Service: { eth: { accounts } } } = this.props;
+    const isOwner = accounts[0] == owner;
+    return isOwner;
   }
 
   componentDidMount() {
@@ -81,19 +107,21 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   render() {
-    const { callData, executedAt, isTimestamp, status, transaction } = this.state;
+    this.getFrozenStatus();
+    const { callData, executedAt, isTimestamp, status, transaction, isFrozen } = this.state;
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
+    const isOwner = this.isOwner(transaction);
 
     return (
       <div className="tab-pane slide active show">
         <div className="row">
-          <div className="col-md-8">
+          <div className="col-md-10">
 
             <table className="table">
               <tbody>
                 <tr>
                   <td>Status</td>
-                  <td>{status}<span className={status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : ''}>&nbsp;at <a href="#">{executedAt}</a></span></td>
+                  <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
                 </tr>
                 <tr>
                   <td>To Address</td>
@@ -101,7 +129,7 @@ class TransactionDetails extends ScrollbarComponent {
                 </tr>
                 <tr>
                   <td>Value/Amount</td>
-                  <td><ValueDisplay priceInWei={callValue} /></td>
+                  <td><ValueDisplay priceInWei= { callValue } /></td>
                 </tr>
                 <tr>
                   <td>Data</td>
@@ -109,36 +137,49 @@ class TransactionDetails extends ScrollbarComponent {
                 </tr>
                 <tr>
                   <td>Block or Time</td>
-                  <td><BlockOrTimeDisplay model={windowStart} isTimestamp={isTimestamp} /></td>
+                  <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
                 </tr>
                 <tr>
                   <td>Window Size</td>
-                  <td><BlockOrTimeDisplay model={windowSize} isTimestamp={isTimestamp} duration={true} /></td>
+                  <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
                 </tr>
                 <tr>
                   <td>Gas Amount</td>
-                  <td>{callGas && callGas.toFixed()}</td>
+                  <td> { callGas && callGas.toFixed() } </td>
                 </tr>
                 <tr>
                   <td>Gas Price</td>
-                  <td><ValueDisplay priceInWei={gasPrice} /></td>
+                  <td><ValueDisplay priceInWei= { gasPrice } /></td>
                 </tr>
                 <tr>
                   <td>Time Bounty</td>
-                  <td><ValueDisplay priceInWei={bounty} /></td>
+                  <td><ValueDisplay priceInWei= { bounty } /></td>
                 </tr>
                 <tr>
                   <td>Donation</td>
-                  <td><ValueDisplay priceInWei={fee} /></td>
+                  <td><ValueDisplay priceInWei= { fee } /></td>
                 </tr>
                 <tr>
                   <td>Deposit</td>
-                  <td><ValueDisplay priceInWei={requiredDeposit} /></td>
+                  <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+        { isOwner && !isFrozen &&
+          <div className="row">
+            <div className="footer-buttons col-md-10">
+              <ul className="pager wizard no-style">
+                <li className="next">
+                  <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
+                    <span>Cancel</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        }
         <div className="row">
           <PoweredByEAC className="col-md-2 mt-2" />
         </div>
