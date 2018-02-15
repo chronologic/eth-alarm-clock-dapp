@@ -11,8 +11,22 @@ class TimeNodeProve extends Component {
     this.verifyDayTokens = this.verifyDayTokens.bind(this);
   }
 
+  _handleEnterPress = event => {
+    if(event.key !== "Enter") return;
+    document.querySelector("#verifyDayTokensBtn").click();
+    event.preventDefault();
+  };
+
+  componentDidMount() {
+    this.signatureRef.addEventListener('keyup', this._handleEnterPress);
+  }
+
+  componentWillUnmount() {
+    this.signatureRef.removeEventListener('keyup', this._handleEnterPress);
+  }
+
   verifyDayTokens() {
-    const signature = this.signature.value;
+    const signature = this.signatureRef.value;
 
     if (signature) {
       this.props.timeNodeStore.checkHasDayTokens(signature);
@@ -62,7 +76,7 @@ class TimeNodeProve extends Component {
                 <input type="text"
                   placeholder="Paste Your Signature Here"
                   className="form-control"
-                  ref={(el) => this.signature = el} />
+                  ref={(el) => this.signatureRef = el} />
               </div>
             </div>
 
@@ -71,7 +85,8 @@ class TimeNodeProve extends Component {
 
         <div className="row">
           <div className="col-md-12">
-            <button className="btn btn-primary pull-right mr-4 px-5"
+            <button id="verifyDayTokensBtn"
+              className="btn btn-primary pull-right mr-4 px-5"
               type="button"
               onClick={this.verifyDayTokens}>Verify</button>
           </div>
