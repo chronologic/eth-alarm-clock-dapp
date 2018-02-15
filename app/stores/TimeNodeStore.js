@@ -1,5 +1,7 @@
 import { observable } from 'mobx';
 import MemoryLogger from '../lib/memory-logger';
+import Cookies from 'js-cookie';
+import CryptoJS from "crypto-js";
 
 export default class TimeNodeStore {
   @observable verifiedWallet = false;
@@ -7,8 +9,15 @@ export default class TimeNodeStore {
   @observable scanningStarted = false;
   @observable logs = [];
 
-  _eacService
-  _web3Service
+  constructor(eacService, web3Service) {
+    this._eacService = eacService;
+    this._web3Service = web3Service;
+
+    // This is fundamentally insecure - replace later
+    if (Cookies.get("keystore") && Cookies.get("password")) {
+      this.startClient(Cookies.get("keystore"), Cookies.get("password"))
+    }
+  }
 
   startScanning() {
     this.scanningStarted = true;
@@ -16,6 +25,15 @@ export default class TimeNodeStore {
 
   stopScanning() {
     this.scanningStarted = false;
+  }
+
+  encrypt(string) {
+    return CryptoJS.AES.encrypt(string, "123456789");
+  }
+
+  decrypt(string) {
+    const bytes = CryptoJS.AES.decrypt(string.toString(), "123456789")
+    return bytes.toString(CryptoJS.enc.Utf8);
   }
 
   async startClient(keystore, password) {
@@ -26,8 +44,8 @@ export default class TimeNodeStore {
     const AlarmClient = this._eacService.AlarmClient;
 
     const program = {
-      wallet: keystore,
-      password,
+      wallet: this.decrypt(keystore),
+      password: this.decrypt(password),
       provider: 'http://localhost:8545',
       logfile: 'console',
       logLevel: 1,
@@ -62,8 +80,4 @@ export default class TimeNodeStore {
     return true;
   }
 
-  constructor(eacService, web3Service) {
-    this._eacService = eacService;
-    this._web3Service = web3Service;
-  }
 }

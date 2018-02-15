@@ -14,19 +14,23 @@ class TimeNodeWallet extends Component {
 
   verifyKeystore() {
     const file = this.walletFileRef.files[0];
-    const password = this.passwdRef.value;
     const timeNodeStore = this.props.timeNodeStore;
+    const password = timeNodeStore.encrypt(this.passwdRef.value);
 
     if (file) {
       const reader = new FileReader();
       reader.onload = async function() {
-        const keystore = reader.result;
+        const keystore = timeNodeStore.encrypt(reader.result);
 
-        // TEMPORARY
-        // Replace this logic with a proper wallet import
         if (keystore && password) {
           const success = await timeNodeStore.startClient(keystore, password);
-          if (success) Cookies.set('verifiedWallet', true);
+          if (success) {
+            // Fundamentally insecure - replace later
+            Cookies.set('keystore', keystore);
+            Cookies.set('password', password);
+
+            Cookies.set('verifiedWallet', true);
+          }
         }
       }
       reader.readAsText(file, "utf-8");
