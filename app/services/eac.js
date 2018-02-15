@@ -6,7 +6,7 @@ let web3 = null;
 
 const additionalMethods = {
   getRequestLibInstance(address) {
-    return web3.eth.contract(RequestLib, address).at(address);
+    return web3.eth.contract(RequestLib).at(address);
   }
 };
 

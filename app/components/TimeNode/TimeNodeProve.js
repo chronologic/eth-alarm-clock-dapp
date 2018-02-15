@@ -67,7 +67,7 @@ class TimeNodeProve extends Component {
 
         <div className="row">
           <div className="col-md-12">
-            <button className="btn btn-primary pull-right mr-4 px-5" 
+            <button className="btn btn-primary pull-right mr-4 px-5"
               type="button"
               onClick={this.verifyDayTokens}>Verify</button>
           </div>
