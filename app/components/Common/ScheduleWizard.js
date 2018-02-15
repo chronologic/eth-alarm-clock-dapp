@@ -6,6 +6,8 @@ import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
 import { observer, inject } from 'mobx-react';
+import moment from 'moment';
+import 'moment-timezone';
 
 @inject('scheduleStore')
 @inject('transactionStore')
@@ -98,14 +100,23 @@ class ScheduleWizard extends Component {
 
   async scheduleTransaction() {
     const { scheduleStore,transactionStore } = this.props;
+    let executionTime, executionWindow;
+    if(scheduleStore.isUsingTime){
+       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
+       executionWindow = scheduleStore.executionWindow * 60
+    }
+    executionTime = scheduleStore.blockNumber;
+    executionWindow = scheduleStore.blockSize;
     await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
                                  scheduleStore.gasAmount,
-                                 scheduleStore.gasPrice,
-                                 scheduleStore.executionWindow,
-                                 scheduleStore.customWindow,
-                                 scheduleStore.donation,
                                  scheduleStore.amountToSend,
+                                 executionWindow,
+                                 executionTime,
+                                 scheduleStore.gasPrice,
+                                 scheduleStore.donation,
+                                 scheduleStore.timeBounty,
+                                 scheduleStore.deposit,
                                  scheduleStore.isUsingTime
                                );
   }

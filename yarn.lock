@@ -4836,6 +4836,10 @@ js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.3.tgz#2e545ec2b0f2957f41356510205214e98fad6582"
 
+js-cookie@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-2.2.0.tgz#1b2c279a6eece380a12168b92485265b35b1effb"
+
 js-scrypt@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/js-scrypt/-/js-scrypt-0.2.0.tgz#7a62b701b4616e70ad0cde544627aabb99d7fe39"
@@ -5671,15 +5675,15 @@ mobx-react-router@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/mobx-react-router/-/mobx-react-router-4.0.1.tgz#72f67b5c637d187595415500e8afa5cddb2231ab"
 
-mobx-react@^4.3.5:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.4.0.tgz#4f9ecea2d2ba453b41927d26a81c844b89f77f95"
+mobx-react@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.4.1.tgz#7cc793b55bbb7485f1febd18c1913c581c124edc"
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-mobx@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.4.1.tgz#37abe5ee882d401828d9f26c6c1a2f47614bbbef"
+mobx@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.5.1.tgz#8e682ec535cf44e04005b9e37e2df66acc975a42"
 
 mocha@*:
   version "5.0.0"
@@ -5747,13 +5751,10 @@ module-deps@^4.0.2, module-deps@^4.0.8:
     through2 "^2.0.0"
     xtend "^4.0.0"
 
-<<<<<<< HEAD
-=======
 moment-duration-format@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/moment-duration-format/-/moment-duration-format-2.2.1.tgz#b9ce5e5051a15282a0a6c361f0c05685c7ead47c"
 
->>>>>>> c55fa90279982101735c28eb5831c6c61ad0bfe7
 moment-timezone@^0.5.14:
   version "0.5.14"
   resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.14.tgz#4eb38ff9538b80108ba467a458f3ed4268ccfcb1"

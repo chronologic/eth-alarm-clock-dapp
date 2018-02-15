@@ -13,6 +13,7 @@ export default class mobxStore {
 
 //BlockComponent
   @observable blockNumber = '';
+  @observable blockSize = '';
 
 //BountySettings
 @observable requireDeposit = true;
