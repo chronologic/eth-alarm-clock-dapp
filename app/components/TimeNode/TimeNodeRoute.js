@@ -25,7 +25,7 @@ class TimeNodeRoute extends Component {
       <div className="container-fluid padding-25 sm-padding-10 subsection">
         <h1 className="view-title">
           {this.props.timeNodeStore.nodeStatus}&nbsp;
-          <span className="view-subtitle">{this.props.timeNodeStore.cookieToAddress()}</span>
+          <span className="view-subtitle">{this.props.timeNodeStore.getMyAddress()}</span>
         </h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {componentToShow}
