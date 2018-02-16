@@ -65,9 +65,9 @@ class ScheduleWizard extends Component {
       yourData: true,
     },
     Errors:{
-      numeric:'Please enter valid value/amount',
-      minimum_numeric:'Value/amount shall be greater or equal to minimum value of 1',
-      minimum_decimal:'Value/amount shall be greater or equal to minimum value of 0.0000000000000000001 '
+      numeric: 'Please enter valid value/amount',
+      minimum_numeric: 'Value/amount shall be greater or equal to minimum value of 1',
+      minimum_decimal: 'Value/amount shall be greater or equal to minimum value of 0.0000000000000000001 '
     }
   }
 
