@@ -13,7 +13,7 @@ class ConfirmSettings extends Component {
   }
   state = {}
 
-  totalCost() {
+   totalCost() {
     const { scheduleStore,web3Service } = this.props;
     let gasPriceEth = web3Service.toEth(scheduleStore.gasPrice);
     const _totalCost = (gasPriceEth * scheduleStore.gasAmount) + scheduleStore.timeBounty + Number(scheduleStore.donation);

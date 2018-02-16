@@ -36,7 +36,8 @@ export default class Web3Service {
 
     @action
      toEth(_wei){
-        const ethValue = window.web3.fromWei(_wei,'gwei');
+        const _toWei = window.web3.toWei(_wei,'gwei') ;
+        const ethValue = window.web3.fromWei(_toWei,'ether');
         return ethValue;
     }
 
