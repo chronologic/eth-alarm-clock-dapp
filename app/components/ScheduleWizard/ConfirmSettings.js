@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { inject,observer } from 'mobx-react';
 
 @inject('scheduleStore')
-@inject('transactionStore')
+@inject('eacService')
 @inject('web3Service')
 @observer
 class ConfirmSettings extends Component {
@@ -11,13 +11,16 @@ class ConfirmSettings extends Component {
   constructor(props){
     super(props);
   }
-  state = {}
+  state = { }
 
-   totalCost() {
-    const { scheduleStore,web3Service } = this.props;
-    let gasPriceEth = web3Service.toEth(scheduleStore.gasPrice);
-    const _totalCost = (gasPriceEth * scheduleStore.gasAmount) + scheduleStore.timeBounty + Number(scheduleStore.donation);
-    return _totalCost;
+  totalCost() {
+    const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
+    let { gasAmount, amountToSend, gasPrice, donation, deposit } = scheduleStore;
+    amountToSend = web3.toWei(amountToSend, 'ether');
+    donation = web3.toWei(donation, 'ether');
+    deposit = web3.toWei(deposit,'ether');
+    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, donation, deposit);
+    return web3.fromWei(endowment, 'ether').valueOf();
   }
 
   executionWindow() {
@@ -38,6 +41,7 @@ class ConfirmSettings extends Component {
 
   render() {
     const { scheduleStore } = this.props;
+
     return (
       <div id="confirmSettings">
         <div className="row">
@@ -88,7 +92,7 @@ class ConfirmSettings extends Component {
                 </tr>
                 <tr>
                   <td><strong>Total cost</strong></td>
-                  <td><strong>{this.totalCost()}</strong></td>
+                  <td><strong> { this.totalCost() } Eth </strong></td>
                 </tr>
               </tbody>
             </table>
@@ -102,6 +106,7 @@ class ConfirmSettings extends Component {
 ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any,
   web3Service: PropTypes.any
+  eacService: PropTypes.any
 };
 
 export default ConfirmSettings;
