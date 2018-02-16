@@ -5,13 +5,9 @@ export default class MemoryLogger {
   // 2 - info
   // 3 - error
 
-  logLevel = 1
-  storageArray = []
-  storageArrayUpdated = () => {}
-
-  constructor(logLevel, storageArrayUpdated) {
+  constructor(logLevel, logs) {
     this.logLevel = logLevel;
-    this.storageArrayUpdated = storageArrayUpdated;
+    this.logs = logs;
   }
 
   cache(message) {
@@ -32,8 +28,6 @@ export default class MemoryLogger {
 
   log(message) {
     const timestamp = moment().unix();
-    this.storageArray.push([timestamp, message]);
-
-    this.storageArrayUpdated(this.storageArray);
+    this.logs.push([timestamp, message]);
   }
 }

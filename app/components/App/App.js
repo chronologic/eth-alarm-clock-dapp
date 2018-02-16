@@ -59,7 +59,7 @@ class App extends Component {
             <div className="content sm-gutter">
               <Switch>
                 <Route exact path="/" component={ScheduleRoute}/>
-                <Route path="/awaiting" component={AwaitingMining}/>
+                <Route path="/awaiting/:type/:hash" component={AwaitingMining}/>
                 <Route path="/transactions" component={TransactionsRoute}/>
                 <Route path="/timenode" component={TimeNodeRoute}/>
                 <Route component={URLNotFound}/>

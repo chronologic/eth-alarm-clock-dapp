@@ -6,7 +6,8 @@ import {
     runInAction
 } from 'mobx';
 import {
-    Networks
+    Networks,
+    Explorers
 } from '../config/web3Config.js'
 
 let instance = null;
@@ -18,6 +19,7 @@ export default class Web3Service {
     @observable connectedToMetaMask = null;
     @observable accounts = null;
     @observable netId = null;
+    @observable explorer = null;
 
     constructor(props) {
         Object.assign(this, props);
@@ -34,36 +36,53 @@ export default class Web3Service {
         }
     }
 
-    @action
      toEth(_wei){
         const _toWei = window.web3.toWei(_wei,'gwei') ;
         const ethValue = window.web3.fromWei(_toWei,'ether');
         return ethValue;
     }
 
-    @action
+    async fetchReceipt(hash) {
+        let { web3 } = this;
+        let receipt = await Bb.fromCallback(callback =>
+            web3.eth.getTransactionReceipt(hash, callback));
+        return receipt;
+    }
+
+    async fetchLog(hash,event) {
+        const receipt = await this.trackTransaction(hash);
+        let Log;
+        receipt.logs.map( (log) => {
+            if (log.topics[0] == event){
+                Log = log;
+                return;
+            }
+        } )
+        return Log;
+    }
+
     async trackTransaction(hash) {
-        if (!(await this.fetchReceipt(hash))) {
+        let receipt;
+        if (!(receipt = await this.fetchReceipt(hash))) {
             const txReceipt = new Promise((resolve) => {
                 setTimeout(async () => {
                     resolve(await this.trackTransaction(hash));
                 }, 2000);
-
             });
             return txReceipt;
+        } else {
+            return receipt;
         }
     }
 
-    @action
     async fetchConfirmations(transaction) {
         const mined = await this.trackTransaction(transaction);
         const block = await this.fetchBlockNumber();
-        if (!mined.blockNumber) {
-            const confirmations = new Promise((resolve, reject) => {
+        if (!mined || !mined.blockNumber) {
+            const confirmations = new Promise((resolve) => {
                 setTimeout(async () => {
                     resolve(await this.fetchConfirmations(transaction));
                 }, 2000);
-                reject();
             });
             return confirmations;
         } else {
@@ -71,7 +90,6 @@ export default class Web3Service {
         }
     }
 
-    @action
     async fetchBlockNumber() {
         const {
             web3
@@ -79,6 +97,12 @@ export default class Web3Service {
         const block = await Bb.fromCallback(callback =>
             web3.eth.getBlockNumber(callback));
         return block;
+    }
+
+    async hasCode ( address ) {
+        const { web3 } = this;
+        const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
+        return code.toString() != '0x0';
     }
 
     @action
@@ -103,6 +127,7 @@ export default class Web3Service {
         const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
+            this.explorer = Explorers[this.netId]
         });
     }
 

@@ -58,10 +58,10 @@ export class TransactionStore {
   async setup() {
     this._eacScheduler = await this._eac.scheduler();
 
-    await this._web3.connect();
+    await this._web3.awaitInitialized();
   }
 
-  async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }) {
+  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
     const requestFactory = await this._eac.requestFactory();
 
     let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
@@ -80,7 +80,7 @@ export class TransactionStore {
     }
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved }) {
+  async queryTransactions( { transactions, offset, limit, resolved } ) {
     const processed = [];
 
     for (let transaction of transactions) {
@@ -105,16 +105,16 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered({ startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock });
+  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
+    let transactions = await this.getTransactions( { startBlock, endBlock } );
 
     if (typeof(resolved) !== 'undefined') {
-      return this.queryTransactions({
+      return this.queryTransactions( {
         transactions,
         offset,
         limit,
         resolved
-      });
+      } );
     }
 
     const total = transactions.length;
@@ -145,6 +145,11 @@ export class TransactionStore {
     return status;
   }
 
+  async getTransactionByAddress(address) {
+    const txRequest = await this._eac.transactionRequest(address, this._web3);
+    return txRequest;
+  }
+
   async isTransactionResolved(transaction) {
     const isMissed = await this.isTransactionMissed(transaction);
 
@@ -157,14 +162,17 @@ export class TransactionStore {
     return executionWindowClosed && !transaction.wasCalled;
   }
 
-  async getTransactionByAddress(address) {
-    const txRequest = this._eac.transactionRequest(address, this._web3);
-
-    return txRequest;
+  async isTransactionFrozen(transaction) {
+    const isFrozen = await transaction.inFreezePeriod();
+    return isFrozen;
   }
 
   isTxUnitTimestamp(transaction) {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+  }
+
+  async cancel(transaction,txParameters) {
+    return await transaction.cancel(txParameters);
   }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, isTimestamp) {
@@ -175,7 +183,8 @@ export class TransactionStore {
       new BigNumber(Number(donation)),
       new BigNumber(Number(payment))
     )
-    await this._eacScheduler.initSender ({
+
+    await this._eacScheduler.initSender ( {
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment

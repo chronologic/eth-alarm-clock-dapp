@@ -24,7 +24,6 @@ class BlockComponent extends AbstractSetting {
     }
     this.validators.blockNumber = this.blockNumberValidator();
     scheduleStore.isUsingTime = false;
-    
   }
 
   blockNumberValidator() {
