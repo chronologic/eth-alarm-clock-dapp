@@ -15,7 +15,7 @@ class BountySettings extends AbstractSetting {
     this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
   }
   validators = {
-    timeBounty: this.integerValidator(),
+    timeBounty: this.decimalValidator(),
     deposit: this.decimalValidator(),
     requireDeposit: this.booleanValidator()
   }
