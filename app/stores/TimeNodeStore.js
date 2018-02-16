@@ -191,7 +191,7 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid){ //&& this.nodeStatus != TIMENODE_STATUS.DISABLED) {
+    if (isValid && this.nodeStatus != TIMENODE_STATUS.DISABLED) {
       this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
       this.attachedDAYAccount = encryptedAttachedAddress;
     } else {
