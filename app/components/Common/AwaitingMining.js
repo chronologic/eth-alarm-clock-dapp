@@ -16,7 +16,7 @@ const mineDestinations =  {
       prop: 'newContract',
       logEventHex: services.eacService.Constants.NEWREQUESTLOG,
       logEventTypes: ['address'],
-      nextParameterPos: 0
+      nextParameterPosition: 0
     }
 }
 
@@ -80,15 +80,16 @@ class AwaitingMining extends Component {
         }
       }
 
-      console.log(mineDestinations[type].logEventTypes, log.data);
       if (mineDestinations[type].logEventTypes && mineDestinations[type].logEventHex) {
         const log = await web3Service.fetchLog(transactionHash, mineDestinations[type].logEventHex);
-        console.log(log, Coder, mineDestinations[type].logEventTypes, log.data);
-        const args = Coder.decodeParams(mineDestinations[type].logEventTypes, log.data)
-        console.log(mineDestinations[type].logEventTypes, log.data, args);
-
+        const data = log.data.substring(2);//truncate data for decoding
+        const args = Coder.decodeParams(mineDestinations[type].logEventTypes, data);
+        let newSate = {};
+        newSate[mineDestinations[type].prop] = args[mineDestinations[type].nextParameterPosition];
+        this.setState(newSate);
       }
-        
+      
+      this.next();
     }
   }
 
