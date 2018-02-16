@@ -177,7 +177,7 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const isValid = (addr == signature.address);
+    const isValid = (addr === signature.address);
     return { isValid, addr };
   }
 
@@ -191,7 +191,7 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid && this.nodeStatus != TIMENODE_STATUS.DISABLED) {
+    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
       this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
       this.attachedDAYAccount = encryptedAttachedAddress;
     } else {
