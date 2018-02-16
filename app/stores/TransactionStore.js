@@ -175,7 +175,7 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, isTimestamp) {
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, waitFormined, isTimestamp,) {
     const endowment = await this._eac.Util.calcEndowment(
       new BigNumber(Number(callGas)),
       new BigNumber(Number(callValue)),
@@ -201,7 +201,8 @@ export class TransactionStore {
           gasPrice,
           donation,
           payment,
-          requiredDeposit
+          requiredDeposit,
+          waitFormined
       )
         return receipt;
     }
@@ -216,7 +217,8 @@ export class TransactionStore {
         gasPrice,
         donation,
         payment,
-        requiredDeposit
+        requiredDeposit,
+        waitFormined
     )
       return receipt;
 }

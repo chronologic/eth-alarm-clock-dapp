@@ -108,18 +108,20 @@ class ScheduleWizard extends Component {
         executionTime = scheduleStore.blockNumber;
         executionWindow = scheduleStore.blockSize;
     }
-    await transactionStore.schedule(scheduleStore.toAddress,
-                                 scheduleStore.yourData,
-                                 scheduleStore.gasAmount,
-                                 scheduleStore.amountToSend,
-                                 executionWindow,
-                                 executionTime,
-                                 scheduleStore.gasPrice,
-                                 scheduleStore.donation,
-                                 scheduleStore.timeBounty,
-                                 scheduleStore.deposit,
-                                 scheduleStore.isUsingTime
-                               );
+    const scheduled = await transactionStore.schedule(scheduleStore.toAddress,
+                                                    scheduleStore.yourData,
+                                                    scheduleStore.gasAmount,
+                                                    scheduleStore.amountToSend,
+                                                    executionWindow,
+                                                    executionTime,
+                                                    scheduleStore.gasPrice,
+                                                    scheduleStore.donation,
+                                                    scheduleStore.timeBounty,
+                                                    scheduleStore.deposit,
+                                                    false, //do not wait for mining to return values
+                                                    scheduleStore.isUsingTime
+                                                  );
+    //console.log(scheduled)
   }
 
 componentDidMount() {
