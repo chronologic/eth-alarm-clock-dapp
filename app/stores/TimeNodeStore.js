@@ -24,8 +24,8 @@ export default class TimeNodeStore {
   @observable scanningStarted = false;
   @observable logs = [];
 
-  @observable balanceETH = 0;
-  @observable balanceDAY = 0;
+  @observable balanceETH = null;
+  @observable balanceDAY = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
@@ -144,7 +144,7 @@ export default class TimeNodeStore {
 
     const balance = parseInt(balanceNum);
 
-    this.updateNodeStatus(balance)
+    this.updateNodeStatus(balance);
     this.balanceDAY = balance;
 
     return balance;
@@ -177,7 +177,7 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const isValid = (addr == signature.address);
+    const isValid = (addr === signature.address);
     return { isValid, addr };
   }
 
@@ -191,7 +191,7 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid && numDAYTokens > 0) {
+    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
       this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
       this.attachedDAYAccount = encryptedAttachedAddress;
     } else {
