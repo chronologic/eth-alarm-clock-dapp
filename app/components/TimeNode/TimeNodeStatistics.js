@@ -12,6 +12,11 @@ class TimeNodeStatistics extends Component {
     this.stopTimeNode = this.stopTimeNode.bind(this);
   }
 
+  async componentWillMount() {
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
+  }
+
   getStopButton() {
     return <button className="btn btn-danger" onClick={this.stopTimeNode}>Stop</button>;
   }
@@ -88,12 +93,12 @@ class TimeNodeStatistics extends Component {
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-6">ETH</div>
-                  <div className="col-md-6">99</div>
+                  <div className="col-md-6">{this.props.timeNodeStore.balanceETH}</div>
                 </div>
                 <hr className="mt-2 mb-2"/>
                 <div className="row">
                   <div className="col-md-6">DAY</div>
-                  <div className="col-md-6">2000</div>
+                  <div className="col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
                 </div>
               </div>
             </div>
