@@ -2,18 +2,22 @@ import React, { Component } from 'react';
 import { Router } from 'react-router';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
+import { services } from '../../services';
+import Coder from 'web3/lib/solidity/coder';
 import { PacmanLoader } from 'react-spinners';
 
 const loaderConfig = {
   color:'#21ffff'
 }
 
-const mineDestinations = {
-  scheduler:{
-    path: 'transactions',
-    prop: 'newContract',
-    logEvent:''
-  }
+const mineDestinations =  {
+    scheduler: {
+      path: 'transactions',
+      prop: 'newContract',
+      logEventHex: services.eacService.Constants.NEWREQUESTLOG,
+      logEventTypes: ['address'],
+      nextParameterPos: 0
+    }
 }
 
 @inject('web3Service')
@@ -35,18 +39,56 @@ class AwaitingMining extends Component {
 
   async loadUp (){
     const { web3Service } = this.props;
-    const { hash } = this.props.match.params;
+    const { web3Service: { web3 } } = this.props;
+    const { hash, type } = this.props.match.params;
+    let unmined = true;
+    let unconfirmed = true;
 
     await web3Service.awaitInitialized();
 
     if (web3.isAddress(hash)) {
-      this.state.newContract = hash;
+      this.setState( { newContract: hash } );
     } else {
-      this.state.transactionHash = hash;
+      this.setState( { transactionHash: hash } );
     }
 
     if ( this.state.newContract ) {
         return this.next();
+    }
+    
+    if (this.state.transactionHash ) {
+      const { transactionHash } = this.state;
+
+      while ( unmined ) {
+        let txReceipt = await web3Service.fetchReceipt(transactionHash);
+        if (!txReceipt) {
+          this.setState( { deploying: true } );
+          await web3Service.trackTransaction(transactionHash);
+        } else {
+          this.setState( { deploying: false } );
+          unmined = false;
+        }
+      }
+
+      while ( unconfirmed ) {
+        const confirmations = await web3Service.fetchConfirmations(transactionHash);
+        if ( confirmations < 1 ){
+          this.setState( { minning: true} );
+        } else {
+          this.setState( { minning: false } );
+          unconfirmed = false;
+        }
+      }
+
+      console.log(mineDestinations[type].logEventTypes, log.data);
+      if (mineDestinations[type].logEventTypes && mineDestinations[type].logEventHex) {
+        const log = await web3Service.fetchLog(transactionHash, mineDestinations[type].logEventHex);
+        console.log(log, Coder, mineDestinations[type].logEventTypes, log.data);
+        const args = Coder.decodeParams(mineDestinations[type].logEventTypes, log.data)
+        console.log(mineDestinations[type].logEventTypes, log.data, args);
+
+      }
+        
     }
   }
 

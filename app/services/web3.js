@@ -36,29 +36,48 @@ export default class Web3Service {
         }
     }
 
-    @action
+    async fetchReceipt(hash) {
+        let { web3 } = this;
+        let receipt = await Bb.fromCallback(callback =>
+            web3.eth.getTransactionReceipt(hash, callback));
+        return receipt;
+    }
+
+    async fetchLog(hash,event) {
+        const { web3 } = this;
+        const receipt = await this.trackTransaction(hash);
+        let Log;
+        receipt.logs.map( (log) => {
+            if (log.topics[0] == event){
+                Log = log;
+                return;
+            }
+        } )
+        return Log;
+    }
+
     async trackTransaction(hash) {
-        if (!(await this.fetchReceipt(hash))) {
+        let receipt;
+        if (!(receipt = await this.fetchReceipt(hash))) {
             const txReceipt = new Promise((resolve) => {
                 setTimeout(async () => {
                     resolve(await this.trackTransaction(hash));
                 }, 2000);
-
             });
             return txReceipt;
+        } else {
+            return receipt;
         }
     }
 
-    @action
     async fetchConfirmations(transaction) {
         const mined = await this.trackTransaction(transaction);
         const block = await this.fetchBlockNumber();
-        if (!mined.blockNumber) {
+        if (!mined || !mined.blockNumber) {
             const confirmations = new Promise((resolve, reject) => {
                 setTimeout(async () => {
                     resolve(await this.fetchConfirmations(transaction));
                 }, 2000);
-                reject();
             });
             return confirmations;
         } else {
@@ -66,7 +85,6 @@ export default class Web3Service {
         }
     }
 
-    @action
     async fetchBlockNumber() {
         const {
             web3
@@ -77,8 +95,8 @@ export default class Web3Service {
     }
 
     async hasCode ( address ) {
-      const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
-      return code.toString() != '0x0';
+        const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
+        return code.toString() != '0x0';
     }
 
     @action
