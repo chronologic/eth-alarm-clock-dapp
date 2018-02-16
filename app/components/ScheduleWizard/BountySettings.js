@@ -20,10 +20,10 @@ class BountySettings extends AbstractSetting {
     requireDeposit: this.booleanValidator()
   }
 
-  toggleRequiredDeposit(){
+  toggleRequiredDeposit() {
     const { scheduleStore } = this.props;
     scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
-    }
+  }
 
   render() {
     const { scheduleStore, } = this.props;

@@ -104,11 +104,11 @@ class ScheduleWizard extends Component {
     const { scheduleStore,transactionStore } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
-       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
-       executionWindow = scheduleStore.executionWindow * 60
+      executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
+      executionWindow = scheduleStore.executionWindow * 60
     }else {
-        executionTime = scheduleStore.blockNumber;
-        executionWindow = scheduleStore.blockSize;
+      executionTime = scheduleStore.blockNumber;
+      executionWindow = scheduleStore.blockSize;
     }
     const scheduled = await transactionStore.schedule(scheduleStore.toAddress,
                                                     scheduleStore.yourData,
