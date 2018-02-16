@@ -54,7 +54,7 @@ class BlockComponent extends AbstractSetting {
       return 0;
     },
     errors: [
-      'Please enter a valid window size, minimum 2'
+      'Please enter a valid window size, minimum 10'
     ]
   },
   }

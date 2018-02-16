@@ -31,6 +31,7 @@ class ScheduleWizard extends Component {
       },
       BlockComponent: {
         blockNumber: true,
+        blockSize: true,
       }
     },
     BountySettings: {
@@ -82,6 +83,7 @@ class ScheduleWizard extends Component {
       },
       BlockComponent: {
         blockNumber: '',
+        blockSize: '',
       }
     },
     BountySettings: {
