@@ -41,9 +41,7 @@ class TransactionDetailsRoute extends Component {
       }
     } else {
       // Display a loader spinner
-      content = <div className='sweet-loading horizontal-center'>
-          <BeatLoader loading={!this.state.fetchedTransactions}/>
-        </div>;
+      content = <div></div>;
     }
 
     return (
@@ -51,6 +49,11 @@ class TransactionDetailsRoute extends Component {
         <h1 className="view-title">Transaction details <span className="view-subtitle">{txAddress}</span></h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           <div className="tab-content p-4">
+            { !this.state.fetchedTransactions &&
+              <div className='sweet-loading horizontal-center'>
+                <BeatLoader loading={!this.state.fetchedTransactions} />
+              </div>
+            }
             {content}
           </div>
         </div>
