@@ -10,7 +10,7 @@ const loaderConfig = {
 
 const mineDestinations = {
   scheduler:{
-    path: 'transaction',
+    path: 'transactions',
     prop: 'newContract',
     logEvent:''
   }
