@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
 @observer
@@ -10,6 +9,20 @@ class TimeNodeWallet extends Component {
   constructor(props) {
     super(props);
     this.verifyKeystore = this.verifyKeystore.bind(this);
+  }
+
+  _handleEnterPress = event => {
+    if(event.key !== "Enter") return;
+    document.querySelector("#verifyWalletBtn").click();
+    event.preventDefault();
+  };
+
+  componentDidMount() {
+    this.passwdRef.addEventListener('keyup', this._handleEnterPress);
+  }
+
+  componentWillUnmount() {
+    this.passwdRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
   verifyKeystore() {
@@ -21,16 +34,8 @@ class TimeNodeWallet extends Component {
       const reader = new FileReader();
       reader.onload = async function() {
         const keystore = timeNodeStore.encrypt(reader.result);
-
         if (keystore && password) {
-          const success = await timeNodeStore.startClient(keystore, password);
-          if (success) {
-            // Fundamentally insecure - replace later
-            Cookies.set('tn', keystore);
-            Cookies.set('tnp', password);
-
-            Cookies.set('verifiedWallet', true);
-          }
+          await timeNodeStore.startClient(keystore, password);
         }
       }
       reader.readAsText(file, "utf-8");
@@ -51,7 +56,8 @@ class TimeNodeWallet extends Component {
           <div className="row">
             <div className="col-md-4">
               <div className="form-group form-group-default">
-                <input type="password"
+                <input id="walletPassword"
+                  type="password"
                   placeholder="Password"
                   className="form-control"
                   ref={(el) => this.passwdRef = el}/>
@@ -61,7 +67,8 @@ class TimeNodeWallet extends Component {
         </div>
         <div className="row">
           <div className="col-md-12">
-            <button className="btn btn-primary pull-right mr-4 px-5"
+            <button id="verifyWalletBtn"
+              className="btn btn-primary pull-right mr-4 px-5"
               type="button"
               onClick={this.verifyKeystore}>Unlock</button>
           </div>
