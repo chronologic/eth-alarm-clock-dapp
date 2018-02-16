@@ -44,7 +44,6 @@ export default class Web3Service {
     }
 
     async fetchLog(hash,event) {
-        const { web3 } = this;
         const receipt = await this.trackTransaction(hash);
         let Log;
         receipt.logs.map( (log) => {
@@ -74,7 +73,7 @@ export default class Web3Service {
         const mined = await this.trackTransaction(transaction);
         const block = await this.fetchBlockNumber();
         if (!mined || !mined.blockNumber) {
-            const confirmations = new Promise((resolve, reject) => {
+            const confirmations = new Promise((resolve) => {
                 setTimeout(async () => {
                     resolve(await this.fetchConfirmations(transaction));
                 }, 2000);
@@ -95,6 +94,7 @@ export default class Web3Service {
     }
 
     async hasCode ( address ) {
+        const { web3 } = this;
         const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
         return code.toString() != '0x0';
     }
