@@ -36,7 +36,6 @@ class ConfirmSettings extends Component {
       return scheduleStore.blockNumber;
   }
 
-
   render() {
     const { scheduleStore } = this.props;
     return (
