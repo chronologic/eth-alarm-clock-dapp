@@ -38,6 +38,7 @@ class TimeComponent extends AbstractSetting {
     const defaultTime = moment().add(1, 'hours').format('HH:mm');
     const defaultDate = moment().add(1, 'hours').toDate().toLocaleDateString();
     const localTimezone = moment.tz.guess();
+    scheduleStore.isUsingTime = true;
     scheduleStore.timezone = scheduleStore.timezone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;

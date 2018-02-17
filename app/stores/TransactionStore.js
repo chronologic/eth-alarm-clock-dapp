@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { observable, computed } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
@@ -58,7 +57,7 @@ export class TransactionStore {
   async setup() {
     this._eacScheduler = await this._eac.scheduler();
 
-    await this._web3.connect();
+    await this._web3.awaitInitialized();
   }
 
   async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
@@ -175,48 +174,46 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, timestamp) {
-    const endowment = await this._eacScheduler.calcEndowment(
-      new BigNumber(callGas),
-      new BigNumber(callValue),
-      new BigNumber(gasPrice),
-      new BigNumber(donation),
-      new BigNumber(payment)
-    )
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, waitFormined, isTimestamp,) {
+    const endowment = this._eac.calcEndowment(callGas,callValue,gasPrice,donation,payment);
 
     await this._eacScheduler.initSender ( {
       from: this._web3.eth.defaultAccount,
       gas: 3000000,
       value: endowment
-    } );
+    });
 
-    if(timestamp) {
-      await this._eacScheduler.timeStampSchedule (
-        toAddress,
-        this._web3.web3.fromAscii(callData),
-        callGas,
-        callValue,
-        windowSize,
-        windowStart,
-        gasPrice,
-        donation,
-        payment,
-        requiredDeposit
+    if(isTimestamp) {
+        const receipt = await this._eacScheduler.timestampSchedule (
+          toAddress,
+          callData,
+          callGas,
+          callValue,
+          windowSize,
+          windowStart,
+          gasPrice,
+          donation,
+          payment,
+          requiredDeposit,
+          waitFormined
       )
-    } else {
-      await this._eacScheduler.blockSchedule (
-        toAddress,
-        this._web3.web3.fromAscii(callData),
-        callGas,
-        callValue,
-        windowSize,
-        windowStart,
-        gasPrice,
-        donation,
-        payment,
-        requiredDeposit
-      )
+        return receipt;
     }
-  }
 
+      const receipt = await this._eacScheduler.blockSchedule (
+        toAddress,
+        this._web3.web3.fromAscii(callData),
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        donation,
+        payment,
+        requiredDeposit,
+        waitFormined
+    )
+      return receipt;
 }
+
+  }
