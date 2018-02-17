@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { observer, inject } from 'mobx-react';
+import moment from 'moment';
+import 'moment-timezone';
 import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
-import { observer, inject } from 'mobx-react';
-import moment from 'moment';
-import 'moment-timezone';
 
+@inject('web3Service')
 @inject('scheduleStore')
 @inject('transactionStore')
 @observer
@@ -31,6 +33,7 @@ class ScheduleWizard extends Component {
       },
       BlockComponent: {
         blockNumber: true,
+        blockSize: true,
       }
     },
     BountySettings: {
@@ -65,9 +68,9 @@ class ScheduleWizard extends Component {
       yourData: true,
     },
     Errors:{
-      numeric:'Please enter valid value/amount',
-      minimum_numeric:'Value/amount shall be greater or equal to minimum value of 1',
-      minimum_decimal:'Value/amount shall be greater or equal to minimum value of 0.0000000000000000001 '
+      numeric: 'Please enter valid value/amount',
+      minimum_numeric: 'Value/amount shall be greater or equal to minimum value of 1',
+      minimum_decimal: 'Value/amount shall be greater or equal to minimum value of 0.0000000000000000001 '
     }
   }
 
@@ -82,6 +85,7 @@ class ScheduleWizard extends Component {
       },
       BlockComponent: {
         blockNumber: '',
+        blockSize: '',
       }
     },
     BountySettings: {
@@ -99,26 +103,41 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
-    const { scheduleStore,transactionStore } = this.props;
+    const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
-       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
-       executionWindow = scheduleStore.executionWindow * 60
+      executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
+      executionWindow = scheduleStore.executionWindow * 60;
+    }else {
+      executionTime = scheduleStore.blockNumber;
+      executionWindow = scheduleStore.blockSize;
     }
-    executionTime = scheduleStore.blockNumber;
-    executionWindow = scheduleStore.blockSize;
-    await transactionStore.schedule(scheduleStore.toAddress,
-                                 scheduleStore.yourData,
-                                 scheduleStore.gasAmount,
-                                 scheduleStore.amountToSend,
-                                 executionWindow,
-                                 executionTime,
-                                 scheduleStore.gasPrice,
-                                 scheduleStore.donation,
-                                 scheduleStore.timeBounty,
-                                 scheduleStore.deposit,
-                                 scheduleStore.isUsingTime
-                               );
+
+    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit, isUsingTime } = scheduleStore;
+
+    amountToSend = web3.toWei(amountToSend, 'ether');
+    gasPrice = web3.toWei(gasPrice, 'gwei');
+    donation = web3.toWei(donation, 'ether');
+    timeBounty = web3.toWei(timeBounty, 'ether');
+    deposit = web3.toWei(deposit, 'ether');
+
+    const scheduled = await transactionStore.schedule(toAddress,
+                                                    yourData,
+                                                    gasAmount,
+                                                    amountToSend,
+                                                    executionWindow,
+                                                    executionTime,
+                                                    gasPrice,
+                                                    donation,
+                                                    timeBounty,
+                                                    deposit,
+                                                    false, //do not wait for mining to return values
+                                                    isUsingTime
+                                                  );
+
+  if (scheduled) {
+      history.push('/awaiting/scheduler/' + scheduled.transactionHash);
+    }
   }
 
 componentDidMount() {
@@ -217,5 +236,12 @@ componentDidMount() {
     );
   }
 }
+
+ScheduleWizard.propTypes = {
+  web3Service: PropTypes.any,
+  scheduleStore: PropTypes.any,
+  transactionStore: PropTypes.any,
+  history: PropTypes.any,
+};
 
 export default ScheduleWizard;

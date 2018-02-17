@@ -22,12 +22,10 @@ class TimeSettings extends Component {
   }
 
   render() {
-    const { scheduleStore } = this.props;
     let componentToRender = null;
     if (this.state.isUsingTime) {
       componentToRender = <TimeComponent {...this.props}/>;
     } else {
-      scheduleStore.isUsingTime = false;
       componentToRender = <BlockComponent {...this.props}/>;
     }
 

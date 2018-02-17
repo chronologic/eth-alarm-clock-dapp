@@ -71,7 +71,7 @@ class AwaitingMining extends Component {
 
       while (unconfirmed) {
         const confirmations = await web3Service.fetchConfirmations(transactionHash);
-        if (confirmations < 1) {
+        if (confirmations < 2) {
           this.setState({ minning: true });
         } else {
           this.setState({ minning: false });
@@ -111,6 +111,7 @@ class AwaitingMining extends Component {
 
   render() {
     const { web3Service: { explorer } } = this.props;
+    const { transactionHash,newContract } = this.state;
 
     return (
       <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
@@ -131,13 +132,13 @@ class AwaitingMining extends Component {
             {this.state.transactionHash &&
               <p className="horizontal-center">
                 Transation Hash: <br />
-                <a target="_blank" href={explorer + '/tx/'} > {this.state.transactionHash} </a>
+              <a target="_blank" href={explorer + '/tx/' + transactionHash } > {this.state.transactionHash} </a>
               </p>
             }
             {this.state.newContract &&
               <p className="horizontal-center">
                 Contract Address: <br />
-                <a target="_blank" href={explorer + '/address/'} > {this.state.newContract} </a>
+              <a target="_blank" href={explorer + '/address/' + newContract } > {this.state.newContract} </a>
               </p>
             }
           </div>

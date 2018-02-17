@@ -36,6 +36,12 @@ export default class Web3Service {
         }
     }
 
+     toEth(_wei){
+        const _toWei = window.web3.toWei(_wei,'gwei') ;
+        const ethValue = window.web3.fromWei(_toWei,'ether');
+        return ethValue;
+    }
+
     async fetchReceipt(hash) {
         let { web3 } = this;
         let receipt = await Bb.fromCallback(callback =>

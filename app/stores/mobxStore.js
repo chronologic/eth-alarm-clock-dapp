@@ -9,7 +9,7 @@ export default class mobxStore {
   @observable transactionTime = moment().add(1, 'hours').format("hh:mm a");
   @observable executionWindow = '';
   @observable customWindow = '';
-  @observable donation = '';
+  @observable donation = 0;
 
 //BlockComponent
   @observable blockNumber = '';
@@ -29,6 +29,7 @@ export default class mobxStore {
 @observable yourData = '';
 
 @observable isUsingTime = true;
+
 
 constructor(source) {
     Object.assign(this, source);

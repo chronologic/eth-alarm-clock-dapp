@@ -50,11 +50,11 @@ class BlockComponent extends AbstractSetting {
     blockNumber: '',
     blockSize: {
       validator: (value) => {
-      if (Number(value) < 2) return 1;
+      if (Number(value) < 10) return 1;
       return 0;
     },
     errors: [
-      'Please enter a valid window size, minimum 2'
+      'Please enter a valid window size, minimum 10'
     ]
   },
   }
