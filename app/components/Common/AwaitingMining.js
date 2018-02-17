@@ -71,7 +71,7 @@ class AwaitingMining extends Component {
 
       while (unconfirmed) {
         const confirmations = await web3Service.fetchConfirmations(transactionHash);
-        if (confirmations < 1) {
+        if (confirmations < 2) {
           this.setState({ minning: true });
         } else {
           this.setState({ minning: false });
