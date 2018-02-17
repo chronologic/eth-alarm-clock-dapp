@@ -103,11 +103,11 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
-    const { scheduleStore,transactionStore,web3Service: { web3 } ,history } = this.props;
+    const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
-      executionWindow = scheduleStore.executionWindow * 60
+      executionWindow = scheduleStore.executionWindow * 60;
     }else {
       executionTime = scheduleStore.blockNumber;
       executionWindow = scheduleStore.blockSize;

@@ -11,7 +11,6 @@ class ConfirmSettings extends Component {
   constructor(props){
     super(props);
   }
-  state = { }
 
   totalCost() {
     const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
@@ -93,7 +92,7 @@ class ConfirmSettings extends Component {
                 </tr>
                 <tr>
                   <td><strong>Total cost</strong></td>
-                  <td><strong> { this.totalCost() } Eth </strong></td>
+                  <td><strong> { this.totalCost() } ETH </strong></td>
                 </tr>
               </tbody>
             </table>
