@@ -28,7 +28,7 @@ class TransactionDetailsRoute extends Component {
   render() {
     const { txAddress } = this.props.match.params;
 
-    let content = null;
+    let content = <div></div>;
 
     // If the list of transactions has been fetched
     if (this.state.fetchedTransactions) {
@@ -39,9 +39,6 @@ class TransactionDetailsRoute extends Component {
         // Throw a 404 if the transaction with that address does not exist
         content = <TransactionNotFound address={txAddress}/>
       }
-    } else {
-      // Display a loader spinner
-      content = <div></div>;
     }
 
     return (
@@ -51,7 +48,7 @@ class TransactionDetailsRoute extends Component {
           <div className="tab-content p-4">
             { !this.state.fetchedTransactions &&
               <div className='sweet-loading horizontal-center'>
-                <BeatLoader loading={!this.state.fetchedTransactions} />
+                <BeatLoader loading={true} />
               </div>
             }
             {content}
