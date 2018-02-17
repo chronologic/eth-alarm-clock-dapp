@@ -17,6 +17,8 @@ export class TIMENODE_STATUS {
   static DISABLED = 'Disabled';
 }
 
+const REMOTE_NODE = 'https://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/';
+
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
@@ -28,6 +30,8 @@ export default class TimeNodeStore {
   @observable balanceDAY = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
+
+  alarmClient = null;
 
   constructor(eacService, web3Service) {
     this._eacService = eacService;
@@ -41,10 +45,14 @@ export default class TimeNodeStore {
 
   startScanning() {
     this.scanningStarted = true;
+
+    this.alarmClient.startScanning();
   }
 
   stopScanning() {
     this.scanningStarted = false;
+
+    this.alarmClient.stopScanning();
   }
 
   encrypt(message) {
@@ -73,7 +81,7 @@ export default class TimeNodeStore {
     const program = {
       wallet: this.decrypt(keystore),
       password: this.decrypt(password),
-      provider: 'http://localhost:8545',
+      provider: REMOTE_NODE,
       logfile: 'console',
       logLevel: 1,
       milliseconds: 4000,
@@ -85,7 +93,7 @@ export default class TimeNodeStore {
 
     const logger = new MemoryLogger(program.logLevel, this.logs);
 
-    await AlarmClient(
+    this.alarmClient = await AlarmClient(
       web3,
       this._eacService,
       program.provider,
@@ -200,8 +208,10 @@ export default class TimeNodeStore {
   }
 
   hasCookies(cookiesList) {
-    for (let cookie in cookiesList) {
-      if (!Cookies.get(cookie)) return false;
+    for (let cookie of cookiesList) {
+      if (!Cookies.get(cookie)) {
+        return false;
+      }
     }
     return true;
   }

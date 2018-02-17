@@ -1304,7 +1304,7 @@ bn.js@4.11.6:
   version "4.11.6"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.6.tgz#53344adb14617a13f6e8dd2ce28905d1c0ba3215"
 
-bn.js@=4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.11.3, bn.js@^4.4.0, bn.js@^4.8.0:
+bn.js@=4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.11.0, bn.js@^4.11.3, bn.js@^4.4.0, bn.js@^4.8.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -2785,8 +2785,9 @@ duplexify@^3.4.2, duplexify@^3.5.3:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
-"eac.js@file:../eac.js":
+eac.js@chronologic/eac.js-timenodes#stable:
   version "1.3.1"
+  resolved "https://codeload.github.com/chronologic/eac.js-timenodes/tar.gz/0e6aafa2f4edf20d463dd02a42c594c827dd8496"
   dependencies:
     "@parity/api" "2.1.16"
     bignumber.js "^5.0.0"
@@ -2795,15 +2796,19 @@ duplexify@^3.4.2, duplexify@^3.5.3:
     clear "0.0.1"
     commander "^2.13.0"
     eth-lightwallet "^3.0.1"
+    ethereumjs-tx "^1.3.3"
     ethereumjs-util "^5.1.3"
+    ethereumjs-wallet "^0.6.0"
     ganache-cli "^6.0.3"
     ganache-core "^2.0.2"
+    jquery "^3.3.1"
     lodash "^4.17.4"
     lokijs "^1.5.1"
     memory-cache "^0.2.0"
     mocha "^4.1.0"
     ora "^1.3.0"
     readline-sync "^1.4.7"
+    repl "^0.1.3"
     truffle-contract "3.0.2"
     web3 "^0.20.4"
     websocket "^1.0.25"
@@ -3234,6 +3239,18 @@ ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereum
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
+ethereumjs-util@^5.1.4:
+  version "5.1.4"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.1.4.tgz#d1a4a9be31eaf8b33aad399894f854fdafda2469"
+  dependencies:
+    bn.js "^4.11.0"
+    create-hash "^1.1.2"
+    ethjs-util "^0.1.3"
+    keccak "^1.0.2"
+    rlp "^2.0.0"
+    safe-buffer "^5.1.1"
+    secp256k1 "^3.0.1"
+
 ethereumjs-vm@2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/ethereumjs-vm/-/ethereumjs-vm-2.3.2.tgz#4f939e22b89e9b298f0c87a7e0f0d8949f485abd"
@@ -3266,7 +3283,7 @@ ethereumjs-vm@^2.0.2:
     rustbn.js "~0.1.1"
     safe-buffer "^5.1.1"
 
-ethereumjs-wallet@~0.6.0:
+ethereumjs-wallet@^0.6.0, ethereumjs-wallet@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.0.tgz#82763b1697ee7a796be7155da9dfb49b2f98cfdb"
   dependencies:
@@ -4823,7 +4840,7 @@ jquery.scrollbar@^0.2.11:
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/jquery.scrollbar/-/jquery.scrollbar-0.2.11.tgz#e91bd4a97d83859463024d26e730dc36676ab59d"
 
-"jquery@>=1.7.1 <4.0.0":
+"jquery@>=1.7.1 <4.0.0", jquery@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
@@ -7257,6 +7274,10 @@ repeating@^2.0.0:
   resolved "https://registry.yarnpkg.com/repeating/-/repeating-2.0.1.tgz#5214c53a926d3552707527fbab415dbc08d06dda"
   dependencies:
     is-finite "^1.0.0"
+
+repl@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/repl/-/repl-0.1.3.tgz#2f05d42b0c88b43d05ccbda10ed14aeff5699b60"
 
 replace-comments-x@^2.0.0:
   version "2.0.0"

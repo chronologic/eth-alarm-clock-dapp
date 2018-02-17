@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 @observer
 class TimeNodeLogs extends Component {
   formatUnix(unix) {
-    return moment.unix(unix).format('DD/MM/YYYY HH:MM:SS');
+    return moment.unix(unix).format('DD/MM/YYYY HH:mm:ss');
   }
 
   render() {
