@@ -10,6 +10,7 @@ import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
 
+@inject('web3Service')
 @inject('scheduleStore')
 @inject('transactionStore')
 @observer
@@ -102,7 +103,7 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
-    const { scheduleStore,transactionStore,history } = this.props;
+    const { scheduleStore,transactionStore,web3Service: { web3 } ,history } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
@@ -133,8 +134,8 @@ class ScheduleWizard extends Component {
                                                     false, //do not wait for mining to return values
                                                     isUsingTime
                                                   );
-                                                  
-    if (scheduled) {
+
+  if (scheduled) {
       history.push('/awaiting/scheduler/' + scheduled.transactionHash);
     }
   }

@@ -15,7 +15,7 @@ const additionalMethods = {
     gasPrice = gasPrice || 0;
     donation = donation || 0;
     deposit = deposit || 0;
-    
+
     const { Util: { calcEndowment } } = this;
     const endowment = calcEndowment(
       new BigNumber(gasAmount),
