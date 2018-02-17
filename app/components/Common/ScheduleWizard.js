@@ -1,17 +1,23 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
 import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
+import { observer, inject } from 'mobx-react';
+import moment from 'moment';
+import 'moment-timezone';
 
+@inject('scheduleStore')
+@inject('transactionStore')
+@observer
 class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
     this.initiateScrollbar = this.initiateScrollbar.bind(this);
+    this.scheduleTransaction = this.scheduleTransaction.bind(this);
   }
 
   _validations = {
@@ -92,29 +98,27 @@ class ScheduleWizard extends Component {
     }
   }
 
-async scheduleTransaction() {
-  const { scheduleStore } = this.props;
-  const { transactionStore } = this.props;
-  if(scheduleStore.isUsingTime) {
+  async scheduleTransaction() {
+    const { scheduleStore,transactionStore } = this.props;
+    let executionTime, executionWindow;
+    if(scheduleStore.isUsingTime){
+       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
+       executionWindow = scheduleStore.executionWindow * 60
+    }
+    executionTime = scheduleStore.blockNumber;
+    executionWindow = scheduleStore.blockSize;
     await transactionStore.schedule(scheduleStore.toAddress,
                                  scheduleStore.yourData,
                                  scheduleStore.gasAmount,
-                                 scheduleStore.gasPrice,
-                                 scheduleStore.executionWindow,
-                                 scheduleStore.customWindow,
-                                 scheduleStore.donation,
                                  scheduleStore.amountToSend,
-                                 true
+                                 executionWindow,
+                                 executionTime,
+                                 scheduleStore.gasPrice,
+                                 scheduleStore.donation,
+                                 scheduleStore.timeBounty,
+                                 scheduleStore.deposit,
+                                 scheduleStore.isUsingTime
                                );
-  } else {
-     await transactionStore.schedule(scheduleStore.toAddress,
-                                scheduleStore.yourData,
-                                scheduleStore.gasAmount,
-                                scheduleStore.gasPrice,
-                                scheduleStore.donation,
-                                scheduleStore.amountToSend,
-                                scheduleStore);
-    }
   }
 
 componentDidMount() {
@@ -191,9 +195,9 @@ componentDidMount() {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <NavLink to="/awaiting" className="btn btn-primary btn-cons pull-right" type="button">
-                    <span>Schedule</span>
-                  </NavLink>
+                <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
+             <span>Schedule</span>
+           </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
                       <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
