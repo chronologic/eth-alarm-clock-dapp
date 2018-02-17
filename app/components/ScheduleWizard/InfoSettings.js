@@ -54,7 +54,7 @@ class InfoSettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.gasAmount?"":" has-error")}>
                 <label>Gas Amount</label>
-                <input type="number" placeholder="Enter Gas Amount in gwei" value={scheduleStore.gasAmount}  onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')}  className="form-control"></input>
+                <input type="number" placeholder="Enter Gas Amount" value={scheduleStore.gasAmount}  onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')}  className="form-control"></input>
               </div>
               {!_validations.gasAmount &&
                 <label className="error">{_validationsErrors.gasAmount}</label>
@@ -74,7 +74,7 @@ class InfoSettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.gasPrice?"":" has-error")}>
                 <label>Gas Price</label>
-                <input type="number" placeholder="Enter Gas Price in gwei" value={scheduleStore.gasPrice}  onBlur={this.validate('gasPrice')} onChange={this.onChange('gasPrice')}  className="form-control"></input>
+                <input type="number" placeholder="Enter Gas Price in Gwei" value={scheduleStore.gasPrice}  onBlur={this.validate('gasPrice')} onChange={this.onChange('gasPrice')}  className="form-control"></input>
               </div>
               {!_validations.gasPrice &&
                 <label className="error">{_validationsErrors.gasPrice}</label>
