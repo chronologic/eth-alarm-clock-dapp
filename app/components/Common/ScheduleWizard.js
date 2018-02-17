@@ -238,6 +238,7 @@ componentDidMount() {
 }
 
 ScheduleWizard.propTypes = {
+  web3Service: PropTypes.any,
   scheduleStore: PropTypes.any,
   transactionStore: PropTypes.any,
   history: PropTypes.any,
