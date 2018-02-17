@@ -176,13 +176,7 @@ export class TransactionStore {
   }
 
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, waitFormined, isTimestamp,) {
-    const endowment = await this._eac.Util.calcEndowment(
-      new BigNumber(Number(callGas)),
-      new BigNumber(Number(callValue)),
-      new BigNumber(Number(gasPrice)),
-      new BigNumber(Number(donation)),
-      new BigNumber(Number(payment))
-    )
+    const endowment = this._eac.calcEndowment(callGas,callValue,gasPrice,donation,payment);
 
     await this._eacScheduler.initSender ( {
       from: this._web3.eth.defaultAccount,

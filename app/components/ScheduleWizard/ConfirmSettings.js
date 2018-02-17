@@ -15,12 +15,13 @@ class ConfirmSettings extends Component {
 
   totalCost() {
     const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
-    let { gasAmount, amountToSend, gasPrice, donation, deposit } = scheduleStore;
+    let { gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit } = scheduleStore;
     amountToSend = web3.toWei(amountToSend, 'ether');
+    gasPrice = web3.toWei(gasPrice, 'gwei');
     donation = web3.toWei(donation, 'ether');
     deposit = web3.toWei(deposit,'ether');
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, donation, deposit);
-    return web3.fromWei(endowment, 'ether').valueOf();
+    return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty);//Only for display purposes
   }
 
   executionWindow() {

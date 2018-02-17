@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { observer, inject } from 'mobx-react';
+import moment from 'moment';
+import 'moment-timezone';
 import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
 import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
 import PoweredByEAC from './PoweredByEAC';
-import { observer, inject } from 'mobx-react';
-import moment from 'moment';
-import 'moment-timezone';
 
 @inject('scheduleStore')
 @inject('transactionStore')
@@ -101,7 +102,7 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
-    const { scheduleStore,transactionStore } = this.props;
+    const { scheduleStore,transactionStore,history } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
@@ -110,20 +111,32 @@ class ScheduleWizard extends Component {
       executionTime = scheduleStore.blockNumber;
       executionWindow = scheduleStore.blockSize;
     }
-    const scheduled = await transactionStore.schedule(scheduleStore.toAddress,
-                                                    scheduleStore.yourData,
-                                                    scheduleStore.gasAmount,
-                                                    scheduleStore.amountToSend,
+
+    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit, isUsingTime } = scheduleStore;
+
+    amountToSend = web3.toWei(amountToSend, 'ether');
+    gasPrice = web3.toWei(gasPrice, 'gwei');
+    donation = web3.toWei(donation, 'ether');
+    timeBounty = web3.toWei(timeBounty, 'ether');
+    deposit = web3.toWei(deposit, 'ether');
+
+    const scheduled = await transactionStore.schedule(toAddress,
+                                                    yourData,
+                                                    gasAmount,
+                                                    amountToSend,
                                                     executionWindow,
                                                     executionTime,
-                                                    scheduleStore.gasPrice,
-                                                    scheduleStore.donation,
-                                                    scheduleStore.timeBounty,
-                                                    scheduleStore.deposit,
+                                                    gasPrice,
+                                                    donation,
+                                                    timeBounty,
+                                                    deposit,
                                                     false, //do not wait for mining to return values
-                                                    scheduleStore.isUsingTime
+                                                    isUsingTime
                                                   );
-    //console.log(scheduled)
+                                                  
+    if (scheduled) {
+      history.push('/awaiting/scheduler/' + scheduled.transactionHash);
+    }
   }
 
 componentDidMount() {
@@ -222,5 +235,11 @@ componentDidMount() {
     );
   }
 }
+
+ScheduleWizard.propTypes = {
+  scheduleStore: PropTypes.any,
+  transactionStore: PropTypes.any,
+  history: PropTypes.any,
+};
 
 export default ScheduleWizard;
