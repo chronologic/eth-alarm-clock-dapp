@@ -99,6 +99,7 @@ class TransactionDetails extends ScrollbarComponent {
   componentDidMount() {
     super.componentDidMount();
     this._isMounted = true;
+    this.getFrozenStatus();
   }
 
   componentWillUnmount() {
@@ -107,7 +108,6 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   render() {
-    this.getFrozenStatus();
     const { callData, executedAt, isTimestamp, status, transaction, isFrozen } = this.state;
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
     const isOwner = this.isOwner(transaction);
