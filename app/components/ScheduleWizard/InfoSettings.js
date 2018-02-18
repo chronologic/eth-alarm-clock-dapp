@@ -54,7 +54,7 @@ class InfoSettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.gasAmount?"":" has-error")}>
                 <label>Gas Amount</label>
-                <input type="text" placeholder="Enter Gas Amount" value={scheduleStore.gasAmount}  onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')}  className="form-control"></input>
+                <input type="number" placeholder="Enter Gas Amount" value={scheduleStore.gasAmount}  onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')}  className="form-control"></input>
               </div>
               {!_validations.gasAmount &&
                 <label className="error">{_validationsErrors.gasAmount}</label>
@@ -65,7 +65,7 @@ class InfoSettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.amountToSend?"":" has-error")}>
                 <label>Value/Amount to Send</label>
-                <input type="text" placeholder="Enter Value/Amount in ETH" value={scheduleStore.amountToSend}  onBlur={this.validate('amountToSend')} onChange={this.onChange('amountToSend')}  className="form-control"></input>
+                <input type="number" placeholder="Enter Value/Amount in ETH" value={scheduleStore.amountToSend}  onBlur={this.validate('amountToSend')} onChange={this.onChange('amountToSend')}  className="form-control"></input>
               </div>
               {!_validations.amountToSend &&
                 <label className="error">{_validationsErrors.amountToSend}</label>
@@ -74,7 +74,7 @@ class InfoSettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required"+(_validations.gasPrice?"":" has-error")}>
                 <label>Gas Price</label>
-                <input type="text" placeholder="Enter Gas Price" value={scheduleStore.gasPrice}  onBlur={this.validate('gasPrice')} onChange={this.onChange('gasPrice')}  className="form-control"></input>
+                <input type="number" placeholder="Enter Gas Price in Gwei" value={scheduleStore.gasPrice}  onBlur={this.validate('gasPrice')} onChange={this.onChange('gasPrice')}  className="form-control"></input>
               </div>
               {!_validations.gasPrice &&
                 <label className="error">{_validationsErrors.gasPrice}</label>

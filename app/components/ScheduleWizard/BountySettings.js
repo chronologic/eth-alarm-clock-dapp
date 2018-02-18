@@ -12,17 +12,15 @@ class BountySettings extends AbstractSetting {
     const { _validations,_validationsErrors } = this.props;
     this._validations = _validations.BountySettings;
     this._validationsErrors = _validationsErrors.BountySettings;
-
     this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
   }
-
   validators = {
-    timeBounty: this.integerValidator(),
+    timeBounty: this.decimalValidator(),
     deposit: this.decimalValidator(),
     requireDeposit: this.booleanValidator()
   }
 
-  toggleRequiredDeposit(){
+  toggleRequiredDeposit() {
     const { scheduleStore } = this.props;
     scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
   }
@@ -36,7 +34,7 @@ class BountySettings extends AbstractSetting {
           <div className="col-md-4">
             <div className={"form-group form-group-default required "+(_validations.timeBounty?"":" has-error")}>
               <label>Time Bounty</label>
-              <input type="text" placeholder="Enter Time Bounty" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className="form-control"></input>
+              <input type="number" placeholder="Enter Time Bounty in ETH" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className="form-control"></input>
             </div>
             {!_validations.timeBounty &&
               <label className="error">{_validationsErrors.timeBounty}</label>
@@ -52,7 +50,7 @@ class BountySettings extends AbstractSetting {
             <div className="col-md-4">
               <div className={"form-group form-group-default required "+(_validations.deposit?"":" has-error")}>
                 <label>Deposit</label>
-                <input type="text" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit" className="form-control"></input>
+                <input type="number" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit in ETH" className="form-control"></input>
               </div>
               {!_validations.timeBounty &&
                 <label className="error">{_validationsErrors.deposit}</label>
