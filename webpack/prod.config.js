@@ -3,6 +3,7 @@ const merge = require('webpack-merge')
 const baseConfig = require('./base.config.js')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
 
 module.exports = merge(baseConfig, {
 
@@ -33,6 +34,9 @@ module.exports = merge(baseConfig, {
   },
 
   plugins: [
+    new Dotenv({
+      path: '.env.prod'
+    }),
     new webpack.DefinePlugin({
      'process.env':{
        'NODE_ENV': JSON.stringify('production')

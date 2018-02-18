@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const baseConfig = require('./base.config.js')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const Dotenv = require('dotenv-webpack');
 
 module.exports = merge(baseConfig, {
   devServer: {
@@ -33,6 +34,9 @@ module.exports = merge(baseConfig, {
 		]
   },
   plugins:[
+    new Dotenv({
+      path: '.env.dev'
+    }),
     new webpack.HotModuleReplacementPlugin(),
   ]
 });

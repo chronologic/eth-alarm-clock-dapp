@@ -17,8 +17,6 @@ export class TIMENODE_STATUS {
   static DISABLED = 'Disabled';
 }
 
-const REMOTE_NODE = 'https://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/';
-
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
@@ -81,7 +79,7 @@ export default class TimeNodeStore {
     const program = {
       wallet: this.decrypt(keystore),
       password: this.decrypt(password),
-      provider: REMOTE_NODE,
+      provider: process.env.HTTP_PROVIDER,
       logfile: 'console',
       logLevel: 1,
       milliseconds: 4000,
