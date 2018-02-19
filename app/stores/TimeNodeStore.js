@@ -20,7 +20,6 @@ export class TIMENODE_STATUS {
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
-  @observable hasDayTokens = false;
   @observable scanningStarted = false;
   @observable logs = [];
 
@@ -35,7 +34,7 @@ export default class TimeNodeStore {
     this._eacService = eacService;
     this._web3Service = web3Service;
 
-    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = true;
+    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = Cookies.get("attachedDAYAccount");
     if (Cookies.get("hasWallet")) this.hasWallet = true;
 
     if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
