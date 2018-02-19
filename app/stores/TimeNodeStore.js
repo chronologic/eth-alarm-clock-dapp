@@ -132,7 +132,7 @@ export default class TimeNodeStore {
       web3.eth.getBalance(address, callback);
     });
 
-    const balance = parseInt(balanceNum);
+    const balance = parseInt(web3.fromWei(balanceNum, 'ether'));
     this.balanceETH = balance;
 
     return balance;
