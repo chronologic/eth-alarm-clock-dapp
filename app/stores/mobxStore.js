@@ -25,7 +25,7 @@ export default class mobxStore {
 @observable gasAmount = '';
 @observable amountToSend = '';
 @observable gasPrice = '';
-@observable useData = true;
+@observable useData = false;
 @observable yourData = '';
 
 @observable isUsingTime = true;
