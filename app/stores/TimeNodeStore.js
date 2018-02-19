@@ -1,10 +1,12 @@
 import { observable } from 'mobx';
-import MemoryLogger from '../lib/memory-logger';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
-import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
+import Loki from 'lokijs';
+
+import dayTokenABI from '../abi/dayTokenABI';
+import MemoryLogger from '../lib/memory-logger';
 
 /*
  * TimeNode classification based on the number
@@ -25,19 +27,26 @@ export default class TimeNodeStore {
 
   @observable balanceETH = null;
   @observable balanceDAY = null;
+  @observable claimedEth = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   alarmClient = null;
 
   constructor(eacService, web3Service) {
+    window.tnstore = this;
     this._eacService = eacService;
     this._web3Service = web3Service;
+    this.setup();
 
     if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = Cookies.get("attachedDAYAccount");
     if (Cookies.get("hasWallet")) this.hasWallet = true;
 
     if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
+  }
+
+  async setup() {
+    await this._web3Service.awaitInitialized();
   }
 
   startScanning() {
@@ -69,8 +78,6 @@ export default class TimeNodeStore {
    * Immediately starts executing transactions and outputting logs.
    */
   async startClient(keystore, password) {
-    await this._web3Service.init();
-
     const web3 = this._web3Service.web3;
 
     const AlarmClient = this._eacService.AlarmClient;
@@ -84,11 +91,11 @@ export default class TimeNodeStore {
       milliseconds: 4000,
       autostart: false,
       scan: 75,
-      repl: false,
-      browserDB: true
+      repl: false
     }
 
     const logger = new MemoryLogger(program.logLevel, this.logs);
+    this.browserDB = new Loki("stats.db");
 
     this.alarmClient = await AlarmClient(
       web3,
@@ -103,7 +110,7 @@ export default class TimeNodeStore {
       program.autostart,
       logger,
       program.repl,
-      program.browserDB
+      this.browserDB
     ).catch((err) => {
       throw err
     });
@@ -125,21 +132,16 @@ export default class TimeNodeStore {
   }
 
   async getBalance(address = this.getMyAddress()) {
-    await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const balanceNum = await Bb.fromCallback((callback) => {
-      web3.eth.getBalance(address, callback);
-    });
+    const balance = await this._eacService.Util.getBalance(address);
+    const balanceEther = parseInt(web3.fromWei(balance, 'ether'));
 
-    const balance = parseInt(web3.fromWei(balanceNum, 'ether'));
-    this.balanceETH = balance;
-
-    return balance;
+    this.balanceETH = balanceEther;
+    return balanceEther;
   }
 
   async getDAYBalance(address = this.getMyAddress()) {
-    await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
     const contract = web3.eth.contract(dayTokenABI).at(contract);
@@ -153,6 +155,18 @@ export default class TimeNodeStore {
     this.balanceDAY = balance;
 
     return balance;
+  }
+
+  getStats(address = this.getMyAddress()) {
+    const stats = this.browserDB.getCollection('stats').data;
+    const web3 = this._web3Service.web3;
+
+    stats.forEach((accountStats) => {
+      if (accountStats.account === address) {
+        let etherGain = accountStats.currentEther.minus(accountStats.startingEther);
+        this.claimedEth = parseInt(web3.fromWei(etherGain));
+      }
+    });
   }
 
   updateNodeStatus(balance) {
@@ -182,7 +196,7 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const isValid = (addr === signature.address);
+    const isValid = (addr === signature.address) && this._eacService.Util.checkValidAddress(addr);
     return { isValid, addr };
   }
 
@@ -196,7 +210,7 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid){// && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
       this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
       this.attachedDAYAccount = encryptedAttachedAddress;
     } else {

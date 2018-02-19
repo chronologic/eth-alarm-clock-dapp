@@ -20,8 +20,10 @@ class TimeNodeStatistics extends Component {
   async componentWillMount() {
     await this.props.timeNodeStore.getBalance();
     await this.props.timeNodeStore.getDAYBalance();
+    this.props.timeNodeStore.getStats();
     this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false
+      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false,
+      fetchedClaimed: true
     });
 
     const data = [12, 19, 3, 5, 2, 3];
@@ -116,7 +118,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div className="card-body">
-                <h1>1234.5 ETH</h1>
+                <h1>{this.state.fetchedClaimed ? this.props.timeNodeStore.claimedEth + " ETH" : "Loading... "}</h1>
               </div>
             </div>
           </div>
