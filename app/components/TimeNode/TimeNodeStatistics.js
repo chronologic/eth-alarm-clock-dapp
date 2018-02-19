@@ -10,7 +10,7 @@ class TimeNodeStatistics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeNodeDisabled: TIMENODE_STATUS.DISABLED
+      timeNodeDisabled: TIMENODE_STATUS.DISABLED ? true : false
     };
 
     this.startTimeNode = this.startTimeNode.bind(this);
@@ -21,7 +21,7 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getBalance();
     await this.props.timeNodeStore.getDAYBalance();
     this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus
+      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false
     });
 
     const data = [12, 19, 3, 5, 2, 3];
