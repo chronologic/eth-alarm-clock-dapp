@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
+import { Chart } from 'chart.js';
 
 @inject('timeNodeStore')
 @observer
@@ -21,6 +22,44 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getDAYBalance();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus
+    });
+
+    const data = [12, 19, 3, 5, 2, 3];
+    this.generateChart(data);
+  }
+
+  generateChart(data) {
+    const labels = Array(data.length).fill('');
+
+    new Chart(this.chartRef.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor:'rgba(33, 255, 255, 0.2)',
+          borderColor: 'rgba(33, 255, 255, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        elements: {
+          line: {
+            tension: 0
+          }
+        },
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            display: false
+          }],
+          xAxes: [{
+            display: false
+          }],
+        }
+      }
     });
   }
 
@@ -94,7 +133,8 @@ class TimeNodeStatistics extends Component {
                   </ul>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body no-padding">
+                <canvas id="myChart" ref={(el) => this.chartRef = el}></canvas>
               </div>
             </div>
           </div>
