@@ -6,7 +6,7 @@ class PoweredByEAC extends React.Component {
     return (
       <div className={ this.props.className }>
         <a href="https://github.com/ethereum-alarm-clock" target="_blank" rel="noopener noreferrer">
-          <img src="img/powered-by-eac.svg" alt="logo" data-src="img/powered-by-eac.png" height="36" />
+          <img src="img/powered-by-eac.svg" alt="logo" data-src="img/powered-by-eac.svg" height="36" />
         </a>
       </div>
     )
