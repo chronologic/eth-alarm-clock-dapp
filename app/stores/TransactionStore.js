@@ -65,6 +65,8 @@ export class TransactionStore {
 
     let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
 
+    requestsCreated.reverse();//Switch to most recent block first
+
     requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
 
     return requestsCreated;
