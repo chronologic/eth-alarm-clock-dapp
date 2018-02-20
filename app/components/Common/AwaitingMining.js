@@ -7,7 +7,7 @@ import { PacmanLoader } from 'react-spinners';
 
 const loaderConfig = {
   color: '#21ffff'
-}
+};
 
 const mineDestinations = {
   scheduler: {
@@ -17,7 +17,7 @@ const mineDestinations = {
     logEventTypes: ['address'],
     nextParameterPosition: 0
   }
-}
+};
 
 @inject('web3Service')
 @observer
@@ -33,7 +33,7 @@ class AwaitingMining extends Component {
       newContract: '',
       deploying: false,
       minning: false,
-    }
+    };
   }
 
   async loadUp() {

@@ -1,12 +1,12 @@
-const path = require('path')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const webpack = require('webpack')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Extracts the SCSS to a file
 const extractSass = new ExtractTextPlugin({
   filename: './main.css'
-})
+});
 
 module.exports = {
 
@@ -101,4 +101,4 @@ module.exports = {
     extractSass
   ]
 
-}
+};

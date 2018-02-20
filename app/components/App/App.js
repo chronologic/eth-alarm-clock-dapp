@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
@@ -33,8 +33,8 @@ class App extends Component {
     - Detecting when to close the search overlay
   */
   onEscKey(event){
-    if(event.keyCode === 27) {
-      if(this.state.showSearchOverlay) {
+    if (event.keyCode === 27) {
+      if (this.state.showSearchOverlay) {
         this.updateSearchState(false);
       }
     }
@@ -73,4 +73,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default App;

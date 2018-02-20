@@ -94,7 +94,7 @@ export default class TimeNodeStore {
     if (typeof message !== "string") {
       message = message.toString();
     }
-    const bytes = CryptoJS.AES.decrypt(message, "88e19245648ba7616099fbd6595d120d")
+    const bytes = CryptoJS.AES.decrypt(message, "88e19245648ba7616099fbd6595d120d");
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 
@@ -202,7 +202,7 @@ export default class TimeNodeStore {
    * If it contains DAY tokens, it allows the usage of TimeNodes.
    */
   async attachDayAccount(sigObject) {
-    const { isValid, addr } = this.isSignatureValid(sigObject)
+    const { isValid, addr } = this.isSignatureValid(sigObject);
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
