@@ -11,16 +11,18 @@ const extractSass = new ExtractTextPlugin({
 module.exports = {
 
   // Webpack checks this file for any additional JS dependencies to be bundled
-  entry: [
-    path.resolve(__dirname, '../app/entry.js'),
-    path.resolve(__dirname, '../app/index.js')
-  ],
+  entry: {
+    app: [
+      path.resolve(__dirname, '../app/entry.js'),
+      path.resolve(__dirname, '../app/index.js')
+    ],
+  },
 
   output: {
     // Output folder in which the files will be built
     path: path.resolve(__dirname, '../out'),
     // All the JS files will be bundled in this one minified/obfuscated file
-    filename: './js/app.bundle.js'
+    filename: './js/[name].bundle.js'
   },
 
   node: {
@@ -31,6 +33,10 @@ module.exports = {
   module: {
 
     rules: [
+      {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' }
+      },
 
       // Loader for the image files
       {

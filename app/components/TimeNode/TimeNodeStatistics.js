@@ -20,7 +20,7 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getBalance();
     await this.props.timeNodeStore.getDAYBalance();
     this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus
+      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
     });
   }
 

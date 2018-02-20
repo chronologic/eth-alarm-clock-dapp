@@ -1,10 +1,11 @@
 import { observable } from 'mobx';
-import MemoryLogger from '../lib/memory-logger';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
 import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
+import EacWorker from 'worker-loader!../js/eac-worker.js';
+import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 
 /*
  * TimeNode classification based on the number
@@ -20,7 +21,6 @@ export class TIMENODE_STATUS {
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
-  @observable hasDayTokens = false;
   @observable scanningStarted = false;
   @observable logs = [];
 
@@ -29,28 +29,61 @@ export default class TimeNodeStore {
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
-  alarmClient = null;
+  eacWorker = null;
 
   constructor(eacService, web3Service) {
     this._eacService = eacService;
     this._web3Service = web3Service;
 
-    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = true;
+    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = Cookies.get("attachedDAYAccount");
     if (Cookies.get("hasWallet")) this.hasWallet = true;
 
     if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
   }
 
+  startWorker(keystore, password) {
+    this.eacWorker = new EacWorker();
+
+    const options = {
+      wallet: this.decrypt(keystore),
+      password: this.decrypt(password),
+      logfile: 'console',
+      logLevel: 1,
+      milliseconds: 4000,
+      autostart: false,
+      scan: 75,
+      repl: false,
+      browserDB: true,
+    };
+
+    this.eacWorker.onmessage = (event) => {
+      const { type } = event.data;
+
+      if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
+        this.logs.push(event.data.value);
+      }
+    };
+
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.START,
+      options
+    });
+  }
+
   startScanning() {
     this.scanningStarted = true;
 
-    this.alarmClient.startScanning();
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
+    });
   }
 
   stopScanning() {
     this.scanningStarted = false;
 
-    this.alarmClient.stopScanning();
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
+    });
   }
 
   encrypt(message) {
@@ -72,42 +105,7 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    const web3 = this._web3Service.web3;
-
-    const AlarmClient = this._eacService.AlarmClient;
-
-    const program = {
-      wallet: this.decrypt(keystore),
-      password: this.decrypt(password),
-      provider: process.env.HTTP_PROVIDER,
-      logfile: 'console',
-      logLevel: 1,
-      milliseconds: 4000,
-      autostart: false,
-      scan: 75,
-      repl: false,
-      browserDB: true
-    }
-
-    const logger = new MemoryLogger(program.logLevel, this.logs);
-
-    this.alarmClient = await AlarmClient(
-      web3,
-      this._eacService,
-      program.provider,
-      program.scan,
-      program.milliseconds,
-      program.logfile,
-      program.logLevel,
-      program.wallet,
-      program.password,
-      program.autostart,
-      logger,
-      program.repl,
-      program.browserDB
-    ).catch((err) => {
-      throw err
-    });
+    this.startWorker(keystore, password);
 
     this.setCookie('tn', keystore);
     this.setCookie('tnp', password);
@@ -121,7 +119,16 @@ export default class TimeNodeStore {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
     } else {
-      return ""
+      return "";
+    }
+  }
+
+  getMyAttachedAddress() {
+    const encryptedAddress = Cookies.get("attachedDAYAccount");
+    if (encryptedAddress) {
+      return this.decrypt(encryptedAddress);
+    } else {
+      return "";
     }
   }
 
@@ -139,16 +146,16 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  async getDAYBalance(address = this.getMyAddress()) {
+  async getDAYBalance(address = this.getMyAttachedAddress()) {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const contract = web3.eth.contract(dayTokenABI).at(contract);
+    const contract = web3.eth.contract(dayTokenABI).at(process.env.DAY_FAUCET_ADDRESS);
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });
 
-    const balance = parseInt(balanceNum);
+    const balance = balanceNum.div(10**18).toNumber();
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
@@ -176,9 +183,11 @@ export default class TimeNodeStore {
    */
   isSignatureValid(sigObject) {
     const signature = JSON.parse(sigObject);
+
+    const message = Buffer.from(signature.msg);
+
+    const msgHash = ethJsUtil.hashPersonalMessage(message);
     const res = ethJsUtil.fromRpcSig(signature.sig);
-    const msgBuffer = ethJsUtil.toBuffer(signature.msg)
-    const msgHash = ethJsUtil.hashPersonalMessage(msgBuffer);
     const pub = ethJsUtil.ecrecover(msgHash, res.v, res.r, res.s);
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
@@ -197,11 +206,16 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-      this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-      this.attachedDAYAccount = encryptedAttachedAddress;
+    if (isValid) {
+      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+        this.attachedDAYAccount = encryptedAttachedAddress;
+        alert("Success.");
+      } else {
+        alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
+      }
     } else {
-      alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
+      alert("Invalid signature.");
     }
   }
 
