@@ -134,30 +134,29 @@ class ScheduleWizard extends Component {
                                                     false, //do not wait for mining to return values
                                                     isUsingTime
                                                   );
-
-  if (scheduled) {
-      history.push('/awaiting/scheduler/' + scheduled.transactionHash);
-    }
+    if (scheduled) {
+        history.push('/awaiting/scheduler/' + scheduled);
+      }
   }
 
-componentDidMount() {
-  const { jQuery } = window;
-  jQuery('#scheduleWizard').bootstrapWizard({
-    onTabShow: function (tab, navigation, index) {
-      var $total = navigation.find('li').length;
-      var $current = index + 1;
+  componentDidMount() {
+    const { jQuery } = window;
+    jQuery('#scheduleWizard').bootstrapWizard({
+      onTabShow: function (tab, navigation, index) {
+        var $total = navigation.find('li').length;
+        var $current = index + 1;
 
-        // If it's the last tab then hide the last button and show the finish instead
-        if ($current >= $total) {
-          jQuery('#scheduleWizard').find('.pager .next').hide();
-          jQuery('#scheduleWizard').find('.pager .finish').show();
-          jQuery('#scheduleWizard').find('.pager .finish').removeClass('disabled');
-        } else {
-          jQuery('#scheduleWizard').find('.pager .next').show();
-          jQuery('#scheduleWizard').find('.pager .finish').hide();
+          // If it's the last tab then hide the last button and show the finish instead
+          if ($current >= $total) {
+            jQuery('#scheduleWizard').find('.pager .next').hide();
+            jQuery('#scheduleWizard').find('.pager .finish').show();
+            jQuery('#scheduleWizard').find('.pager .finish').removeClass('disabled');
+          } else {
+            jQuery('#scheduleWizard').find('.pager .next').show();
+            jQuery('#scheduleWizard').find('.pager .finish').hide();
+          }
         }
-      }
-    });
+      });
     this.initiateScrollbar();
   }
 

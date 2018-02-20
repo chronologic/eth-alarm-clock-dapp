@@ -200,8 +200,7 @@ export class TransactionStore {
           waitFormined
       );
         return receipt;
-    }
-
+    } else {
       const receipt = await this._eacScheduler.blockSchedule (
         toAddress,
         this._web3.web3.fromAscii(callData),
@@ -214,8 +213,8 @@ export class TransactionStore {
         payment,
         requiredDeposit,
         waitFormined
-    );
+      );
       return receipt;
-}
-
+    }
   }
+}
