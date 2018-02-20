@@ -169,7 +169,7 @@ export default class Web3Service {
 
         let display = priceAsNumber;
 
-        if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.MWEI) {
+        if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.MWEI && priceAsNumber > 0) {
             unit = 'WEI';
         } else {
             display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.ETH).toFixed();
