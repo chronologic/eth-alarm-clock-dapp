@@ -29,7 +29,7 @@ async componentDidMount(){
 }
 
 web3web3Disabled(web3Service){
-    return !web3Service.connectedToMetaMask || !(typeof web3Service.accounts !== 'undefined' && web3Service.accounts.length > 0)
+    return !web3Service.connectedToMetaMask || !(typeof web3Service.accounts !== 'undefined' && web3Service.accounts.length > 0);
 }
 
 

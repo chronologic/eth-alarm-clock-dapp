@@ -198,7 +198,7 @@ export class TransactionStore {
           payment,
           requiredDeposit,
           waitFormined
-      )
+      );
         return receipt;
     }
 
@@ -214,7 +214,7 @@ export class TransactionStore {
         payment,
         requiredDeposit,
         waitFormined
-    )
+    );
       return receipt;
 }
 

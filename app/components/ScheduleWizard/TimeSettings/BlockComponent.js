@@ -21,7 +21,7 @@ class BlockComponent extends AbstractSetting {
     const { scheduleStore } = this.props;
     this.state = {
       blockNumber : (await Bb.fromCallback( callback => web3.eth.getBlockNumber(callback) ) ).valueOf()
-    }
+    };
     this.validators.blockNumber = this.blockNumberValidator();
     scheduleStore.isUsingTime = false;
   }
@@ -42,7 +42,7 @@ class BlockComponent extends AbstractSetting {
         'Entered block number is from the past. Please enter a valid block number',
         'Entered block number is too soon. Please enter a block number that is at least 60 blocks higher than the current block'
       ]
-    }
+    };
   }
 
 

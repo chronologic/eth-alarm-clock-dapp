@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 
 class SidePanel extends Component {
@@ -47,7 +47,7 @@ class SidePanel extends Component {
           <div className="clearfix"></div>
         </div>
       </nav>
-    )
+    );
   }
 }
 

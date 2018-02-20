@@ -37,7 +37,7 @@ class TimeNodeWallet extends Component {
         if (keystore && password) {
           await timeNodeStore.startClient(keystore, password);
         }
-      }
+      };
       reader.readAsText(file, "utf-8");
     }
   }

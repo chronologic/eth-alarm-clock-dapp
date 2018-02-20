@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 class AbstractSetting extends Component {
 
   constructor (props) {
-    super(props)
+    super(props);
     this.onChange = this.onChange.bind(this);
   }
 
@@ -17,30 +17,30 @@ class AbstractSetting extends Component {
     const { _validations } = this.props;
     return {
       validator: (value)=> {
-        if (!new RegExp('^\\d+$').test(value)) return 1
-        if (!Number(value) > 0) return 2
+        if (!new RegExp('^\\d+$').test(value)) return 1;
+        if (!Number(value) > 0) return 2;
         return 0;
       },
       errors: [
         _validations.Errors.numeric,
         _validations.Errors.minimum_numeric
       ]
-    }
+    };
   }
 
   decimalValidator (){
     const { _validations } = this.props;
     return {
       validator: (value)=> {
-        if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1
-        if (!Number(value) > 0) return 2
+        if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
+        if (!Number(value) > 0) return 2;
         return 0;
       },
       errors: [
         _validations.Errors.numeric,
         _validations.Errors.minimum_decimal
       ]
-    }
+    };
   }
 
   booleanValidator (){
@@ -52,7 +52,7 @@ class AbstractSetting extends Component {
       errors: [
         'Kindly indicate Value'
       ]
-    }
+    };
   }
 
   ethereumAddressValidator(){
@@ -61,11 +61,11 @@ class AbstractSetting extends Component {
         errors: [
           'Kindly provide valid address'
         ]
-      }
+      };
   }
 
   getValidations() {
-    return this._validations
+    return this._validations;
   }
 
   @action

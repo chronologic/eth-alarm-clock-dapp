@@ -76,12 +76,12 @@ class TimeComponent extends AbstractSetting {
     return {
       validator: (value)=>{
         const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timezone);
-         return newdate.isValid()?0:1
+         return newdate.isValid()?0:1;
        },
       errors: [
         'Kindly indicate Valid Time'
       ]
-    }
+    };
   }
 
   dateValidator (){
@@ -89,12 +89,12 @@ class TimeComponent extends AbstractSetting {
     return {
       validator: (value)=>{
         const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timezone);
-         return newdate.isValid()?0:1
+         return newdate.isValid()?0:1;
        },
       errors: [
         'Kindly indicate Valid Date'
       ]
-    }
+    };
   }
 
   validators = {

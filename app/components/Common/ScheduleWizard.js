@@ -165,7 +165,7 @@ componentDidMount() {
     const options = {};
     const element = document.querySelector('.tab-pane.active');
     if (element){
-      Scrollbar.init(element, options)
+      Scrollbar.init(element, options);
     }
    }
 

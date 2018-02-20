@@ -30,7 +30,7 @@ export const NAVIGATION_STEPS = {
 
 
 }
-}
+};
 
 export const NETWORK_MESSAGES = {
     '1': 'You are connected to Mainnet',
@@ -42,4 +42,4 @@ export const NETWORK_MESSAGES = {
 
 export const PROPERTIES = {
 
-}
+};
