@@ -10,7 +10,7 @@ class TimeNodeStatistics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeNodeDisabled: TIMENODE_STATUS.DISABLED ? true : false
+      timeNodeDisabled: TIMENODE_STATUS.DISABLED
     };
 
     this.startTimeNode = this.startTimeNode.bind(this);
@@ -20,7 +20,7 @@ class TimeNodeStatistics extends Component {
   async componentWillMount() {
     await this.refreshBalances();
     this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false
+      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
     });
 
     this.refreshChart();
