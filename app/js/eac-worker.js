@@ -60,4 +60,4 @@ onmessage = async function(event) {
       eacWorker.startScanning();
       break;
   }
-}
+};

@@ -28,7 +28,7 @@ class TimeNodeLogs extends Component {
             {this.props.timeNodeStore.logs.map(([ timestamp, message ], index) => {
               return (
                 <p key={index} className="no-margin"><span>{this.formatUnix(timestamp)}</span> {message}</p>
-              )
+              );
             })}
           </div>
         </div>

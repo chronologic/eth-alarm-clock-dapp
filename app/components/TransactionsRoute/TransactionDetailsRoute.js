@@ -37,7 +37,7 @@ class TransactionDetailsRoute extends Component {
         content = <TransactionDetails address={txAddress} />;
       } else {
         // Throw a 404 if the transaction with that address does not exist
-        content = <TransactionNotFound address={txAddress}/>
+        content = <TransactionNotFound address={txAddress}/>;
       }
     }
 

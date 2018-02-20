@@ -23,14 +23,14 @@ class SearchResult extends Component {
             <span>Transaction </span>
             <Link to={`/transactions/${this.state.txAddress}`}
               className="semi-bold result-name"
-              onClick={() => {this.props.updateSearchState(false)}}>
+              onClick={() => {this.props.updateSearchState(false);}}>
               {this.state.txAddress}
             </Link>
           </h5>
           <p className="hint-text">{this.state.txStatus}</p>
         </div>
       </div>
-    )
+    );
   }
 }
 

@@ -83,7 +83,7 @@ class TimeComponent extends AbstractSetting {
       errors: [
         'Kindly indicate Valid Time'
       ]
-    }
+    };
   }
 
   dateValidator (){
@@ -93,7 +93,7 @@ class TimeComponent extends AbstractSetting {
       errors: [
         'Kindly indicate Valid Date'
       ]
-    }
+    };
   }
 
   validators = {
