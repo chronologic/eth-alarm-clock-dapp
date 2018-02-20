@@ -156,7 +156,7 @@ export default class TimeNodeStore {
       contract.balanceOf.call(address, callback);
     });
 
-    const balance = parseInt(balanceNum);
+    const balance = balanceNum.div(10**18).toNumber();
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
@@ -211,6 +211,7 @@ export default class TimeNodeStore {
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
         this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
         this.attachedDAYAccount = encryptedAttachedAddress;
+        alert("Success.");
       } else {
         alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
       }
