@@ -119,7 +119,7 @@ export default class TimeNodeStore {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
     } else {
-      return ""
+      return "";
     }
   }
 
@@ -129,7 +129,7 @@ export default class TimeNodeStore {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
     } else {
-      return ""
+      return "";
     }
   }
 
@@ -184,9 +184,11 @@ export default class TimeNodeStore {
    */
   isSignatureValid(sigObject) {
     const signature = JSON.parse(sigObject);
+
+    const message = Buffer.from(signature.msg);
+
+    const msgHash = ethJsUtil.hashPersonalMessage(message);
     const res = ethJsUtil.fromRpcSig(signature.sig);
-    const msgBuffer = ethJsUtil.toBuffer(signature.msg)
-    const msgHash = ethJsUtil.hashPersonalMessage(msgBuffer);
     const pub = ethJsUtil.ecrecover(msgHash, res.v, res.r, res.s);
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
