@@ -26,43 +26,50 @@ class TimeNodeStatistics extends Component {
       fetchedClaimed: true
     });
 
-    const data = [12, 19, 3, 5, 2, 3];
-    this.generateChart(data);
+    this.generateChart(this.props.timeNodeStore.executedCounters);
   }
 
   generateChart(data) {
-    const labels = Array(data.length).fill('');
+    const ctx = this.chartRef.getContext('2d');
 
-    new Chart(this.chartRef.getContext('2d'), {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: data,
-          backgroundColor:'rgba(33, 255, 255, 0.2)',
-          borderColor: 'rgba(33, 255, 255, 1)',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        elements: {
-          line: {
-            tension: 0
+    if (data.length > 0) {
+      const labels = Array(data.length).fill('');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor:'rgba(33, 255, 255, 0.2)',
+            borderColor: 'rgba(33, 255, 255, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          elements: {
+            line: {
+              tension: 0
+            }
+          },
+          legend: {
+            display: false
+          },
+          scales: {
+            yAxes: [{
+              display: false
+            }],
+            xAxes: [{
+              display: false
+            }],
           }
-        },
-        legend: {
-          display: false
-        },
-        scales: {
-          yAxes: [{
-            display: false
-          }],
-          xAxes: [{
-            display: false
-          }],
         }
-      }
-    });
+      });
+    } else {
+      ctx.font = "20px Helvetica";
+      ctx.textAlign="center";
+      ctx.fillText("No data yet.",150,65);
+    }
+
   }
 
   getStopButton() {

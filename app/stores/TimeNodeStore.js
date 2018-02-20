@@ -23,6 +23,7 @@ export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+  @observable executedCounters = [];
   @observable logs = [];
 
   @observable balanceETH = null;
@@ -127,7 +128,7 @@ export default class TimeNodeStore {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
     } else {
-      return ""
+      return "";
     }
   }
 
@@ -158,15 +159,22 @@ export default class TimeNodeStore {
   }
 
   getStats(address = this.getMyAddress()) {
-    const stats = this.browserDB.getCollection('stats').data;
-    const web3 = this._web3Service.web3;
+    const stats = this.browserDB.getCollection('stats');
 
-    stats.forEach((accountStats) => {
-      if (accountStats.account === address) {
-        let etherGain = accountStats.currentEther.minus(accountStats.startingEther);
-        this.claimedEth = parseInt(web3.fromWei(etherGain));
-      }
-    });
+    if (stats.data.length > 0) {
+      const web3 = this._web3Service.web3;
+
+      stats.data.forEach((accountStats) => {
+        if (accountStats.account === address) {
+          let etherGain = accountStats.currentEther.minus(accountStats.startingEther);
+          this.claimedEth = parseInt(web3.fromWei(etherGain));
+          this.executedCounters.push(accountStats.executed);
+        }
+      });
+    } else {
+      this.claimedEth = 0;
+    }
+
   }
 
   updateNodeStatus(balance) {
@@ -210,7 +218,7 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+    if (isValid){// && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
       this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
       this.attachedDAYAccount = encryptedAttachedAddress;
     } else {
