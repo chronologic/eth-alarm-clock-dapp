@@ -1,1 +1,1 @@
-export { default } from './TransactionScanner'
+export { default } from './TransactionScanner';

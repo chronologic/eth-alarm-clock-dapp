@@ -12,7 +12,7 @@ class TimeNodeWallet extends Component {
   }
 
   _handleEnterPress = event => {
-    if(event.key !== "Enter") return;
+    if (event.key !== "Enter") return;
     document.querySelector("#verifyWalletBtn").click();
     event.preventDefault();
   };
@@ -37,7 +37,7 @@ class TimeNodeWallet extends Component {
         if (keystore && password) {
           await timeNodeStore.startClient(keystore, password);
         }
-      }
+      };
       reader.readAsText(file, "utf-8");
     }
   }

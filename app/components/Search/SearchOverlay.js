@@ -65,7 +65,7 @@ class SearchOverlay extends Component {
         <div className="overlay-content has-results m-t-20">
           <div className="container-fluid">
             <img className="overlay-brand" src="img/logo-black.png" alt="logo" data-src="img/logo-black.png" height="36" />
-            <div className="close-icon-light overlay-close text-black fs-16" onClick={() => {this.props.updateSearchState(false)}}>
+            <div className="close-icon-light overlay-close text-black fs-16" onClick={() => {this.props.updateSearchState(false);}}>
               <i className="pg-close"></i>
             </div>
           </div>
@@ -87,7 +87,7 @@ class SearchOverlay extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

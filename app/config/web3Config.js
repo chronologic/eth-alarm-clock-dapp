@@ -4,7 +4,7 @@ const Networks =  {
   3: 'Ropsten',
   4: 'Rinkeby',
   42: 'Kovan'
-}
+};
 
 const Explorers =  {
   0: '127.0.0.1:7545',//Ganache
@@ -12,6 +12,6 @@ const Explorers =  {
   3: 'https://ropsten.etherscan.io/',
   4: 'https://rinkeby.etherscan.io/',
   42: 'https://kovan.etherscan.io/'
-}
+};
 
 export { Networks,Explorers };

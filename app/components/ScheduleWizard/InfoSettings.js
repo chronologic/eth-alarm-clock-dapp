@@ -7,9 +7,9 @@ import AbstractSetting from './AbstractSetting';
 @observer
 class InfoSettings extends AbstractSetting {
     constructor (props) {
-      super(props)
+      super(props);
 
-      this.state = {}
+      this.state = {};
       const { _validations,_validationsErrors } = this.props;
       this._validations = _validations.InfoSettings;
       this._validationsErrors = _validationsErrors.InfoSettings;

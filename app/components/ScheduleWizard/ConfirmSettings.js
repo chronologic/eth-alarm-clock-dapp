@@ -25,7 +25,7 @@ class ConfirmSettings extends Component {
 
   executionWindow() {
     const { scheduleStore } = this.props;
-    if(scheduleStore.isUsingTime){
+    if (scheduleStore.isUsingTime){
       return scheduleStore.executionWindow;
     }
       return scheduleStore.blockSize;
@@ -33,7 +33,7 @@ class ConfirmSettings extends Component {
 
   blockOrTime(){
     const { scheduleStore } = this.props;
-    if(scheduleStore.isUsingTime){
+    if (scheduleStore.isUsingTime){
       return scheduleStore.transactionTime;
     }
       return scheduleStore.blockNumber;
