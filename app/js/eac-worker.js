@@ -6,6 +6,8 @@ import Loki from 'lokijs';
 
 class EacWorker {
   alarmClient = null;
+  browserDb = null;
+  currentStats = null;
 
   async start(options) {
     const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
@@ -15,7 +17,7 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
-    const browserDB = new Loki("stats.db");
+    this.browserDB = new Loki("stats.db");
 
     const AlarmClient = eac.AlarmClient;
 
@@ -32,7 +34,7 @@ class EacWorker {
       options.autostart,
       logger,
       options.repl,
-      browserDB
+      this.browserDB
     );
   }
 
@@ -42,6 +44,10 @@ class EacWorker {
 
   stopScanning() {
     this.alarmClient.stopScanning();
+  }
+
+  updateStats() {
+    this.currentStats = this.browserDB.getCollection('stats');
   }
 }
 
@@ -58,6 +64,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
       eacWorker.startScanning();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+      eacWorker.updateStats();
       break;
   }
 }

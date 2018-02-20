@@ -20,10 +20,9 @@ class TimeNodeStatistics extends Component {
   async componentWillMount() {
     await this.props.timeNodeStore.getBalance();
     await this.props.timeNodeStore.getDAYBalance();
-    this.props.timeNodeStore.getStats();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false,
-      fetchedClaimed: true
+      fetchedClaimed: this.props.timeNodeStore.claimedEth !== null
     });
 
     this.generateChart(this.props.timeNodeStore.executedCounters);
@@ -103,7 +102,7 @@ class TimeNodeStatistics extends Component {
 
     return (
       <div id="timeNodeStatistics">
-        {!this.state.timeNodeDisabled ? dayTokenError : null}
+        {this.state.timeNodeDisabled ? dayTokenError : null}
 
         <h2 className="py-4">
           Your TimeNode is currently {timeNodeStatus}.

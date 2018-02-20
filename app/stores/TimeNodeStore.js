@@ -164,8 +164,7 @@ export default class TimeNodeStore {
   }
 
   getStats(address = this.getMyAddress()) {
-    const stats = this.browserDB.getCollection('stats');
-
+    const stats = this.eacWorker.currentStats;
     if (stats.data.length > 0) {
       const web3 = this._web3Service.web3;
 
