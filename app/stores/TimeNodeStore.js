@@ -1,11 +1,11 @@
 import { observable } from 'mobx';
-import MemoryLogger from '../lib/memory-logger';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
 import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
-import Loki from 'lokijs';
+import EacWorker from 'worker-loader!../js/eac-worker.js';
+import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 
 /*
  * TimeNode classification based on the number
@@ -29,7 +29,7 @@ export default class TimeNodeStore {
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
-  alarmClient = null;
+  eacWorker = null;
 
   constructor(eacService, web3Service) {
     this._eacService = eacService;
@@ -41,16 +41,49 @@ export default class TimeNodeStore {
     if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
   }
 
+  startWorker(keystore, password) {
+    this.eacWorker = new EacWorker();
+
+    const options = {
+      wallet: this.decrypt(keystore),
+      password: this.decrypt(password),
+      logfile: 'console',
+      logLevel: 1,
+      milliseconds: 4000,
+      autostart: false,
+      scan: 75,
+      repl: false,
+      browserDB: true,
+    };
+
+    this.eacWorker.onmessage = (event) => {
+      const { type } = event.data;
+
+      if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
+        this.logs.push(event.data.value);
+      }
+    };
+
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.START,
+      options
+    });
+  }
+
   startScanning() {
     this.scanningStarted = true;
 
-    this.alarmClient.startScanning();
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
+    });
   }
 
   stopScanning() {
     this.scanningStarted = false;
 
-    this.alarmClient.stopScanning();
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
+    });
   }
 
   encrypt(message) {
@@ -72,43 +105,7 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    const web3 = this._web3Service.web3;
-
-    const AlarmClient = this._eacService.AlarmClient;
-
-    const program = {
-      wallet: this.decrypt(keystore),
-      password: this.decrypt(password),
-      provider: process.env.HTTP_PROVIDER,
-      logfile: 'console',
-      logLevel: 1,
-      milliseconds: 4000,
-      autostart: false,
-      scan: 75,
-      repl: false,
-      browserDB: true
-    }
-
-    const logger = new MemoryLogger(program.logLevel, this.logs);
-    this.browserDB = new Loki("stats.db");
-
-    this.alarmClient = await AlarmClient(
-      web3,
-      this._eacService,
-      program.provider,
-      program.scan,
-      program.milliseconds,
-      program.logfile,
-      program.logLevel,
-      program.wallet,
-      program.password,
-      program.autostart,
-      logger,
-      program.repl,
-      this.browserDB
-    ).catch((err) => {
-      throw err
-    });
+    this.startWorker(keystore, password);
 
     this.setCookie('tn', keystore);
     this.setCookie('tnp', password);
