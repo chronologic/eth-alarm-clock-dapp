@@ -6,7 +6,7 @@ import Loki from 'lokijs';
 
 class EacWorker {
   alarmClient = null;
-  browserDb = null;
+  browserDB = null;
 
   async start(options) {
     const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
@@ -56,7 +56,7 @@ class EacWorker {
     let executedCounter;
 
     // If it finds any data
-    if (stats.data) {
+    if (stats && stats.data) {
       const accountStats = stats.data[0];
       etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
       executedCounter = accountStats.executed;
@@ -88,6 +88,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
       eacWorker.startScanning();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
+      eacWorker.stopScanning();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
