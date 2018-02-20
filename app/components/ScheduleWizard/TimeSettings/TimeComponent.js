@@ -129,7 +129,7 @@ class TimeComponent extends AbstractSetting {
           <div className="col-md-3">
             <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timeZone?"":" has-error")}>
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timezone')} onChange={this.onChange('timezone')} >
+              <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timeZone')} onChange={this.onChange('timeZone')} >
                 {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
                 )}
