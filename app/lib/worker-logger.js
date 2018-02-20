@@ -1,6 +1,7 @@
 import moment from 'moment';
+import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 
-export default class MemoryLogger {
+export default class WorkerLogger {
   // 1 - debug / cache
   // 2 - info
   // 3 - error
@@ -28,6 +29,10 @@ export default class MemoryLogger {
 
   log(message) {
     const timestamp = moment().unix();
-    this.logs.push([timestamp, message]);
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.LOG,
+      value: [timestamp, message]
+    });
   }
 }
