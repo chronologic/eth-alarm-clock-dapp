@@ -7,7 +7,6 @@ import Loki from 'lokijs';
 class EacWorker {
   alarmClient = null;
   browserDb = null;
-  currentStats = null;
 
   async start(options) {
     const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
@@ -46,8 +45,33 @@ class EacWorker {
     this.alarmClient.stopScanning();
   }
 
+  /*
+   * Fetches the current stats of the Alarm Client
+   * And updates the TimeNodeStore.
+   */
   updateStats() {
-    this.currentStats = this.browserDB.getCollection('stats');
+    const stats = this.browserDB.getCollection('stats');
+
+    let etherGain;
+    let executedCounter;
+
+    // If it finds any data
+    if (stats.data) {
+      const accountStats = stats.data[0];
+      etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
+      executedCounter = accountStats.executed;
+
+    // Otherwise report every value as a zero
+    } else {
+      etherGain = 0;
+      executedCounter = 0;
+    }
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
+      etherGain: etherGain,
+      executedCounter: executedCounter
+    });
   }
 }
 

@@ -64,6 +64,9 @@ export default class TimeNodeStore {
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.logs.push(event.data.value);
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
+        this.claimedEth = event.data.etherGain;
+        this.executedCounters.push(event.data.executedCounter);
       }
     };
 
@@ -71,6 +74,8 @@ export default class TimeNodeStore {
       type: EAC_WORKER_MESSAGE_TYPES.START,
       options
     });
+
+    this.updateStats();
   }
 
   startScanning() {
@@ -79,6 +84,8 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
     });
+
+    this.updateStats();
   }
 
   stopScanning() {
@@ -163,22 +170,10 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  getStats(address = this.getMyAddress()) {
-    const stats = this.eacWorker.currentStats;
-    if (stats.data.length > 0) {
-      const web3 = this._web3Service.web3;
-
-      stats.data.forEach((accountStats) => {
-        if (accountStats.account === address) {
-          let etherGain = accountStats.currentEther.minus(accountStats.startingEther);
-          this.claimedEth = parseInt(web3.fromWei(etherGain));
-          this.executedCounters.push(accountStats.executed);
-        }
-      });
-    } else {
-      this.claimedEth = 0;
-    }
-
+  updateStats() {
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+    });
   }
 
   updateNodeStatus(balance) {

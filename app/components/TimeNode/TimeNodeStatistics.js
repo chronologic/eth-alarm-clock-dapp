@@ -18,17 +18,41 @@ class TimeNodeStatistics extends Component {
   }
 
   async componentWillMount() {
-    await this.props.timeNodeStore.getBalance();
-    await this.props.timeNodeStore.getDAYBalance();
+    await this.refreshBalances();
     this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false,
-      fetchedClaimed: this.props.timeNodeStore.claimedEth !== null
+      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED ? true : false
     });
 
-    this.generateChart(this.props.timeNodeStore.executedCounters);
+    this.refreshChart();
   }
 
-  generateChart(data) {
+  getStopButton() {
+    return <button className="btn btn-danger" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
+  }
+
+  getStartButton() {
+    return <button className="btn btn-primary" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
+  }
+
+  startTimeNode() {
+    this.props.timeNodeStore.startScanning();
+  }
+
+  stopTimeNode() {
+    this.props.timeNodeStore.stopScanning();
+  }
+
+  async refreshBalances() {
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
+  }
+
+  refreshStats() {
+    this.props.timeNodeStore.updateStats();
+  }
+
+  refreshChart() {
+    const data = this.props.timeNodeStore.executedCounters;
     const ctx = this.chartRef.getContext('2d');
 
     if (data.length > 0) {
@@ -68,23 +92,6 @@ class TimeNodeStatistics extends Component {
       ctx.textAlign="center";
       ctx.fillText("No data yet.",150,65);
     }
-
-  }
-
-  getStopButton() {
-    return <button className="btn btn-danger" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
-  }
-
-  getStartButton() {
-    return <button className="btn btn-primary" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
-  }
-
-  startTimeNode() {
-    this.props.timeNodeStore.startScanning();
-  }
-
-  stopTimeNode() {
-    this.props.timeNodeStore.stopScanning();
   }
 
   render() {
@@ -94,6 +101,9 @@ class TimeNodeStatistics extends Component {
     } else {
       timeNodeStatus = this.props.timeNodeStore.scanningStarted ? 'running' : 'stopped';
     }
+
+    const claimedEth = this.props.timeNodeStore.claimedEth;
+    const claimedEthStatus = claimedEth !== null ? claimedEth + " ETH" : "Loading...";
 
     const dayTokenError = <div className="alert alert-danger" role="alert">
       <button className="close" data-dismiss="alert"></button>
@@ -118,13 +128,13 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshStats()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="card-body">
-                <h1>{this.state.fetchedClaimed ? this.props.timeNodeStore.claimedEth + " ETH" : "Loading... "}</h1>
+                <h1>{claimedEthStatus}</h1>
               </div>
             </div>
           </div>
@@ -136,7 +146,7 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshChart()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
@@ -154,7 +164,7 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshBalances()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
