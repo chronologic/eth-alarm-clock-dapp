@@ -73,7 +73,7 @@ class TimeComponent extends AbstractSetting {
 
   timeValidator (){
     const { scheduleStore } = this.props;
-    return{
+    return {
       validator: (value)=>{
         const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timezone);
          return newdate.isValid()?0:1
@@ -86,7 +86,7 @@ class TimeComponent extends AbstractSetting {
 
   dateValidator (){
     const { scheduleStore } = this.props;
-    return{
+    return {
       validator: (value)=>{
         const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timezone);
          return newdate.isValid()?0:1

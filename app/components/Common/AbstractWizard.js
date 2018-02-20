@@ -9,7 +9,7 @@ constructor(activeStepKey, activeApp, props) {
   this.activeApp = activeApp;
 
   this.activeStep = NAVIGATION_STEPS[this.activeApp][this.activeStepKey];
-  if(!this.activeStep){
+  if (!this.activeStep){
     throw new Error('No steps with key', this.activeStepKey);
   }
   if (!this.activeStep.propertyKeys){

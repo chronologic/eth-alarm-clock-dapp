@@ -105,10 +105,10 @@ class ScheduleWizard extends Component {
   async scheduleTransaction() {
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
-    if(scheduleStore.isUsingTime){
+    if (scheduleStore.isUsingTime){
       executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
       executionWindow = scheduleStore.executionWindow * 60;
-    }else {
+    } else {
       executionTime = scheduleStore.blockNumber;
       executionWindow = scheduleStore.blockSize;
     }
@@ -164,7 +164,7 @@ componentDidMount() {
   initiateScrollbar(){
     const options = {};
     const element = document.querySelector('.tab-pane.active');
-    if(element){
+    if (element){
       Scrollbar.init(element, options)
     }
    }

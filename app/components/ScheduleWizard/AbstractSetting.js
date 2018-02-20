@@ -15,10 +15,10 @@ class AbstractSetting extends Component {
 
   integerValidator (){
     const { _validations } = this.props;
-    return{
+    return {
       validator: (value)=> {
-        if(!new RegExp('^\\d+$').test(value))return 1
-        if(!Number(value) > 0)return 2
+        if (!new RegExp('^\\d+$').test(value)) return 1
+        if (!Number(value) > 0) return 2
         return 0;
       },
       errors: [
@@ -30,10 +30,10 @@ class AbstractSetting extends Component {
 
   decimalValidator (){
     const { _validations } = this.props;
-    return{
+    return {
       validator: (value)=> {
-        if(!new RegExp('^\\d+\\.?\\d*$').test(value))return 1
-        if(!Number(value) > 0)return 2
+        if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1
+        if (!Number(value) > 0) return 2
         return 0;
       },
       errors: [
@@ -44,9 +44,9 @@ class AbstractSetting extends Component {
   }
 
   booleanValidator (){
-    return{
+    return {
       validator: (value)=> {
-        if(!value && value !== true) return 1;
+        if (!value && value !== true) return 1;
         return 0;
       },
       errors: [
@@ -56,7 +56,7 @@ class AbstractSetting extends Component {
   }
 
   ethereumAddressValidator(){
-      return{
+      return {
         validator: (value,web3)=>web3.isAddress(value)?0:1,
         errors: [
           'Kindly provide valid address'
@@ -75,16 +75,16 @@ class AbstractSetting extends Component {
     const { validator,errors } = this.validators[property];
     const value = scheduleStore[property];
     let Web3;
-    if(web3Service){
+    if (web3Service){
       const { web3 } = web3Service;
       Web3 = web3;
     }
     const errorState = validator(value,Web3);
-    if(errorState == 0){
+    if (errorState == 0){
       _validations[property] = true;
       _validationsErrors[property] = '';
     }
-    else{
+    else {
       _validations[property] = false;
       _validationsErrors[property] = errors[errorState-1];
     }

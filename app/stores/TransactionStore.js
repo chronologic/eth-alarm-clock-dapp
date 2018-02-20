@@ -185,7 +185,7 @@ export class TransactionStore {
       value: endowment
     });
 
-    if(isTimestamp) {
+    if (isTimestamp) {
         const receipt = await this._eacScheduler.timestampSchedule (
           toAddress,
           callData,

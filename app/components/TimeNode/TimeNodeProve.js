@@ -12,7 +12,7 @@ class TimeNodeProve extends Component {
   }
 
   _handleEnterPress = event => {
-    if(event.key !== "Enter") return;
+    if (event.key !== "Enter") return;
     document.querySelector("#verifyDayTokensBtn").click();
     event.preventDefault();
   };

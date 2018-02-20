@@ -107,10 +107,33 @@ class TransactionDetails extends ScrollbarComponent {
     this._isMounted = false;
   }
 
-  render() {
-    const { callData, executedAt, isTimestamp, status, transaction, isFrozen } = this.state;
-    const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
+  getCancelSection() {
+    const { transaction, isFrozen } = this.state;
+
     const isOwner = this.isOwner(transaction);
+
+    if (isOwner && !isFrozen) {
+      return (
+        <div className="row">
+          <div className="footer-buttons col-md-10">
+            <ul className="pager wizard no-style">
+              <li className="next">
+                <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
+                  <span>Cancel</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    return <div></div>;
+  }
+
+  render() {
+    const { callData, executedAt, isTimestamp, status, transaction } = this.state;
+    const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
 
     return (
       <div className="tab-pane slide active show">
@@ -167,19 +190,7 @@ class TransactionDetails extends ScrollbarComponent {
             </table>
           </div>
         </div>
-        { isOwner && !isFrozen &&
-          <div className="row">
-            <div className="footer-buttons col-md-10">
-              <ul className="pager wizard no-style">
-                <li className="next">
-                  <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
-                    <span>Cancel</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-        }
+        {this.getCancelSection()}
         <div className="row">
           <PoweredByEAC className="col-md-2 mt-2" />
         </div>
