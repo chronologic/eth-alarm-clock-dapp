@@ -25,6 +25,14 @@ class TimeComponent extends AbstractSetting {
     this._validations = _validations.TimeSettings.TimeComponent;
     this._validationsErrors = _validationsErrors.TimeSettings.TimeComponent;
 
+    var locale = window.navigator.userLanguage || window.navigator.language;
+    moment.locale(locale);
+
+    const localeData = moment.localeData();
+    this.timeFormat = localeData.longDateFormat('LT');
+    this.dateFormat = localeData.longDateFormat('L');
+    this.dateTimeFormat = this.dateFormat + " " + this.timeFormat;
+
     this.timeValidator = this.timeValidator.bind(this);
     this.dateValidator = this.dateValidator.bind(this);
     this.onRadioChange = this.onRadioChange.bind(this);
@@ -35,9 +43,12 @@ class TimeComponent extends AbstractSetting {
 
     const { scheduleStore } = this.props;
     const that = this;
-    const defaultTime = moment().add(1, 'hours').format('HH:mm');
-    const defaultDate = moment().add(1, 'hours').toDate().toLocaleDateString();
+    
+    const defaultTime = moment().add(1, 'hours').format(this.timeFormat);
+    const defaultDate = moment().add(1, 'hours').format(this.dateFormat);
+
     const localTimezone = moment.tz.guess();
+
     scheduleStore.isUsingTime = true;
     scheduleStore.timeZone = scheduleStore.timeZone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
@@ -50,7 +61,7 @@ class TimeComponent extends AbstractSetting {
     jQuery('#timezoneSelect').val(scheduleStore.timeZone);
 
     jQuery('#timepicker').timepicker({
-      showMeridian: false,
+      showMeridian: false
     }).on('show.timepicker', function() {
         const widget = jQuery('.bootstrap-timepicker-widget');
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
@@ -61,8 +72,8 @@ class TimeComponent extends AbstractSetting {
     });
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
-      startDate: new Date(),
-      language: moment.locale()
+      defaultDate: scheduleStore.transactionDate,
+      format: this.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
     });
     jQuery('#timezoneSelect').select2();
   }
@@ -75,8 +86,8 @@ class TimeComponent extends AbstractSetting {
     const { scheduleStore } = this.props;
     return{
       validator: (value)=>{
-        const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timeZone);
-         return newdate.isValid()?0:1
+        const newdate = moment.tz(scheduleStore.transactionDate+' '+value, this.dateTimeFormat, scheduleStore.timeZone);
+        return newdate.isValid()?0:1
        },
       errors: [
         'Kindly indicate Valid Time'
@@ -88,7 +99,7 @@ class TimeComponent extends AbstractSetting {
     const { scheduleStore } = this.props;
     return{
       validator: (value)=>{
-        const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timeZone);
+        const newdate = moment.tz(value+' '+scheduleStore.transactionTime, this.dateTimeFormat, scheduleStore.timeZone);
          return newdate.isValid()?0:1
        },
       errors: [
@@ -145,7 +156,7 @@ class TimeComponent extends AbstractSetting {
             <div className={"form-group form-group-default input-group required"+(_validations.transactionDate?"":" has-error")}>
               <div className="form-input-group">
                 <label>Transaction Date</label>
-                <input type="email" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
+                <input type="text" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
               </div>
               <div className="input-group-addon">
                 <i className="fa fa-calendar"></i>

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import moment from 'moment';
-import 'moment-timezone';
 import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
@@ -106,7 +104,7 @@ class ScheduleWizard extends Component {
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
     if(scheduleStore.isUsingTime){
-      executionTime = moment.tz(scheduleStore.transactionDate + " " + scheduleStore.transactionTime, scheduleStore.timeZone).unix();
+      executionTime = scheduleStore.transactionTimestamp;
       executionWindow = scheduleStore.executionWindow * 60;
     }else {
       executionTime = scheduleStore.blockNumber;
