@@ -47,8 +47,9 @@ class TimeNodeWallet extends Component {
       <div id="timeNodeWallet" className="tab-content">
         <div className="tab-pane active show padding-25">
           <h2>Select Your Wallet File</h2>
-          <p>We support MyEtherWallet keystore files</p>
-          <p>If you don&#39;t have the wallet yet, please visit <a href="https://myetherwallet.com" target="_blank" rel="noopener noreferrer">https://myetherwallet.com</a> and create a new wallet.</p>
+          <p>In order to enable TimeNode functionality please unlock your wallet that contains small amount of ETH necessary for schedueled transactions execution.</p>
+          <p>We support standard Ethereum keystore wallet file</p>
+          <p>If you don&#39;t have the wallet yet, please visit <a href="https://www.mycrypto.com" target="_blank" rel="noopener noreferrer">https://www.mycrypto.com</a> and create a new wallet.</p>
           <input type="file"
             className="my-3"
             ref={(el) => this.walletFileRef = el} />
