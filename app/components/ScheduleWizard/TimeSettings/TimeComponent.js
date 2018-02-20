@@ -12,6 +12,7 @@ const presetExecutionWindows = [
   ];
 
 @inject('scheduleStore')
+@inject('dateTimeValidatorStore')
 @observer
 class TimeComponent extends AbstractSetting {
 
@@ -21,7 +22,7 @@ class TimeComponent extends AbstractSetting {
       execWindows: presetExecutionWindows
     };
 
-    const { _validations,_validationsErrors } = this.props;
+    const { _validations, _validationsErrors } = this.props;
     this._validations = _validations.TimeSettings.TimeComponent;
     this._validationsErrors = _validationsErrors.TimeSettings.TimeComponent;
 
@@ -33,13 +34,17 @@ class TimeComponent extends AbstractSetting {
   componentDidMount() {
     momentDurationFormatSetup(moment);
 
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     const that = this;
-    const defaultTime = moment().add(1, 'hours').format('HH:mm');
-    const defaultDate = moment().add(1, 'hours').toDate().toLocaleDateString();
+
+    const inOneHour = moment().add(1, 'hours').toDate();
+    const defaultTime = dateTimeValidatorStore.time(inOneHour);
+    const defaultDate = dateTimeValidatorStore.date(inOneHour);
+
     const localTimezone = moment.tz.guess();
+
     scheduleStore.isUsingTime = true;
-    scheduleStore.timezone = scheduleStore.timezone || localTimezone;
+    scheduleStore.timeZone = scheduleStore.timeZone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;
     scheduleStore.executionWindow = scheduleStore.executionWindow || 5;
@@ -47,10 +52,10 @@ class TimeComponent extends AbstractSetting {
     const { jQuery } = window;
 
     jQuery('#timepicker').val(scheduleStore.transactionTime);
-    jQuery('#timezoneSelect').val(scheduleStore.timezone);
+    jQuery('#timezoneSelect').val(scheduleStore.timeZone);
 
     jQuery('#timepicker').timepicker({
-      showMeridian: false,
+      showMeridian: false
     }).on('show.timepicker', function() {
         const widget = jQuery('.bootstrap-timepicker-widget');
         widget.find('.glyphicon-chevron-up').removeClass().addClass('pg-arrow_maximize');
@@ -61,8 +66,8 @@ class TimeComponent extends AbstractSetting {
     });
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
-      startDate: new Date(),
-      language: moment.locale()
+      defaultDate: scheduleStore.transactionDate,
+      format: dateTimeValidatorStore.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
     });
     jQuery('#timezoneSelect').select2();
   }
@@ -72,12 +77,9 @@ class TimeComponent extends AbstractSetting {
   }
 
   timeValidator (){
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     return {
-      validator: (value)=>{
-        const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timezone);
-         return newdate.isValid()?0:1;
-       },
+      validator: (value) => dateTimeValidatorStore.isValid(scheduleStore.transactionDate, value, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Time'
       ]
@@ -85,12 +87,9 @@ class TimeComponent extends AbstractSetting {
   }
 
   dateValidator (){
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     return {
-      validator: (value)=>{
-        const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timezone);
-         return newdate.isValid()?0:1;
-       },
+      validator: (value) => dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Date'
       ]
@@ -101,7 +100,7 @@ class TimeComponent extends AbstractSetting {
     timezone:{
       validator: (value)=> typeof moment.tz.zone(value) == 'object'?0:1,
       errors: [
-        'Kindly indicate Valid Timezone'
+        'Kindly indicate Valid time zone'
       ]
     },
     transactionDate: '',
@@ -128,16 +127,16 @@ class TimeComponent extends AbstractSetting {
       <div id="timeComponent">
         <div className="row">
           <div className="col-md-3">
-            <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timezone?"":" has-error")}>
+            <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timeZone?"":" has-error")}>
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onBlur={this.validate('timezone')} onChange={this.onChange('timezone')} >
+              <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timeZone')} onChange={this.onChange('timeZone')} >
                 {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
                 )}
               </select>
             </div>
             {!_validations.timezone &&
-              <label className="error">{_validationsErrors.timezone}</label>
+              <label className="error">{_validationsErrors.timeZone}</label>
               }
           </div>
 
@@ -145,7 +144,7 @@ class TimeComponent extends AbstractSetting {
             <div className={"form-group form-group-default input-group required"+(_validations.transactionDate?"":" has-error")}>
               <div className="form-input-group">
                 <label>Transaction Date</label>
-                <input type="email" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
+                <input type="text" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
               </div>
               <div className="input-group-addon">
                 <i className="fa fa-calendar"></i>
