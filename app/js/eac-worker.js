@@ -2,6 +2,7 @@ import Web3 from 'web3/index';
 import EAC from 'eac.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
+import Loki from 'lokijs';
 
 class EacWorker {
   alarmClient = null;
@@ -14,6 +15,7 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
+    const browserDB = new Loki("stats.db");
 
     const AlarmClient = eac.AlarmClient;
 
@@ -30,7 +32,7 @@ class EacWorker {
       options.autostart,
       logger,
       options.repl,
-      options.browserDB
+      browserDB
     );
   }
 
