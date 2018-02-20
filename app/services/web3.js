@@ -8,7 +8,7 @@ import {
 import {
     Networks,
     Explorers
-} from '../config/web3Config.js'
+} from '../config/web3Config.js';
 
 let instance = null;
 
@@ -57,7 +57,7 @@ export default class Web3Service {
                 Log = log;
                 return;
             }
-        } )
+        } );
         return Log;
     }
 
@@ -127,7 +127,7 @@ export default class Web3Service {
         const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
-            this.explorer = Explorers[this.netId]
+            this.explorer = Explorers[this.netId];
         });
     }
 
@@ -138,7 +138,7 @@ export default class Web3Service {
                 setTimeout(async function() {
                     resolve(await that.awaitInitialized());
                 }, 2000);
-            })
+            });
             return Promises;
         } else
             return true;

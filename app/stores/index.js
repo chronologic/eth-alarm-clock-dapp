@@ -4,12 +4,14 @@ import { TransactionStore } from './TransactionStore';
 import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
 import ScheduleStore from './mobxStore';
+import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 const { eacService, web3Service } = services;
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 const scheduleStore = new ScheduleStore(false);
+const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionStore = new TransactionStore(eacService, web3Service);
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service);
@@ -20,5 +22,6 @@ export const stores = {
   routing: routingStore,
   transactionStore,
   timeNodeStore,
-  scheduleStore
+  scheduleStore,
+  dateTimeValidatorStore
 };

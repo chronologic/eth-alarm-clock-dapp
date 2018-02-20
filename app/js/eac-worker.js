@@ -94,4 +94,4 @@ onmessage = async function(event) {
       eacWorker.updateStats();
       break;
   }
-}
+};

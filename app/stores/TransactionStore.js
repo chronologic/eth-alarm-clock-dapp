@@ -185,7 +185,7 @@ export class TransactionStore {
       value: endowment
     });
 
-    if(isTimestamp) {
+    if (isTimestamp) {
         const receipt = await this._eacScheduler.timestampSchedule (
           toAddress,
           callData,
@@ -198,13 +198,12 @@ export class TransactionStore {
           payment,
           requiredDeposit,
           waitFormined
-      )
+      );
         return receipt;
-    }
-
+    } else {
       const receipt = await this._eacScheduler.blockSchedule (
         toAddress,
-        this._web3.web3.fromAscii(callData),
+        callData,
         callGas,
         callValue,
         windowSize,
@@ -214,8 +213,8 @@ export class TransactionStore {
         payment,
         requiredDeposit,
         waitFormined
-    )
+      );
       return receipt;
-}
-
+    }
   }
+}

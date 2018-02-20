@@ -1,2 +1,2 @@
-export { TimeComponent } from './TimeComponent'
-export { BlockComponent } from './BlockComponent'
+export { TimeComponent } from './TimeComponent';
+export { BlockComponent } from './BlockComponent';

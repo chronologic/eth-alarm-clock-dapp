@@ -1,38 +1,42 @@
 import { observable } from 'mobx';
-import moment from 'moment';
-import 'moment-timezone';
+import { computed } from '../../node_modules/mobx/lib/mobx';
+import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class mobxStore {
   //TimeComponent
-  @observable timezone = moment.tz.guess();
+  @observable timeZone = '';
   @observable transactionDate = '';
-  @observable transactionTime = moment().add(1, 'hours').format("hh:mm a");
+  @observable transactionTime = '';
   @observable executionWindow = '';
   @observable customWindow = '';
   @observable donation = 0;
 
-//BlockComponent
+  //BlockComponent
   @observable blockNumber = '';
   @observable blockSize = '';
 
-//BountySettings
-@observable requireDeposit = true;
-@observable timeBounty = '';
-@observable deposit = '';
+  //BountySettings
+  @observable requireDeposit = true;
+  @observable timeBounty = '';
+  @observable deposit = '';
 
-//infoSettings
-@observable toAddress = '';
-@observable gasAmount = '';
-@observable amountToSend = '';
-@observable gasPrice = '';
-@observable useData = false;
-@observable yourData = '';
+  //infoSettings
+  @observable toAddress = '';
+  @observable gasAmount = '';
+  @observable amountToSend = '';
+  @observable gasPrice = '';
+  @observable useData = false;
+  @observable yourData = '';
 
-@observable isUsingTime = true;
+  @observable isUsingTime = true;
 
+  @computed get transactionTimestamp() {
+    return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
+  }
 
-constructor(source) {
+  constructor(source) {
     Object.assign(this, source);
+    this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
 }
 

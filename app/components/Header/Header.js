@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class Header extends Component {
@@ -21,13 +21,13 @@ class Header extends Component {
           </div>
         </div>
         <div className="d-flex">
-          <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true)}}>
+          <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true);}}>
             <i className="pg-search"></i>
             Search by Address
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
