@@ -5,6 +5,7 @@ import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
 import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
+import Loki from 'lokijs';
 
 /*
  * TimeNode classification based on the number
@@ -89,6 +90,7 @@ export default class TimeNodeStore {
     }
 
     const logger = new MemoryLogger(program.logLevel, this.logs);
+    this.browserDB = new Loki("stats.db");
 
     this.alarmClient = await AlarmClient(
       web3,
@@ -103,7 +105,7 @@ export default class TimeNodeStore {
       program.autostart,
       logger,
       program.repl,
-      program.browserDB
+      this.browserDB
     ).catch((err) => {
       throw err
     });
@@ -116,6 +118,16 @@ export default class TimeNodeStore {
 
   getMyAddress() {
     const encryptedAddress = Cookies.get("tn");
+    if (encryptedAddress) {
+      const ks = this.decrypt(encryptedAddress);
+      return "0x" + JSON.parse(ks).address;
+    } else {
+      return ""
+    }
+  }
+
+  getMyAttachedAddress() {
+    const encryptedAddress = Cookies.get("attachedDAYAccount");
     if (encryptedAddress) {
       const ks = this.decrypt(encryptedAddress);
       return "0x" + JSON.parse(ks).address;
@@ -138,11 +150,11 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  async getDAYBalance(address = this.getMyAddress()) {
+  async getDAYBalance(address = this.getMyAttachedAddress()) {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const contract = web3.eth.contract(dayTokenABI).at(contract);
+    const contract = web3.eth.contract(dayTokenABI).at(process.env.DAY_FAUCET_ADDRESS);
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });
@@ -196,11 +208,15 @@ export default class TimeNodeStore {
     const numDAYTokens = await this.getDAYBalance(addr);
     const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid && this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-      this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-      this.attachedDAYAccount = encryptedAttachedAddress;
+    if (isValid) {
+      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+        this.attachedDAYAccount = encryptedAttachedAddress;
+      } else {
+        alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
+      }
     } else {
-      alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
+      alert("Invalid signature.");
     }
   }
 
