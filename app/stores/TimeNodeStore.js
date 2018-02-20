@@ -126,8 +126,7 @@ export default class TimeNodeStore {
   getMyAttachedAddress() {
     const encryptedAddress = Cookies.get("attachedDAYAccount");
     if (encryptedAddress) {
-      const ks = this.decrypt(encryptedAddress);
-      return "0x" + JSON.parse(ks).address;
+      return this.decrypt(encryptedAddress);
     } else {
       return "";
     }
