@@ -27,7 +27,7 @@ export default class DateTimeValidator {
   date(dateTime) {
     return moment(dateTime).format(this.dateFormat);
   }
-  
+
   ts(date, time, tz) {
     return this.parse(date, time, tz).unix();
   }

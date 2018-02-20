@@ -1,7 +1,6 @@
 import { observable } from 'mobx';
 import { computed } from '../../node_modules/mobx/lib/mobx';
-import DateTimeValidatorStore from './DateTimeValidatorStore'
-
+import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class mobxStore {
   //TimeComponent

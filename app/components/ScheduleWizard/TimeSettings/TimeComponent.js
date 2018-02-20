@@ -36,7 +36,7 @@ class TimeComponent extends AbstractSetting {
 
     const { scheduleStore, dateTimeValidatorStore } = this.props;
     const that = this;
-    
+
     const inOneHour = moment().add(1, 'hours').toDate();
     const defaultTime = dateTimeValidatorStore.time(inOneHour);
     const defaultDate = dateTimeValidatorStore.date(inOneHour);
@@ -78,7 +78,7 @@ class TimeComponent extends AbstractSetting {
 
   timeValidator (){
     const { scheduleStore, dateTimeValidatorStore } = this.props;
-    return{
+    return {
       validator: (value) => dateTimeValidatorStore.isValid(scheduleStore.transactionDate, value, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Time'
@@ -88,7 +88,7 @@ class TimeComponent extends AbstractSetting {
 
   dateValidator (){
     const { scheduleStore, dateTimeValidatorStore } = this.props;
-    return{
+    return {
       validator: (value) => dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Date'

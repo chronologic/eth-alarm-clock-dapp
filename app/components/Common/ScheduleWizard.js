@@ -104,7 +104,7 @@ class ScheduleWizard extends Component {
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
 
-    if(scheduleStore.isUsingTime){
+    if (scheduleStore.isUsingTime) {
       executionTime = scheduleStore.transactionTimestamp;
       executionWindow = scheduleStore.executionWindow * 60;
     } else {
