@@ -12,6 +12,7 @@ const presetExecutionWindows = [
   ];
 
 @inject('scheduleStore')
+@inject('dateTimeValidatorStore')
 @observer
 class TimeComponent extends AbstractSetting {
 
@@ -21,17 +22,9 @@ class TimeComponent extends AbstractSetting {
       execWindows: presetExecutionWindows
     };
 
-    const { _validations,_validationsErrors } = this.props;
+    const { _validations, _validationsErrors } = this.props;
     this._validations = _validations.TimeSettings.TimeComponent;
     this._validationsErrors = _validationsErrors.TimeSettings.TimeComponent;
-
-    var locale = window.navigator.userLanguage || window.navigator.language;
-    moment.locale(locale);
-
-    const localeData = moment.localeData();
-    this.timeFormat = localeData.longDateFormat('LT');
-    this.dateFormat = localeData.longDateFormat('L');
-    this.dateTimeFormat = this.dateFormat + " " + this.timeFormat;
 
     this.timeValidator = this.timeValidator.bind(this);
     this.dateValidator = this.dateValidator.bind(this);
@@ -41,11 +34,12 @@ class TimeComponent extends AbstractSetting {
   componentDidMount() {
     momentDurationFormatSetup(moment);
 
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     const that = this;
     
-    const defaultTime = moment().add(1, 'hours').format(this.timeFormat);
-    const defaultDate = moment().add(1, 'hours').format(this.dateFormat);
+    const inOneHour = moment().add(1, 'hours').toDate();
+    const defaultTime = dateTimeValidatorStore.time(inOneHour);
+    const defaultDate = dateTimeValidatorStore.date(inOneHour);
 
     const localTimezone = moment.tz.guess();
 
@@ -73,7 +67,7 @@ class TimeComponent extends AbstractSetting {
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
       defaultDate: scheduleStore.transactionDate,
-      format: this.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
+      format: dateTimeValidatorStore.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
     });
     jQuery('#timezoneSelect').select2();
   }
@@ -83,12 +77,9 @@ class TimeComponent extends AbstractSetting {
   }
 
   timeValidator (){
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     return{
-      validator: (value)=>{
-        const newdate = moment.tz(scheduleStore.transactionDate+' '+value, this.dateTimeFormat, scheduleStore.timeZone);
-        return newdate.isValid()?0:1
-       },
+      validator: (value) => dateTimeValidatorStore.isValid(scheduleStore.transactionDate, value, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Time'
       ]
@@ -96,12 +87,9 @@ class TimeComponent extends AbstractSetting {
   }
 
   dateValidator (){
-    const { scheduleStore } = this.props;
+    const { scheduleStore, dateTimeValidatorStore } = this.props;
     return{
-      validator: (value)=>{
-        const newdate = moment.tz(value+' '+scheduleStore.transactionTime, this.dateTimeFormat, scheduleStore.timeZone);
-         return newdate.isValid()?0:1
-       },
+      validator: (value) => dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)?0:1,
       errors: [
         'Kindly indicate Valid Date'
       ]

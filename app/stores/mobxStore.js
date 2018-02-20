@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
-import moment from 'moment';
-import 'moment-timezone';
 import { computed } from '../../node_modules/mobx/lib/mobx';
+import DateTimeValidatorStore from './DateTimeValidatorStore'
+
 
 export default class mobxStore {
   //TimeComponent
@@ -32,19 +32,12 @@ export default class mobxStore {
   @observable isUsingTime = true;
 
   @computed get transactionTimestamp() {
-    var locale = window.navigator.userLanguage || window.navigator.language;
-    moment.locale(locale);
-
-    const localeData = moment.localeData();
-    const timeFormat = localeData.longDateFormat('LT');
-    const dateFormat = localeData.longDateFormat('L');
-    const dateTimeFormat = dateFormat + " " + timeFormat;
-
-    return moment.tz(this.transactionDate + " " + this.transactionTime, dateTimeFormat, this.timeZone).unix()
+    return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
   }
 
   constructor(source) {
     Object.assign(this, source);
+    this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
 }
 
