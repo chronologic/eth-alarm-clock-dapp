@@ -204,7 +204,7 @@ export class TransactionStore {
 
       const receipt = await this._eacScheduler.blockSchedule (
         toAddress,
-        this._web3.web3.fromAscii(callData),
+        callData,
         callGas,
         callValue,
         windowSize,

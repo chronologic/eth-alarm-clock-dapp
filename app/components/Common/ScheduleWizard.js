@@ -25,7 +25,7 @@ class ScheduleWizard extends Component {
   _validations = {
     TimeSettings: {
       TimeComponent: {
-        timezone: true,
+        timeZone: true,
         transactionDate: true,
         transactionTime: true,
         executionWindow: true,
@@ -49,7 +49,7 @@ class ScheduleWizard extends Component {
       yourData: true
     },
     ConfirmSettings: {
-      timezone: true,
+      timeZone: true,
       transactionDate: true,
       transactionTime: true,
       executionWindow: true,
@@ -77,7 +77,7 @@ class ScheduleWizard extends Component {
   _validationsErrors = {
     TimeSettings: {
       TimeComponent: {
-        timezone: '',
+        timeZone: '',
         transactionDate: '',
         transactionTime: '',
         executionWindow: '',

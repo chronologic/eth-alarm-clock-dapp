@@ -39,7 +39,7 @@ class TimeComponent extends AbstractSetting {
     const defaultDate = moment().add(1, 'hours').toDate().toLocaleDateString();
     const localTimezone = moment.tz.guess();
     scheduleStore.isUsingTime = true;
-    scheduleStore.timezone = scheduleStore.timezone || localTimezone;
+    scheduleStore.timeZone = scheduleStore.timeZone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;
     scheduleStore.executionWindow = scheduleStore.executionWindow || 5;
@@ -47,7 +47,7 @@ class TimeComponent extends AbstractSetting {
     const { jQuery } = window;
 
     jQuery('#timepicker').val(scheduleStore.transactionTime);
-    jQuery('#timezoneSelect').val(scheduleStore.timezone);
+    jQuery('#timezoneSelect').val(scheduleStore.timeZone);
 
     jQuery('#timepicker').timepicker({
       showMeridian: false,
@@ -75,7 +75,7 @@ class TimeComponent extends AbstractSetting {
     const { scheduleStore } = this.props;
     return{
       validator: (value)=>{
-        const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timezone);
+        const newdate = moment.tz(scheduleStore.transactionDate+' '+value,scheduleStore.timeZone);
          return newdate.isValid()?0:1
        },
       errors: [
@@ -88,7 +88,7 @@ class TimeComponent extends AbstractSetting {
     const { scheduleStore } = this.props;
     return{
       validator: (value)=>{
-        const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timezone);
+        const newdate = moment.tz(value+' '+scheduleStore.transactionTime,scheduleStore.timeZone);
          return newdate.isValid()?0:1
        },
       errors: [
@@ -101,7 +101,7 @@ class TimeComponent extends AbstractSetting {
     timezone:{
       validator: (value)=> typeof moment.tz.zone(value) == 'object'?0:1,
       errors: [
-        'Kindly indicate Valid Timezone'
+        'Kindly indicate Valid time zone'
       ]
     },
     transactionDate: '',
@@ -128,16 +128,16 @@ class TimeComponent extends AbstractSetting {
       <div id="timeComponent">
         <div className="row">
           <div className="col-md-3">
-            <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timezone?"":" has-error")}>
+            <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timeZone?"":" has-error")}>
               <label className="">Timezone</label>
-              <select id="timezoneSelect" className="full-width" value={scheduleStore.timezone} onBlur={this.validate('timezone')} onChange={this.onChange('timezone')} >
+              <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timezone')} onChange={this.onChange('timezone')} >
                 {timezones.map((timezone, index) =>
                   <option key={index} value={timezone}>{timezone}</option>
                 )}
               </select>
             </div>
             {!_validations.timezone &&
-              <label className="error">{_validationsErrors.timezone}</label>
+              <label className="error">{_validationsErrors.timeZone}</label>
               }
           </div>
 

@@ -4,7 +4,7 @@ import 'moment-timezone';
 
 export default class mobxStore {
   //TimeComponent
-  @observable timezone = moment.tz.guess();
+  @observable timeZone = moment.tz.guess();
   @observable transactionDate = '';
   @observable transactionTime = moment().add(1, 'hours').format("hh:mm a");
   @observable executionWindow = '';
