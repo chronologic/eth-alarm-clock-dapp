@@ -49,10 +49,11 @@ class TimeNodeProve extends Component {
 
           <div className="row">
             <div className="col-md-6">
-              <p>TimeNode functionality requires a wallet address that holds DAY tokens.</p>
-              <p>Please follow these steps to attach it:</p>
+              <p>TimeNode functionality requires DAY tokens proof of ownership. By signing TimeNode address using your DAY token account, you provide us the necessary information to determine your DAY token balance.</p>
+              <p> Note that signing process would not give us any control over your DAY tokens. </p>
+              <p>Please follow these steps to complete the setup:</p>
               <ol>
-                <li>Visit <a href="https://www.myetherwallet.com/signmsg.html" target="_blank" rel="noopener noreferrer">https://www.myetherwallet.com/signmsg.html</a></li>
+                <li>Visit <a href="https://www.mycrypto.com/signmsg.html" target="_blank" rel="noopener noreferrer">https://www.mycrypto.com/signmsg.html</a></li>
                 <li>Sign a message using your wallet. Use the following as the message content:
                   <div className="row">
                     <div className="col-md-8">
@@ -65,7 +66,8 @@ class TimeNodeProve extends Component {
                     </div>
                   </div>
                 </li>
-                <li>Paste the whole generated signature into the Signature field.</li>
+                <li>Copy generated signature</li>
+                <li>Paste the whole generated signature into the Signature field</li>
               </ol>
               <a href="#">Watch Tutorial</a>
             </div>
