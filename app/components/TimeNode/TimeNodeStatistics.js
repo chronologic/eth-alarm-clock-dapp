@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
+import { Chart } from 'chart.js';
 
 @inject('timeNodeStore')
 @observer
@@ -17,11 +18,12 @@ class TimeNodeStatistics extends Component {
   }
 
   async componentWillMount() {
-    await this.props.timeNodeStore.getBalance();
-    await this.props.timeNodeStore.getDAYBalance();
+    await this.refreshBalances();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
     });
+
+    this.refreshChart();
   }
 
   getStopButton() {
@@ -40,6 +42,58 @@ class TimeNodeStatistics extends Component {
     this.props.timeNodeStore.stopScanning();
   }
 
+  async refreshBalances() {
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
+  }
+
+  refreshStats() {
+    this.props.timeNodeStore.updateStats();
+  }
+
+  refreshChart() {
+    const data = this.props.timeNodeStore.executedCounters;
+    const ctx = this.chartRef.getContext('2d');
+
+    if (data.length > 0) {
+      const labels = Array(data.length).fill('');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor:'rgba(33, 255, 255, 0.2)',
+            borderColor: 'rgba(33, 255, 255, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          elements: {
+            line: {
+              tension: 0
+            }
+          },
+          legend: {
+            display: false
+          },
+          scales: {
+            yAxes: [{
+              display: false
+            }],
+            xAxes: [{
+              display: false
+            }],
+          }
+        }
+      });
+    } else {
+      ctx.font = "20px Helvetica";
+      ctx.textAlign="center";
+      ctx.fillText("No data yet.",150,65);
+    }
+  }
+
   render() {
     let timeNodeStatus = null;
     if (this.state.timeNodeDisabled) {
@@ -47,6 +101,9 @@ class TimeNodeStatistics extends Component {
     } else {
       timeNodeStatus = this.props.timeNodeStore.scanningStarted ? 'running' : 'stopped';
     }
+
+    const claimedEth = this.props.timeNodeStore.claimedEth;
+    const claimedEthStatus = claimedEth !== null ? claimedEth + " ETH" : "Loading...";
 
     const dayTokenError = <div className="alert alert-danger" role="alert">
       <button className="close" data-dismiss="alert"></button>
@@ -71,13 +128,13 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshStats()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="card-body">
-                <h1>1234.5 ETH</h1>
+                <h1>{claimedEthStatus}</h1>
               </div>
             </div>
           </div>
@@ -89,12 +146,13 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshChart()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body no-padding">
+                <canvas id="myChart" ref={(el) => this.chartRef = el}></canvas>
               </div>
             </div>
           </div>
@@ -106,7 +164,7 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshBalances()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>

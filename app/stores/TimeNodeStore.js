@@ -2,8 +2,8 @@ import { observable } from 'mobx';
 import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
-import dayTokenABI from '../abi/dayTokenABI';
 import Bb from 'bluebird';
+import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 
@@ -22,16 +22,19 @@ export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+  @observable executedCounters = [];
   @observable logs = [];
 
   @observable balanceETH = null;
   @observable balanceDAY = null;
+  @observable claimedEth = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   eacWorker = null;
 
   constructor(eacService, web3Service) {
+    window.tnstore = this;
     this._eacService = eacService;
     this._web3Service = web3Service;
 
@@ -61,6 +64,9 @@ export default class TimeNodeStore {
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.logs.push(event.data.value);
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
+        this.claimedEth = event.data.etherGain;
+        this.executedCounters.push(event.data.executedCounter);
       }
     };
 
@@ -68,6 +74,8 @@ export default class TimeNodeStore {
       type: EAC_WORKER_MESSAGE_TYPES.START,
       options
     });
+
+    this.updateStats();
   }
 
   startScanning() {
@@ -76,6 +84,8 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
     });
+
+    this.updateStats();
   }
 
   stopScanning() {
@@ -133,18 +143,15 @@ export default class TimeNodeStore {
   }
 
   async getBalance(address = this.getMyAddress()) {
-    await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const balanceNum = await Bb.fromCallback((callback) => {
-      web3.eth.getBalance(address, callback);
-    });
+    const balance = await this._eacService.Util.getBalance(address);
+    const balanceEther = parseInt(web3.fromWei(balance, 'ether'));
 
-    const balance = parseInt(balanceNum);
-    this.balanceETH = balance;
-
-    return balance;
+    this.balanceETH = balanceEther;
+    return balanceEther;
   }
+
 
   async getDAYBalance(address = this.getMyAttachedAddress()) {
     await this._web3Service.init();
@@ -161,6 +168,12 @@ export default class TimeNodeStore {
     this.balanceDAY = balance;
 
     return balance;
+  }
+
+  updateStats() {
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+    });
   }
 
   updateNodeStatus(balance) {
@@ -192,7 +205,7 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const isValid = (addr === signature.address);
+    const isValid = (addr === signature.address) && this._eacService.Util.checkValidAddress(addr);
     return { isValid, addr };
   }
 

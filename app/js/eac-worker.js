@@ -6,6 +6,7 @@ import Loki from 'lokijs';
 
 class EacWorker {
   alarmClient = null;
+  browserDb = null;
 
   async start(options) {
     const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
@@ -15,7 +16,7 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
-    const browserDB = new Loki("stats.db");
+    this.browserDB = new Loki("stats.db");
 
     const AlarmClient = eac.AlarmClient;
 
@@ -32,7 +33,7 @@ class EacWorker {
       options.autostart,
       logger,
       options.repl,
-      browserDB
+      this.browserDB
     );
   }
 
@@ -42,6 +43,35 @@ class EacWorker {
 
   stopScanning() {
     this.alarmClient.stopScanning();
+  }
+
+  /*
+   * Fetches the current stats of the Alarm Client
+   * And updates the TimeNodeStore.
+   */
+  updateStats() {
+    const stats = this.browserDB.getCollection('stats');
+
+    let etherGain;
+    let executedCounter;
+
+    // If it finds any data
+    if (stats.data) {
+      const accountStats = stats.data[0];
+      etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
+      executedCounter = accountStats.executed;
+
+    // Otherwise report every value as a zero
+    } else {
+      etherGain = 0;
+      executedCounter = 0;
+    }
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
+      etherGain: etherGain,
+      executedCounter: executedCounter
+    });
   }
 }
 
@@ -58,6 +88,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
       eacWorker.startScanning();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+      eacWorker.updateStats();
       break;
   }
 };
