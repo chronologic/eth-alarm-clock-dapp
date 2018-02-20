@@ -103,7 +103,7 @@ class TimeNodeStatistics extends Component {
 
     return (
       <div id="timeNodeStatistics">
-        {this.state.timeNodeDisabled ? dayTokenError : null}
+        {!this.state.timeNodeDisabled ? dayTokenError : null}
 
         <h2 className="py-4">
           Your TimeNode is currently {timeNodeStatus}.
