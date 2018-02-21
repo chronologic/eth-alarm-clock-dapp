@@ -9,7 +9,7 @@ export default class DateTimeValidator {
     const localeData = moment.localeData();
     this.timeFormat = localeData.longDateFormat('LT');
     this.dateFormat = localeData.longDateFormat('L');
-    this.dateTimeFormat = this.dateFormat + " " + this.timeFormat;
+    this.dateTimeFormat = this.dateFormat + ' ' + this.timeFormat;
   }
 
   parse(date, time, tz) {

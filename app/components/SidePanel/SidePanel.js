@@ -9,36 +9,36 @@ class SidePanel extends Component {
     jQuery.Pages.init();
   }
 
-  isUrlActive(url, type = "thumbnail", substring = false) {
+  isUrlActive(url, type = 'thumbnail', substring = false) {
     const currentUrl = window.location.pathname;
-    const cls = type === "thumbnail" ? "active" : "text-white";
+    const cls = type === 'thumbnail' ? 'active' : 'text-white';
 
     if (substring) {
-      return currentUrl.includes(url) ? cls : "";
+      return currentUrl.includes(url) ? cls : '';
     } else {
-      return currentUrl === url ? cls : "";
+      return currentUrl === url ? cls : '';
     }
   }
 
   render() {
-    const titleClasses = "title ";
-    const thumbnailClasses = "icon-thumbnail ";
+    const titleClasses = 'title ';
+    const thumbnailClasses = 'icon-thumbnail ';
 
     const entryList = [
       {
-        title: "Schedule",
-        titleClasses: titleClasses + this.isUrlActive("/", "title"),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive("/")
+        title: 'Schedule',
+        titleClasses: titleClasses + this.isUrlActive('/', 'title'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/')
       },
       {
-        title: "Transactions",
-        titleClasses: titleClasses + this.isUrlActive("/transactions", "title", true),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive("/transactions", "thumbnail", true),
+        title: 'Transactions',
+        titleClasses: titleClasses + this.isUrlActive('/transactions', 'title', true),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true),
       },
       {
-        title: "TimeNode",
-        titleClasses: titleClasses + this.isUrlActive("/timenode", "title"),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive("/timenode"),
+        title: 'TimeNode',
+        titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode'),
       },
     ];
 

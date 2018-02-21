@@ -43,7 +43,7 @@ class InfoSettings extends AbstractSetting {
         <div id="infoSettings">
           <div className="row">
             <div className="col-md-4">
-              <div className={"form-group form-group-default required"+(_validations.toAddress?"":" has-error")}>
+              <div className={'form-group form-group-default required'+(_validations.toAddress?'':' has-error')}>
                 <label>To Address</label>
                 <input type="text" placeholder="Enter address" value={scheduleStore.toAddress} onChange={this.onChange('toAddress')}  onBlur={this.validate('toAddress')} className="form-control"></input>
               </div>
@@ -52,7 +52,7 @@ class InfoSettings extends AbstractSetting {
                 }
             </div>
             <div className="col-md-4">
-              <div className={"form-group form-group-default required"+(_validations.gasAmount?"":" has-error")}>
+              <div className={'form-group form-group-default required'+(_validations.gasAmount?'':' has-error')}>
                 <label>Gas Amount</label>
                 <input type="number" placeholder="Enter Gas Amount" value={scheduleStore.gasAmount}  onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')}  className="form-control"></input>
               </div>
@@ -63,7 +63,7 @@ class InfoSettings extends AbstractSetting {
           </div>
           <div className="row">
             <div className="col-md-4">
-              <div className={"form-group form-group-default required"+(_validations.amountToSend?"":" has-error")}>
+              <div className={'form-group form-group-default required'+(_validations.amountToSend?'':' has-error')}>
                 <label>Value/Amount to Send</label>
                 <input type="number" placeholder="Enter Value/Amount in ETH" value={scheduleStore.amountToSend}  onBlur={this.validate('amountToSend')} onChange={this.onChange('amountToSend')}  className="form-control"></input>
               </div>
@@ -72,7 +72,7 @@ class InfoSettings extends AbstractSetting {
                 }
             </div>
             <div className="col-md-4">
-              <div className={"form-group form-group-default required"+(_validations.gasPrice?"":" has-error")}>
+              <div className={'form-group form-group-default required'+(_validations.gasPrice?'':' has-error')}>
                 <label>Gas Price</label>
                 <input type="number" placeholder="Enter Gas Price in Gwei" value={scheduleStore.gasPrice}  onBlur={this.validate('gasPrice')} onChange={this.onChange('gasPrice')}  className="form-control"></input>
               </div>
@@ -88,7 +88,7 @@ class InfoSettings extends AbstractSetting {
           {scheduleStore.useData &&
             <div className="row">
               <div className="col-md-4">
-                <div className={"form-group form-group-default required"+(_validations.yourData?"":" has-error")}>
+                <div className={'form-group form-group-default required'+(_validations.yourData?'':' has-error')}>
                   <label>Your Data</label>
                   <input type="text" placeholder="Enter Your Data" value={scheduleStore.yourData}  onBlur={this.validate('yourData')} onChange={this.onChange('yourData')}  className="form-control"></input>
                 </div>

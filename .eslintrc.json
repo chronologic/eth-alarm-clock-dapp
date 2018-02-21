@@ -19,6 +19,7 @@
         "no-trailing-spaces": "error",
         "keyword-spacing": "error",
         "no-extra-semi": "error",
-        "semi": ["error", "always"]
+        "semi": ["error", "always"],
+        "quotes": ["error", "single", { "allowTemplateLiterals": true }]
     }
 }

@@ -16,7 +16,7 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
-    this.browserDB = new Loki("stats.db");
+    this.browserDB = new Loki('stats.db');
 
     const AlarmClient = eac.AlarmClient;
 
