@@ -8,7 +8,11 @@ class TimeNodeWallet extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+        userUploadedWallet: false
+    };
     this.verifyKeystore = this.verifyKeystore.bind(this);
+    this.updateUserUploadedWallet = this.updateUserUploadedWallet.bind(this);
   }
 
   _handleEnterPress = event => {
@@ -18,11 +22,12 @@ class TimeNodeWallet extends Component {
   };
 
   componentDidMount() {
-    this.passwdRef.addEventListener('keyup', this._handleEnterPress);
+    this.walletTabRef.addEventListener('keyup', this._handleEnterPress);
+    this.walletFileRef.addEventListener('change', this.updateUserUploadedWallet);
   }
 
   componentWillUnmount() {
-    this.passwdRef.removeEventListener('keyup', this._handleEnterPress);
+    this.walletTabRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
   verifyKeystore() {
@@ -42,30 +47,48 @@ class TimeNodeWallet extends Component {
     }
   }
 
+  updateUserUploadedWallet() {
+    this.setState({
+      userUploadedWallet: true
+    });
+  }
+
   render() {
+    let passwordField = null;
+    if (this.state.userUploadedWallet) {
+      passwordField = <div>
+        <p>Your wallet is <b>encrypted</b>. Please enter the password:</p>
+        <div className="row">
+          <div className="col-md-4">
+            <div className="form-group form-group-default required">
+              <input id="walletPassword"
+                type="password"
+                placeholder="Password"
+                className="form-control"
+                ref={(el) => this.passwdRef = el}/>
+            </div>
+          </div>
+        </div>
+      </div>;
+      // this.passwdRef.addEventListener('keyup', this._handleEnterPress);
+    }
+
     return (
-      <div id="timeNodeWallet" className="tab-content">
+      <div id="timeNodeWallet"
+        className="tab-content"
+        ref={(el) => this.walletTabRef = el}>
+
         <div className="tab-pane active show padding-25">
           <h2>Select Your Wallet File</h2>
           <p>In order to enable TimeNode functionality please unlock your wallet that contains small amount of ETH necessary for scheduled transactions execution.</p>
-          <p>We support standard Ethereum keystore wallet file</p>
+          <p>We support the standard Ethereum keystore wallet file (version 3).</p>
           <p>If you don&#39;t have the wallet yet, please visit <a href="https://www.mycrypto.com" target="_blank" rel="noopener noreferrer">https://www.mycrypto.com</a> and create a new wallet.</p>
           <input type="file"
             className="my-3"
             ref={(el) => this.walletFileRef = el} />
-          <p>Your wallet is encrypted. Please enter the password:</p>
-          <div className="row">
-            <div className="col-md-4">
-              <div className="form-group form-group-default">
-                <input id="walletPassword"
-                  type="password"
-                  placeholder="Password"
-                  className="form-control"
-                  ref={(el) => this.passwdRef = el}/>
-              </div>
-            </div>
-          </div>
+          {passwordField}
         </div>
+
         <div className="row">
           <div className="col-md-12">
             <button id="verifyWalletBtn"
@@ -74,6 +97,7 @@ class TimeNodeWallet extends Component {
               onClick={this.verifyKeystore}>Unlock</button>
           </div>
         </div>
+
       </div>
     );
   }
