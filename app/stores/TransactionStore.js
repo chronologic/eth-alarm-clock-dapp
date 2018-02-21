@@ -1,5 +1,10 @@
 import { observable, computed } from 'mobx';
 
+const requestFactoryStartBlocks = {
+  3: 2594245,
+  42: 5555500
+};
+
 export const DEFAULT_LIMIT = 10;
 
 export class TRANSACTION_STATUS {
@@ -45,7 +50,10 @@ export class TransactionStore {
     return addresses;
   }
 
-  requestFactoryStartBlock = '5555500';
+  @computed get requestFactoryStartBlock () {
+    const { netId } = this._web3;
+    return requestFactoryStartBlocks[netId] || 0;
+  }
 
   constructor(eac, web3, cache) {
     this._web3 = web3;
@@ -58,14 +66,17 @@ export class TransactionStore {
   }
 
   async setup() {
-    this._eacScheduler = await this._eac.scheduler();
+    this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
 
     await this._web3.awaitInitialized();
-
+    
     this._cache.startLazy();    
   }
 
-  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },cached ) {
+  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+    await this.setup();
+
+    startBlock = startBlock || this.requestFactoryStartBlock;//allow all components preload
     return await this._cache.getTransactions({ startBlock , endBlock }, cached);
   }
 
