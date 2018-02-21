@@ -10,7 +10,8 @@ class TimeNodeWallet extends Component {
     super(props);
     this.state = {
         userUploadedWallet: false,
-        selectedFile: null
+        selectedFile: null,
+        warnings: []
     };
     this.verifyKeystore = this.verifyKeystore.bind(this);
     this._handleFileUpload = this._handleFileUpload.bind(this);

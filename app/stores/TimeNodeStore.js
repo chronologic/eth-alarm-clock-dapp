@@ -164,7 +164,7 @@ export default class TimeNodeStore {
       contract.balanceOf.call(address, callback);
     });
 
-    const balance = balanceNum.div(10**18).toNumber();
+    const balance = balanceNum.div(10**18).toNumber().toFixed(2);
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
