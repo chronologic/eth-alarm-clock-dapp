@@ -3,6 +3,8 @@ import Cookies from 'js-cookie';
 import CryptoJS from "crypto-js";
 import ethJsUtil from 'ethereumjs-util';
 import Bb from 'bluebird';
+import ethereumJsWallet from 'ethereumjs-wallet';
+
 import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
@@ -162,7 +164,7 @@ export default class TimeNodeStore {
       contract.balanceOf.call(address, callback);
     });
 
-    const balance = balanceNum.div(10**18).toNumber();
+    const balance = balanceNum.div(10**18).toNumber().toFixed(2);
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
@@ -243,6 +245,15 @@ export default class TimeNodeStore {
 
   setCookie(key, value) {
     Cookies.set(key, value, { expires: 30 });
+  }
+
+  checkPasswordMatchesKeystore(keystore, password) {
+    try {
+      ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
+      return { matches: true, msg: "Success." };
+    } catch (e) {
+      return { matches: false, msg: e };
+    }
   }
 
 }
