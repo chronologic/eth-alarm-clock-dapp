@@ -23,7 +23,9 @@ export class TEMPORAL_UNIT {
 export class TransactionStore {
   _eac = null;
   _web3 = null;
+  _cache = null;
   _eacScheduler = null;
+  isSetup = false;
 
   @observable allTransactions;
   @observable filter;
@@ -41,13 +43,7 @@ export class TransactionStore {
 
   // Returns an array of only the addresses of all transactions
   @computed get allTransactionsAddresses() {
-    let addresses = [];
-    if (this.allTransactions) {
-      addresses = this.allTransactions.map(
-        transaction => transaction.instance.address
-      );
-    }
-    return addresses;
+    return this._cache.allTransactionsAddresses;
   }
 
   @computed get requestFactoryStartBlock () {
@@ -59,18 +55,23 @@ export class TransactionStore {
     this._web3 = web3;
     this._eac = eac;
     this._cache = cache;
-    this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
     this.allTransactions = this._cache.allTransactions;
 
     this.setup();
   }
 
   async setup() {
+    if(this.isSetup){
+      return;
+    }
     this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
 
     await this._web3.awaitInitialized();
-    
-    this._cache.startLazy();    
+
+    this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this._cache.startLazy();
+
+    this.isSetup = true;  
   }
 
   async getTransactions({ startBlock, endBlock = 'latest' }, cached) {

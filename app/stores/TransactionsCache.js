@@ -1,6 +1,5 @@
 import { observable } from 'mobx';
 import { computed } from '../../node_modules/mobx/lib/mobx';
-import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class TransactionsCache {
     //Memebers
@@ -25,41 +24,56 @@ export default class TransactionsCache {
             return;
         }
         this.running = true;
-        console.log(this._eac)
         this.runFetchTicker();
     }
 
-    runFetchTicker () {
-        if (!this.running){
+    async runFetchTicker () {
+        if (!this.running) {
             this.stopFetchTicker();
             return ;
         }
-        this.getTransactions({}, false);
+        await this.getTransactions({}, false);
+        this.lastUpdate = new Date();
+        this.updateLastBlock();
         this.setNextTicker();
     }
 
     setNextTicker () {
-        this.fetcher = setInterval(()=>{
+        this.fetcher = setInterval (() => {
             this.runFetchTicker();
         },this.fetchInterval);
     }
 
     stopFetchTicker() {
         this.running = false;
-        if (this.fetcher){
-            cancelInterval(this.fetcher);
+        if (this.fetcher) {
+            clearInterval(this.fetcher);
         }
         this.fetcher = false;
     }
+    
+    updateLastBlock() {
+        const { getBlockNumber } = this._eac.Util;
+        getBlockNumber()
+        .then((r)=> {
+            if (r) {
+                this.lastBlock = r;
+            }
+        });
+    }
 
-    get allTransactions () {
+    @computed get allTransactions () {
         return this.transactions;
+    }
+
+    @computed get allTransactionsAddresses() {
+        return this.contracts;
     }
 
     async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
         
         if (cache && this.running && this.contracts.length > 0) {
-            return this.getCachedTransactions();
+            return this.allTransactions();
         } else {
 
             const requestFactory = await this._eac.requestFactory();
@@ -82,12 +96,8 @@ export default class TransactionsCache {
         }
     }
 
-    getCachedTransactions(){
-        return this.allTransactions;
-    }
-
     async getAllTransactions(cached = this.cacheDefault) {
-        if (cached){
+        if (cached) {
             return this.allTransactions;
         }
 
