@@ -9,7 +9,7 @@ const extractSass = new ExtractTextPlugin({
 });
 
 module.exports = {
-
+  devtool: 'cheap-module-source-map',
   // Webpack checks this file for any additional JS dependencies to be bundled
   entry: {
     app: [
