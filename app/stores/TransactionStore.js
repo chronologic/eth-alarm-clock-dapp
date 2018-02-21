@@ -62,17 +62,15 @@ export class TransactionStore {
 
     await this._web3.awaitInitialized();
 
-    console.log(this._cache)
     this._cache.startLazy();    
   }
 
   async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },cached ) {
-    console.log(this._cache)
-    return this._cache.getTransactions({ startBlock , endBlock }, cached);
+    return await this._cache.getTransactions({ startBlock , endBlock }, cached);
   }
 
   async getAllTransactions(cached) {
-    return this._cache.getAllTransactions(cached);
+    return await this._cache.getAllTransactions(cached);
   }
 
   async queryTransactions( { transactions, offset, limit, resolved } ) {
