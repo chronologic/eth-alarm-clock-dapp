@@ -127,7 +127,7 @@ class TimeComponent extends AbstractSetting {
       <div id="timeComponent">
         <div className="row">
           <div className="col-md-3">
-            <div className={"form-group form-group-default form-group-default-select2 required"+(_validations.timeZone?"":" has-error")}>
+            <div className={'form-group form-group-default form-group-default-select2 required'+(_validations.timeZone?'':' has-error')}>
               <label className="">Timezone</label>
               <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timeZone')} onChange={this.onChange('timeZone')} >
                 {timezones.map((timezone, index) =>
@@ -141,7 +141,7 @@ class TimeComponent extends AbstractSetting {
           </div>
 
           <div className="col-md-3">
-            <div className={"form-group form-group-default input-group required"+(_validations.transactionDate?"":" has-error")}>
+            <div className={'form-group form-group-default input-group required'+(_validations.transactionDate?'':' has-error')}>
               <div className="form-input-group">
                 <label>Transaction Date</label>
                 <input type="text" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
@@ -156,7 +156,7 @@ class TimeComponent extends AbstractSetting {
           </div>
 
           <div className="col-md-3">
-            <div className={"form-group form-group-default input-group required"+(_validations.transactionTime?"":" has-error")}>
+            <div className={'form-group form-group-default input-group required'+(_validations.transactionTime?'':' has-error')}>
               <div className="form-input-group">
                 <label>Transaction Time</label>
               <input id="timepicker" type="text" className="form-control" value={scheduleStore.transactionTime} onBlur={this.validate('transactionTime')} onChange={this.onChange('transactionTime')} />
@@ -174,9 +174,9 @@ class TimeComponent extends AbstractSetting {
             <div className="form-group required">
               <label>Execution Window</label>
             </div>
-            <div data-toggle="buttons" className={"btn-group d-flex"+(_validations.executionWindow?"":" has-error")}>
+            <div data-toggle="buttons" className={'btn-group d-flex'+(_validations.executionWindow?'':' has-error')}>
               {this.state.execWindows.map((exeWind, index) =>
-                <label key={index} className={"btn btn-default w-100 " + (exeWind.value==scheduleStore.executionWindow ? 'active' : '')}>
+                <label key={index} className={'btn btn-default w-100 ' + (exeWind.value==scheduleStore.executionWindow ? 'active' : '')}>
                   <input type="radio" name="exeWindOptions" value={exeWind.value} checked={exeWind.value == scheduleStore.executionWindow} onBlur={this.validate('executionWindow')} onChange={this.onRadioChange('executionWindow')} />{exeWind.value} min
                 </label>
               )}
@@ -185,7 +185,7 @@ class TimeComponent extends AbstractSetting {
               <label className="error">{_validationsErrors.executionWindow}</label>
               }
 
-            <div id="customExecution" className={"form-group form-group-default"+(_validations.customWindow?"":" has-error")}>
+            <div id="customExecution" className={'form-group form-group-default'+(_validations.customWindow?'':' has-error')}>
               <label>Custom</label>
               <input type="text" placeholder="Enter custom execution window (min)" className="form-control" value={scheduleStore.customWindow} onBlur={this.validate('customWindow')} onChange={this.onChange('customWindow')}></input>
             </div>
