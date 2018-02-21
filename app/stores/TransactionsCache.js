@@ -5,8 +5,8 @@ import DateTimeValidatorStore from './DateTimeValidatorStore';
 export default class TransactionsCache {
     //Memebers
     @observable requestFactoryStartBlock = 0;
-    @observable running = true;
-    @observable cached = true;
+    @observable running = false;
+    @observable cacheDefault = true;
     @observable lastBlock = '';
     @observable lastUpdate = '';
     @observable contracts = [];
@@ -15,12 +15,13 @@ export default class TransactionsCache {
     constructor(eac,startBlock) {
         this._eac = eac;
         this.requestFactoryStartBlock = startBlock;
-        if (this.requestFactoryStartBlock) {
-            this.startLazy();
-        }
+        this.startLazy();
     }
 
     startLazy () {
+        if (this.running || !this.requestFactoryStartBlock) {//If running do Nothing
+            return;
+        }
         this.running = true;
         //this.fetch
     }
@@ -29,7 +30,7 @@ export default class TransactionsCache {
         return this.transactions;
     }
 
-    async getTransactions ({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },cache = this.cached) {
+    async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
         
         if (cache && this.running && this.contracts.length > 0) {
             return this.getCachedTransactions();
@@ -38,7 +39,7 @@ export default class TransactionsCache {
             const requestFactory = await this._eac.requestFactory();
 
             let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-            console.log(requestFactory, requestsCreated)
+            console.log(requestFactory, requestsCreated, startBlock, endBlock, this.running , this.contracts.length)
 
             requestsCreated.reverse();//Switch to most recent block first
             const requestAddresses = requestsCreated;
@@ -59,7 +60,7 @@ export default class TransactionsCache {
         return this.allTransactions;
     }
 
-    async getAllTransactions(cached = true) {
+    async getAllTransactions(cached = this.cacheDefault) {
         if (cached){
             return this.allTransactions;
         }
