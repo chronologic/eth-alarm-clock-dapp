@@ -3,7 +3,7 @@ import { observable, computed } from 'mobx';
 const requestFactoryStartBlocks = {
   3: 2594245,
   42: 5555500
-}
+};
 
 export const DEFAULT_LIMIT = 10;
 
@@ -70,9 +70,9 @@ export class TransactionStore {
 
   async getTransactions( { startBlock, endBlock = 'latest' } ) {
     await this.setup();
-    
+
     startBlock = startBlock || this.requestFactoryStartBlock;//allow all components preload
-    
+
     const requestFactory = await this._eac.requestFactory();
 
     let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
