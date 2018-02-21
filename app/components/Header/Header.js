@@ -44,7 +44,7 @@ class Header extends Component {
           </div>
           <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa " />&nbsp;Current Blocknumber:&nbsp;
+              <i className="fa " />&nbsp;Current Block Number:&nbsp;
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
