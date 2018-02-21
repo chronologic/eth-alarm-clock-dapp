@@ -4,6 +4,8 @@ import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class TransactionsCache {
     //Memebers
+    fetchInterval = 60 * 1000;
+    fetcher = '';
     @observable requestFactoryStartBlock = 0;
     @observable running = false;
     @observable cacheDefault = true;
@@ -23,7 +25,31 @@ export default class TransactionsCache {
             return;
         }
         this.running = true;
-        //this.fetch
+        console.log(this._eac)
+        this.runFetchTicker();
+    }
+
+    runFetchTicker () {
+        if (!this.running){
+            this.stopFetchTicker();
+            return ;
+        }
+        this.getTransactions({}, false);
+        this.setNextTicker();
+    }
+
+    setNextTicker () {
+        this.fetcher = setInterval(()=>{
+            this.runFetchTicker();
+        },this.fetchInterval);
+    }
+
+    stopFetchTicker() {
+        this.running = false;
+        if (this.fetcher){
+            cancelInterval(this.fetcher);
+        }
+        this.fetcher = false;
     }
 
     get allTransactions () {
