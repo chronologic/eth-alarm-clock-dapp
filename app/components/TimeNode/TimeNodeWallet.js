@@ -18,8 +18,8 @@ class TimeNodeWallet extends Component {
   }
 
   _handleEnterPress = event => {
-    if (event.key !== "Enter") return;
-    document.querySelector("#verifyWalletBtn").click();
+    if (event.key !== 'Enter') return;
+    document.querySelector('#verifyWalletBtn').click();
     event.preventDefault();
   };
 
@@ -50,10 +50,10 @@ class TimeNodeWallet extends Component {
             await timeNodeStore.startClient(keystore, password);
           }
         };
-        reader.readAsText(file, "utf-8");
+        reader.readAsText(file, 'utf-8');
       }
     } catch (e) {
-      alert("Please select a wallet file.");
+      alert('Please select a wallet file.');
     }
   }
 
