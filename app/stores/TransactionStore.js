@@ -47,9 +47,10 @@ export class TransactionStore {
 
   requestFactoryStartBlock = '5555500';
 
-  constructor(eac, web3) {
+  constructor(eac, web3, cache) {
     this._web3 = web3;
     this._eac = eac;
+    this._cache = new cache(eac, this.requestFactoryStartBlock);
 
     this.setup();
   }
@@ -60,16 +61,8 @@ export class TransactionStore {
     await this._web3.awaitInitialized();
   }
 
-  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' } ) {
-    const requestFactory = await this._eac.requestFactory();
-
-    let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-
-    requestsCreated.reverse();//Switch to most recent block first
-
-    requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
-
-    return requestsCreated;
+  async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },cached ) {
+    return this._cache.getAllTransactions({ startBlock , endBlock }, cached);
   }
 
   async getAllTransactions() {
