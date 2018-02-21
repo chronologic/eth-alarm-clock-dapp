@@ -18,6 +18,10 @@ export const transactionsCache = new TransactionsCache(eacService);
 export const transactionStore = new TransactionStore(eacService, web3Service, transactionsCache);
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service);
 
+//getCache running
+transactionsCache.requestFactoryStartBlock = transactionsCache.requestFactoryStartBlock;
+transactionsCache.startLazy();
+
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
 export const stores = {
