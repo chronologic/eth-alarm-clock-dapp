@@ -41,7 +41,6 @@ class ConfirmSettings extends Component {
 
   render() {
     const { scheduleStore } = this.props;
-
     return (
       <div id="confirmSettings">
         <div className="row">
