@@ -1,7 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { observer,inject } from 'mobx-react';
 
+@inject('web3Service')
+@observer
 class Header extends Component {
+
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      blocknumber: ''
+    };
+  }
+
+  componentWillMount() {
+    this.getCurrentBlock();
+  }
+
+  getCurrentBlock() {
+    const { web3Service: { web3 } } = this.props;
+    web3.eth.getBlockNumber((err,res) =>{
+      err == null && this.setState({ blocknumber: res });
+    });
+  }
+
   render() {
     return (
       <div className="header">
@@ -19,6 +42,12 @@ class Header extends Component {
             </span>
             <span className="timenode-count">1000</span>
           </div>
+          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+            <span className="active-timenodes">
+              <i className="fa " />&nbsp;Current Blocknumber:&nbsp;
+            </span>
+            <span className="timenode-count">{this.state.blocknumber}</span>
+          </div>
         </div>
         <div className="d-flex">
           <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true);}}>
@@ -32,7 +61,8 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  updateSearchState: PropTypes.any
+  updateSearchState: PropTypes.any,
+  web3Service: PropTypes.any
 };
 
 export default Header;
