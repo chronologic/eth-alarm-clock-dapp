@@ -23,7 +23,7 @@ const scheduleStore = new ScheduleStore(false);
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionsCache = new TransactionsCache(eacService);
-export const transactionStore = new TransactionStore(eacService, web3Service);
+export const transactionStore = new TransactionStore(eacService, web3Service, transactionsCache);
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore);
 
 //getCache running
