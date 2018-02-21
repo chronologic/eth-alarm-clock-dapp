@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 import { Chart } from 'chart.js';
+
+import Alert from '../Common/Alert';
+import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 
 @inject('timeNodeStore')
 @observer
@@ -105,10 +107,7 @@ class TimeNodeStatistics extends Component {
     const claimedEth = this.props.timeNodeStore.claimedEth;
     const claimedEthStatus = claimedEth !== null ? claimedEth + " ETH" : "Loading...";
 
-    const dayTokenError = <div className="alert alert-danger" role="alert">
-      <button className="close" data-dismiss="alert"></button>
-      <strong>Error: </strong>Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens.
-    </div>;
+    const dayTokenError = <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens."/>;
 
     return (
       <div id="timeNodeStatistics">
