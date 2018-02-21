@@ -66,7 +66,7 @@ class BlockComponent extends AbstractSetting {
         <div id="blockComponent">
           <div className="row">
             <div className="col-md-4">
-              <div className={"form-group form-group-default required"+(_validations.blockNumber?"":" has-error")}>
+              <div className={'form-group form-group-default required'+(_validations.blockNumber?'':' has-error')}>
                 <label>Block Number</label>
                 <input type="number" placeholder="Enter a block number" value={scheduleStore.blockNumber} onBlur={this.validate('blockNumber')} onChange={this.onChange('blockNumber')} className="form-control"></input>
               </div>
@@ -75,7 +75,7 @@ class BlockComponent extends AbstractSetting {
                 }
             </div>
             <div className="col-md-4">
-              <div className={"form-group form-group-default required" + (_validations.blockSize ? "" : " has-error")}>
+              <div className={'form-group form-group-default required' + (_validations.blockSize ? '' : ' has-error')}>
                 <label>Window Size</label>
                 <input type="text" placeholder="Enter window size" value={scheduleStore.blockSize} onBlur={this.validate('blockSize')} onChange={this.onChange('blockSize')} className="form-control"></input>
               </div>

@@ -41,7 +41,7 @@ class App extends Component {
   }
 
   componentDidMount(){
-    document.addEventListener("keydown", this.onEscKey, false);
+    document.addEventListener('keydown', this.onEscKey, false);
   }
 
   render() {

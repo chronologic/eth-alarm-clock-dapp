@@ -12,8 +12,8 @@ class TimeNodeProve extends Component {
   }
 
   _handleEnterPress = event => {
-    if (event.key !== "Enter") return;
-    document.querySelector("#verifyDayTokensBtn").click();
+    if (event.key !== 'Enter') return;
+    document.querySelector('#verifyDayTokensBtn').click();
     event.preventDefault();
   };
 
@@ -34,9 +34,9 @@ class TimeNodeProve extends Component {
   }
 
   toClipboard() {
-    var copyText = document.getElementById("copyAddress");
+    var copyText = document.getElementById('copyAddress');
     copyText.select();
-    document.execCommand("Copy");
+    document.execCommand('Copy');
   }
 
   render() {

@@ -90,9 +90,9 @@ class TimeNodeStatistics extends Component {
         }
       });
     } else {
-      ctx.font = "20px Helvetica";
-      ctx.textAlign="center";
-      ctx.fillText("No data yet.",150,65);
+      ctx.font = '20px Helvetica';
+      ctx.textAlign='center';
+      ctx.fillText('No data yet.',150,65);
     }
   }
 
@@ -105,7 +105,7 @@ class TimeNodeStatistics extends Component {
     }
 
     const claimedEth = this.props.timeNodeStore.claimedEth;
-    const claimedEthStatus = claimedEth !== null ? claimedEth + " ETH" : "Loading...";
+    const claimedEthStatus = claimedEth !== null ? claimedEth + ' ETH' : 'Loading...';
 
     const dayTokenError = <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens."/>;
 
