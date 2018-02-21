@@ -50,7 +50,9 @@ export class TransactionStore {
   constructor(eac, web3, cache) {
     this._web3 = web3;
     this._eac = eac;
-    this._cache = new cache(eac, this.requestFactoryStartBlock);
+    this._cache = cache;
+    this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this.allTransactions = this._cache.allTransactions;
 
     this.setup();
   }
@@ -59,19 +61,18 @@ export class TransactionStore {
     this._eacScheduler = await this._eac.scheduler();
 
     await this._web3.awaitInitialized();
+
+    console.log(this._cache)
+    this._cache.startLazy();    
   }
 
   async getTransactions( { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },cached ) {
-    return this._cache.getAllTransactions({ startBlock , endBlock }, cached);
+    console.log(this._cache)
+    return this._cache.getTransactions({ startBlock , endBlock }, cached);
   }
 
-  async getAllTransactions() {
-    this.allTransactions = await this.getTransactions({});
-
-    for (let transaction of this.allTransactions) {
-      await transaction.fillData();
-      transaction.status = await this.getTxStatus(transaction);
-    }
+  async getAllTransactions(cached) {
+    return this._cache.getAllTransactions(cached);
   }
 
   async queryTransactions( { transactions, offset, limit, resolved } ) {

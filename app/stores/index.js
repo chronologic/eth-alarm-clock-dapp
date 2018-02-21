@@ -5,6 +5,7 @@ import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
 import ScheduleStore from './mobxStore';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
+import TransactionsCache from './TransactionsCache';
 
 const { eacService, web3Service } = services;
 
@@ -13,7 +14,8 @@ const routingStore = new RouterStore();
 const scheduleStore = new ScheduleStore(false);
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
-export const transactionStore = new TransactionStore(eacService, web3Service);
+export const transactionsCache = new TransactionsCache(eacService);
+export const transactionStore = new TransactionStore(eacService, web3Service, transactionsCache);
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
