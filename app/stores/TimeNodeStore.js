@@ -69,8 +69,8 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     const options = {
-      wallet: this.decrypt(keystore),
-      password: this.decrypt(password),
+      keystore: this.decrypt(keystore),
+      keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,
       milliseconds: 4000,
