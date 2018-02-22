@@ -8,6 +8,7 @@ import ethereumJsWallet from 'ethereumjs-wallet';
 import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
+import { showNotification } from '../services/notification';
 
 /*
  * TimeNode classification based on the number
@@ -243,12 +244,12 @@ export default class TimeNodeStore {
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
         this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
         this.attachedDAYAccount = encryptedAttachedAddress;
-        alert('Success.');
+        showNotification('Success.', 'success');
       } else {
-        alert('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
+        showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
       }
     } else {
-      alert('Invalid signature.');
+      showNotification('Invalid signature.');
     }
   }
 
@@ -268,9 +269,11 @@ export default class TimeNodeStore {
   checkPasswordMatchesKeystore(keystore, password) {
     try {
       ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
-      return { matches: true, msg: 'Success.' };
+      showNotification('Success.', 'success');
+      return true;
     } catch (e) {
-      return { matches: false, msg: e };
+      showNotification(e);
+      return false;
     }
   }
 

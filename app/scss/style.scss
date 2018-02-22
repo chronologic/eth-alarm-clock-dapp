@@ -96,6 +96,10 @@ $primary-color: #21FFFF;
 $titleColor: #fff;
 
 /* NEW CUSTOM CSS */
+.left-separator {
+  border-left: 1px solid grey;
+}
+
 .view-title {
 	color: $titleColor;
 	font-size: 32px;
