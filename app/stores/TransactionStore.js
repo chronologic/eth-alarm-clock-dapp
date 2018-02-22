@@ -88,8 +88,9 @@ export class TransactionStore {
   async queryTransactions( { transactions, offset, limit, resolved } ) {
     const processed = [];
 
+    await this._cache.queryTransactions (transactions);
+
     for (let transaction of transactions) {
-      await transaction.fillData();
 
       const isResolved = await this.isTransactionResolved(transaction);
 

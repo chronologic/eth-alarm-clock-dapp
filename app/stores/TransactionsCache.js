@@ -86,7 +86,6 @@ export default class TransactionsCache {
             requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
 
             if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {//cache new values if complete fetch
-                console.log(requestAddresses, requestsCreated)
                 this.cacheContracts(requestAddresses);
                 this.cacheTransactions(requestsCreated);
             }
@@ -108,6 +107,36 @@ export default class TransactionsCache {
         }
     }
 
+    async queryTransactions(transactions) {
+        for (let transaction of transactions) {
+            let cached = this.fetchCachedTransaction(transaction);
+            if (cached) {
+                transaction = cached;
+                transaction.refreshData();
+            } else {
+                await transaction.fillData();
+            }
+        }
+        return transactions;
+    }
+
+    async fillUpTransactions (transactions) {
+        for (let transaction of transactions) {
+            if (transaction.fillData) {
+                await transaction.fillData();
+            }
+        }
+    }
+
+    fetchCachedTransaction (transaction) {
+        this.allTransactions.find( (cachedTransaction) => {
+            if (cachedTransaction.address == transaction.address) {
+                return cachedTransaction;
+            }
+        });
+        return false;
+    }
+
     cacheContracts (requestContracts = [], updateType ) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
@@ -121,6 +150,7 @@ export default class TransactionsCache {
     cacheTransactions(transactions = [], updateType) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
+        this.fillUpTransactions(transactions);
         if (this.transactions.length < transactions.length || replace) {
             this.transactions = transactions;
         } else if (append) {
