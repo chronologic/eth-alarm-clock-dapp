@@ -61,7 +61,7 @@ export class TransactionStore {
   }
 
   async setup() {
-    if(this.isSetup){
+    if (this.isSetup) {
       return;
     }
     this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
@@ -71,7 +71,7 @@ export class TransactionStore {
     this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
     this._cache.startLazy();
 
-    this.isSetup = true;  
+    this.isSetup = true;
   }
 
   async getTransactions({ startBlock, endBlock = 'latest' }, cached) {

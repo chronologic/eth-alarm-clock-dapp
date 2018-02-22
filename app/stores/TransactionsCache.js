@@ -51,7 +51,7 @@ export default class TransactionsCache {
         }
         this.fetcher = false;
     }
-    
+
     updateLastBlock() {
         const { getBlockNumber } = this._eac.Util;
         getBlockNumber()
@@ -71,7 +71,7 @@ export default class TransactionsCache {
     }
 
     async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
-        
+
         if (cache && this.running && this.contracts.length > 0) {
             return this.allTransactions();
         } else {
@@ -79,7 +79,6 @@ export default class TransactionsCache {
             const requestFactory = await this._eac.requestFactory();
 
             let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-            console.log(requestFactory, requestsCreated, startBlock, endBlock, this.running , this.contracts.length)
 
             requestsCreated.reverse();//Switch to most recent block first
             const requestAddresses = requestsCreated;
@@ -88,8 +87,8 @@ export default class TransactionsCache {
 
             if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {//cache new values if complete fetch
                 console.log(requestAddresses, requestsCreated)
-                //this.cacheContracts(requestAddresses);
-                //this.cacheTransactions(requestsCreated);
+                this.cacheContracts(requestAddresses);
+                this.cacheTransactions(requestsCreated);
             }
 
             return requestsCreated;
