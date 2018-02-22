@@ -21,6 +21,13 @@ export class TIMENODE_STATUS {
   static DISABLED = 'Disabled';
 }
 
+class SIGNATURE_ERRORS {
+  static JSON_FORMAT_ERROR = `There is a problem with JSON format of your signature. Make sure you've copied it correctly.`;
+  static MISSING_MSG = `Message is missing in provided string. Make sure property "msg" is present.`;
+  static MISSING_SIG = `Signature is missing in provided string. Make sure property "sig" is present.`;
+  static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
+}
+
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
 
@@ -216,7 +223,25 @@ export default class TimeNodeStore {
    * (inputted by the user) is valid.
    */
   isSignatureValid(sigObject) {
-    const signature = JSON.parse(sigObject);
+    let signature;
+
+    try {
+      signature = JSON.parse(sigObject);
+    } catch (error) {
+      throw SIGNATURE_ERRORS.JSON_FORMAT_ERROR;
+    }
+
+    if (!signature.msg) {
+      throw SIGNATURE_ERRORS.MISSING_MSG;
+    }
+
+    if (!signature.sig) {
+      throw SIGNATURE_ERRORS.MISSING_SIG;
+    }
+
+    if (!signature.address) {
+      throw SIGNATURE_ERRORS.MISSING_ADDRESS;
+    }
 
     const message = Buffer.from(signature.msg);
 
@@ -236,20 +261,24 @@ export default class TimeNodeStore {
    * If it contains DAY tokens, it allows the usage of TimeNodes.
    */
   async attachDayAccount(sigObject) {
-    const { isValid, addr } = this.isSignatureValid(sigObject);
-    const numDAYTokens = await this.getDAYBalance(addr);
-    const encryptedAttachedAddress = this.encrypt(addr);
+    try {
+      const { isValid, addr } = this.isSignatureValid(sigObject);
+      const numDAYTokens = await this.getDAYBalance(addr);
+      const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid) {
-      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-        this.attachedDAYAccount = encryptedAttachedAddress;
-        showNotification('Success.', 'success');
+      if (isValid) {
+        if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+          this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+          this.attachedDAYAccount = encryptedAttachedAddress;
+          showNotification('Success.', 'success');
+        } else {
+          showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
+        }
       } else {
-        showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
+        showNotification('Invalid signature.');
       }
-    } else {
-      showNotification('Invalid signature.');
+    } catch (error) {
+      showNotification(error);
     }
   }
 
