@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { observer,inject } from 'mobx-react';
 
 @inject('web3Service')
+@inject('keenStore')
 @observer
 class Header extends Component {
 
@@ -38,13 +39,13 @@ class Header extends Component {
         <div className="d-flex align-items-center">
           <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa fa-sitemap"/>&nbsp;Active TimeNodes:&nbsp;
+              <i className="fa fa-sitemap"/>&nbsp;&nbsp;Active TimeNodes:&nbsp;
             </span>
-            <span className="timenode-count">1000</span>
+            <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
-          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+          <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa " />&nbsp;Current Block Number:&nbsp;
+              <i className="fa fa-th-large" />&nbsp;Current Block Number:&nbsp;
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
@@ -62,7 +63,8 @@ class Header extends Component {
 
 Header.propTypes = {
   updateSearchState: PropTypes.any,
-  web3Service: PropTypes.any
+  web3Service: PropTypes.any,
+  keenStore: PropTypes.any
 };
 
 export default Header;

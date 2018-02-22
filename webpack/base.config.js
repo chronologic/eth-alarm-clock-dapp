@@ -68,9 +68,9 @@ module.exports = {
         include: path.resolve(__dirname, '../app'),
         loader: 'babel-loader',
         options: {
-          presets: ["es2015", "env", "react"],
+          presets: ['es2015', 'env', 'react'],
           plugins: [
-              "transform-runtime",
+              'transform-runtime',
               'transform-decorators-legacy',
               'transform-class-properties'
           ]

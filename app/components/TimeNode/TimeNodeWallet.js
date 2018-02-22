@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
+import { showNotification } from '../../services/notification';
 
 @inject('timeNodeStore')
 @observer
@@ -18,8 +19,8 @@ class TimeNodeWallet extends Component {
   }
 
   _handleEnterPress = event => {
-    if (event.key !== "Enter") return;
-    document.querySelector("#verifyWalletBtn").click();
+    if (event.key !== 'Enter') return;
+    document.querySelector('#verifyWalletBtn').click();
     event.preventDefault();
   };
 
@@ -42,18 +43,16 @@ class TimeNodeWallet extends Component {
         const reader = new FileReader();
         reader.onload = async function() {
           const keystore = timeNodeStore.encrypt(reader.result);
-          const { matches, msg } = timeNodeStore.checkPasswordMatchesKeystore(keystore, password);
-
-          alert(msg);
+          const matches = timeNodeStore.checkPasswordMatchesKeystore(keystore, password);
 
           if (matches) {
             await timeNodeStore.startClient(keystore, password);
           }
         };
-        reader.readAsText(file, "utf-8");
+        reader.readAsText(file, 'utf-8');
       }
     } catch (e) {
-      alert("Please select a wallet file.");
+      showNotification('Please select a wallet file.');
     }
   }
 

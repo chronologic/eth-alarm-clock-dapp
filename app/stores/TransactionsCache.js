@@ -2,7 +2,7 @@ import { observable } from 'mobx';
 import { computed } from '../../node_modules/mobx/lib/mobx';
 
 export default class TransactionsCache {
-    //Members
+    //Memebers
     fetchInterval = 60 * 1000;
     fetcher = '';
     @observable requestFactoryStartBlock = 0;
@@ -39,7 +39,7 @@ export default class TransactionsCache {
     }
 
     setNextTicker () {
-        this.fetcher = setInterval (() => {
+        this.fetcher = setTimeout (() => {
             this.runFetchTicker();
         },this.fetchInterval);
     }
@@ -47,7 +47,7 @@ export default class TransactionsCache {
     stopFetchTicker() {
         this.running = false;
         if (this.fetcher) {
-            clearInterval(this.fetcher);
+            clearTimeout(this.fetcher);
         }
         this.fetcher = false;
     }
@@ -107,6 +107,36 @@ export default class TransactionsCache {
         }
     }
 
+    async queryTransactions(transactions) {
+        for (let transaction of transactions) {
+            let cached = this.fetchCachedTransaction(transaction);
+            if (cached) {
+                transaction = cached;
+                transaction.refreshData();
+            } else {
+                await transaction.fillData();
+            }
+        }
+        return transactions;
+    }
+
+    async fillUpTransactions (transactions) {
+        for (let transaction of transactions) {
+            if (transaction.fillData) {
+                await transaction.fillData();
+            }
+        }
+    }
+
+    fetchCachedTransaction (transaction) {
+        this.allTransactions.find( (cachedTransaction) => {
+            if (cachedTransaction.address == transaction.address) {
+                return cachedTransaction;
+            }
+        });
+        return false;
+    }
+
     cacheContracts (requestContracts = [], updateType ) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
@@ -120,6 +150,7 @@ export default class TransactionsCache {
     cacheTransactions(transactions = [], updateType) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
+        this.fillUpTransactions(transactions);
         if (this.transactions.length < transactions.length || replace) {
             this.transactions = transactions;
         } else if (append) {

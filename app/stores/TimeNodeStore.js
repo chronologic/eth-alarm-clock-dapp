@@ -1,6 +1,6 @@
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import Cookies from 'js-cookie';
-import CryptoJS from "crypto-js";
+import CryptoJS from 'crypto-js';
 import ethJsUtil from 'ethereumjs-util';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
@@ -8,6 +8,8 @@ import ethereumJsWallet from 'ethereumjs-wallet';
 import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
+import { showNotification } from '../services/notification';
+import { LOGGER_MSG_TYPES } from '../lib/worker-logger.js';
 
 /*
  * TimeNode classification based on the number
@@ -20,12 +22,33 @@ export class TIMENODE_STATUS {
   static DISABLED = 'Disabled';
 }
 
+class SIGNATURE_ERRORS {
+  static JSON_FORMAT_ERROR = `There is a problem with JSON format of your signature. Make sure you've copied it correctly.`;
+  static MISSING_MSG = `Message is missing in provided string. Make sure property "msg" is present.`;
+  static MISSING_SIG = `Signature is missing in provided string. Make sure property "sig" is present.`;
+  static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
+}
+
+// 1 minute as milliseconds
+const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
-  @observable executedCounters = [];
+
   @observable logs = [];
+  @observable showLogTypes = Object.values(LOGGER_MSG_TYPES);
+  @computed get filteredLogs() {
+    return this.logs.filter(
+      log => this.showLogTypes.includes(log.type)
+    );
+  }
+
+  @observable executedCounters = [];
+  @computed get totalExecuted() {
+    return this.executedCounters.reduce((a, b) => a + b, 0);
+  }
 
   @observable balanceETH = null;
   @observable balanceDAY = null;
@@ -35,15 +58,20 @@ export default class TimeNodeStore {
 
   eacWorker = null;
 
-  constructor(eacService, web3Service) {
+  _keenStore = null;
+
+  _timeNodeStatusCheckIntervalRef = null;
+
+  constructor(eacService, web3Service, keenStore) {
     window.tnstore = this;
     this._eacService = eacService;
     this._web3Service = web3Service;
+    this._keenStore = keenStore;
 
-    if (Cookies.get("attachedDAYAccount")) this.attachedDAYAccount = Cookies.get("attachedDAYAccount");
-    if (Cookies.get("hasWallet")) this.hasWallet = true;
+    if (Cookies.get('attachedDAYAccount')) this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
+    if (Cookies.get('hasWallet')) this.hasWallet = true;
 
-    if (this.hasCookies(["tn", "tnp"])) this.startClient(Cookies.get("tn"), Cookies.get("tnp"));
+    if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
   }
 
   startWorker(keystore, password) {
@@ -80,8 +108,16 @@ export default class TimeNodeStore {
     this.updateStats();
   }
 
+  sendActiveTimeNodeEvent() {
+    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getMyAttachedAddress());
+  }
+
   startScanning() {
     this.scanningStarted = true;
+
+    this.sendActiveTimeNodeEvent();
+
+    this._timeNodeStatusCheckIntervalRef = setInterval(() => this.sendActiveTimeNodeEvent(), STATUS_UPDATE_INTERVAL);
 
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
@@ -93,20 +129,22 @@ export default class TimeNodeStore {
   stopScanning() {
     this.scanningStarted = false;
 
+    clearInterval(this._timeNodeStatusCheckIntervalRef);
+
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
     });
   }
 
   encrypt(message) {
-    return CryptoJS.AES.encrypt(message, "88e19245648ba7616099fbd6595d120d");
+    return CryptoJS.AES.encrypt(message, '88e19245648ba7616099fbd6595d120d');
   }
 
   decrypt(message) {
-    if (typeof message !== "string") {
+    if (typeof message !== 'string') {
       message = message.toString();
     }
-    const bytes = CryptoJS.AES.decrypt(message, "88e19245648ba7616099fbd6595d120d");
+    const bytes = CryptoJS.AES.decrypt(message, '88e19245648ba7616099fbd6595d120d');
     return bytes.toString(CryptoJS.enc.Utf8);
   }
 
@@ -126,21 +164,21 @@ export default class TimeNodeStore {
   }
 
   getMyAddress() {
-    const encryptedAddress = Cookies.get("tn");
+    const encryptedAddress = Cookies.get('tn');
     if (encryptedAddress) {
       const ks = this.decrypt(encryptedAddress);
-      return "0x" + JSON.parse(ks).address;
+      return '0x' + JSON.parse(ks).address;
     } else {
-      return "";
+      return '';
     }
   }
 
   getMyAttachedAddress() {
-    const encryptedAddress = Cookies.get("attachedDAYAccount");
+    const encryptedAddress = Cookies.get('attachedDAYAccount');
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
-      return "";
+      return '';
     }
   }
 
@@ -197,7 +235,25 @@ export default class TimeNodeStore {
    * (inputted by the user) is valid.
    */
   isSignatureValid(sigObject) {
-    const signature = JSON.parse(sigObject);
+    let signature;
+
+    try {
+      signature = JSON.parse(sigObject);
+    } catch (error) {
+      throw SIGNATURE_ERRORS.JSON_FORMAT_ERROR;
+    }
+
+    if (!signature.msg) {
+      throw SIGNATURE_ERRORS.MISSING_MSG;
+    }
+
+    if (!signature.sig) {
+      throw SIGNATURE_ERRORS.MISSING_SIG;
+    }
+
+    if (!signature.address) {
+      throw SIGNATURE_ERRORS.MISSING_ADDRESS;
+    }
 
     const message = Buffer.from(signature.msg);
 
@@ -217,20 +273,24 @@ export default class TimeNodeStore {
    * If it contains DAY tokens, it allows the usage of TimeNodes.
    */
   async attachDayAccount(sigObject) {
-    const { isValid, addr } = this.isSignatureValid(sigObject);
-    const numDAYTokens = await this.getDAYBalance(addr);
-    const encryptedAttachedAddress = this.encrypt(addr);
+    try {
+      const { isValid, addr } = this.isSignatureValid(sigObject);
+      const numDAYTokens = await this.getDAYBalance(addr);
+      const encryptedAttachedAddress = this.encrypt(addr);
 
-    if (isValid) {
-      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-        this.attachedDAYAccount = encryptedAttachedAddress;
-        alert("Success.");
+      if (isValid) {
+        if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+          this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+          this.attachedDAYAccount = encryptedAttachedAddress;
+          showNotification('Success.', 'success');
+        } else {
+          showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
+        }
       } else {
-        alert("Not enough DAY tokens. Current balance: " + numDAYTokens.toString());
+        showNotification('Invalid signature.');
       }
-    } else {
-      alert("Invalid signature.");
+    } catch (error) {
+      showNotification(error);
     }
   }
 
@@ -250,9 +310,11 @@ export default class TimeNodeStore {
   checkPasswordMatchesKeystore(keystore, password) {
     try {
       ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
-      return { matches: true, msg: "Success." };
+      showNotification('Success.', 'success');
+      return true;
     } catch (e) {
-      return { matches: false, msg: e };
+      showNotification(e);
+      return false;
     }
   }
 

@@ -33,8 +33,8 @@ class SearchOverlay extends Component {
   }
 
   render() {
-    let searchResultsString = "Fetching...";
-    let filter = "";
+    let searchResultsString = 'Fetching...';
+    let filter = '';
     let filteredTransactions = [];
     const maxTxShown = 5;
 
@@ -42,9 +42,9 @@ class SearchOverlay extends Component {
       filter = this.props.transactionStore.filter;
       filteredTransactions = this.props.transactionStore.filteredTransactions;
 
-      searchResultsString = "Showing ".concat(
+      searchResultsString = 'Showing '.concat(
         filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length,
-        " of ",
+        ' of ',
         filteredTransactions.length
       );
     }
@@ -81,7 +81,7 @@ class SearchOverlay extends Component {
           </div>
           <div className="container-fluid">
             <div className="search-results m-t-40">
-              <p className="bold">{"Search Results - " + searchResultsString}</p>
+              <p className="bold">{'Search Results - ' + searchResultsString}</p>
                 {transactionsList}
             </div>
           </div>

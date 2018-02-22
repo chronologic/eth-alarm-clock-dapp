@@ -51,10 +51,11 @@ class TimeNodeStatistics extends Component {
 
   refreshStats() {
     this.props.timeNodeStore.updateStats();
+    this.refreshChart();
   }
 
   refreshChart() {
-    const data = this.props.timeNodeStore.executedCounters;
+    const data = this.props.timeNodeStore.executedCounters.slice(-5);
     const ctx = this.chartRef.getContext('2d');
 
     if (data.length > 0) {
@@ -67,10 +68,32 @@ class TimeNodeStatistics extends Component {
             data: data,
             backgroundColor:'rgba(33, 255, 255, 0.2)',
             borderColor: 'rgba(33, 255, 255, 1)',
-            borderWidth: 2
+            borderWidth: 2,
+            datalabels: {
+              align: 'start',
+              anchor: 'start'
+            }
           }]
         },
         options: {
+          animation: {
+            duration: 1,
+            onComplete: function () {
+              const chartInstance = this.chart;
+              const ctx = this.chart.ctx;
+              ctx.fillStyle = 'black';
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function (dataset, i) {
+                  const meta = chartInstance.controller.getDatasetMeta(i);
+                  meta.data.forEach(function (bar, index) {
+                      var data = dataset.data[index];
+                      ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                  });
+              });
+            }
+          },
           elements: {
             line: {
               tension: 0
@@ -90,9 +113,9 @@ class TimeNodeStatistics extends Component {
         }
       });
     } else {
-      ctx.font = "20px Helvetica";
-      ctx.textAlign="center";
-      ctx.fillText("No data yet.",150,65);
+      ctx.font = '20px Helvetica';
+      ctx.textAlign='center';
+      ctx.fillText('No data yet.',150,65);
     }
   }
 
@@ -105,7 +128,7 @@ class TimeNodeStatistics extends Component {
     }
 
     const claimedEth = this.props.timeNodeStore.claimedEth;
-    const claimedEthStatus = claimedEth !== null ? claimedEth + " ETH" : "Loading...";
+    const claimedEthStatus = claimedEth !== null ? claimedEth + ' ETH' : 'Loading...';
 
     const dayTokenError = <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens."/>;
 
@@ -123,7 +146,7 @@ class TimeNodeStatistics extends Component {
           <div className="col-md-3">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Bounty</div>
+                <div className="card-title">Claimed</div>
                 <div className="card-controls">
                   <ul>
                     <li>
@@ -141,7 +164,7 @@ class TimeNodeStatistics extends Component {
           <div className="col-md-3">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Executed</div>
+                <div className="card-title">Executed: {this.props.timeNodeStore.totalExecuted}</div>
                 <div className="card-controls">
                   <ul>
                     <li>
