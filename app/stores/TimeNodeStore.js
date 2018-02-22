@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import Cookies from 'js-cookie';
 import CryptoJS from 'crypto-js';
 import ethJsUtil from 'ethereumjs-util';
@@ -28,8 +28,11 @@ export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
-  @observable executedCounters = [];
   @observable logs = [];
+  @observable executedCounters = [];
+  @computed get totalExecuted() {
+    return this.executedCounters.reduce((a, b) => a + b, 0);
+  }
 
   @observable balanceETH = null;
   @observable balanceDAY = null;
