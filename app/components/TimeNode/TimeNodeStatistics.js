@@ -124,7 +124,7 @@ class TimeNodeStatistics extends Component {
           <div className="col-md-3">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Bounty</div>
+                <div className="card-title">Claimed amount</div>
                 <div className="card-controls">
                   <ul>
                     <li>
