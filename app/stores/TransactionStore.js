@@ -27,18 +27,27 @@ export class TransactionStore {
   _eacScheduler = null;
   isSetup = false;
 
-  @observable allTransactions;
-  @observable filter;
+  @observable filter = '';
 
   // Returns an array of transactions based on the current
   // state of the filter variable
   @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
+    if (!this.filter && this.filter.length < 1) {
+      return [];
+    }
+
     if (this.allTransactions) {
       return this.allTransactions.filter(
-        transaction => !this.filter || matchesFilter.test(transaction.instance.address)
+        transaction => {
+          return !this.filter || matchesFilter.test(transaction.instance.address);
+        }
       );
     }
+  }
+
+  @computed get allTransactions () {
+    return this._cache.allTransactions;
   }
 
   // Returns an array of only the addresses of all transactions
@@ -55,7 +64,6 @@ export class TransactionStore {
     this._web3 = web3;
     this._eac = eac;
     this._cache = cache;
-    this.allTransactions = this._cache.allTransactions;
 
     this.setup();
   }
@@ -82,7 +90,13 @@ export class TransactionStore {
   }
 
   async getAllTransactions(cached) {
-    return await this._cache.getAllTransactions(cached);
+    const transactions =  await this._cache.getAllTransactions(cached);
+
+    for (let transaction of transactions) {
+      transaction.status = await this.getTxStatus(transaction);
+    }
+
+    return transactions;
   }
 
   async queryTransactions( { transactions, offset, limit, resolved } ) {

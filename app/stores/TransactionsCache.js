@@ -95,16 +95,14 @@ export default class TransactionsCache {
     }
 
     async getAllTransactions(cached = this.cacheDefault) {
-        if (cached) {
-            return this.allTransactions;
+        if (!cached || !this.running || this.allTransactions.length == 0) {
+            await this.getTransactions({});
+            await this.queryTransactions(this.allTransactions);
         }
 
-        this.allTransactions = await this.getTransactions({});
+        await this.queryTransactions(this.allTransactions);
 
-        for (let transaction of this.allTransactions) {
-            await transaction.fillData();
-            transaction.status = await this.getTxStatus(transaction);
-        }
+        return this.allTransactions;
     }
 
     async queryTransactions(transactions) {
