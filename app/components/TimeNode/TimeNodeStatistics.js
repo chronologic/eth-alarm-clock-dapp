@@ -55,7 +55,7 @@ class TimeNodeStatistics extends Component {
   }
 
   refreshChart() {
-    const data = this.props.timeNodeStore.executedCounters;
+    const data = this.props.timeNodeStore.executedCounters.slice(-5);
     const ctx = this.chartRef.getContext('2d');
 
     if (data.length > 0) {
