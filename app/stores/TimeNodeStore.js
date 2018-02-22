@@ -9,6 +9,7 @@ import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
+import { LOGGER_MSG_TYPES } from '../lib/worker-logger.js';
 
 /*
  * TimeNode classification based on the number
@@ -35,7 +36,15 @@ export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+
   @observable logs = [];
+  @observable showLogTypes = Object.values(LOGGER_MSG_TYPES);
+  @computed get filteredLogs() {
+    return this.logs.filter(
+      log => this.showLogTypes.includes(log.type)
+    );
+  }
+
   @observable executedCounters = [];
   @computed get totalExecuted() {
     return this.executedCounters.reduce((a, b) => a + b, 0);
