@@ -47,7 +47,7 @@ class SidePanel extends Component {
         <div className="sidebar-header">
           <img src="img/logo-white.png" alt="logo" className="brand" data-src="img/logo-white.png" height="36"/>
           <div className="sidebar-header-controls">
-            <button type="button" className="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i className="fa fs-12"></i>
+            <button type="button" className="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i className="fa fa-lock"></i>
             </button>
           </div>
         </div>
