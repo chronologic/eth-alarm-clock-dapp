@@ -39,7 +39,7 @@ export default class TransactionsCache {
     }
 
     setNextTicker () {
-        this.fetcher = setInterval (() => {
+        this.fetcher = setTimeout (() => {
             this.runFetchTicker();
         },this.fetchInterval);
     }
@@ -47,7 +47,7 @@ export default class TransactionsCache {
     stopFetchTicker() {
         this.running = false;
         if (this.fetcher) {
-            clearInterval(this.fetcher);
+            clearTimeout(this.fetcher);
         }
         this.fetcher = false;
     }
