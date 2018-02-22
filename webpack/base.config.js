@@ -3,6 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+
 // Extracts the SCSS to a file
 const extractSass = new ExtractTextPlugin({
   filename: './main.css'
@@ -87,7 +88,8 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: './app/index.html', to: 'index.html' },
       { from: './app/plugins/modernizr.custom.js', to: './js/modernizr.custom.js' },
-      { from: './app/assets/img/logo', to: './img' }
+      { from: './app/assets/img/logo', to: './img' },
+      { from: './app/assets/img/favicon', to: './' }
     ]),
 
     // Declares global packages
