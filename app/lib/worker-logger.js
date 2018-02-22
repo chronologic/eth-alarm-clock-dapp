@@ -39,7 +39,11 @@ export default class WorkerLogger {
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.LOG,
-      value: [timestamp, message, type]
+      value: {
+        timestamp,
+        message,
+        type
+      }
     });
   }
 }

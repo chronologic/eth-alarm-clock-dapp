@@ -9,20 +9,17 @@ import { LOGGER_MSG_TYPES } from '../../lib/worker-logger.js';
 class TimeNodeLogs extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      showCache: true,
-      showInfo: true,
-      showDebug: true,
-      showError: true
-    };
   }
 
-  updateFilter(type) {
-    if (type === LOGGER_MSG_TYPES.CACHE) {
-      this.setState({
-        showCache: event.target.checked
-      });
-    }
+  updateFilters() {
+    let types = [];
+
+    if (this.checkboxCache.checked) types.push(LOGGER_MSG_TYPES.CACHE);
+    if (this.checkboxInfo.checked) types.push(LOGGER_MSG_TYPES.INFO);
+    if (this.checkboxDebug.checked) types.push(LOGGER_MSG_TYPES.DEBUG);
+    if (this.checkboxError.checked) types.push(LOGGER_MSG_TYPES.ERROR);
+
+    this.props.timeNodeStore.showLogTypes = types;
   }
 
   formatUnix(unix) {
@@ -47,10 +44,10 @@ class TimeNodeLogs extends Component {
                 </div>
               </div>
               <div className="card-body">
-                {this.props.timeNodeStore.logs.map(([ timestamp, message, type ], index) => {
+                {this.props.timeNodeStore.filteredLogs.map((log, index) => {
                   return (
                     <p key={index} className="no-margin">
-                      <span>{this.formatUnix(timestamp)}</span> [{type.toUpperCase()}] {message}
+                      <span>{this.formatUnix(log.timestamp)}</span> [{log.type.toUpperCase()}] {log.message}
                     </p>
                   );
                 })}
@@ -63,24 +60,37 @@ class TimeNodeLogs extends Component {
 
             <div className="checkbox check-primary">
               <input type="checkbox"
-                defaultChecked={this.state.showCache}
                 id="checkboxCache"
-                onChange={() => this.updateFilter(LOGGER_MSG_TYPES.CACHE)}/>
+                defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.CACHE)}
+                ref={(el) => this.checkboxCache = el}
+                onChange={() => this.updateFilters()} />
               <label htmlFor="checkboxCache">{LOGGER_MSG_TYPES.CACHE}</label>
             </div>
 
             <div className="checkbox check-info">
-              <input type="checkbox" defaultChecked={this.state.showInfo} id="checkboxInfo"/>
+              <input type="checkbox"
+                id="checkboxInfo"
+                defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.INFO)}
+                ref={(el) => this.checkboxInfo = el}
+                onChange={() => this.updateFilters()} />
               <label htmlFor="checkboxInfo">{LOGGER_MSG_TYPES.INFO}</label>
             </div>
 
             <div className="checkbox check-warning">
-              <input type="checkbox" defaultChecked={this.state.showDebug} id="checkboxDebug"/>
+              <input type="checkbox"
+                id="checkboxDebug"
+                defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.DEBUG)}
+                ref={(el) => this.checkboxDebug = el}
+                onChange={() => this.updateFilters()} />
               <label htmlFor="checkboxDebug">{LOGGER_MSG_TYPES.DEBUG}</label>
             </div>
 
             <div className="checkbox check-danger">
-              <input type="checkbox" defaultChecked={this.state.showError} id="checkboxError"/>
+              <input type="checkbox"
+                id="checkboxError"
+                defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.ERROR)}
+                ref={(el) => this.checkboxError = el}
+                onChange={() => this.updateFilters()} />
               <label htmlFor="checkboxError">{LOGGER_MSG_TYPES.ERROR}</label>
             </div>
           </div>
