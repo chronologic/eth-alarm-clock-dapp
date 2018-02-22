@@ -25,7 +25,7 @@ class TimeNodeStatistics extends Component {
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
     });
 
-    this.refreshChart(this.props.timeNodeStore.executedCounters);
+    this.refreshChart();
   }
 
   getStopButton() {
