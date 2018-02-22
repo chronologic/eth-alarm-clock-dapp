@@ -73,7 +73,7 @@ export default class TransactionsCache {
     async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
 
         if (cache && this.running && this.contracts.length > 0) {
-            return this.allTransactions();
+            return this.allTransactions;
         } else {
 
             const requestFactory = await this._eac.requestFactory();
