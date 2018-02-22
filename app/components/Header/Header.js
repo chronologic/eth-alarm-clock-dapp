@@ -43,9 +43,9 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
-          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+          <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa " />&nbsp;Current Block Number:&nbsp;
+              <i className="fa fa-th-large" />&nbsp;Current Block Number:&nbsp;
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
