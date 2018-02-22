@@ -23,7 +23,9 @@ export class TEMPORAL_UNIT {
 export class TransactionStore {
   _eac = null;
   _web3 = null;
+  _cache = null;
   _eacScheduler = null;
+  isSetup = false;
 
   @observable allTransactions;
   @observable filter;
@@ -41,13 +43,7 @@ export class TransactionStore {
 
   // Returns an array of only the addresses of all transactions
   @computed get allTransactionsAddresses() {
-    let addresses = [];
-    if (this.allTransactions) {
-      addresses = this.allTransactions.map(
-        transaction => transaction.instance.address
-      );
-    }
-    return addresses;
+    return this._cache.allTransactionsAddresses;
   }
 
   @computed get requestFactoryStartBlock () {
@@ -55,49 +51,46 @@ export class TransactionStore {
     return requestFactoryStartBlocks[netId] || 0;
   }
 
-  constructor(eac, web3) {
+  constructor(eac, web3, cache) {
     this._web3 = web3;
     this._eac = eac;
+    this._cache = cache;
+    this.allTransactions = this._cache.allTransactions;
 
     this.setup();
   }
 
   async setup() {
-    this._eacScheduler = await this._eac.scheduler();
+    if (this.isSetup) {
+      return;
+    }
+    this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
 
     await this._web3.awaitInitialized();
+
+    this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this._cache.startLazy();
+
+    this.isSetup = true;
   }
 
-  async getTransactions( { startBlock, endBlock = 'latest' } ) {
+  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
     await this.setup();
 
     startBlock = startBlock || this.requestFactoryStartBlock;//allow all components preload
-
-    const requestFactory = await this._eac.requestFactory();
-
-    let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-
-    requestsCreated.reverse();//Switch to most recent block first
-
-    requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
-
-    return requestsCreated;
+    return await this._cache.getTransactions({ startBlock , endBlock }, cached);
   }
 
-  async getAllTransactions() {
-    this.allTransactions = await this.getTransactions({});
-
-    for (let transaction of this.allTransactions) {
-      await transaction.fillData();
-      transaction.status = await this.getTxStatus(transaction);
-    }
+  async getAllTransactions(cached) {
+    return await this._cache.getAllTransactions(cached);
   }
 
   async queryTransactions( { transactions, offset, limit, resolved } ) {
     const processed = [];
 
+    await this._cache.queryTransactions (transactions);
+
     for (let transaction of transactions) {
-      await transaction.fillData();
 
       const isResolved = await this.isTransactionResolved(transaction);
 
