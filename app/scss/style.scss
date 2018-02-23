@@ -93,6 +93,14 @@ $primary-color: #21FFFF;
   background-color: $primary-color;
 }
 
+.page-sidebar .sidebar-menu .menu-items li > a {
+  width: 100%;
+}
+
+.page-sidebar .sidebar-menu .menu-items li > a.sub-title {
+  width: inherit;
+}
+
 $titleColor: #fff;
 
 /* NEW CUSTOM CSS */
