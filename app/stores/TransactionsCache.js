@@ -7,6 +7,7 @@ export default class TransactionsCache {
     fetcher = '';
     @observable requestFactoryStartBlock = 0;
     @observable running = false;
+    @observable syncing = false;
     @observable cacheDefault = true;
     @observable lastBlock = '';
     @observable lastUpdate = '';
@@ -32,10 +33,12 @@ export default class TransactionsCache {
             this.stopFetchTicker();
             return ;
         }
+        this.syncing = true;
         await this.getTransactions({}, false);
         this.lastUpdate = new Date();
         this.updateLastBlock();
         this.setNextTicker();
+        this.syncing = false;
     }
 
     setNextTicker () {
@@ -60,6 +63,14 @@ export default class TransactionsCache {
                 this.lastBlock = r;
             }
         });
+    }
+
+    async awaitSync() {
+        if (this.syncing) {
+            return await setTimeout( () => this.awaitSync(),500);
+        } else {
+            return true;
+        }
     }
 
     @computed get allTransactions () {
@@ -95,9 +106,10 @@ export default class TransactionsCache {
     }
 
     async getAllTransactions(cached = this.cacheDefault) {
-        if (!cached || !this.running || this.allTransactions.length == 0) {
+        if (this.syncing) {
+            await this.awaitSync();
+        } else if (!cached || !this.running || this.allTransactions.length == 0) {
             await this.getTransactions({});
-            await this.queryTransactions(this.allTransactions);
         }
 
         await this.queryTransactions(this.allTransactions);
