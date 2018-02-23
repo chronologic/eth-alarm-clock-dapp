@@ -1,5 +1,4 @@
 import { observable } from 'mobx';
-import { computed } from '../../node_modules/mobx/lib/mobx';
 
 export default class TransactionsCache {
     //Memebers
@@ -73,11 +72,11 @@ export default class TransactionsCache {
         }
     }
 
-    @computed get allTransactions () {
+    get allTransactions () {
         return this.transactions;
     }
 
-    @computed get allTransactionsAddresses() {
+    get allTransactionsAddresses() {
         return this.contracts;
     }
 
