@@ -1,8 +1,11 @@
 import Web3 from 'web3/index';
-import EAC from 'eac.js';
+import EAC from 'eac.js-lib';
+import EACJSClient from 'eac.js-client';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
+
+const { Config, Scanner, StatsDB } = EACJSClient;
 
 class EacWorker {
   alarmClient = null;
@@ -16,33 +19,43 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
+
     this.browserDB = new Loki('stats.db');
 
-    const AlarmClient = eac.AlarmClient;
+    const statsDB = new StatsDB(web3, this.browserDB);
 
-    this.alarmClient = await AlarmClient(
+    const configOptions = {
       web3,
       eac,
       provider,
-      options.scan,
-      options.milliseconds,
-      options.logfile,
-      options.logLevel,
-      options.wallet,
-      options.password,
-      options.autostart,
+      scanSpread: options.scan,
+      logfile: options.logfile,
+      logLevel: options.logLevel,
+      walletFile: JSON.parse(options.keystore.toLowerCase()),
+      password: options.keystorePassword,
+      autostart: options.autostart,
       logger,
-      options.repl,
-      this.browserDB
+      factory: await eac.requestFactory(),
+      tracker: await eac.requestTracker()
+    };
+
+    this.config = await Config.create(configOptions);
+
+    this.config.logger = logger;
+    this.config.statsdb = statsDB;
+
+    this.alarmClient = await Scanner.start(
+      options.milliseconds,
+      this.config
     );
   }
 
   startScanning() {
-    this.alarmClient.startScanning();
+    this.config.scanning = true;
   }
 
   stopScanning() {
-    this.alarmClient.stopScanning();
+    this.config.scanning = false;
   }
 
   /*
@@ -56,7 +69,7 @@ class EacWorker {
     let executedCounter;
 
     // If it finds any data
-    if (stats && stats.data) {
+    if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
       etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
       executedCounter = accountStats.executed;

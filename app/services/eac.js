@@ -1,4 +1,4 @@
-import EAC from 'eac.js';
+import EAC from 'eac.js-lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
