@@ -5,7 +5,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
 
-const { Config, Scanner } = EACJSClient;
+const { Config, Scanner, StatsDB } = EACJSClient;
 
 class EacWorker {
   alarmClient = null;
@@ -19,7 +19,10 @@ class EacWorker {
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
+
     this.browserDB = new Loki('stats.db');
+
+    const statsDB = new StatsDB(web3, this.browserDB);
 
     const configOptions = {
       web3,
@@ -39,6 +42,7 @@ class EacWorker {
     this.config = await Config.create(configOptions);
 
     this.config.logger = logger;
+    this.config.statsdb = statsDB;
 
     this.alarmClient = await Scanner.start(
       options.milliseconds,
@@ -65,7 +69,7 @@ class EacWorker {
     let executedCounter;
 
     // If it finds any data
-    if (stats && stats.data) {
+    if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
       etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
       executedCounter = accountStats.executed;
