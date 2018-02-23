@@ -78,15 +78,15 @@ class SidePanel extends Component {
             </li>
             <li>
               <a href="http://alpha.chronologic.network" className="title" target="_blank" rel="noopener noreferrer">Debt Smart Contract</a>
-              <span className="icon-thumbnail"><a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer"><i className="fab fa-ethereum"></i></a></span>
+              <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
             </li>
             <li>
               <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Day Token Contract</a>
-              <span className="icon-thumbnail"><a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer"><i className="far fa-clock"></i></a></span>
+              <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
             </li>
             <li>
               <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Help</a>
-              <span className="icon-thumbnail"><a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer"><i className="fas fa-question-circle"></i></a></span>
+              <span className="icon-thumbnail"><i className="fas fa-question-circle"></i></span>
             </li>
           </ul>
           <div className="clearfix"></div>
