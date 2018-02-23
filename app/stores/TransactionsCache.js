@@ -140,7 +140,7 @@ export default class TransactionsCache {
 
     fetchCachedTransaction (transaction) {
         this.allTransactions.find( (cachedTransaction) => {
-            if (cachedTransaction.address == transaction.address) {
+            if (cachedTransaction.address == transaction.address && cachedTransaction.instance) {
                 return cachedTransaction;
             }
         });
