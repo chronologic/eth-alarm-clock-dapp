@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Route } from 'react-router-dom';
+import { inject, observer } from 'mobx-react';
+import MetamaskComponent from '../Common/MetamaskComponent';
 import ScheduleWizard from '../Common/ScheduleWizard';
 
 
-export class ScheduleRoute extends Component {
+@inject('web3Service')
+@observer
+export class ScheduleRoute extends MetamaskComponent {
   render() {
     return (
       <div className="container-fluid padding-25 sm-padding-10">

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import Scrollbar from 'smooth-scrollbar';
-import MetamaskComponent from './MetamaskComponent';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -13,7 +12,7 @@ import PoweredByEAC from './PoweredByEAC';
 @inject('scheduleStore')
 @inject('transactionStore')
 @observer
-class ScheduleWizard extends MetamaskComponent {
+class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
@@ -148,7 +147,6 @@ class ScheduleWizard extends MetamaskComponent {
   }
 
   componentDidMount() {
-
     const { jQuery } = window;
     jQuery('#scheduleWizard').bootstrapWizard({
       onTabShow: function (tab, navigation, index) {
@@ -167,7 +165,6 @@ class ScheduleWizard extends MetamaskComponent {
         }
       });
     this.initiateScrollbar();
-    super.componentDidMount();
   }
 
   render() {
