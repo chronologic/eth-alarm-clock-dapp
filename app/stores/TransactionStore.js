@@ -31,7 +31,7 @@ export class TransactionStore {
 
   // Returns an array of transactions based on the current
   // state of the filter variable
-  @computed get filteredTransactions() {
+  get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
     if (!this.filter && this.filter.length < 1) {
       return [];
@@ -39,17 +39,17 @@ export class TransactionStore {
 
     if (this._cache.allTransactions) {
       return this._cache.allTransactions.filter(
-        transaction => matchesFilter.test(transaction.instance.address)
+        transaction => matchesFilter.test(transaction.address)
       );
     }
   }
 
-  @computed get allTransactions () {
+  get allTransactions () {
     return this._cache.allTransactions;
   }
 
   // Returns an array of only the addresses of all transactions
-  @computed get allTransactionsAddresses() {
+  get allTransactionsAddresses() {
     return this._cache.allTransactionsAddresses;
   }
 
