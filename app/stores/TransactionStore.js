@@ -31,7 +31,7 @@ export class TransactionStore {
 
   // Returns an array of transactions based on the current
   // state of the filter variable
-  get filteredTransactions() {
+  @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
     if (!this.filter && this.filter.length < 1) {
       return [];
@@ -53,7 +53,7 @@ export class TransactionStore {
     return this._cache.allTransactionsAddresses;
   }
 
-  @computed get requestFactoryStartBlock () {
+  get requestFactoryStartBlock () {
     const { netId } = this._web3;
     return requestFactoryStartBlocks[netId] || 0;
   }
