@@ -38,7 +38,7 @@ export class TransactionStore {
     }
 
     if (this.allTransactions) {
-      return this.allTransactions.filter(
+      return this._cache.allTransactions.filter(
         transaction => {
           return !this.filter || matchesFilter.test(transaction.instance.address);
         }
