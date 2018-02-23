@@ -76,6 +76,18 @@ class SidePanel extends Component {
               <NavLink to="/timenode" className={entryList[2].titleClasses}>{entryList[2].title}</NavLink>
               <span className={entryList[2].thumbnailClasses}><i className="fa fa-sitemap"></i></span>
             </li>
+            <li>
+              <a href="http://alpha.chronologic.network" className="title" target="_blank" rel="noopener noreferrer">Debt Smart Contract</a>
+              <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
+            </li>
+            <li>
+              <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Day Token Contract</a>
+              <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
+            </li>
+            <li>
+              <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Help</a>
+              <span className="icon-thumbnail"><i className="fas fa-question-circle"></i></span>
+            </li>
           </ul>
           <div className="clearfix"></div>
         </div>
