@@ -29,7 +29,7 @@ class SidePanel extends Component {
       {
         title: 'Schedule',
         titleClasses: titleClasses + this.isUrlActive('/', 'title'),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/')
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/', 'thumbnail')
       },
       {
         title: 'Transactions',
@@ -39,7 +39,7 @@ class SidePanel extends Component {
       {
         title: 'TimeNode',
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
       },
     ];
 
