@@ -61,8 +61,10 @@ class SidePanel extends Component {
               </NavLink>
             </li>
             <li>
-              <a href="#" onClick={(e) => e.preventDefault()} className={entryList[1].titleClasses}>{entryList[1].title}</a>
-              <span className={entryList[1].thumbnailClasses}><i className="pg-charts"></i></span>
+              <a href="#" onClick={(e) => e.preventDefault()}>
+                <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
+                <span className={entryList[1].thumbnailClasses}><i className="pg-charts"></i></span>
+              </a>
 
               <ul className="sub-menu">
                 <li>
