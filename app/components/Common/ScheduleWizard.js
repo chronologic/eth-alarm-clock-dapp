@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import Scrollbar from 'smooth-scrollbar';
+import MetamaskComponent from './MetamaskComponent';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -12,7 +13,7 @@ import PoweredByEAC from './PoweredByEAC';
 @inject('scheduleStore')
 @inject('transactionStore')
 @observer
-class ScheduleWizard extends Component {
+class ScheduleWizard extends MetamaskComponent {
   constructor(props){
     super(props);
     this.state = {};
@@ -138,7 +139,16 @@ class ScheduleWizard extends Component {
       }
   }
 
+  initiateScrollbar() {
+    const options = {};
+    const element = document.querySelector('.tab-pane.active');
+    if (element) {
+      Scrollbar.init(element, options);
+    }
+  }
+
   componentDidMount() {
+
     const { jQuery } = window;
     jQuery('#scheduleWizard').bootstrapWizard({
       onTabShow: function (tab, navigation, index) {
@@ -157,15 +167,8 @@ class ScheduleWizard extends Component {
         }
       });
     this.initiateScrollbar();
+    super.componentDidMount();
   }
-
-  initiateScrollbar(){
-    const options = {};
-    const element = document.querySelector('.tab-pane.active');
-    if (element){
-      Scrollbar.init(element, options);
-    }
-   }
 
   render() {
     const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
