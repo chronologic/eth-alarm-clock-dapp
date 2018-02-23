@@ -34,12 +34,11 @@ class SearchOverlay extends Component {
 
   render() {
     let searchResultsString = 'Fetching...';
-    let filter = '';
     let filteredTransactions = [];
     const maxTxShown = 5;
+    const { filter } = this.props.transactionStore;
 
     if (this.state.fetchedTransactions) {
-      filter = this.props.transactionStore.filter;
       filteredTransactions = this.props.transactionStore.filteredTransactions;
 
       searchResultsString = 'Showing '.concat(
@@ -75,7 +74,7 @@ class SearchOverlay extends Component {
               placeholder="Search by contract address..."
               autoComplete="off"
               spellCheck="false"
-              value={filter || ''}
+              value={filter}
               onChange={this.filter.bind(this)}
               autoFocus/>
           </div>
