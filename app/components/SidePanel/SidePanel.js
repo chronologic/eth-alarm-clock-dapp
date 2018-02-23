@@ -77,15 +77,15 @@ class SidePanel extends Component {
               <span className={entryList[2].thumbnailClasses}><i className="fa fa-sitemap"></i></span>
             </li>
             <li>
-              <NavLink to="" className="title"><a href="http://alpha.chronologic.network">Debt Smart Contract</a></NavLink>
+              <NavLink to="" className="title">Debt Smart Contract</NavLink>
               <span className="icon-thumbnail"><a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer"><i className="fab fa-ethereum"></i></a></span>
             </li>
             <li>
-              <NavLink to="" className="title"><a href="http://alpha.chronologic.network">Day Token Contract</a></NavLink>
+              <NavLink to="" className="title">Day Token Contract</NavLink>
               <span className="icon-thumbnail"><a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer"><i className="far fa-clock"></i></a></span>
             </li>
             <li>
-              <a href="https://blog.chronologic.network/chronos-platform/home"><NavLink to="" className="title">Help</NavLink></a>
+              <NavLink to="" className="title">Help</NavLink>
               <span className="icon-thumbnail"><a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer"><i className="fas fa-question-circle"></i></a></span>
             </li>
           </ul>
