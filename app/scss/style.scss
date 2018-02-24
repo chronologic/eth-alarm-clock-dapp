@@ -3,17 +3,20 @@ $primary-color: #21FFFF;
 
 /* PAGES TEMPLATE OVERRIDES */
 
+#root, .app-container {
+  height: 100%;
+}
+
 .brand {
 	margin-left: 20px;
 }
 
-body {
+.page-content-wrapper {
 	background: url(../assets/img/background.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  height: 100%;
 }
 
 .header {
@@ -97,8 +100,6 @@ body {
 }
 
 .page-sidebar .sidebar-menu .menu-items li > a:hover > .icon-thumbnail {
-  -webkit-transition: ease-in 0.1s; /* Safari */
-  transition: ease-in 0.1s;
   color: #fff;
 }
 
