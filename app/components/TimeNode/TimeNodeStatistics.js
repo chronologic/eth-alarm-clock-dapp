@@ -104,11 +104,19 @@ class TimeNodeStatistics extends Component {
           },
           scales: {
             yAxes: [{
-              display: false
+              display: false,
+              gridLines: {
+                tickMarkLength: 0
+              }
             }],
             xAxes: [{
               display: false
             }],
+          },
+          layout: {
+            padding: {
+              top: 20
+            }
           }
         }
       });
