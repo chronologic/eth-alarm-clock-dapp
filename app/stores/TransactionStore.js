@@ -193,8 +193,8 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, donation, payment, requiredDeposit, waitFormined, isTimestamp,) {
-    const endowment = this._eac.calcEndowment(callGas,callValue,gasPrice,donation,payment);
+  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, waitFormined, isTimestamp,) {
+    const endowment = this._eac.calcEndowment(callGas, callValue, gasPrice, fee, payment);
 
     await this._eacScheduler.initSender ( {
       from: this._web3.eth.defaultAccount,
@@ -211,7 +211,7 @@ export class TransactionStore {
           windowSize,
           windowStart,
           gasPrice,
-          donation,
+          fee,
           payment,
           requiredDeposit,
           waitFormined
@@ -226,7 +226,7 @@ export class TransactionStore {
         windowSize,
         windowStart,
         gasPrice,
-        donation,
+        fee,
         payment,
         requiredDeposit,
         waitFormined
