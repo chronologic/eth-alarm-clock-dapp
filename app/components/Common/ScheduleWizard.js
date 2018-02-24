@@ -173,17 +173,49 @@ class ScheduleWizard extends Component {
     return (
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab1"  onClick={ this.initiateScrollbar }><i className="far fa-clock tab-icon"></i> <span>Date & Time</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#tab1" onClick={ this.initiateScrollbar }>
+              <div className="d-none d-md-block">
+                <i className="far fa-clock tab-icon"></i>&nbsp;
+                <span>Date & Time</span>
+              </div>
+              <div className="d-sm-block d-md-none">
+                <i className="far fa-clock tab-icon"></i>
+              </div>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab2"  onClick={ this.initiateScrollbar }><i className="fas fa-info tab-icon"></i> <span>Information</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#tab2" onClick={ this.initiateScrollbar }>
+              <div className="d-none d-md-block">
+                <i className="fas fa-info tab-icon"></i>&nbsp;
+                <span>Information</span>
+              </div>
+              <div className="d-sm-block d-md-none">
+                <i className="fas fa-info tab-icon"></i>
+              </div>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab3"  onClick={ this.initiateScrollbar }><i className="fab fa-ethereum tab-icon"></i> <span>Bounty</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#tab3" onClick={ this.initiateScrollbar }>
+              <div className="d-none d-md-block">
+                <i className="fab fa-ethereum tab-icon"></i>&nbsp;
+                <span>Bounty</span>
+              </div>
+              <div className="d-sm-block d-md-none">
+                <i className="fab fa-ethereum tab-icon"></i>
+              </div>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab4"  onClick={ this.initiateScrollbar }><i className="fas fa-cloud-upload-alt tab-icon"></i> <span>Confirm</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#tab4" onClick={ this.initiateScrollbar }>
+              <div className="d-none d-md-block">
+                <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
+                <span>Confirm</span>
+              </div>
+              <div className="d-sm-block d-md-none">
+                <i className="fas fa-cloud-upload-alt tab-icon"></i>
+              </div>
+            </a>
           </li>
         </ul>
 
