@@ -215,7 +215,10 @@ class ScheduleWizard extends Component {
           <ConfirmSettings/>
 
           <div className="row">
-            <PoweredByEAC className="col-md-2 footer-buttons"/>
+            <div className="d-none d-md-block">
+              <PoweredByEAC className="col-md-2 footer-buttons"/>
+            </div>
+
             <div className="footer-buttons col-md-10">
               <ul className="pager wizard no-style">
                 <li className="next">
@@ -225,13 +228,13 @@ class ScheduleWizard extends Component {
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
                 <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
-             <span>Schedule</span>
-           </button>
+                  <span>Schedule</span>
+                </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
-                      <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                          <span>First</span>
-                      </button>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                    <span>First</span>
+                  </button>
                   </li>
                 <li className="previous">
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
@@ -240,6 +243,10 @@ class ScheduleWizard extends Component {
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div className="d-sm-block d-md-none">
+            <PoweredByEAC className="col-md-2 footer-buttons mt-5"/>
           </div>
         </div>
       </div>
