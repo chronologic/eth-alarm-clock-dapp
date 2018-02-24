@@ -155,14 +155,16 @@ $titleColor: #fff;
   height: 100%;
 }
 
-.subsection .tab-content {
-  height: 570px;
-}
 
-.subsection .tab-pane.active {
-	overflow: hidden;
-	overflow-y: auto;
-	height:90%;
+@media (min-width:589px) {
+  .subsection .tab-content {
+    height: 570px;
+  }
+  .subsection .tab-pane.active {
+  	overflow: hidden;
+  	overflow-y: auto;
+  	height:90%;
+  }
 }
 
 #scheduleWizard .footer-buttons,.subsection .footer-buttons{
@@ -191,12 +193,6 @@ $titleColor: #fff;
 
 #scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
   border-top-color: transparent;
-}
-
-@media (max-width:589px) {
-	#scheduleWizard .tab-content{
-	    height: 500px;
-	}
 }
 
 .active-timenodes {
