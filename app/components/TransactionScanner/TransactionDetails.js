@@ -179,7 +179,7 @@ class TransactionDetails extends ScrollbarComponent {
                   <td><ValueDisplay priceInWei= { bounty } /></td>
                 </tr>
                 <tr>
-                  <td>Donation</td>
+                  <td>Fee</td>
                   <td><ValueDisplay priceInWei= { fee } /></td>
                 </tr>
                 <tr>
