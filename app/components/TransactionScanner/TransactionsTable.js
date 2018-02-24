@@ -78,7 +78,7 @@ class TransactionsTable extends Component {
     return (
       <div>
         <div className="table-responsive">
-          <table className="table table-hover table-condensed">
+          <table className="table">
             <thead>
               <tr>
                 <th>Contract Address</th>
