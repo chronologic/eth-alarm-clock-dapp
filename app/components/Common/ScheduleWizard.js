@@ -221,15 +221,27 @@ class ScheduleWizard extends Component {
 
         <div className="tab-content">
           <div className="tab-pane active slide" id="tab1">
+            <div className="d-sm-block d-md-none">
+              <h2 className="m-b-20">Date & Time</h2>
+            </div>
             <TimeSettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab2">
+            <div className="d-sm-block d-md-none">
+              <h2 className="m-b-20">Information</h2>
+            </div>
             <InfoSettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab3">
+            <div className="d-sm-block d-md-none">
+              <h2 className="m-b-20">Bounty</h2>
+            </div>
             <BountySettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab4">
+            <div className="d-sm-block d-md-none">
+              <h2 className="m-b-20">Confirm</h2>
+            </div>
             <ConfirmSettings
             />
           </div>
