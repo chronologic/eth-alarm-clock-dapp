@@ -129,8 +129,6 @@ class SidePanel extends Component {
               </a>
             </li>
 
-            <div>
-
             <hr id="sidebar-separator" className="d-sm-block d-md-none mx-4"/>
 
             <li className="d-sm-block d-md-none">
@@ -158,8 +156,6 @@ class SidePanel extends Component {
                 </div>
               </div>
             </li>
-
-            </div>
 
           </ul>
           <div className="clearfix"></div>

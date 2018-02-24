@@ -164,46 +164,26 @@ class ScheduleWizard extends Component {
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="far fa-clock tab-icon"></i>&nbsp;
-                <span>Date & Time</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="far fa-clock tab-icon"></i>
-              </div>
+              <i className="far fa-clock tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Date & Time</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fas fa-info tab-icon"></i>&nbsp;
-                <span>Information</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fas fa-info tab-icon"></i>
-              </div>
+              <i className="fas fa-info tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Information</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fab fa-ethereum tab-icon"></i>&nbsp;
-                <span>Bounty</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fab fa-ethereum tab-icon"></i>
-              </div>
+              <i className="fab fa-ethereum tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Bounty</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
-                <span>Confirm</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fas fa-cloud-upload-alt tab-icon"></i>
-              </div>
+              <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Confirm</span>
             </a>
           </li>
         </ul>
