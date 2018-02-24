@@ -3,14 +3,12 @@ $primary-color: #21FFFF;
 
 /* PAGES TEMPLATE OVERRIDES */
 
-.brand {
-	margin-left: 20px;
+#root, .app-container {
+  height: 100%;
 }
 
-.page-container {
-    top: 0;
-    bottom: 0;
-    position: fixed;
+.brand {
+	margin-left: 20px;
 }
 
 .page-content-wrapper {
@@ -102,8 +100,6 @@ $primary-color: #21FFFF;
 }
 
 .page-sidebar .sidebar-menu .menu-items li > a:hover > .icon-thumbnail {
-  -webkit-transition: ease-in 0.1s; /* Safari */
-  transition: ease-in 0.1s;
   color: #fff;
 }
 
@@ -159,14 +155,16 @@ $titleColor: #fff;
   height: 100%;
 }
 
-.subsection .tab-content {
-  height: 570px;
-}
 
-.subsection .tab-pane.active {
-	overflow: hidden;
-	overflow-y: auto;
-	height:90%;
+@media (min-width:589px) {
+  .subsection .tab-content {
+    height: 570px;
+  }
+  .subsection .tab-pane.active {
+  	overflow: hidden;
+  	overflow-y: auto;
+  	height:90%;
+  }
 }
 
 #scheduleWizard .footer-buttons,.subsection .footer-buttons{
@@ -195,12 +193,6 @@ $titleColor: #fff;
 
 #scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
   border-top-color: transparent;
-}
-
-@media (max-width:589px) {
-	#scheduleWizard .tab-content{
-	    height: 500px;
-	}
 }
 
 .active-timenodes {

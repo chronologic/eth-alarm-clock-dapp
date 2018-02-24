@@ -51,7 +51,7 @@ class App extends Component {
     }
 
     return (
-      <div>
+      <div className="app-container">
         <SidePanel />
         <div className="page-container">
           <Header updateSearchState={this.updateSearchState}/>
