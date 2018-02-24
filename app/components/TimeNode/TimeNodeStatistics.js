@@ -55,17 +55,46 @@ class TimeNodeStatistics extends Component {
   }
 
   refreshChart() {
-    const data = this.props.timeNodeStore.executedCounters.slice(-5);
-    const ctx = this.chartRef.getContext('2d');
+    const data = this.props.timeNodeStore.executedTransactions;
 
-    if (data.length > 0) {
-      const labels = Array(data.length).fill('');
+    let timeIntervals = [];
+
+    // This section sorts the executed transactions by hour into an array
+    for (let transaction of data) {
+      const transactionDate = new Date(transaction.timestamp);
+      transactionDate.setHours(transactionDate.getUTCHours(),0,0,0);
+
+      let timeIntervalExists = false;
+
+      // Check if that time interval already exists in the array
+      for (let i = 0; i < timeIntervals.length; i++) {
+        // If so, add the transaction to that array
+        if (timeIntervals[i].datetime.getTime() === transactionDate.getTime()) {
+          timeIntervals[i].executed += 1;
+          timeIntervalExists = true;
+        }
+      }
+
+      // If the time interval doesn't exist already
+      if (!timeIntervalExists) {
+        // Create the time interval and bump the executed flag
+        timeIntervals.push({ 'datetime': transactionDate, 'executed': 1 });
+      }
+    }
+
+    const ctx = this.chartRef.getContext('2d');
+    timeIntervals.sort(this.compareDates);
+
+    if (timeIntervals.length > 0) {
+      const dataLabels = timeIntervals.map(interval => interval.datetime.getHours() + ':00');
+      const dataExecuted = timeIntervals.map(interval => interval.executed);
+
       new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels: dataLabels,
           datasets: [{
-            data: data,
+            data: dataExecuted,
             backgroundColor:'rgba(33, 255, 255, 0.2)',
             borderColor: 'rgba(33, 255, 255, 1)',
             borderWidth: 2,
@@ -110,7 +139,7 @@ class TimeNodeStatistics extends Component {
               }
             }],
             xAxes: [{
-              display: false
+              display: true
             }],
           },
           layout: {
@@ -125,6 +154,12 @@ class TimeNodeStatistics extends Component {
       ctx.textAlign='center';
       ctx.fillText('No data yet.',150,65);
     }
+  }
+
+  compareDates(a, b) {
+    if (a.datetime.getTime() < b.datetime.getTime()) return -1;
+    if (a.datetime.getTime() > b.datetime.getTime()) return 1;
+    return 0;
   }
 
   render() {

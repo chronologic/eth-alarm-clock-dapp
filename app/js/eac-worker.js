@@ -66,24 +66,24 @@ class EacWorker {
     const stats = this.browserDB.getCollection('stats');
 
     let etherGain;
-    let executedCounter;
+    let executedTransactions;
 
     // If it finds any data
     if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
       etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
-      executedCounter = accountStats.executed;
+      executedTransactions = accountStats.executedTransactions;
 
-    // Otherwise report every value as a zero
+    // Otherwise report the value as a zero
     } else {
       etherGain = 0;
-      executedCounter = 0;
+      executedTransactions = [];
     }
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
       etherGain: etherGain,
-      executedCounter: executedCounter
+      executedTransactions: executedTransactions
     });
   }
 }
