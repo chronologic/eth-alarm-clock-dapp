@@ -199,8 +199,8 @@ class ScheduleWizard extends Component {
           </div>
 
           <div className="row">
-            <div className="d-none d-md-block">
-              <PoweredByEAC className="col-md-2 footer-buttons"/>
+            <div className="d-none d-md-block col-md-2">
+              <PoweredByEAC className="footer-buttons"/>
             </div>
 
             <div className="footer-buttons col-md-10">
@@ -229,7 +229,7 @@ class ScheduleWizard extends Component {
             </div>
           </div>
 
-          <div className="d-sm-block d-md-none">
+          <div className="d-sm-inline d-md-none">
             <PoweredByEAC className="col-md-2 footer-buttons mt-5"/>
           </div>
         </div>
