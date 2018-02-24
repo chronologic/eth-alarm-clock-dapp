@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -16,7 +15,6 @@ class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
-    this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.scheduleTransaction = this.scheduleTransaction.bind(this);
   }
 
@@ -156,16 +154,7 @@ class ScheduleWizard extends Component {
           }
         }
       });
-    this.initiateScrollbar();
   }
-
-  initiateScrollbar(){
-    const options = {};
-    const element = document.querySelector('.tab-pane.active');
-    if (element){
-      Scrollbar.init(element, options);
-    }
-   }
 
   render() {
     const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
@@ -174,7 +163,7 @@ class ScheduleWizard extends Component {
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab1" onClick={ this.initiateScrollbar }>
+            <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
               <div className="d-none d-md-block">
                 <i className="far fa-clock tab-icon"></i>&nbsp;
                 <span>Date & Time</span>
@@ -185,7 +174,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab2" onClick={ this.initiateScrollbar }>
+            <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
               <div className="d-none d-md-block">
                 <i className="fas fa-info tab-icon"></i>&nbsp;
                 <span>Information</span>
@@ -196,7 +185,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab3" onClick={ this.initiateScrollbar }>
+            <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
               <div className="d-none d-md-block">
                 <i className="fab fa-ethereum tab-icon"></i>&nbsp;
                 <span>Bounty</span>
@@ -207,7 +196,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab4" onClick={ this.initiateScrollbar }>
+            <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
               <div className="d-none d-md-block">
                 <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
                 <span>Confirm</span>
@@ -220,31 +209,10 @@ class ScheduleWizard extends Component {
         </ul>
 
         <div className="tab-content">
-          <div className="tab-pane active slide" id="tab1">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Date & Time</h2>
-            </div>
-            <TimeSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab2">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Information</h2>
-            </div>
-            <InfoSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab3">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Bounty</h2>
-            </div>
-            <BountySettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab4">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Confirm</h2>
-            </div>
-            <ConfirmSettings
-            />
-          </div>
+          <TimeSettings {..._validationProps}/>
+          <InfoSettings {..._validationProps}/>
+          <BountySettings {..._validationProps}/>
+          <ConfirmSettings/>
 
           <div className="row">
             <PoweredByEAC className="col-md-2 footer-buttons"/>

@@ -45,14 +45,12 @@ class TransactionDetailsRoute extends Component {
       <div>
         <h1 className="view-title">Transaction details <span className="view-subtitle">{txAddress}</span></h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <div className="tab-content p-4">
-            { !this.state.fetchedTransactions &&
-              <div className='sweet-loading horizontal-center'>
-                <BeatLoader loading={true} />
-              </div>
-            }
-            {content}
-          </div>
+          { !this.state.fetchedTransactions &&
+            <div className='sweet-loading horizontal-center tab-content p-5'>
+              <BeatLoader loading={true} />
+            </div>
+          }
+          {content}
         </div>
       </div>
     );

@@ -30,7 +30,10 @@ class TimeSettings extends Component {
     }
 
     return (
-      <div id="timeSettings">
+      <div id="timeSettings" className="tab-pane active slide">
+        <div className="d-sm-block d-md-none">
+          <h2 className="m-b-20">Date & Time</h2>
+        </div>
         <div className="radio radio-primary">
           <input type="radio"
             id="timeSettingsTime"

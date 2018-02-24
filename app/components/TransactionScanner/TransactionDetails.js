@@ -136,63 +136,65 @@ class TransactionDetails extends ScrollbarComponent {
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
 
     return (
-      <div className="tab-pane slide active show">
-        <div className="row">
-          <div className="col-md-10">
+      <div className="tab-content p-4">
+        <div className="tab-pane slide active show">
+          <div className="row">
+            <div className="col-md-10">
 
-            <table className="table">
-              <tbody>
-                <tr>
-                  <td>Status</td>
-                  <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
-                </tr>
-                <tr>
-                  <td>To Address</td>
-                  <td><a href="#">{toAddress}</a></td>
-                </tr>
-                <tr>
-                  <td>Value/Amount</td>
-                  <td><ValueDisplay priceInWei= { callValue } /></td>
-                </tr>
-                <tr>
-                  <td>Data</td>
-                  <td>{callData}</td>
-                </tr>
-                <tr>
-                  <td>Block or Time</td>
-                  <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
-                </tr>
-                <tr>
-                  <td>Window Size</td>
-                  <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
-                </tr>
-                <tr>
-                  <td>Gas Amount</td>
-                  <td> { callGas && callGas.toFixed() } </td>
-                </tr>
-                <tr>
-                  <td>Gas Price</td>
-                  <td><ValueDisplay priceInWei= { gasPrice } /></td>
-                </tr>
-                <tr>
-                  <td>Time Bounty</td>
-                  <td><ValueDisplay priceInWei= { bounty } /></td>
-                </tr>
-                <tr>
-                  <td>Donation</td>
-                  <td><ValueDisplay priceInWei= { fee } /></td>
-                </tr>
-                <tr>
-                  <td>Deposit</td>
-                  <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
-                </tr>
-              </tbody>
-            </table>
+              <table className="table">
+                <tbody>
+                  <tr>
+                    <td>Status</td>
+                    <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
+                  </tr>
+                  <tr>
+                    <td>To Address</td>
+                    <td><a href="#">{toAddress}</a></td>
+                  </tr>
+                  <tr>
+                    <td>Value/Amount</td>
+                    <td><ValueDisplay priceInWei= { callValue } /></td>
+                  </tr>
+                  <tr>
+                    <td>Data</td>
+                    <td>{callData}</td>
+                  </tr>
+                  <tr>
+                    <td>Block or Time</td>
+                    <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
+                  </tr>
+                  <tr>
+                    <td>Window Size</td>
+                    <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
+                  </tr>
+                  <tr>
+                    <td>Gas Amount</td>
+                    <td> { callGas && callGas.toFixed() } </td>
+                  </tr>
+                  <tr>
+                    <td>Gas Price</td>
+                    <td><ValueDisplay priceInWei= { gasPrice } /></td>
+                  </tr>
+                  <tr>
+                    <td>Time Bounty</td>
+                    <td><ValueDisplay priceInWei= { bounty } /></td>
+                  </tr>
+                  <tr>
+                    <td>Donation</td>
+                    <td><ValueDisplay priceInWei= { fee } /></td>
+                  </tr>
+                  <tr>
+                    <td>Deposit</td>
+                    <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+          {this.getCancelSection()}
         </div>
-        {this.getCancelSection()}
         <div className="row">
-          <PoweredByEAC className="col-md-2 mt-2" />
+          <PoweredByEAC className="col-md-2 mt-3" />
         </div>
       </div>
     );

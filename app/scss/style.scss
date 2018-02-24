@@ -158,10 +158,10 @@ $titleColor: #fff;
 
 @media (min-width:589px) {
   .subsection .tab-content {
-    height: 570px;
+    height: 580px;
   }
   .subsection .tab-pane.active {
-  	overflow: hidden;
+  	overflow-x: hidden;
   	overflow-y: auto;
   	height:90%;
   }
@@ -175,6 +175,10 @@ $titleColor: #fff;
 
 #confirmSettings table td {
   padding: 10px 20px;
+}
+
+.table tbody tr td {
+  padding: 0.75rem;
 }
 
 #scheduleWizard .nav li a {
