@@ -15,6 +15,7 @@ class TimeNodeStatistics extends Component {
       timeNodeDisabled: TIMENODE_STATUS.DISABLED
     };
 
+    this.refreshChart = this.refreshChart.bind(this);
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
   }
@@ -26,6 +27,15 @@ class TimeNodeStatistics extends Component {
     });
 
     this.refreshChart();
+  }
+
+  componentDidMount() {
+    // Refreshes the graph every 5 seconds
+    this.interval = setInterval(this.refreshChart, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   getStopButton() {
