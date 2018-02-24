@@ -1,7 +1,30 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { observer,inject } from 'mobx-react';
 
+@inject('web3Service')
+@inject('keenStore')
+@observer
 class SidePanel extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      blocknumber: ''
+    };
+  }
+
+  componentWillMount() {
+    this.getCurrentBlock();
+  }
+
+  getCurrentBlock() {
+    const { web3Service: { web3 } } = this.props;
+    web3.eth.getBlockNumber((err,res) =>{
+      err == null && this.setState({ blocknumber: res });
+    });
+  }
 
   componentDidMount() {
     const { jQuery } = window;
@@ -105,6 +128,39 @@ class SidePanel extends Component {
                 <span className="icon-thumbnail"><i className="far fa-question-circle"></i></span>
               </a>
             </li>
+
+            <div>
+
+            <hr id="sidebar-separator" className="d-sm-block d-md-none mx-4"/>
+
+            <li className="d-sm-block d-md-none">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-8 px-0">
+                    <span className="active-timenodes">Active TimeNodes</span>
+                  </div>
+                  <div className="col-4 px-0 text-right">
+                    <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes}</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li className="d-sm-block d-md-none">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-8 px-0">
+                    <span className="active-timenodes">Current Block</span>
+                  </div>
+                  <div className="col-4 px-0 text-right">
+                    <span className="timenode-count col-6">{this.state.blocknumber}</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            </div>
+
           </ul>
           <div className="clearfix"></div>
         </div>
@@ -112,5 +168,10 @@ class SidePanel extends Component {
     );
   }
 }
+
+SidePanel.propTypes = {
+  web3Service: PropTypes.any,
+  keenStore: PropTypes.any
+};
 
 export default SidePanel;
