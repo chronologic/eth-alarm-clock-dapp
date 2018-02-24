@@ -110,11 +110,11 @@ class ScheduleWizard extends Component {
       executionWindow = scheduleStore.blockSize;
     }
 
-    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit, isUsingTime } = scheduleStore;
+    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
-    donation = web3.toWei(donation, 'ether');
+    fee = web3.toWei(fee, 'ether');
     timeBounty = web3.toWei(timeBounty, 'ether');
     deposit = web3.toWei(deposit, 'ether');
 
@@ -125,7 +125,7 @@ class ScheduleWizard extends Component {
                                                     executionWindow,
                                                     executionTime,
                                                     gasPrice,
-                                                    donation,
+                                                    fee,
                                                     timeBounty,
                                                     deposit,
                                                     false, //do not wait for mining to return values

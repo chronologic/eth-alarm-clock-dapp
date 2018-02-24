@@ -9,7 +9,7 @@ export default class mobxStore {
   @observable transactionTime = '';
   @observable executionWindow = '';
   @observable customWindow = '';
-  @observable donation = 0;
+  @observable fee = 0;
 
   //BlockComponent
   @observable blockNumber = '';
@@ -39,6 +39,3 @@ export default class mobxStore {
     this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
 }
-
-
-//export { mobxStore };

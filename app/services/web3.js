@@ -115,15 +115,18 @@ export default class Web3Service {
                 web3 = new Web3(window.web3.currentProvider);
                 this.connectedToMetaMask = true;
             } else {
-                web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+                web3 = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
+                Object.assign(this, web3);
                 this.connectedToMetaMask = false;
             }
+
             window.web3 = web3;
             this.web3 = web3;
         }
         if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
         this.accounts = web3.eth.accounts;
         web3.eth.defaultAccount = this.accounts[0];
+
         const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
