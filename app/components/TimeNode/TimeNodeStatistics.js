@@ -29,11 +29,11 @@ class TimeNodeStatistics extends Component {
   }
 
   getStopButton() {
-    return <button className="btn btn-danger" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
+    return <button className="btn btn-danger px-4" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
   }
 
   getStartButton() {
-    return <button className="btn btn-primary" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
+    return <button className="btn btn-primary px-4" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
   }
 
   startTimeNode() {
@@ -104,11 +104,19 @@ class TimeNodeStatistics extends Component {
           },
           scales: {
             yAxes: [{
-              display: false
+              display: false,
+              gridLines: {
+                tickMarkLength: 0
+              }
             }],
             xAxes: [{
               display: false
             }],
+          },
+          layout: {
+            padding: {
+              top: 20
+            }
           }
         }
       });
@@ -191,13 +199,13 @@ class TimeNodeStatistics extends Component {
                   </ul>
                 </div>
               </div>
-              <div className="card-body">
-                <div className="row">
+              <div className="card-body p-0 m-t-10">
+                <div className="row px-4">
                   <div className="col-md-6">ETH</div>
                   <div className="col-md-6">{this.props.timeNodeStore.balanceETH}</div>
                 </div>
                 <hr className="mt-2 mb-2"/>
-                <div className="row">
+                <div className="row px-4 pb-2">
                   <div className="col-md-6">DAY</div>
                   <div className="col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
                 </div>
