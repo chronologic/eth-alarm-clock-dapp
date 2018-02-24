@@ -97,6 +97,8 @@ body {
 }
 
 .page-sidebar .sidebar-menu .menu-items li > a:hover > .icon-thumbnail {
+  -webkit-transition: ease-in 0.1s; /* Safari */
+  transition: ease-in 0.1s;
   color: #fff;
 }
 
