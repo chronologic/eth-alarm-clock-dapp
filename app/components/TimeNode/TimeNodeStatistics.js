@@ -29,11 +29,11 @@ class TimeNodeStatistics extends Component {
   }
 
   getStopButton() {
-    return <button className="btn btn-danger" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
+    return <button className="btn btn-danger px-4" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
   }
 
   getStartButton() {
-    return <button className="btn btn-primary" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
+    return <button className="btn btn-primary px-4" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
   }
 
   startTimeNode() {
