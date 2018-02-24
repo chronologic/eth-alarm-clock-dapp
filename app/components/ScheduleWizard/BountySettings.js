@@ -32,6 +32,7 @@ class BountySettings extends AbstractSetting {
       <div id="bountySettings" className="tab-pane slide">
         <div className="d-sm-block d-md-none">
           <h2 className="m-b-20">Bounty</h2>
+          <hr/>
         </div>
         <div className="row">
           <div className="col-md-4">

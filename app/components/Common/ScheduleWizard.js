@@ -214,6 +214,10 @@ class ScheduleWizard extends Component {
           <BountySettings {..._validationProps}/>
           <ConfirmSettings/>
 
+          <div className="d-sm-block d-md-none">
+            <hr/>
+          </div>
+
           <div className="row">
             <div className="d-none d-md-block">
               <PoweredByEAC className="col-md-2 footer-buttons"/>
