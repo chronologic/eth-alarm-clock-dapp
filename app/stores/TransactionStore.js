@@ -70,6 +70,7 @@ export class TransactionStore {
     if (this.isSetup) {
       return;
     }
+
     this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
 
     await this._web3.awaitInitialized();
