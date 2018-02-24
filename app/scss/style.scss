@@ -7,18 +7,13 @@ $primary-color: #21FFFF;
 	margin-left: 20px;
 }
 
-.page-container {
-    top: 0;
-    bottom: 0;
-    position: fixed;
-}
-
-.page-content-wrapper {
+body {
 	background: url(../assets/img/background.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  height: 100%;
 }
 
 .header {
