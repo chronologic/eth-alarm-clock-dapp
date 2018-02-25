@@ -136,14 +136,6 @@ class ScheduleWizard extends Component {
       }
   }
 
-  initiateScrollbar() {
-    const options = {};
-    const element = document.querySelector('.tab-pane.active');
-    if (element) {
-      Scrollbar.init(element, options);
-    }
-  }
-
   componentDidMount() {
     const { jQuery } = window;
     jQuery('#scheduleWizard').bootstrapWizard({
