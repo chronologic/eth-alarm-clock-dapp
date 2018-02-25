@@ -49,6 +49,7 @@ class TimeComponent extends AbstractSetting {
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;
     scheduleStore.executionWindow = scheduleStore.executionWindow || 5;
 
+
     const { jQuery } = window;
 
     jQuery('#timepicker').val(scheduleStore.transactionTime);

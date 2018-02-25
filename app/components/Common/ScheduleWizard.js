@@ -100,17 +100,18 @@ class ScheduleWizard extends Component {
 
   async scheduleTransaction() {
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
-    let executionTime, executionWindow;
-
+    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime, executionTime, executionWindow, customWindow, transactionTimestamp } = scheduleStore;
     if (scheduleStore.isUsingTime) {
-      executionTime = scheduleStore.transactionTimestamp;
-      executionWindow = scheduleStore.executionWindow * 60;
+      executionTime = transactionTimestamp;
+      if (customWindow != null) {
+        executionWindow = customWindow * 60;
+      } else {
+        executionWindow = executionWindow * 60;
+      }
     } else {
       executionTime = scheduleStore.blockNumber;
       executionWindow = scheduleStore.blockSize;
     }
-
-    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
