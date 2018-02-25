@@ -5,7 +5,6 @@ import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
-import PoweredByEAC from '../Common/PoweredByEAC';
 
 const INITIAL_STATE = {
   callData: '',
@@ -189,10 +188,7 @@ class TransactionDetails extends ScrollbarComponent {
               </tbody>
             </table>
           </div>
-        </div>
-        {this.getCancelSection()}
-        <div className="row">
-          <PoweredByEAC className="col-md-2 mt-2" />
+          {this.getCancelSection()}
         </div>
       </div>
     );

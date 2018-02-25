@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -16,7 +15,6 @@ class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
-    this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.scheduleTransaction = this.scheduleTransaction.bind(this);
   }
 
@@ -156,16 +154,7 @@ class ScheduleWizard extends Component {
           }
         }
       });
-    this.initiateScrollbar();
   }
-
-  initiateScrollbar(){
-    const options = {};
-    const element = document.querySelector('.tab-pane.active');
-    if (element){
-      Scrollbar.init(element, options);
-    }
-   }
 
   render() {
     const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
@@ -174,80 +163,46 @@ class ScheduleWizard extends Component {
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab1" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="far fa-clock tab-icon"></i>&nbsp;
-                <span>Date & Time</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="far fa-clock tab-icon"></i>
-              </div>
+            <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
+              <i className="far fa-clock tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Date & Time</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab2" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fas fa-info tab-icon"></i>&nbsp;
-                <span>Information</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fas fa-info tab-icon"></i>
-              </div>
+            <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
+              <i className="fas fa-info tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Information</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab3" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fab fa-ethereum tab-icon"></i>&nbsp;
-                <span>Bounty</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fab fa-ethereum tab-icon"></i>
-              </div>
+            <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
+              <i className="fab fa-ethereum tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Bounty</span>
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#tab4" onClick={ this.initiateScrollbar }>
-              <div className="d-none d-md-block">
-                <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
-                <span>Confirm</span>
-              </div>
-              <div className="d-sm-block d-md-none">
-                <i className="fas fa-cloud-upload-alt tab-icon"></i>
-              </div>
+            <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
+              <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Confirm</span>
             </a>
           </li>
         </ul>
 
         <div className="tab-content">
-          <div className="tab-pane active slide" id="tab1">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Date & Time</h2>
-            </div>
-            <TimeSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab2">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Information</h2>
-            </div>
-            <InfoSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab3">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Bounty</h2>
-            </div>
-            <BountySettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab4">
-            <div className="d-sm-block d-md-none">
-              <h2 className="m-b-20">Confirm</h2>
-            </div>
-            <ConfirmSettings
-            />
+          <TimeSettings {..._validationProps}/>
+          <InfoSettings {..._validationProps}/>
+          <BountySettings {..._validationProps}/>
+          <ConfirmSettings/>
+
+          <div className="d-sm-block d-md-none">
+            <hr/>
           </div>
 
           <div className="row">
-            <PoweredByEAC className="col-md-2 footer-buttons"/>
+            <div className="d-none d-md-block col-md-2">
+              <PoweredByEAC className="footer-buttons"/>
+            </div>
+
             <div className="footer-buttons col-md-10">
               <ul className="pager wizard no-style">
                 <li className="next">
@@ -257,13 +212,13 @@ class ScheduleWizard extends Component {
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
                 <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
-             <span>Schedule</span>
-           </button>
+                  <span>Schedule</span>
+                </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
-                      <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                          <span>First</span>
-                      </button>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                    <span>First</span>
+                  </button>
                   </li>
                 <li className="previous">
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
@@ -272,6 +227,10 @@ class ScheduleWizard extends Component {
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div className="d-sm-inline d-md-none">
+            <PoweredByEAC className="col-md-2 footer-buttons mt-5"/>
           </div>
         </div>
       </div>

@@ -45,7 +45,11 @@ class ConfirmSettings extends Component {
   render() {
     const { scheduleStore } = this.props;
     return (
-      <div id="confirmSettings">
+      <div id="confirmSettings" className="tab-pane">
+        <div className="d-sm-block d-md-none">
+          <h2 className="m-b-20">Confirm</h2>
+          <hr/>
+        </div>
         <div className="row">
           <div className="col-md-10">
             <table className="table">

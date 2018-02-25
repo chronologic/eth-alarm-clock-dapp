@@ -106,6 +106,10 @@ $primary-color: #21FFFF;
 $titleColor: #fff;
 
 /* NEW CUSTOM CSS */
+hr {
+  border-color: #f6f6f6;
+}
+
 .left-separator {
   border-left: 1px solid grey;
 }
@@ -158,10 +162,10 @@ $titleColor: #fff;
 
 @media (min-width:589px) {
   .subsection .tab-content {
-    height: 570px;
+    height: 580px;
   }
   .subsection .tab-pane.active {
-  	overflow: hidden;
+  	overflow-x: hidden;
   	overflow-y: auto;
   	height:90%;
   }
@@ -175,6 +179,10 @@ $titleColor: #fff;
 
 #confirmSettings table td {
   padding: 10px 20px;
+}
+
+.table tbody tr td {
+  padding: 0.75rem;
 }
 
 #scheduleWizard .nav li a {
@@ -201,4 +209,13 @@ $titleColor: #fff;
 
 .timenode-count {
   color: #fff;
+}
+
+#timenodeLogsField {
+  height: 400px;
+  overflow-y: auto;
+}
+
+#sidebar-separator {
+  border-color: #1D1F27;
 }
