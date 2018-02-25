@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject } from 'mobx-react';
 import PropTypes from 'prop-types';
-import ScrollbarComponent from '../Common/ScrollbarComponent';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
 const INITIAL_STATE = {
@@ -14,7 +13,7 @@ const INITIAL_STATE = {
 };
 
 @inject('transactionStore')
-class TransactionScanner extends ScrollbarComponent {
+class TransactionScanner extends Component {
   state = INITIAL_STATE
 
   _isMounted = false;
@@ -49,12 +48,10 @@ class TransactionScanner extends ScrollbarComponent {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this._isMounted = false;
   }
 
   componentDidMount() {
-    super.componentDidMount();
     this._isMounted = true;
   }
 
@@ -93,17 +90,19 @@ class TransactionScanner extends ScrollbarComponent {
 
   render() {
     return (
-      <div className="tab-pane slide active show">
-        <TransactionsTable
-          transactions={this.state.transactions}
-          fetchingTransactions={this.state.fetchingTransactions}
-          limit={this.state.limit}
-          offset={this.state.offset}
-          total={this.state.total}
-          goToPage={this.goToPage}
-          currentPage={this.state.currentPage}
-          showStatus={this.props.showStatus}
-        />
+      <div className="tab-content p-4">
+        <div className="tab-pane active">
+          <TransactionsTable
+            transactions={this.state.transactions}
+            fetchingTransactions={this.state.fetchingTransactions}
+            limit={this.state.limit}
+            offset={this.state.offset}
+            total={this.state.total}
+            goToPage={this.goToPage}
+            currentPage={this.state.currentPage}
+            showStatus={this.props.showStatus}
+          />
+        </div>
         <div className="row">
           <PoweredByEAC className="col-md-2 mt-2" />
         </div>

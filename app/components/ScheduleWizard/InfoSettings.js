@@ -40,7 +40,11 @@ class InfoSettings extends AbstractSetting {
       const { _validations,_validationsErrors } = this;
 
       return (
-        <div id="infoSettings">
+        <div id="infoSettings" className="tab-pane slide">
+          <div className="d-sm-block d-md-none">
+            <h2 className="m-b-20">Information</h2>
+            <hr/>
+          </div>
           <div className="row">
             <div className="col-md-4">
               <div className={'form-group form-group-default required'+(_validations.toAddress?'':' has-error')}>

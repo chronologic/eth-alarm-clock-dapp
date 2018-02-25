@@ -1,7 +1,30 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { observer,inject } from 'mobx-react';
 
+@inject('web3Service')
+@inject('keenStore')
+@observer
 class SidePanel extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      blocknumber: ''
+    };
+  }
+
+  componentWillMount() {
+    this.getCurrentBlock();
+  }
+
+  getCurrentBlock() {
+    const { web3Service: { web3 } } = this.props;
+    web3.eth.getBlockNumber((err,res) =>{
+      err == null && this.setState({ blocknumber: res });
+    });
+  }
 
   componentDidMount() {
     const { jQuery } = window;
@@ -22,23 +45,24 @@ class SidePanel extends Component {
 
   render() {
     const titleClasses = 'title ';
+    const subtitleClasses = 'sub-title ';
     const thumbnailClasses = 'icon-thumbnail ';
 
     const entryList = [
       {
         title: 'Schedule',
         titleClasses: titleClasses + this.isUrlActive('/', 'title'),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/')
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/', 'thumbnail')
       },
       {
         title: 'Transactions',
-        titleClasses: titleClasses + this.isUrlActive('/transactions', 'title', true),
+        titleClasses: titleClasses + subtitleClasses + this.isUrlActive('/transactions', 'title', true),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true),
       },
       {
         title: 'TimeNode',
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
       },
     ];
 
@@ -54,40 +78,85 @@ class SidePanel extends Component {
         <div className="sidebar-menu">
           <ul className="menu-items">
             <li className="m-t-30 ">
-              <NavLink to="/" className={entryList[0].titleClasses}>{entryList[0].title}</NavLink>
-              <span className={entryList[0].thumbnailClasses}><i className="pg-calender"></i></span>
+              <NavLink to="/">
+                <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
+                <span className={entryList[0].thumbnailClasses}><i className="pg-calender"></i></span>
+              </NavLink>
             </li>
-            <li className="">
-              <a href="#" onClick={(e) => e.preventDefault()} className={entryList[1].titleClasses}>{entryList[1].title}</a>
-              <span className={entryList[1].thumbnailClasses}><i className="pg-charts"></i></span>
+            <li>
+              <a href="#" onClick={(e) => e.preventDefault()}>
+                <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
+                <span className={entryList[1].thumbnailClasses}><i className="pg-charts"></i></span>
+              </a>
 
               <ul className="sub-menu">
                 <li>
-                  <NavLink to="/transactions/scheduled" className="title">Scheduled</NavLink>
-                  <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>
+                  <NavLink to="/transactions/scheduled">
+                    <span className="title">Scheduled</span>
+                    <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>
+                  </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/transactions/completed" className="title">Completed</NavLink>
-                  <span className="icon-thumbnail"><i className="fa fa-check"></i></span>
+                  <NavLink to="/transactions/completed">
+                    <span className="title">Completed</span>
+                    <span className="icon-thumbnail"><i className="fa fa-check"></i></span>
+                  </NavLink>
                 </li>
               </ul>
             </li>
             <li>
-              <NavLink to="/timenode" className={entryList[2].titleClasses}>{entryList[2].title}</NavLink>
-              <span className={entryList[2].thumbnailClasses}><i className="fa fa-sitemap"></i></span>
+              <NavLink to="/timenode">
+                <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
+                <span className={entryList[2].thumbnailClasses}><i className="fa fa-sitemap"></i></span>
+              </NavLink>
             </li>
             <li>
-              <a href="http://alpha.chronologic.network" className="title" target="_blank" rel="noopener noreferrer">Debt Smart Contract</a>
-              <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
+              <a href="https://alpha.chronologic.network/debt/" target="_blank" rel="noopener noreferrer">
+                <span className="title">Debt Smart Contract</span>
+                <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
+              </a>
             </li>
             <li>
-              <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Day Token Contract</a>
-              <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
+              <a href="https://alpha.chronologic.network/chronos/" target="_blank" rel="noopener noreferrer">
+                <span className="title">Day Token Contract</span>
+                <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
+              </a>
             </li>
             <li>
-              <a href="http://alpha.chronologic.network" target="_blank" rel="noopener noreferrer" className="title">Help</a>
-              <span className="icon-thumbnail"><i className="fas fa-question-circle"></i></span>
+              <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">
+                <span className="title">Help</span>
+                <span className="icon-thumbnail"><i className="far fa-question-circle"></i></span>
+              </a>
             </li>
+
+            <hr id="sidebar-separator" className="d-sm-block d-md-none mx-4"/>
+
+            <li className="d-sm-block d-md-none">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-8 px-0">
+                    <span className="active-timenodes">Active TimeNodes</span>
+                  </div>
+                  <div className="col-4 px-0 text-right">
+                    <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes}</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li className="d-sm-block d-md-none">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-8 px-0">
+                    <span className="active-timenodes">Current Block</span>
+                  </div>
+                  <div className="col-4 px-0 text-right">
+                    <span className="timenode-count col-6">{this.state.blocknumber}</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
           </ul>
           <div className="clearfix"></div>
         </div>
@@ -95,5 +164,10 @@ class SidePanel extends Component {
     );
   }
 }
+
+SidePanel.propTypes = {
+  web3Service: PropTypes.any,
+  keenStore: PropTypes.any
+};
 
 export default SidePanel;

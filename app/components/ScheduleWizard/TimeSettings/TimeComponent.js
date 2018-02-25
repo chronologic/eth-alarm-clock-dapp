@@ -72,10 +72,6 @@ class TimeComponent extends AbstractSetting {
     jQuery('#timezoneSelect').select2();
   }
 
-  clearPresetExecWindow() {
-
-  }
-
   timeValidator (){
     const { scheduleStore, dateTimeValidatorStore } = this.props;
     return {
@@ -170,7 +166,11 @@ class TimeComponent extends AbstractSetting {
               }
           </div>
 
+
           <div className="col-md-3">
+            <div className="d-sm-block d-md-none">
+              <hr/>
+            </div>
             <div className="form-group required">
               <label>Execution Window</label>
             </div>

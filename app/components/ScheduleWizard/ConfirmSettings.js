@@ -14,13 +14,16 @@ class ConfirmSettings extends Component {
 
   totalCost() {
     const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
-    let { gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit } = scheduleStore;
+    let { gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit } = scheduleStore;
+
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
-    donation = web3.toWei(donation, 'ether');
+    fee = web3.toWei(fee, 'ether');
     deposit = web3.toWei(deposit,'ether');
-    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, donation, deposit);
-    return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty);//Only for display purposes
+
+    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, deposit);
+
+    return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty); // Only for display purposes
   }
 
   executionWindow() {
@@ -42,7 +45,11 @@ class ConfirmSettings extends Component {
   render() {
     const { scheduleStore } = this.props;
     return (
-      <div id="confirmSettings">
+      <div id="confirmSettings" className="tab-pane">
+        <div className="d-sm-block d-md-none">
+          <h2 className="m-b-20">Confirm</h2>
+          <hr/>
+        </div>
         <div className="row">
           <div className="col-md-10">
             <table className="table">
@@ -78,8 +85,8 @@ class ConfirmSettings extends Component {
                   <td>{scheduleStore.gasPrice}</td>
                 </tr>
                 <tr>
-                  <td>Donation</td>
-                  <td>{scheduleStore.donation}</td>
+                  <td>Fee</td>
+                  <td>{scheduleStore.fee}</td>
                 </tr>
                 <tr>
                   <td>Time Bounty</td>
