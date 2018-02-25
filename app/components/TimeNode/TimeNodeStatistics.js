@@ -246,13 +246,13 @@ class TimeNodeStatistics extends Component {
               </div>
               <div className="card-body p-0 m-t-10">
                 <div className="row px-4">
-                  <div className="col-md-6">ETH</div>
-                  <div className="col-md-6">{this.props.timeNodeStore.balanceETH}</div>
+                  <div className="col-6 col-md-6">ETH</div>
+                  <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceETH}</div>
                 </div>
                 <hr className="mt-2 mb-2"/>
                 <div className="row px-4 pb-2">
-                  <div className="col-md-6">DAY</div>
-                  <div className="col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
+                  <div className="col-6 col-md-6">DAY</div>
+                  <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
                 </div>
               </div>
             </div>

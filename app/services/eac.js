@@ -9,21 +9,24 @@ const additionalMethods = {
   getRequestLibInstance(address) {
     return web3.eth.contract(RequestLib).at(address);
   },
-  calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, donation = 0, deposit = 0) {
+
+  calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, deposit = 0) {
     gasAmount = gasAmount || 0;
     amountToSend = amountToSend || 0;
     gasPrice = gasPrice || 0;
-    donation = donation || 0;
+    fee = fee || 0;
     deposit = deposit || 0;
 
     const { Util: { calcEndowment } } = this;
+
     const endowment = calcEndowment(
       new BigNumber(gasAmount),
       new BigNumber(amountToSend),
       new BigNumber(gasPrice),
-      new BigNumber(donation),
+      new BigNumber(fee),
       new BigNumber(deposit),
     );
+
     return endowment;
   }
 };

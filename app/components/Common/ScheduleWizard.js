@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import Scrollbar from 'smooth-scrollbar';
 import TimeSettings from '../ScheduleWizard/TimeSettings';
 import InfoSettings from '../ScheduleWizard/InfoSettings';
 import BountySettings from '../ScheduleWizard/BountySettings';
@@ -16,7 +15,6 @@ class ScheduleWizard extends Component {
   constructor(props){
     super(props);
     this.state = {};
-    this.initiateScrollbar = this.initiateScrollbar.bind(this);
     this.scheduleTransaction = this.scheduleTransaction.bind(this);
   }
 
@@ -112,11 +110,11 @@ class ScheduleWizard extends Component {
       executionWindow = scheduleStore.blockSize;
     }
 
-    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, donation, timeBounty, deposit, isUsingTime } = scheduleStore;
+    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
-    donation = web3.toWei(donation, 'ether');
+    fee = web3.toWei(fee, 'ether');
     timeBounty = web3.toWei(timeBounty, 'ether');
     deposit = web3.toWei(deposit, 'ether');
 
@@ -127,7 +125,7 @@ class ScheduleWizard extends Component {
                                                     executionWindow,
                                                     executionTime,
                                                     gasPrice,
-                                                    donation,
+                                                    fee,
                                                     timeBounty,
                                                     deposit,
                                                     false, //do not wait for mining to return values
@@ -156,16 +154,7 @@ class ScheduleWizard extends Component {
           }
         }
       });
-    this.initiateScrollbar();
   }
-
-  initiateScrollbar(){
-    const options = {};
-    const element = document.querySelector('.tab-pane.active');
-    if (element){
-      Scrollbar.init(element, options);
-    }
-   }
 
   render() {
     const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
@@ -173,37 +162,46 @@ class ScheduleWizard extends Component {
     return (
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab1"  onClick={ this.initiateScrollbar }><i className="far fa-clock tab-icon"></i> <span>Date & Time</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
+              <i className="far fa-clock tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Date & Time</span>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab2"  onClick={ this.initiateScrollbar }><i className="fas fa-info tab-icon"></i> <span>Information</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
+              <i className="fas fa-info tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Information</span>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab3"  onClick={ this.initiateScrollbar }><i className="fab fa-ethereum tab-icon"></i> <span>Bounty</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
+              <i className="fab fa-ethereum tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Bounty</span>
+            </a>
           </li>
-          <li className="col-md-3">
-            <a data-toggle="tab" href="#tab4"  onClick={ this.initiateScrollbar }><i className="fas fa-cloud-upload-alt tab-icon"></i> <span>Confirm</span></a>
+          <li className="col-3 col-md-3">
+            <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
+              <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
+              <span className="d-none d-md-inline">Confirm</span>
+            </a>
           </li>
         </ul>
 
         <div className="tab-content">
-          <div className="tab-pane active slide" id="tab1">
-            <TimeSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab2">
-            <InfoSettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab3">
-            <BountySettings {..._validationProps}/>
-          </div>
-          <div className="tab-pane slide" id="tab4">
-            <ConfirmSettings
-            />
-          </div>
+          <TimeSettings {..._validationProps}/>
+          <InfoSettings {..._validationProps}/>
+          <BountySettings {..._validationProps}/>
+          <ConfirmSettings { ...{ isWeb3Usable: this.isWeb3Usable }}/>
 
+          <div className="d-sm-block d-md-none">
+            <hr/>
+          </div>
           <div className="row">
-            <PoweredByEAC className="col-md-2 footer-buttons"/>
+            <div className="d-none d-md-block col-md-2">
+              <PoweredByEAC className="footer-buttons"/>
+            </div>
+
             <div className="footer-buttons col-md-10">
               <ul className="pager wizard no-style">
                 <li className="next">
@@ -212,14 +210,14 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
-             <span>Schedule</span>
-           </button>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.isWeb3Usable}>
+                    <span>Schedule</span>
+                  </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
-                      <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                          <span>First</span>
-                      </button>
+                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                    <span>First</span>
+                  </button>
                   </li>
                 <li className="previous">
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
@@ -228,6 +226,10 @@ class ScheduleWizard extends Component {
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div className="d-sm-inline d-md-none">
+            <PoweredByEAC className="col-md-2 footer-buttons mt-5"/>
           </div>
         </div>
       </div>

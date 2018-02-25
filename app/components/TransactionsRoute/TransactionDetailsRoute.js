@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import TransactionDetails from '../TransactionScanner/TransactionDetails';
 import TransactionNotFound from '../TransactionScanner/TransactionNotFound';
 import { BeatLoader } from 'react-spinners';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 @inject('transactionStore')
 @observer
@@ -53,6 +54,7 @@ class TransactionDetailsRoute extends Component {
             }
             {content}
           </div>
+          <PoweredByEAC className="col-md-2 mb-4 ml-3" />
         </div>
       </div>
     );
