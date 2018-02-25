@@ -26,14 +26,14 @@ class MetamaskComponent extends Component {
     async resolveWeb3() {
         const { web3Service } = this.props;
         await web3Service.awaitInitialized();
-        if (web3Service.web3.isConnected()) {
+        if (web3Service.web3.isConnected() && web3Service.connectedToMetaMask) {
             showNotification(`<b>Metamask connected</b>`, 'success');
             showNotification(`You are connected to ${ web3Service.network }`, 'info');
             if (web3Service.accounts.length < 1) {
                 showNotification(`Kindly unlock your account or add new accounts to use this Dapp`, 'warning');
             }
         } else {
-            showNotification(`<b>Metamask is not installed</b>`);
+            showNotification(`<b>Metamask is not installed</b>`, undefined, undefined, false);
             showNotification(`<b>Metamask</b> is required to use this Dapp <a href='https://metamask.io' target='_blank' >https://metamask.io</a>`,'warning');
         }
     }
