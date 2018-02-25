@@ -212,7 +212,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
+                <button className="btn btn-primary btn-cons pull-right" type="button"  onClick={ this.scheduleTransaction}>
              <span>Schedule</span>
            </button>
                 </li>
