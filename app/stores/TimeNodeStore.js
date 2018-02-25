@@ -45,11 +45,7 @@ export default class TimeNodeStore {
     );
   }
 
-  @observable executedCounters = [];
-  @computed get totalExecuted() {
-    return this.executedCounters.reduce((a, b) => a + b, 0);
-  }
-
+  @observable executedTransactions = [];
   @observable balanceETH = null;
   @observable balanceDAY = null;
   @observable claimedEth = null;
@@ -96,7 +92,7 @@ export default class TimeNodeStore {
         this.logs.push(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         this.claimedEth = event.data.etherGain;
-        this.executedCounters.push(event.data.executedCounter);
+        this.executedTransactions = event.data.executedTransactions;
       }
     };
 
