@@ -6,7 +6,7 @@ class TimeNodeMain extends Component {
   render() {
     return (
       <div id="timeNodeMain" className="tab-content">
-        <ul className="nav nav-tabs nav-tabs-simple" role="tablist" data-init-reponsive-tabs="dropdownfx">
+        <ul className="nav nav-tabs nav-tabs-simple" role="tablist">
           <li className="nav-item">
             <a className="active px-5 py-3" data-toggle="tab" role="tab" data-target="#tabStatistics" href="#">Statistics</a>
           </li>

@@ -29,7 +29,11 @@ class BountySettings extends AbstractSetting {
     const { scheduleStore, } = this.props;
     const { _validations,_validationsErrors } = this;
     return (
-      <div id="bountySettings">
+      <div id="bountySettings" className="tab-pane slide">
+        <div className="d-sm-block d-md-none">
+          <h2 className="m-b-20">Bounty</h2>
+          <hr/>
+        </div>
         <div className="row">
           <div className="col-md-4">
             <div className={'form-group form-group-default required '+(_validations.timeBounty?'':' has-error')}>

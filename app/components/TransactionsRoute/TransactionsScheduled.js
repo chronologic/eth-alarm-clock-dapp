@@ -7,9 +7,7 @@ export default class TransactionsScheduled extends Component {
       <div>
         <h1 className="view-title">Transaction Scanner - Scheduled</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <div className="tab-content p-4">
-            <TransactionScanner showStatus={false} includeResolved={false} includeUnresolved={true} />
-          </div>
+          <TransactionScanner showStatus={false} includeResolved={false} includeUnresolved={true} />
         </div>
       </div>
     );
