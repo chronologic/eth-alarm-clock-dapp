@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject,observer } from 'mobx-react';
+import Alert from '../Common/Alert';
 
 @inject('scheduleStore')
 @inject('eacService')
@@ -42,6 +43,10 @@ class ConfirmSettings extends Component {
       return scheduleStore.blockNumber;
   }
 
+  web3Error() {
+    return !this.props.isWeb3Usable ? <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} /> : null;
+  }
+
   render() {
     const { scheduleStore } = this.props;
     return (
@@ -52,6 +57,7 @@ class ConfirmSettings extends Component {
         </div>
         <div className="row">
           <div className="col-md-10">
+            {this.web3Error()}
             <table className="table">
               <thead>
                 <tr>
@@ -112,7 +118,8 @@ class ConfirmSettings extends Component {
 ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any,
   web3Service: PropTypes.any,
-  eacService: PropTypes.any
+  eacService: PropTypes.any,
+  isWeb3Usable: PropTypes.any
 };
 
 export default ConfirmSettings;
