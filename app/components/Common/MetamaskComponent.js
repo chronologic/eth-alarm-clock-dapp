@@ -13,6 +13,16 @@ class MetamaskComponent extends Component {
         );
     }
 
+    get isWeb3Viewable () {
+        const { web3Service } = this.props;
+        return ( web3Service.web3.isConnected() );
+    }
+
+    get isWeb3Usable() {
+        const { web3Service } = this.props;
+        return (web3Service.web3.isConnected() && web3Service.accounts.length > 0);
+    }
+
     async resolveWeb3() {
         const { web3Service } = this.props;
         await web3Service.awaitInitialized();

@@ -198,10 +198,9 @@ class ScheduleWizard extends Component {
             <BountySettings {..._validationProps}/>
           </div>
           <div className="tab-pane slide" id="tab4">
-            <ConfirmSettings
+            <ConfirmSettings {...{ isWeb3Usable:this.isWeb3Usable }}
             />
           </div>
-
           <div className="row">
             <PoweredByEAC className="col-md-2 footer-buttons"/>
             <div className="footer-buttons col-md-10">
@@ -212,9 +211,9 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                <button className="btn btn-primary btn-cons pull-right" type="button" onClick={ this.scheduleTransaction}>
-             <span>Schedule</span>
-           </button>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.isWeb3Usable}>
+                    <span>Schedule</span>
+                  </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
                       <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
