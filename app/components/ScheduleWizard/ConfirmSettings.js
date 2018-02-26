@@ -38,7 +38,7 @@ class ConfirmSettings extends Component {
   blockOrTime(){
     const { scheduleStore } = this.props;
     if (scheduleStore.isUsingTime){
-      return scheduleStore.transactionTime;
+      return scheduleStore.transactionDate + ' ' + scheduleStore.transactionTime;
     }
       return scheduleStore.blockNumber;
   }
