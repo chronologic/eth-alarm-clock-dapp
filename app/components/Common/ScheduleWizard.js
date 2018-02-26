@@ -103,6 +103,16 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
+  get InfoSettingsValidations() {
+    const { scheduleStore } = this.props;
+    let _addr = scheduleStore.toAddress && this._validations.InfoSettings.toAddress;
+    let _gasAmount = scheduleStore.toAddress && this._validations.InfoSettings.gasAmount;
+    let _amountToSend = scheduleStore.amountToSend && this._validations.InfoSettings.amountToSend;
+    let _gasPrice = scheduleStore.gasPrice && this._validations.InfoSettings.gasPrice;
+    let _yourData = scheduleStore.yourData && this._validations.InfoSettings.yourData;
+    return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
+  }
+
   async scheduleTransaction() {
     const { scheduleStore, transactionStore, web3Service: { web3 }, history } = this.props;
     let executionTime, executionWindow;
