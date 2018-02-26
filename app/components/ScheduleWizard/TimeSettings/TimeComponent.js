@@ -6,9 +6,9 @@ import momentDurationFormatSetup from 'moment-duration-format';
 import { inject, observer } from 'mobx-react';
 
 const presetExecutionWindows = [
-    { value: 1, selected: false },
     { value: 3, selected: false },
-    { value: 5, selected: false }
+    { value: 5, selected: false },
+    { value: 7, selected: false },
   ];
 
 @inject('scheduleStore')
@@ -92,6 +92,11 @@ class TimeComponent extends AbstractSetting {
     };
   }
 
+  validateWindow () {
+    this.validate('executionWindow')();
+    this.validate('customWindow')();
+  }
+
   validators = {
     timezone:{
       validator: (value)=> typeof moment.tz.zone(value) == 'object'?0:1,
@@ -101,14 +106,15 @@ class TimeComponent extends AbstractSetting {
     },
     transactionDate: '',
     transactionTime: '',
-    executionWindow: this.integerValidator(),
-    customWindow: this.integerValidator(),
+    executionWindow: this.integerValidator(3, 'window has minimum value of 3 mins'),
+    customWindow: this.integerValidator(3,'window has minimum value of 3 mins'),
   }
 
   onRadioChange = (property) => (event) => {
     const { scheduleStore } = this.props;
     const { target } = event;
     scheduleStore[property] = target.value;
+    this.validate(property)(event);
   }
 
   render() {
@@ -174,10 +180,10 @@ class TimeComponent extends AbstractSetting {
             <div className="form-group required">
               <label>Execution Window</label>
             </div>
-            <div data-toggle="buttons" className={'btn-group d-flex'+(_validations.executionWindow?'':' has-error')}>
+            <div data-toggle="buttons" className={'btn-group d-flex' + (_validations.executionWindow && _validations.customWindow ?'':' has-error')}>
               {this.state.execWindows.map((exeWind, index) =>
                 <label key={index} className={'btn btn-default w-100 ' + (exeWind.value==scheduleStore.executionWindow ? 'active' : '')}>
-                  <input type="radio" name="exeWindOptions" value={exeWind.value} checked={exeWind.value == scheduleStore.executionWindow} onBlur={this.validate('executionWindow')} onChange={this.onRadioChange('executionWindow')} />{exeWind.value} min
+                  <input type="radio" name="exeWindOptions" value={exeWind.value} checked={exeWind.value == scheduleStore.executionWindow} onBlur={this.validateWindow.bind(this)} onChange={this.onRadioChange('executionWindow')} />{exeWind.value} min
                 </label>
               )}
             </div>
@@ -185,9 +191,9 @@ class TimeComponent extends AbstractSetting {
               <label className="error">{_validationsErrors.executionWindow}</label>
               }
 
-            <div id="customExecution" className={'form-group form-group-default'+(_validations.customWindow?'':' has-error')}>
+            <div id="customExecution" className={'form-group form-group-default' + (_validations.customWindow && _validations.executionWindow?'':' has-error')}>
               <label>Custom</label>
-              <input type="text" placeholder="Enter custom execution window (min)" className="form-control" value={scheduleStore.customWindow} onBlur={this.validate('customWindow')} onChange={this.onChange('customWindow')}></input>
+              <input type="text" placeholder="Enter custom execution window (min)" className="form-control" value={scheduleStore.customWindow} onBlur={this.validateWindow.bind(this)} onChange={this.onChange('customWindow')}></input>
             </div>
             {!_validations.customWindow &&
               <label className="error">{_validationsErrors.customWindow}</label>
