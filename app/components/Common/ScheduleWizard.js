@@ -104,8 +104,13 @@ class ScheduleWizard extends Component {
   }
 
 
-
-  get BountySettingsValidation() {
+  get BlockComponentValidations() {
+    const { scheduleStore } = this.props;
+    let _blockNumber = scheduleStore.blockNumber && this._validations.InfoSettings.requireDeposit;
+    let _blockSize = scheduleStore.blockSize && this._validations.InfoSettings.blockSize;
+    return _blockNumber && _blockSize;
+  }
+  get bountySettingsValidation() {
     const { scheduleStore } = this.props;
     let _requireDeposit = scheduleStore.requireDeposit && this._validations.InfoSettings.requireDeposit;
     let _timeBounty = scheduleStore.timeBounty && this._validations.InfoSettings.timeBounty;
