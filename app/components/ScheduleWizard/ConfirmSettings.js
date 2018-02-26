@@ -38,9 +38,9 @@ class ConfirmSettings extends Component {
   blockOrTime(){
     const { scheduleStore } = this.props;
     if (scheduleStore.isUsingTime){
-      return scheduleStore.transactionTime;
+      return scheduleStore.transactionDate + ' ' + scheduleStore.transactionTime;
     }
-      return scheduleStore.blockNumber;
+    return scheduleStore.blockNumber ? scheduleStore.blockNumber : '-';
   }
 
   web3Error() {
@@ -49,67 +49,82 @@ class ConfirmSettings extends Component {
 
   render() {
     const { scheduleStore } = this.props;
+    const emptyFieldSign = '-';
     return (
       <div id="confirmSettings" className="tab-pane">
-        <div className="d-sm-block d-md-none">
-          <h2 className="m-b-20">Confirm</h2>
-          <hr/>
-        </div>
+        <h2>Summary</h2>
+
         <div className="row">
-          <div className="col-md-10">
+
+          <div className="col-sm-6 col-md-6">
             {this.web3Error()}
             <table className="table">
               <thead>
                 <tr>
-                  <th><strong>Summary</strong></th>
+                  <th></th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>To Address</td>
-                  <td><a href="#">{scheduleStore.toAddress}</a></td>
+                  <td><strong>To Address</strong></td>
+                  <td>{scheduleStore.toAddress ? <a href="#">{scheduleStore.toAddress}</a> : emptyFieldSign}</td>
+                </tr>
+                <tr>
+                  <td><strong>Amount to Send</strong></td>
+                  <td>{scheduleStore.amountToSend ? scheduleStore.amountToSend + ' ETH' : emptyFieldSign}</td>
                 </tr>
                 <tr>
                   <td>Data</td>
-                  <td>{scheduleStore.yourData}</td>
+                  <td>{scheduleStore.yourData ? scheduleStore.yourData : emptyFieldSign}</td>
                 </tr>
                 <tr>
-                  <td>Block or Time</td>
+                  <td>{scheduleStore.isUsingTime ? 'Time' : 'Block Number'}</td>
                   <td>{this.blockOrTime()}</td>
                 </tr>
                 <tr>
                   <td>Window Size</td>
-                  <td>{this.executionWindow()}</td>
-                </tr>
-                <tr>
-                  <td>Gas Amount</td>
-                  <td>{scheduleStore.gasAmount}</td>
-                </tr>
-                <tr>
-                  <td>Gas Price</td>
-                  <td>{scheduleStore.gasPrice}</td>
-                </tr>
-                <tr>
-                  <td>Fee</td>
-                  <td>{scheduleStore.fee}</td>
-                </tr>
-                <tr>
-                  <td>Time Bounty</td>
-                  <td>{scheduleStore.timeBounty}</td>
-                </tr>
-                <tr>
-                  <td>Deposit</td>
-                  <td>{scheduleStore.deposit}</td>
-                </tr>
-                <tr>
-                  <td><strong>Total cost</strong></td>
-                  <td><strong> { this.totalCost() } ETH </strong></td>
+                  <td>{this.executionWindow() ? this.executionWindow() : emptyFieldSign}</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <div className="col-sm-6 col-md-6">
+            <table className="table">
+              <thead>
+                <tr className="d-none d-md-table-row">
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Gas Amount</td>
+                  <td>{scheduleStore.gasAmount ? scheduleStore.gasAmount : emptyFieldSign}</td>
+                </tr>
+                <tr>
+                  <td>Gas Price</td>
+                  <td>{scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}</td>
+                </tr>
+                <tr>
+                  <td>Fee</td>
+                  <td>{scheduleStore.fee ? scheduleStore.fee : emptyFieldSign}</td>
+                </tr>
+                <tr>
+                  <td>Time Bounty</td>
+                  <td>{scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}</td>
+                </tr>
+                <tr>
+                  <td>Deposit</td>
+                  <td>{scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
+        <h3 className="text-right m-t-20">Total cost: <strong>{ this.totalCost() } ETH</strong></h3>
       </div>
         );
       }
