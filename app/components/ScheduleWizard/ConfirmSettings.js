@@ -27,12 +27,12 @@ class ConfirmSettings extends Component {
     return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty); // Only for display purposes
   }
 
-  executionWindow() {
-    const { scheduleStore } = this.props;
+  get executionWindow() {
+    const { scheduleStore, isCustomWindow } = this.props;
     if (scheduleStore.isUsingTime){
-      return scheduleStore.executionWindow;
+      return `${(isCustomWindow ? scheduleStore.customWindow : scheduleStore.executionWindow)} mins`;
     }
-      return scheduleStore.blockSize;
+      return `${scheduleStore.blockSize} blocks`;
   }
 
   blockOrTime(){
@@ -80,7 +80,7 @@ class ConfirmSettings extends Component {
                 </tr>
                 <tr>
                   <td>Window Size</td>
-                  <td>{this.executionWindow()}</td>
+                  <td>{this.executionWindow}</td>
                 </tr>
                 <tr>
                   <td>Gas Amount</td>
@@ -119,7 +119,8 @@ ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
-  isWeb3Usable: PropTypes.any
+  isWeb3Usable: PropTypes.any,
+  isCustomWindow: PropTypes.any
 };
 
 export default ConfirmSettings;
