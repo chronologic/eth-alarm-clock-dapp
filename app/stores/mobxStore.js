@@ -34,7 +34,7 @@ export default class mobxStore {
   }
 
   get transactionTzTime() {
-    return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).calendar();
+    return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).toString();
   }
 
   constructor(source) {
