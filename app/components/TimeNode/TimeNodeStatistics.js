@@ -160,9 +160,10 @@ class TimeNodeStatistics extends Component {
         }
       });
     } else {
+      ctx.clearRect(0, 0, this.chartRef.width, this.chartRef.height);
       ctx.font = '20px Helvetica';
-      ctx.textAlign='center';
-      ctx.fillText('No data yet.',150,65);
+      ctx.textAlign = 'center';
+      ctx.fillText('No data yet.', 150, 65);
     }
   }
 
