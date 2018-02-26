@@ -103,7 +103,17 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
-  get InfoSettingsValidations() {
+
+
+  get BountySettingsValidation() {
+    const { scheduleStore } = this.props;
+    let _requireDeposit = scheduleStore.requireDeposit && this._validations.InfoSettings.requireDeposit;
+    let _timeBounty = scheduleStore.timeBounty && this._validations.InfoSettings.timeBounty;
+    let _deposit = scheduleStore.deposit && this._validations.InfoSettings.deposit;
+    return _requireDeposit && _timeBounty && _deposit;
+  }
+
+  get infoSettingsValidations() {
     const { scheduleStore } = this.props;
     let _addr = scheduleStore.toAddress && this._validations.InfoSettings.toAddress;
     let _gasAmount = scheduleStore.toAddress && this._validations.InfoSettings.gasAmount;
