@@ -10,7 +10,7 @@ import ScheduleWizard from '../Common/ScheduleWizard';
 export class ScheduleRoute extends MetamaskComponent {
   render() {
     return (
-      <div className="container-fluid padding-25 sm-padding-10">
+      <div className="container padding-25 sm-padding-10">
         <h1 className="view-title">Schedule Transaction</h1>
         <Route render={routeProps => <ScheduleWizard {...Object.assign({ isWeb3Usable: this.isWeb3Usable }, routeProps)} />} />
       </div>
