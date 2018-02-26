@@ -11,21 +11,21 @@ let presetExecutionWindows = [
     { value: 7, selected: false },
   ];
 
-const RadioButton = (props) =>{
+const RadioButton = (args) =>{
   return (
     <label
-      className= {`btn btn-default w-100 ${props.checked?'active':''} `}
-      onClick = {props.onChange}
+      className= {`btn btn-default w-100 ${args.checked?'active':''} `}
+      onClick = {args.onChange}
     >
       <input
-        type = "radio" 
-        checked = {props.checked}
-        value = {props.value} 
-        onBlur = {props.onBlur} 
-      /> { props.value } min
+        type = "radio"
+        checked = {args.checked}
+        value = {args.value}
+        onBlur = {args.onBlur}
+      /> { args.value } min
     </label >
   );
-}
+};
 
 @inject('scheduleStore')
 @inject('dateTimeValidatorStore')
@@ -192,7 +192,7 @@ class TimeComponent extends AbstractSetting {
             </div>
             <div data-toggle="buttons" className={'btn-group d-flex' + (_validations.executionWindow ? '' : ' has-error')}>
               {this.state.execWindows.map((exeWind, index) =>
-                <RadioButton key={`radio${exeWind.value}`} {...{ value: exeWind.value, checked: scheduleStore.executionWindow == exeWind.value, onChange: this.onRadioChange('executionWindow', exeWind.value), onBlur: this.validate('executionWindow') }} />
+                <RadioButton key={`radio${index}`} {...{ value: exeWind.value, checked: scheduleStore.executionWindow == exeWind.value, onChange: this.onRadioChange('executionWindow', exeWind.value), onBlur: this.validate('executionWindow') }} />
               )}
             </div>
             {!_validations.executionWindow &&

@@ -46,7 +46,7 @@ class AbstractSetting extends Component {
             return 2;
           }
         } else if (!(Number(value) > 0)) {
-          return 2;          
+          return 2;
         }
         return 0;
       },
