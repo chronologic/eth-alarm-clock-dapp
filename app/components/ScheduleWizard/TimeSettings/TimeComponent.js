@@ -1,15 +1,31 @@
 import React from 'react';
-import AbstractSetting from '../AbstractSetting';
+import { inject, observer } from 'mobx-react';
 import moment from 'moment';
 import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { inject, observer } from 'mobx-react';
+import AbstractSetting from '../AbstractSetting';
 
-const presetExecutionWindows = [
-    { value: 1, selected: false },
+let presetExecutionWindows = [
     { value: 3, selected: false },
-    { value: 5, selected: false }
+    { value: 5, selected: false },
+    { value: 7, selected: false },
   ];
+
+const RadioButton = (args) =>{
+  return (
+    <label
+      className= {`btn btn-default w-100 ${args.checked?'active':''} `}
+      onClick = {args.onChange}
+    >
+      <input
+        type = "radio"
+        checked = {args.checked}
+        value = {args.value}
+        onBlur = {args.onBlur}
+      /> { args.value } min
+    </label >
+  );
+};
 
 @inject('scheduleStore')
 @inject('dateTimeValidatorStore')
@@ -102,14 +118,14 @@ class TimeComponent extends AbstractSetting {
     },
     transactionDate: '',
     transactionTime: '',
-    executionWindow: this.integerValidator(),
-    customWindow: this.integerValidator(),
+    executionWindow: this.integerValidator(3, 'window has minimum value of 3 mins'),
+    customWindow: this.integerValidator(3,'window has minimum value of 3 mins'),
   }
 
-  onRadioChange = (property) => (event) => {
+  onRadioChange = (property,value) => (event) => {
     const { scheduleStore } = this.props;
-    const { target } = event;
-    scheduleStore[property] = target.value;
+    scheduleStore[property] = value;
+    this.validate(property)(event);
   }
 
   render() {
@@ -175,18 +191,16 @@ class TimeComponent extends AbstractSetting {
             <div className="form-group required">
               <label>Execution Window</label>
             </div>
-            <div data-toggle="buttons" className={'btn-group d-flex'+(_validations.executionWindow?'':' has-error')}>
+            <div data-toggle="buttons" className={'btn-group d-flex' + (_validations.executionWindow ? '' : ' has-error')}>
               {this.state.execWindows.map((exeWind, index) =>
-                <label key={index} className={'btn btn-default w-100 ' + (exeWind.value==scheduleStore.executionWindow ? 'active' : '')}>
-                  <input type="radio" name="exeWindOptions" value={exeWind.value} checked={exeWind.value == scheduleStore.executionWindow} onBlur={this.validate('executionWindow')} onChange={this.onRadioChange('executionWindow')} />{exeWind.value} min
-                </label>
+                <RadioButton key={`radio${index}`} {...{ value: exeWind.value, checked: scheduleStore.executionWindow == exeWind.value, onChange: this.onRadioChange('executionWindow', exeWind.value), onBlur: this.validate('executionWindow') }} />
               )}
             </div>
             {!_validations.executionWindow &&
               <label className="error">{_validationsErrors.executionWindow}</label>
               }
 
-            <div id="customExecution" className={'form-group form-group-default'+(_validations.customWindow?'':' has-error')}>
+            <div id="customExecution" className={'form-group form-group-default' + (_validations.customWindow ? '' : ' has-error' )}>
               <label>Custom</label>
               <input type="text" placeholder="Enter custom execution window (min)" className="form-control" value={scheduleStore.customWindow} onBlur={this.validate('customWindow')} onChange={this.onChange('customWindow')}></input>
             </div>
