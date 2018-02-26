@@ -1,4 +1,5 @@
-import Keen from 'keen-js';
+import KeenAnalysis from 'keen-analysis';
+import KeenTracking from 'keen-tracking';
 import { observable } from 'mobx';
 
 const COLLECTIONS = {
@@ -15,7 +16,8 @@ export class KeenStore {
   projectId = '';
   writeKey = '';
   readKey = '';
-  client = null;
+  analysisClient = null;
+  trackingClient = null;
   networkId = null;
 
   _web3Service = null;
@@ -35,10 +37,14 @@ export class KeenStore {
 
     this.networkId = this._web3Service.netId;
 
-    this.client = new Keen({
+    this.analysisClient = new KeenAnalysis({
       projectId: this.projectId,
-      writeKey: this.writeKey,
       readKey: this.readKey
+    });
+
+    this.trackingClient = new KeenTracking({
+      projectId: this.projectId,
+      writeKey: this.writeKey
     });
 
     this.sendPageView();
@@ -47,7 +53,7 @@ export class KeenStore {
   }
 
   sendPageView() {
-    this.client.recordEvent(COLLECTIONS.PAGEVIEWS, {
+    this.trackingClient.recordEvent(COLLECTIONS.PAGEVIEWS, {
       title: document.title
     });
   }
@@ -60,11 +66,11 @@ export class KeenStore {
       status: 'active'
     };
 
-    this.client.addEvent(COLLECTIONS.TIMENODES, event);
+    this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
   getActiveTimeNodesCount(networkId) {
-    const count = new Keen.Query('count_unique', {
+    const count = new KeenAnalysis.Query('count_unique', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
       timeframe: 'previous_5_minutes',
@@ -82,7 +88,7 @@ export class KeenStore {
       ]
     });
 
-    this.client.run(count, (err, response) => {
+    this.analysisClient.run(count, (err, response) => {
       this.activeTimeNodes = response.result;
     });
   }
