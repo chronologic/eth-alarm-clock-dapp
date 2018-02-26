@@ -182,12 +182,11 @@ export default class TimeNodeStore {
     const web3 = this._web3Service.web3;
 
     const balance = await this._eacService.Util.getBalance(address);
-    const balanceEther = parseInt(web3.fromWei(balance, 'ether'));
+    const balanceEther = web3.fromWei(balance, 'ether');
 
     this.balanceETH = balanceEther;
     return balanceEther;
   }
-
 
   async getDAYBalance(address = this.getMyAttachedAddress()) {
     await this._web3Service.init();

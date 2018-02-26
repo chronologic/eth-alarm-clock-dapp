@@ -13,32 +13,46 @@ class AbstractSetting extends Component {
 
   validators = {}
 
-  integerValidator (){
+  integerValidator (min,minError){
     const { _validations } = this.props;
     return {
       validator: (value)=> {
         if (!new RegExp('^\\d+$').test(value)) return 1;
-        if (!Number(value) > 0) return 2;
+        if (min) {
+          minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+          if (Number(value) < Number(min)) {
+            return 2;
+          }
+        } else if (!(Number(value) > 0)) {
+          return 2;
+        }
         return 0;
       },
       errors: [
         _validations.Errors.numeric,
-        _validations.Errors.minimum_numeric
+        minError || _validations.Errors.minimum_numeric
       ]
     };
   }
 
-  decimalValidator (){
+  decimalValidator(min, minError){
     const { _validations } = this.props;
     return {
       validator: (value)=> {
         if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
-        if (!Number(value) > 0) return 2;
+        if (min) {
+          minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+          if (Number(value) < Number(min) ) {
+            return 2;
+          }
+        } else if (!(Number(value) > 0)) {
+          return 2;
+        }
         return 0;
       },
       errors: [
         _validations.Errors.numeric,
-        _validations.Errors.minimum_decimal
+        minError || _validations.Errors.minimum_decimal
       ]
     };
   }
