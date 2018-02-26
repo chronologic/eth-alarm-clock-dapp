@@ -78,12 +78,17 @@ class TimeComponent extends AbstractSetting {
         widget.find('.glyphicon-chevron-down').removeClass().addClass('pg-arrow_minimize');
     }).on('changeTime.timepicker', function(e) {
         scheduleStore.transactionTime = e.time.value;
-        that.validate('transactionDate');
+        that.validate('transactionTime')();
     });
     jQuery('#datepicker-component').datepicker({
       autoclose: true,
+      startDate: new Date(),
       defaultDate: scheduleStore.transactionDate,
       format: dateTimeValidatorStore.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
+    }).on('hide',function(e){
+        scheduleStore.transactionDate = e.target.value || 0;
+        that.validate('transactionDate')();
+        that.forceUpdate();
     });
     jQuery('#timezoneSelect').select2();
   }
@@ -101,9 +106,9 @@ class TimeComponent extends AbstractSetting {
   dateValidator (){
     const { scheduleStore, dateTimeValidatorStore } = this.props;
     return {
-      validator: (value) => dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)?0:1,
+      validator: (value) => value && dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)?0:1,
       errors: [
-        'Kindly indicate Valid Date'
+        'Kindly indicate a Valid Date'
       ]
     };
   }
@@ -156,7 +161,7 @@ class TimeComponent extends AbstractSetting {
             <div className={'form-group form-group-default input-group required'+(_validations.transactionDate?'':' has-error')}>
               <div className="form-input-group">
                 <label>Transaction Date</label>
-                <input type="text" className="form-control" value={scheduleStore.transactionDate} onBlur={this.validate('transactionDate')} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
+                <input type="text" className="form-control" value={scheduleStore.transactionDate} onChange={this.onChange('transactionDate')} placeholder="Pick a date" id="datepicker-component"/>
               </div>
               <div className="input-group-addon">
                 <i className="fa fa-calendar"></i>
