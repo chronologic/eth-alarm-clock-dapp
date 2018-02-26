@@ -84,7 +84,7 @@ class ConfirmSettings extends Component {
                 </tr>
                 <tr>
                   <td>Window Size</td>
-                  <td>{this.executionWindow() ? this.executionWindow() : emptyFieldSign}</td>
+                  <td>{this.executionWindow || emptyFieldSign}</td>
                 </tr>
               </tbody>
             </table>
