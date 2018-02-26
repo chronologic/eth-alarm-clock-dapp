@@ -1,5 +1,4 @@
 import { observable } from 'mobx';
-import { computed } from '../../node_modules/mobx/lib/mobx';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class mobxStore {
@@ -30,8 +29,12 @@ export default class mobxStore {
 
   @observable isUsingTime = true;
 
-  @computed get transactionTimestamp() {
+  get transactionTimestamp() {
     return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
+  }
+
+  get transactionTzTime() {
+    return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).toString();
   }
 
   constructor(source) {

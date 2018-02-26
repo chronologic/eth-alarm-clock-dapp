@@ -98,13 +98,19 @@ class ScheduleWizard extends Component {
     }
   }
 
+  get isCustomWindow () {
+    const { scheduleStore } = this.props;
+    return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
+  }
+
   async scheduleTransaction() {
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
 
     if (scheduleStore.isUsingTime) {
       executionTime = scheduleStore.transactionTimestamp;
-      executionWindow = scheduleStore.executionWindow * 60;
+      executionWindow = this.isCustomWindow ? scheduleStore.customWindow : scheduleStore.executionWindow;
+      executionWindow = executionWindow * 60;
     } else {
       executionTime = scheduleStore.blockNumber;
       executionWindow = scheduleStore.blockSize;
@@ -192,7 +198,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps}/>
           <InfoSettings {..._validationProps}/>
           <BountySettings {..._validationProps}/>
-          <ConfirmSettings { ...{ isWeb3Usable: this.props.isWeb3Usable }}/>
+          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
           <div className="d-sm-block d-md-none">
             <hr/>
