@@ -6,6 +6,7 @@
     "test": "",
     "build": "webpack --config webpack/prod.config.js",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check --hot",
+    "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "clean": "./tools/clean.sh",

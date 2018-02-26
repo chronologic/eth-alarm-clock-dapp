@@ -5,7 +5,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(baseConfig, {
 
@@ -50,7 +49,7 @@ module.exports = merge(baseConfig, {
       uglifyOptions: {
         mangle: true,
         compress: {
-          warnings: false, // Suppress uglification warnings
+          warnings: false,
           pure_getters: true,
           unsafe_comps: true,
           conditionals: true,
@@ -77,7 +76,6 @@ module.exports = merge(baseConfig, {
       test: /\.js$|\.css$|\.html$/,
       threshold: 10240,
       minRatio: 0
-    }),
-    new BundleAnalyzerPlugin()
+    })
   ]
 });
