@@ -43,19 +43,18 @@ class EacWorker {
 
     this.config.logger = logger;
     this.config.statsdb = statsDB;
-
-    this.alarmClient = await Scanner.start(
+    this.alarmClient = new Scanner(
       options.milliseconds,
       this.config
     );
   }
 
   startScanning() {
-    this.config.scanning = true;
+    this.alarmClient.start();
   }
 
   stopScanning() {
-    this.config.scanning = false;
+    this.alarmClient.stop();
   }
 
   /*
