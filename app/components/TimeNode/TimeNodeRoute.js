@@ -22,7 +22,7 @@ class TimeNodeRoute extends Component {
     }
 
     return (
-      <div className="container-fluid padding-25 sm-padding-10 subsection">
+      <div className="container padding-25 sm-padding-10 subsection">
         <h1 className="view-title">
           {this.props.timeNodeStore.nodeStatus}&nbsp;
           <span className="view-subtitle d-none d-md-inline">{this.props.timeNodeStore.getMyAddress()}</span>
