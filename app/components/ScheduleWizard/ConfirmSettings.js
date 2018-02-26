@@ -53,11 +53,11 @@ class ConfirmSettings extends Component {
     return (
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
+        {this.web3Error()}
 
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
-            {this.web3Error()}
             <table className="table">
               <thead>
                 <tr>
