@@ -4,6 +4,8 @@ const baseConfig = require('./base.config.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const CompressionPlugin = require('compression-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(baseConfig, {
 
@@ -27,6 +29,7 @@ module.exports = merge(baseConfig, {
               loader: 'sass-loader'
             }
           ],
+          allChunks: false,
           fallback: 'style-loader'
         })
       }
@@ -41,17 +44,40 @@ module.exports = merge(baseConfig, {
      'process.env':{
        'NODE_ENV': JSON.stringify('production')
      }
-   }),
+    }),
     // Uglifies and minifies the JS
     new UglifyJSPlugin({
       uglifyOptions: {
+        mangle: true,
         compress: {
-          warnings: false
+          warnings: false, // Suppress uglification warnings
+          pure_getters: true,
+          unsafe_comps: true,
+          conditionals: true,
+          unused: true,
+          comparisons: true,
+          sequences: true,
+          dead_code: true,
+          evaluate: true,
+          if_return: true,
+          join_vars: true
         },
+        exclude: [/\.min\.js$/gi], // skip pre-minified libs,
         output: {
           comments: false
         }
       }
-    })
+    }),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new CompressionPlugin({
+      asset: '[path].gz[query]',
+      algorithm: 'gzip',
+      test: /\.js$|\.css$|\.html$/,
+      threshold: 10240,
+      minRatio: 0
+    }),
+    new BundleAnalyzerPlugin()
   ]
 });
