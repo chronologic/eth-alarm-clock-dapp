@@ -68,13 +68,13 @@ class MetamaskComponent extends Component {
   }
 
   componentDidMount () {
-      this.resolveWeb3();
+    this.resolveWeb3();
   }
 }
 
 MetamaskComponent.propTypes = {
-    web3Service: PropTypes.object,
-    history: PropTypes.any,
+  web3Service: PropTypes.object,
+   history: PropTypes.any,
 };
 
 export default MetamaskComponent;
