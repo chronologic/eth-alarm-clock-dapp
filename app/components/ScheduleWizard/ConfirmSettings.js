@@ -22,7 +22,7 @@ class ConfirmSettings extends Component {
     fee = web3.toWei(fee, 'ether');
     deposit = web3.toWei(deposit,'ether');
 
-    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, deposit);
+    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
     return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
   }
