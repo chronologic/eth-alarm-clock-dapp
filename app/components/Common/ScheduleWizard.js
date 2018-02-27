@@ -231,7 +231,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps} />
           <InfoSettings {..._validationProps} />
           <BountySettings {..._validationProps} />
-          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }} />
+          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow, BlockComponentValidations: this.BlockComponentValidations, bountySettingsValidation: this.bountySettingsValidation, infoSettingsValidations: this.infoSettingsValidations, TimeSettingsValidations: this.TimeSettingsValidations }} />
 
           <div className="d-sm-block d-md-none">
             <hr />
@@ -249,7 +249,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable}>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable && !this.props.BlockComponentValidations && !this.props.TimeSettingsValidations && !this.props.infoSettingsValidations && !this.props.bountySettingsValidation}>
                     <span>Schedule</span>
                   </button>
                 </li>
@@ -281,7 +281,11 @@ ScheduleWizard.propTypes = {
   scheduleStore: PropTypes.any,
   transactionStore: PropTypes.any,
   history: PropTypes.any,
-  isWeb3Usable: PropTypes.any
+  isWeb3Usable: PropTypes.any,
+  BlockComponentValidations: PropTypes.any,
+  TimeSettingsValidations: PropTypes.any,
+  bountySettingsValidation: PropTypes.any,
+  infoSettingsValidations: PropTypes.any
 };
 
 export default ScheduleWizard;
