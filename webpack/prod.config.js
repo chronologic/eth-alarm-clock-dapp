@@ -5,7 +5,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(baseConfig, {
 
@@ -37,7 +36,6 @@ module.exports = merge(baseConfig, {
   },
 
   plugins: [
-    // new BundleAnalyzerPlugin(),
     new Dotenv({
       path: '.env.prod'
     }),
@@ -71,7 +69,6 @@ module.exports = merge(baseConfig, {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    //new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new CompressionPlugin({
       asset: '[path].gz[query]',
       algorithm: 'gzip',

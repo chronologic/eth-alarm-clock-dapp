@@ -82,7 +82,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      moment: path.resolve(__dirname, '../node_modules/moment/moment.js')
+      moment: path.resolve(__dirname, '../node_modules/moment')
     }
   },
 
