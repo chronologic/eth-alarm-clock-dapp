@@ -103,7 +103,7 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
-  get TimeSettingsValidations() {
+  get TimeComponentValidations() {
     const { scheduleStore } = this.props;
     let _timeZone = scheduleStore.timeZone && this._validations.TimeSettings.TimeComponent.timeZone;
     let _transactionDate = scheduleStore.transactionDate && this._validations.TimeSettings.TimeComponent.transactionDate;
@@ -231,7 +231,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps} />
           <InfoSettings {..._validationProps} />
           <BountySettings {..._validationProps} />
-          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow, BlockComponentValidations: this.BlockComponentValidations, bountySettingsValidation: this.bountySettingsValidation, infoSettingsValidations: this.infoSettingsValidations, TimeSettingsValidations: this.TimeSettingsValidations }} />
+          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow, bountySettingsValidation: this.bountySettingsValidation, infoSettingsValidations: this.infoSettingsValidations, TimeComponentValidations: this.TimeSComponentsValidations }} />
 
           <div className="d-sm-block d-md-none">
             <hr />
@@ -249,7 +249,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable && !this.props.BlockComponentValidations && !this.props.TimeSettingsValidations && !this.props.infoSettingsValidations && !this.props.bountySettingsValidation}>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable ||  !this.props.TimeComponentValidations || !this.props.infoSettingsValidations || !this.props.bountySettingsValidation}>
                     <span>Schedule</span>
                   </button>
                 </li>
@@ -282,8 +282,7 @@ ScheduleWizard.propTypes = {
   transactionStore: PropTypes.any,
   history: PropTypes.any,
   isWeb3Usable: PropTypes.any,
-  BlockComponentValidations: PropTypes.any,
-  TimeSettingsValidations: PropTypes.any,
+  TimeComponentValidations: PropTypes.any,
   bountySettingsValidation: PropTypes.any,
   infoSettingsValidations: PropTypes.any
 };
