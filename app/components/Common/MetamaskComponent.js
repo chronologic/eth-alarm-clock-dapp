@@ -8,20 +8,19 @@ import Cookies from 'js-cookie';
 @observer
 class MetamaskComponent extends Component {
 
-  showAlert (args) {
+  showAlert(args) {
     return (
       <Alert {...args} />
     );
   }
 
-  get isWeb3Viewable () {
-    const { web3Service } = this.props;
-    return ( web3Service.web3.isConnected() );
+  get isWeb3Viewable() {
+    return this.props.web3Service.web3.isConnected();
   }
 
   get isWeb3Usable() {
     const { web3Service } = this.props;
-    return (web3Service.web3.isConnected() && typeof web3Service.accounts != 'undefined' && web3Service.accounts != null && web3Service.accounts.length > 0);
+    return (web3Service.web3.isConnected() && typeof web3Service.accounts !== 'undefined' && web3Service.accounts !== null && web3Service.accounts.length > 0);
   }
 
   async resolveWeb3() {
@@ -67,7 +66,7 @@ class MetamaskComponent extends Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.resolveWeb3();
   }
 }
