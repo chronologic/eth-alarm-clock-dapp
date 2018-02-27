@@ -27,6 +27,8 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
   ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.'
 };
 
+const SCHEDULING_GAS_LIMIT = 1500000;
+
 export class TransactionStore {
   _eac = null;
   _web3 = null;
@@ -278,7 +280,7 @@ export class TransactionStore {
 
     await this._eacScheduler.initSender({
       from: this._web3.eth.defaultAccount,
-      gas: 3000000,
+      gas: SCHEDULING_GAS_LIMIT,
       value: endowment
     });
 
