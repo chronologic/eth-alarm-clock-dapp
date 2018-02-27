@@ -47,6 +47,18 @@ class ConfirmSettings extends Component {
     return !this.props.isWeb3Usable ? <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} /> : null;
   }
 
+  bountyFieldsError() {
+    return !this.props.bountySettingsValidations ? <Alert {...{ msg: 'Error in required fields on bounty tab' }} /> : null;
+  }
+
+  infoFieldsError() {
+    return !this.props.infoSettingsValidations ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
+  }
+
+  timeFieldsError() {
+    return !this.props.infoSettingsValidations ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
+  }
+
   render() {
     const { scheduleStore } = this.props;
     const emptyFieldSign = '-';
@@ -58,6 +70,9 @@ class ConfirmSettings extends Component {
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
+            {this.bountyFieldsError()}
+            {this.infoFieldsError()}
+            {this.timeFieldsError()}
             <table className="table">
               <thead>
                 <tr>
@@ -135,6 +150,10 @@ ConfirmSettings.propTypes = {
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   isWeb3Usable: PropTypes.any,
+  isCustomWindow: PropTypes.any,
+  TimeComponentValidations: PropTypes.any,
+  bountySettingsValidations: PropTypes.any,
+  infoSettingsValidations: PropTypes.any,
   isCustomWindow: PropTypes.any
 };
 
