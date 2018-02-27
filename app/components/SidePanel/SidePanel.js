@@ -33,7 +33,7 @@ class SidePanel extends Component {
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
-    const currentUrl = window.location.pathname;
+    const currentUrl = this.props.location.pathname;
     const cls = type === 'thumbnail' ? 'active' : 'text-white';
 
     if (substring) {
@@ -167,7 +167,8 @@ class SidePanel extends Component {
 
 SidePanel.propTypes = {
   web3Service: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  location: PropTypes.object.isRequired
 };
 
 export default SidePanel;
