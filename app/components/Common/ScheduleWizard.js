@@ -105,34 +105,34 @@ class ScheduleWizard extends Component {
 
   get TimeComponentValidations() {
     const { scheduleStore } = this.props;
-    let _timeZone = scheduleStore.timeZone && this._validations.TimeSettings.TimeComponent.timeZone;
-    let _transactionDate = scheduleStore.transactionDate && this._validations.TimeSettings.TimeComponent.transactionDate;
-    let _transactionTime = scheduleStore.transactionTime && this._validations.TimeSettings.TimeComponent.transactionTime;
-    let _executionWindow = scheduleStore.executionWindow && this._validations.TimeSettings.TimeComponent.executionWindow;
-    let _customWindow = scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
+    const _timeZone = scheduleStore.timeZone && this._validations.TimeSettings.TimeComponent.timeZone;
+    const _transactionDate = scheduleStore.transactionDate && this._validations.TimeSettings.TimeComponent.transactionDate;
+    const _transactionTime = scheduleStore.transactionTime && this._validations.TimeSettings.TimeComponent.transactionTime;
+    const _executionWindow = scheduleStore.executionWindow && this._validations.TimeSettings.TimeComponent.executionWindow;
+    const _customWindow = scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
     return _timeZone && _transactionDate && _transactionTime && _executionWindow && _customWindow;
   }
   get BlockComponentValidations() {
     const { scheduleStore } = this.props;
-    let _blockNumber = scheduleStore.blockNumber && this._validations.InfoSettings.requireDeposit;
-    let _blockSize = scheduleStore.blockSize && this._validations.InfoSettings.blockSize;
+    const _blockNumber = scheduleStore.blockNumber && this._validations.InfoSettings.requireDeposit;
+    const _blockSize = scheduleStore.blockSize && this._validations.InfoSettings.blockSize;
     return _blockNumber && _blockSize;
   }
   get bountySettingsValidation() {
     const { scheduleStore } = this.props;
-    let _requireDeposit = scheduleStore.requireDeposit && this._validations.InfoSettings.requireDeposit;
-    let _timeBounty = scheduleStore.timeBounty && this._validations.InfoSettings.timeBounty;
-    let _deposit = scheduleStore.deposit && this._validations.InfoSettings.deposit;
+    const _requireDeposit = scheduleStore.requireDeposit && this._validations.InfoSettings.requireDeposit;
+    const _timeBounty = scheduleStore.timeBounty && this._validations.InfoSettings.timeBounty;
+    const _deposit = scheduleStore.deposit && this._validations.InfoSettings.deposit;
     return _requireDeposit && _timeBounty && _deposit;
   }
 
   get infoSettingsValidations() {
     const { scheduleStore } = this.props;
-    let _addr = scheduleStore.toAddress && this._validations.InfoSettings.toAddress;
-    let _gasAmount = scheduleStore.toAddress && this._validations.InfoSettings.gasAmount;
-    let _amountToSend = scheduleStore.amountToSend && this._validations.InfoSettings.amountToSend;
-    let _gasPrice = scheduleStore.gasPrice && this._validations.InfoSettings.gasPrice;
-    let _yourData = scheduleStore.yourData && this._validations.InfoSettings.yourData;
+    const _addr = scheduleStore.toAddress && this._validations.InfoSettings.toAddress;
+    const _gasAmount = scheduleStore.toAddress && this._validations.InfoSettings.gasAmount;
+    const _amountToSend = scheduleStore.amountToSend && this._validations.InfoSettings.amountToSend;
+    const _gasPrice = scheduleStore.gasPrice && this._validations.InfoSettings.gasPrice;
+    const _yourData = scheduleStore.yourData && this._validations.InfoSettings.yourData;
     return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
   }
 
