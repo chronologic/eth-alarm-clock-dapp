@@ -103,7 +103,15 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
-
+  get TimeSettingsValidations() {
+    const { scheduleStore } = this.props;
+    let _timeZone = scheduleStore.timeZone && this._validations.TimeSettings.TimeComponent.timeZone;
+    let _transactionDate = scheduleStore.transactionDate && this._validations.TimeSettings.TimeComponent.transactionDate;
+    let _transactionTime = scheduleStore.transactionTime && this._validations.TimeSettings.TimeComponent.transactionTime;
+    let _executionWindow = scheduleStore.executionWindow && this._validations.TimeSettings.TimeComponent.executionWindow;
+    let _customWindow = scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
+    return _timeZone && _transactionDate && _transactionTime && _executionWindow && _customWindow;
+  }
   get BlockComponentValidations() {
     const { scheduleStore } = this.props;
     let _blockNumber = scheduleStore.blockNumber && this._validations.InfoSettings.requireDeposit;
