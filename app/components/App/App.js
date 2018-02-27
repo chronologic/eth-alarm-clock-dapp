@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
 import TransactionsRoute from '../TransactionsRoute/TransactionsRoute';
 import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
+@withRouter
 class App extends Component {
 
   constructor(props) {
@@ -52,7 +54,7 @@ class App extends Component {
 
     return (
       <div className="app-container">
-        <SidePanel />
+        <SidePanel {...this.props} />
         <div className="page-container">
           <Header updateSearchState={this.updateSearchState}/>
           <div className="page-content-wrapper">
@@ -72,5 +74,9 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  location: PropTypes.object.isRequired
+};
 
 export default App;
