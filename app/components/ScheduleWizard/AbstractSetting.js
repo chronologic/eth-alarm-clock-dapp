@@ -15,11 +15,14 @@ class AbstractSetting extends Component {
 
   integerValidator (min,minError){
     const { _validations } = this.props;
+    if (min) {
+      minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+    }
+
     return {
       validator: (value)=> {
         if (!new RegExp('^\\d+$').test(value)) return 1;
         if (min) {
-          minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
           if (Number(value) < Number(min)) {
             return 2;
           }

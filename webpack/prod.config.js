@@ -69,7 +69,6 @@ module.exports = merge(baseConfig, {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new CompressionPlugin({
       asset: '[path].gz[query]',
       algorithm: 'gzip',
