@@ -271,7 +271,7 @@ export class TransactionStore {
     );
 
     if (!paramsValid && errors.length > 0) {
-      showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[errors[0]]);
+      errors.forEach(error => error && showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[error], 'danger', 4000));
 
       return;
     }

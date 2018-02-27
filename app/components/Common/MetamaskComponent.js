@@ -43,7 +43,7 @@ class MetamaskComponent extends Component {
         showNotification(`<b>Metamask connected</b>`, 'success');
         showNotification(`You are connected to ${ web3Service.network }`, 'info');
       } else {
-        showNotification(`<b>Metamask is not installed</b>`, undefined, undefined, false);
+        showNotification(`<b>Metamask is not installed</b>`, undefined, undefined, undefined, false);
         showNotification(`<b>Metamask</b> is required to use this Dapp <a href='https://metamask.io' target='_blank' >https://metamask.io</a>`,'warning');
       }
       Cookies.set('metamaskInstalled', metamaskInstalled, { expires: 30 });
