@@ -24,7 +24,7 @@ class ConfirmSettings extends Component {
 
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, deposit);
 
-    return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty); // Only for display purposes
+    return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
   }
 
   get executionWindow() {
