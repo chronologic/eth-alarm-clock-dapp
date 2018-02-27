@@ -86,7 +86,7 @@ class TimeComponent extends AbstractSetting {
       defaultDate: scheduleStore.transactionDate,
       format: dateTimeValidatorStore.dateFormat.toLowerCase() //super hacky thing but moment.js doesn't recognize D vs d where JS does
     }).on('hide',function(e){
-        scheduleStore.transactionDate = e.target.value || 0;
+        scheduleStore.transactionDate = e.target.value || defaultDate;
         that.validate('transactionDate')();
         that.forceUpdate();
     });
