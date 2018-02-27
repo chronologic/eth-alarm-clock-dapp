@@ -11,13 +11,12 @@ install: npm install
 script:
   - npm run lint
   - npm run build
-before_deploy:
-  - cd out
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     bucket: $AWS_S3_BUCKET
+    local_dir: out
     skip_cleanup: true
     acl: public_read
     on:
@@ -26,6 +25,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     bucket: $AWS_S3_PROD_BUCKET
+    local_dir: out
     skip_cleanup: true
     acl: public_read
     on:
