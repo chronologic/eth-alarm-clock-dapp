@@ -15,16 +15,16 @@ class ConfirmSettings extends Component {
 
   totalCost() {
     const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
-    let { gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit } = scheduleStore;
+    let { gasAmount, amountToSend, gasPrice, fee, timeBounty } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
     fee = web3.toWei(fee, 'ether');
-    deposit = web3.toWei(deposit,'ether');
+    timeBounty = web3.toWei(timeBounty,'ether');
 
-    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, deposit);
+    const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
-    return Number(web3.fromWei(endowment, 'ether'))+Number(timeBounty); // Only for display purposes
+    return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
   }
 
   get executionWindow() {
@@ -53,11 +53,11 @@ class ConfirmSettings extends Component {
     return (
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
+        {this.web3Error()}
 
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
-            {this.web3Error()}
             <table className="table">
               <thead>
                 <tr>

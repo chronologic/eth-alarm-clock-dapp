@@ -21,6 +21,7 @@ class Header extends Component {
 
   getCurrentBlock() {
     const { web3Service: { web3 } } = this.props;
+
     web3.eth.getBlockNumber((err,res) =>{
       err == null && this.setState({ blocknumber: res });
     });
