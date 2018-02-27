@@ -114,7 +114,7 @@ class AwaitingMining extends Component {
     const { transactionHash,newContract } = this.state;
 
     return (
-      <div id="awaitingMining" className="container-fluid padding-25 sm-padding-10 horizontal-center">
+      <div id="awaitingMining" className="container padding-25 sm-padding-10 horizontal-center">
         {this.state.deploying &&
           <h1 className="view-title">Deploying</h1>
         }
