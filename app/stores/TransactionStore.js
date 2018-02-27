@@ -200,7 +200,7 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
-  async validateRequestParams(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, waitForMined, isTimestamp, endowment) {
+  async validateRequestParams(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, isTimestamp, endowment) {
     const requestFactory = await this._eac.requestFactory();
     const temporalUnit = isTimestamp ? 2 : 1;
     const freezePeriod = isTimestamp ? 3 * 60 : 10; // 3 minutes or 10 blocks
@@ -208,7 +208,6 @@ export class TransactionStore {
     const claimWindowSize = isTimestamp ? 60 * 60 : 255; // 60 minutes or 255 blocks
     const feeRecipient = '0x0'; // stub
     const fromAddress = this._web3.eth.defaultAccount;
-
 
     const serializedParams = [
       [
@@ -256,9 +255,20 @@ export class TransactionStore {
   async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, waitForMined, isTimestamp) {
     const endowment = this._eac.calcEndowment(callGas, callValue, gasPrice, fee, payment);
 
-    const paramsToValidate = Array(...arguments).concat([endowment]);
-
-    const { paramsValid, errors } = await this.validateRequestParams(...paramsToValidate);
+    const { paramsValid, errors } = await this.validateRequestParams(
+      toAddress,
+      callData,
+      callGas,
+      callValue,
+      windowSize,
+      windowStart,
+      gasPrice,
+      fee,
+      payment,
+      requiredDeposit,
+      isTimestamp,
+      endowment
+    );
 
     if (!paramsValid && errors.length > 0) {
       showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[errors[0]]);
