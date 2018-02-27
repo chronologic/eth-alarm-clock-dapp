@@ -2,7 +2,6 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import AbstractSetting from './AbstractSetting';
-import Web3Service from '../../services/web3';
 
 @inject('scheduleStore')
 @inject('web3Service')
@@ -49,7 +48,7 @@ class InfoSettings extends AbstractSetting {
         );
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
-      this.setState({ minGas:estimate});
+      this.setState({ minGas:estimate });
       return estimate;
     }
 
