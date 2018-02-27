@@ -74,7 +74,7 @@ class MetamaskComponent extends Component {
 
 MetamaskComponent.propTypes = {
   web3Service: PropTypes.object,
-   history: PropTypes.any,
+  history: PropTypes.any,
 };
 
 export default MetamaskComponent;
