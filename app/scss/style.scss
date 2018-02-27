@@ -1,0 +1,221 @@
+$primary-color: #21FFFF;
+
+
+/* PAGES TEMPLATE OVERRIDES */
+
+#root, .app-container {
+  height: 100%;
+}
+
+.brand {
+	margin-left: 20px;
+}
+
+.page-content-wrapper {
+	background: url(../assets/img/background.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.header {
+	background: transparent;
+  border-bottom: none;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pages-sidebar {
+	background-color: #1D252A;
+}
+
+.pages-sidebar .sidebar-header {
+	background-color: #181E21;
+}
+
+.page-sidebar .icon-thumbnail.active {
+	background: $primary-color;
+	color: inherit;
+}
+
+.datepicker thead tr .prev:before {
+  content: "<";
+}
+.datepicker thead tr .next:before {
+  content: ">";
+}
+
+.header .search-link {
+  padding-left: 20px;
+  color: #fff;
+  font-size: 15px;
+  margin-left: 30px;
+}
+
+.header .search-link:hover, .header .search-link:visited {
+  color: #fff;
+}
+
+[data-toggle=buttons] > .btn input[type=radio],
+[data-toggle=buttons] > .btn-group > .btn input[type=radio] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.input-group {
+  flex-wrap: nowrap;
+}
+
+.input-group-addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#overlay-search {
+  font-size: 40px;
+}
+
+.overlay-close {
+  cursor: pointer
+}
+
+.search-link {
+  -webkit-transition: ease-in 0.3s; /* Safari */
+  transition: ease-in 0.3s;
+  cursor: pointer;
+}
+
+.nav-tabs-simple > li > a:after {
+  background-color: $primary-color;
+}
+
+.page-sidebar .sidebar-menu .menu-items li > a {
+  width: 100%;
+}
+
+.page-sidebar .sidebar-menu .menu-items li > a.sub-title {
+  width: inherit;
+}
+
+.page-sidebar .sidebar-menu .menu-items li > a:hover > .icon-thumbnail {
+  color: #fff;
+}
+
+$titleColor: #fff;
+
+/* NEW CUSTOM CSS */
+hr {
+  border-color: #f6f6f6;
+}
+
+.left-separator {
+  border-left: 1px solid grey;
+}
+
+.view-title {
+	color: $titleColor;
+	font-size: 32px;
+	font-weight: normal;
+}
+
+.view-subtitle {
+	color: transparentize($color: $titleColor, $amount: 0.35);
+}
+
+.text-grey {
+  color: #ccc;
+}
+
+.horizontal-center {
+	text-align: center;
+}
+
+.absolute-center {
+    height: 200px;
+    position: relative;
+    text-align: center;
+}
+
+.absolute-center span {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.loader{
+	width: 50px;
+	height: 50px;
+	background-size: 100% auto;
+	margin: 0 auto;
+	margin-top:7%;
+	margin-bottom: 24px;
+}
+
+.subsection {
+  height: 100%;
+}
+
+
+@media (min-width:589px) {
+  .subsection .tab-content {
+    height: 560px;
+  }
+  .subsection .tab-pane.active {
+  	overflow-x: hidden;
+  	overflow-y: auto;
+  	height:90%;
+  }
+}
+
+#scheduleWizard .footer-buttons,.subsection .footer-buttons{
+	margin-top: 15px;
+	display:block;
+	height:6.5%;
+}
+
+#confirmSettings table td {
+  padding: 10px 20px;
+}
+
+.table tbody tr td {
+  padding: 0.75rem;
+}
+
+#scheduleWizard .nav li a {
+  text-align: center;
+  font-size: 15px;
+  color: transparentize($color: #fff, $amount: 0.5);
+}
+
+#scheduleWizard .nav li a.active {
+  color: #fff;
+}
+
+#scheduleWizard .tab-content {
+  padding: 40px;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
+  border-top-color: transparent;
+}
+
+.active-timenodes {
+  color: $primary-color;
+}
+
+.timenode-count {
+  color: #fff;
+}
+
+#timenodeLogsField {
+  height: 330px;
+  overflow-y: auto;
+}
+
+#sidebar-separator {
+  border-color: #1D1F27;
+}
