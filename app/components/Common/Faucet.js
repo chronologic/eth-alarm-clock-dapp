@@ -201,8 +201,7 @@ class Faucet extends Component {
 }
 
 Faucet.propTypes = {
-  web3Service: PropTypes.any,
-  history: PropTypes.object.isRequired
+  web3Service: PropTypes.any
 };
 
 export default Faucet;
