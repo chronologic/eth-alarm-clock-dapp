@@ -192,7 +192,8 @@ export default class TimeNodeStore {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const contract = web3.eth.contract(dayTokenABI).at(process.env.DAY_FAUCET_ADDRESS);
+    const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
+    const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });
