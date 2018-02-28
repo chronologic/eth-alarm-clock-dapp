@@ -137,7 +137,7 @@ class SidePanel extends Component {
             <li>
               <NavLink to="/faucet">
                 <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                <span className={entryList[3].thumbnailClasses}><i className="fa fa-bank"></i></span>
+                <span className={entryList[3].thumbnailClasses}><i className="fas fa-tint"></i></span>
               </NavLink>
             </li>
             <li>
