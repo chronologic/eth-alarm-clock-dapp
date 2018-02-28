@@ -117,7 +117,7 @@ class TransactionDetails extends ScrollbarComponent {
           <div className="footer-buttons col-md-10">
             <ul className="pager wizard no-style">
               <li className="next">
-                <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
+                <button className="btn btn-danger btn-cons" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
                   <span>Cancel</span>
                 </button>
               </li>
@@ -188,8 +188,8 @@ class TransactionDetails extends ScrollbarComponent {
               </tbody>
             </table>
           </div>
-          {this.getCancelSection()}
         </div>
+        {this.getCancelSection()}
       </div>
     );
   }
