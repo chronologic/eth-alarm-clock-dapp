@@ -47,7 +47,9 @@ module.exports = merge(baseConfig, {
     // Uglifies and minifies the JS
     new UglifyJSPlugin({
       uglifyOptions: {
-        mangle: true,
+        mangle: {
+          keep_fnames: true
+        },
         compress: {
           warnings: false,
           pure_getters: true,
