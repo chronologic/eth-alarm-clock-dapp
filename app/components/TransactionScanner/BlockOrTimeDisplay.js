@@ -23,8 +23,8 @@ export class BlockOrTimeDisplay extends Component {
     if (duration) {
       return moment.duration(seconds, 'seconds').format('d [days], h [hours], m [minutes]');
     }
-
-    return moment.unix(seconds).tz('Europe/Berlin').format('YYYY-MM-DD HH:MM z');
+    window.moment = moment;
+    return moment.unix(seconds).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm z');
   }
 
   async getLastBlockTimestamp() {
