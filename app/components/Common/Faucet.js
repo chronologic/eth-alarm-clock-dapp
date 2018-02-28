@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import dayFaucetABI from '../../abi/dayFaucetABI';
 import { showNotification } from '../../services/notification';
+import { BeatLoader } from 'react-spinners';
 
 const Eth = 1e+18;
 
@@ -131,57 +132,67 @@ class Faucet extends Component {
     const { web3Service } = this.props;
 
     return (
-      <div className='container padding-25 sm-padding-10 subsection'>
-        <h1 className='view-title'>DAY Faucet </h1>
+      <div className='container subsection'>
+        <h1 className='view-title'>DAY Token Faucet</h1>
         <div className='card card-body'>
-          <div id='faucet' className='tabs-content horizontal-center'>
-            <div className='tab-pane active show padding-25'>
-              <div className='padding-25'>
-                <div className='row'>
-                  <div className='col-md-6 text-right'>
-                    <strong> Network |</strong>
+          <div id='faucet' className='tab-content'>
+            <div className='tab-pane active show'>
+
+              <p>Get test DAY tokens on a testnet of your choice.</p>
+
+              <div className='row'>
+                <div className='col-md-8 offset-md-2'>
+                  <div className='row my-3'>
+                    <div className='col-md-6 text-sm-right'>
+                      <strong>Testnet Network</strong>
+                    </div>
+                    <div className='col-md-6 text-left'>
+                      {web3Service.network ? web3Service.network : <BeatLoader/>}
+                    </div>
                   </div>
-                  <div className='col-md-6 text-left'>
-                    {web3Service.network}
+
+                  <div className='row my-3'>
+                    <div className='col-md-6 text-sm-right'>
+                      <strong>Faucet Address</strong>
+                    </div>
+                    <div className='col-md-6 text-left'>
+                      {this.state.faucetAddress ? this.state.faucetAddress : <BeatLoader/>}
+                    </div>
                   </div>
-                </div>
-                <div className='row'>
-                  <div className='col-md-6 text-right'>
-                    <strong> Faucet Address |</strong>
+
+                  <div className='row my-3'>
+                    <div className='col-md-6 text-sm-right'>
+                      <strong>Faucet Balance</strong>
+                    </div>
+                    <div className='col-md-6 text-left'>
+                      {this.state.faucetBalance > 0 ? this.state.faucetBalance / Eth : <BeatLoader/>}
+                    </div>
                   </div>
-                  <div className='col-md-6 text-left'>
-                    {this.state.faucetAddress}
+
+                  <div className='row my-3'>
+                    <div className='col-md-6 text-sm-right'>
+                      <strong>Your Wallet Address</strong>
+                    </div>
+                    <div className='col-md-6 text-left'>
+                      {this.state.defaultAccount ? this.state.defaultAccount : <BeatLoader/>}
+                    </div>
                   </div>
-                </div>
-                <div className='row'>
-                  <div className='col-md-6 text-right'>
-                    <strong> Faucet Balance |</strong>
-                  </div>
-                  <div className='col-md-6 text-left'>
-                    {this.state.faucetBalance / Eth}
-                  </div>
-                </div>
-                <div className='row'>
-                  <div className='col-md-6 text-right'>
-                    <strong> Wallet Address |</strong>
-                  </div>
-                  <div className='col-md-6 text-left'>
-                    {this.state.defaultAccount}
-                  </div>
-                </div>
-                <div className='row'>
-                  <div className='col-md-6 text-right'>
-                    <strong> Remaining Wait Time |</strong>
-                  </div>
-                  <div className='col-md-6 text-left'>
-                    {this.printWaitTime}
+
+                  <div className='row my-3'>
+                    <div className='col-md-6 text-sm-right'>
+                      <strong>Remaining Wait Time</strong>
+                    </div>
+                    <div className='col-md-6 text-left'>
+                      {this.state.lastUsed ? this.printWaitTime : <BeatLoader/>}
+                    </div>
                   </div>
                 </div>
               </div>
-              <button className='btn btn-primary btn-lg' disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens } onClick={this.useFaucet} >
-                Get Testnet Day
-              </button>
+
             </div>
+            <button className='btn btn-primary pull-right btn-lg' disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens } onClick={this.useFaucet} >
+              Get Testnet DAY
+            </button>
           </div>
         </div>
       </div>
