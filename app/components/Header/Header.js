@@ -13,10 +13,16 @@ class Header extends Component {
     this.state = {
       blocknumber: ''
     };
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   componentWillMount() {
     this.getCurrentBlock();
+  }
+
+  componentDidMount() {
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(this.getCurrentBlock, 10000);
   }
 
   getCurrentBlock() {
@@ -25,6 +31,10 @@ class Header extends Component {
     web3.eth.getBlockNumber((err,res) =>{
       err == null && this.setState({ blocknumber: res });
     });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
