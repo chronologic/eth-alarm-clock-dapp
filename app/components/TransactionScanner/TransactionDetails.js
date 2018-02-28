@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
-import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
+import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 
 const INITIAL_STATE = {
@@ -158,7 +158,7 @@ class TransactionDetails extends ScrollbarComponent {
                   <td>{callData}</td>
                 </tr>
                 <tr>
-                  <td>Block or Time</td>
+                  <td>{ isTimestamp ? 'Time' : 'Block' }</td>
                   <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
                 </tr>
                 <tr>
