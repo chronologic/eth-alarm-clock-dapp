@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import TimeSettings from '../ScheduleWizard/TimeSettings';
-import InfoSettings from '../ScheduleWizard/InfoSettings';
-import BountySettings from '../ScheduleWizard/BountySettings';
-import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import PoweredByEAC from './PoweredByEAC';
+import TimeSettings from './TimeSettings';
+import InfoSettings from './InfoSettings';
+import BountySettings from './BountySettings';
+import ConfirmSettings from './ConfirmSettings';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 @inject('web3Service')
 @inject('scheduleStore')
@@ -201,9 +201,6 @@ class ScheduleWizard extends Component {
           <BountySettings {..._validationProps}/>
           <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
-          <div className="d-sm-block d-md-none">
-            <hr/>
-          </div>
           <div className="row">
             <div className="d-none d-md-block col-md-2">
               <PoweredByEAC className="footer-buttons"/>
