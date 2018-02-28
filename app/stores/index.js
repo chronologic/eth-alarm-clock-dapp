@@ -3,7 +3,7 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { TransactionStore } from './TransactionStore';
 import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
-import ScheduleStore from './mobxStore';
+import ScheduleStore from './ScheduleStore';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 import TransactionsCache from './TransactionsCache';
 import { KeenStore } from './KeenStore';
