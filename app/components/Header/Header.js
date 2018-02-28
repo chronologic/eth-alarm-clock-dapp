@@ -33,6 +33,10 @@ class Header extends Component {
     });
   }
 
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   render() {
     return (
       <div className="header">
