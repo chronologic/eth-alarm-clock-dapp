@@ -24,6 +24,7 @@ const RadioButton = (args) =>{
         checked = {args.checked}
         value = {args.value}
         onBlur = {args.onBlur}
+        onChange = {()=>{}}
       /> { args.value } min
     </label >
   );
