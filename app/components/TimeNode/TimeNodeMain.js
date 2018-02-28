@@ -22,7 +22,7 @@ class TimeNodeMain extends Component {
           <div className="tab-pane " id="tabLogs">
             <TimeNodeLogs/>
           </div>
-          <PoweredByEAC />
+          <PoweredByEAC/>
         </div>
       </div>
     );

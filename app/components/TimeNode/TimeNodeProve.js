@@ -88,7 +88,7 @@ class TimeNodeProve extends Component {
 
         <div className="row">
           <div className="col-md-6 d-none d-md-block">
-            <PoweredByEAC className="col-md-2 mt-2" />
+            <PoweredByEAC className="col-md-2" />
           </div>
           <div className="col-md-6">
             <button id="verifyDayTokensBtn"
