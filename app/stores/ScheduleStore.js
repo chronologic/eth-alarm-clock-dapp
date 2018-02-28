@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 
-export default class mobxStore {
+export default class ScheduleStore {
   //TimeComponent
   @observable timeZone = '';
   @observable transactionDate = '';
