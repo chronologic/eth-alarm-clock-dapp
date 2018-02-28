@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { showNotification } from '../../services/notification';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 @inject('timeNodeStore')
 @observer
@@ -88,30 +89,36 @@ class TimeNodeWallet extends Component {
         className="tab-content"
         ref={(el) => this.walletTabRef = el}>
 
-        <div className="tab-pane active show padding-25">
-          <h2>Select Your Wallet File</h2>
+        <div className="tab-pane active show">
+          <h2 className="mb-4">Select Your Wallet File</h2>
           <p>In order to enable TimeNode functionality please unlock your wallet that contains small amount of ETH necessary for scheduled transactions execution.</p>
           <p>We support the standard Ethereum keystore wallet file (v3).</p>
           <p>If you don&#39;t have the wallet yet, please visit <a href="https://www.mycrypto.com" target="_blank" rel="noopener noreferrer">https://www.mycrypto.com</a> and create a new one.</p>
 
-          <div className="row my-3">
-            <div className="col-md-6">
-              <label htmlFor="walletFile" className="btn btn-block">Select wallet file</label>
-              <input id="walletFile" type="file" className="hide" ref={(el) => this.walletFileRef = el} />
+          <div className="my-4">
+            <div className="row">
+              <div className="col-md-6">
+                <label htmlFor="walletFile" className="btn btn-block">Select wallet file</label>
+                <input id="walletFile" type="file" className="hide" ref={(el) => this.walletFileRef = el} />
+              </div>
             </div>
-            <div className="col-md-6">
-              <p>{this.state.selectedFile}</p>
-            </div>
+            <p>{this.state.selectedFile}</p>
           </div>
           {passwordField}
         </div>
 
         <div className="row">
-          <div className="col-md-12">
+          <div className="col-md-6 d-none d-md-block">
+            <PoweredByEAC className="col-md-2" />
+          </div>
+          <div className="col-md-6">
             <button id="verifyWalletBtn"
               className="btn btn-primary pull-right mr-4 px-5"
               type="button"
               onClick={this.verifyKeystore}>Unlock</button>
+          </div>
+          <div className="d-sm-inline d-md-none">
+            <PoweredByEAC className="mt-5"/>
           </div>
         </div>
 
