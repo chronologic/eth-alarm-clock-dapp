@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TimeNodeStatistics from './TimeNodeStatistics';
 import TimeNodeLogs from './TimeNodeLogs';
+import PoweredByEAC from '../Common/PoweredByEAC';
 
 class TimeNodeMain extends Component {
   render() {
@@ -21,6 +22,7 @@ class TimeNodeMain extends Component {
           <div className="tab-pane " id="tabLogs">
             <TimeNodeLogs/>
           </div>
+          <PoweredByEAC />
         </div>
       </div>
     );
