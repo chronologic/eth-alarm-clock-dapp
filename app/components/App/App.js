@@ -5,6 +5,7 @@ import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
+import Faucet from '../Common/Faucet';
 import TransactionsRoute from '../TransactionsRoute/TransactionsRoute';
 import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
@@ -63,7 +64,8 @@ class App extends Component {
                 <Route exact path="/" component={ScheduleRoute}/>
                 <Route path="/awaiting/:type/:hash" component={AwaitingMining}/>
                 <Route path="/transactions" component={TransactionsRoute}/>
-                <Route path="/timenode" component={TimeNodeRoute}/>
+                <Route path="/timenode" component={TimeNodeRoute} />
+                <Route path="/faucet" component={Faucet}/>
                 <Route component={URLNotFound}/>
               </Switch>
             </div>
