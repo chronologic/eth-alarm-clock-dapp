@@ -64,6 +64,11 @@ class SidePanel extends Component {
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
       },
+      {
+        title: 'Faucet',
+        titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
+      },
     ];
 
     return (
@@ -121,6 +126,12 @@ class SidePanel extends Component {
                 <span className="title">Day Token Contract</span>
                 <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
               </a>
+            </li>
+            <li>
+              <NavLink to="/faucet">
+                <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                <span className={entryList[3].thumbnailClasses}><i className="fa fa-bank"></i></span>
+              </NavLink>
             </li>
             <li>
               <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">
