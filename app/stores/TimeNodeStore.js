@@ -31,6 +31,7 @@ class SIGNATURE_ERRORS {
 
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+const LOG_CAP = 10000;
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
@@ -53,7 +54,6 @@ export default class TimeNodeStore {
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   eacWorker = null;
-  logsCap = 10000;
 
   _keenStore = null;
 
@@ -105,7 +105,7 @@ export default class TimeNodeStore {
   }
 
   pushToLog(logs, log) {
-    if (logs.length === this.logsCap) {
+    if (logs.length === LOG_CAP) {
       logs.shift();
     }
 
