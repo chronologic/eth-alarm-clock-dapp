@@ -9,7 +9,7 @@ import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
-import { LOGGER_MSG_TYPES } from '../lib/worker-logger.js';
+import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 
 /*
  * TimeNode classification based on the number
@@ -31,18 +31,19 @@ class SIGNATURE_ERRORS {
 
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+const LOG_CAP = 10000;
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
 
-  @observable logs = [];
-  @observable showLogTypes = Object.values(LOGGER_MSG_TYPES);
-  @computed get filteredLogs() {
-    return this.logs.filter(
-      log => this.showLogTypes.includes(log.type)
-    );
+  @observable basicLogs = [];
+  @observable detailedLogs = [];
+
+  @observable logType = LOG_TYPE.BASIC;
+  @computed get logs() {
+    return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
   }
 
   @observable executedTransactions = [];
@@ -87,9 +88,8 @@ export default class TimeNodeStore {
 
     this.eacWorker.onmessage = (event) => {
       const { type } = event.data;
-
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
-        this.logs.push(event.data.value);
+        this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         this.claimedEth = event.data.etherGain;
         this.executedTransactions = event.data.executedTransactions;
@@ -102,6 +102,23 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+  }
+
+  pushToLog(logs, log) {
+    if (logs.length === LOG_CAP) {
+      logs.shift();
+    }
+
+    logs.push(log);
+  }
+
+  handleLogMessage(log) {
+    if (log.type === LOGGER_MSG_TYPES.CACHE) return;
+    if (log.type !== LOGGER_MSG_TYPES.DEBUG) {
+      this.pushToLog(this.basicLogs, log);
+    }
+
+    this.pushToLog(this.detailedLogs, log);
   }
 
   sendActiveTimeNodeEvent() {
