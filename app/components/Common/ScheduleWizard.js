@@ -138,8 +138,9 @@ class ScheduleWizard extends Component {
                                                     isUsingTime
                                                   );
     if (scheduled) {
-        history.push('/awaiting/scheduler/' + scheduled.transactionHash);
-      }
+      scheduleStore.reset();
+      history.push('/awaiting/scheduler/' + scheduled.transactionHash);
+    }
   }
 
   componentDidMount() {

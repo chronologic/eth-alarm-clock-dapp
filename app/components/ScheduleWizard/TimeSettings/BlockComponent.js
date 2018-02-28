@@ -3,6 +3,8 @@ import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import AbstractSetting from '../AbstractSetting';
 
+const MINIMUM_BLOCK_WINDOW = 16;
+
 @inject('scheduleStore')
 @inject('web3Service')
 @observer
@@ -48,15 +50,7 @@ class BlockComponent extends AbstractSetting {
 
   validators = {
     blockNumber: '',
-    blockSize: {
-      validator: (value) => {
-      if (Number(value) < 10) return 1;
-      return 0;
-    },
-    errors: [
-      'Please enter a valid window size, minimum 10'
-    ]
-  },
+    blockSize: this.integerValidator(MINIMUM_BLOCK_WINDOW),
   }
 
   render() {
