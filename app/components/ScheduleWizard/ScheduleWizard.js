@@ -201,9 +201,6 @@ class ScheduleWizard extends Component {
           <BountySettings {..._validationProps}/>
           <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
-          <div className="d-sm-block d-md-none">
-            <hr/>
-          </div>
           <div className="row">
             <div className="d-none d-md-block col-md-2">
               <PoweredByEAC className="footer-buttons"/>
