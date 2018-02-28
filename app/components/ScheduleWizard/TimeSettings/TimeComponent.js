@@ -21,7 +21,7 @@ const RadioButton = (args) =>{
     >
       <input
         type = "radio"
-        checked = {args.checked}
+        defaultChecked = {args.checked}
         value = {args.value}
         onBlur = {args.onBlur}
       /> { args.value } min
