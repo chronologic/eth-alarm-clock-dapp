@@ -1,9 +1,9 @@
 import { observable } from 'mobx';
 
 export default class TransactionsCache {
-    //Memebers
     fetchInterval = 60 * 1000;
     fetcher = '';
+
     @observable requestFactoryStartBlock = 0;
     @observable running = false;
     @observable syncing = false;
@@ -20,20 +20,24 @@ export default class TransactionsCache {
     }
 
     startLazy () {
-        if (this.running || !this.requestFactoryStartBlock) {//If running do Nothing
+        if (this.running || !this.requestFactoryStartBlock) {
             return;
         }
+
         this.running = true;
         this.runFetchTicker();
     }
 
     async runFetchTicker () {
         if (!this.running) {
-            this.stopFetchTicker();
-            return ;
+          this.stopFetchTicker();
+          return;
         }
+
         this.syncing = true;
+
         await this.getTransactions({}, false);
+
         this.lastUpdate = new Date();
         this.updateLastBlock();
         this.setNextTicker();
@@ -65,55 +69,53 @@ export default class TransactionsCache {
     }
 
     async awaitSync() {
-        if (this.syncing) {
-            return await setTimeout( () => this.awaitSync(),500);
-        } else {
-            return true;
-        }
+      if (this.syncing) {
+        return await setTimeout( () => this.awaitSync(),500);
+      }
+
+      return true;
     }
 
     get allTransactions () {
-        return this.transactions;
+      return this.transactions;
     }
 
     get allTransactionsAddresses() {
-        return this.contracts;
+      return this.contracts;
     }
 
     async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
-
         if (cache && this.running && this.contracts.length > 0) {
-            return this.allTransactions;
-        } else {
-
-            const requestFactory = await this._eac.requestFactory();
-
-            let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-
-            requestsCreated.reverse();//Switch to most recent block first
-            const requestAddresses = requestsCreated;
-
-            requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
-
-            if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {//cache new values if complete fetch
-                this.cacheContracts(requestAddresses);
-                this.cacheTransactions(requestsCreated);
-            }
-
-            return requestsCreated;
+          return this.allTransactions;
         }
+
+        const requestFactory = await this._eac.requestFactory();
+
+        let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
+
+        requestsCreated.reverse(); //Switch to most recent block first
+        const requestAddresses = requestsCreated;
+
+        requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
+
+        if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {//cache new values if complete fetch
+          this.cacheContracts(requestAddresses);
+          this.cacheTransactions(requestsCreated);
+        }
+
+        return requestsCreated;
     }
 
     async getAllTransactions(cached = this.cacheDefault) {
-        if (this.syncing) {
-            await this.awaitSync();
-        } else if (!cached || !this.running || this.allTransactions.length == 0) {
-            await this.getTransactions({});
-        }
+      if (this.syncing) {
+        await this.awaitSync();
+      } else if (!cached || !this.running || this.allTransactions.length == 0) {
+        await this.getTransactions({});
+      }
 
-        await this.queryTransactions(this.allTransactions);
+      await this.queryTransactions(this.allTransactions);
 
-        return this.allTransactions;
+      return this.allTransactions;
     }
 
     async queryTransactions(transactions) {
@@ -143,6 +145,7 @@ export default class TransactionsCache {
                 return cachedTransaction;
             }
         });
+
         return false;
     }
 
@@ -159,14 +162,13 @@ export default class TransactionsCache {
     cacheTransactions(transactions = [], updateType) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
+
         this.fillUpTransactions(transactions);
+
         if (this.transactions.length < transactions.length || replace) {
-            this.transactions = transactions;
+          this.transactions = transactions;
         } else if (append) {
-            this.transactions.push(transactions);
+          this.transactions.push(transactions);
         }
     }
-
-
-
 }

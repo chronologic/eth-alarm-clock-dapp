@@ -5,11 +5,13 @@ import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
 import AbstractSetting from '../AbstractSetting';
 
-let presetExecutionWindows = [
-    { value: 3, selected: false },
-    { value: 5, selected: false },
-    { value: 7, selected: false },
+const presetExecutionWindows = [
+    { value: 5 },
+    { value: 10 },
+    { value: 15 },
   ];
+
+const MINIMUM_TIME_WINDOW = 5;
 
 const RadioButton = (args) =>{
   return (
@@ -63,7 +65,7 @@ class TimeComponent extends AbstractSetting {
     scheduleStore.timeZone = scheduleStore.timeZone || localTimezone;
     scheduleStore.transactionTime = scheduleStore.transactionTime || defaultTime;
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;
-    scheduleStore.executionWindow = scheduleStore.executionWindow || 5;
+    scheduleStore.executionWindow = scheduleStore.executionWindow || 10;
 
     const { jQuery } = window;
 
@@ -122,8 +124,8 @@ class TimeComponent extends AbstractSetting {
     },
     transactionDate: '',
     transactionTime: '',
-    executionWindow: this.integerValidator(3, 'window has minimum value of 3 mins'),
-    customWindow: this.integerValidator(3,'window has minimum value of 3 mins'),
+    executionWindow: this.integerValidator(MINIMUM_TIME_WINDOW, `window has minimum value of ${MINIMUM_TIME_WINDOW} mins`),
+    customWindow: this.integerValidator(MINIMUM_TIME_WINDOW,`window has minimum value of ${MINIMUM_TIME_WINDOW} mins`),
   }
 
   onRadioChange = (property,value) => (event) => {

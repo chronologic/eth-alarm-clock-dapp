@@ -13,6 +13,7 @@ class SidePanel extends Component {
     this.state = {
       blocknumber: ''
     };
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   componentWillMount() {
@@ -28,12 +29,18 @@ class SidePanel extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
-
     jQuery.Pages.init();
+
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(this.getCurrentBlock, 10000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
-    const currentUrl = window.location.pathname;
+    const currentUrl = this.props.location.pathname;
     const cls = type === 'thumbnail' ? 'active' : 'text-white';
 
     if (substring) {
@@ -167,7 +174,8 @@ class SidePanel extends Component {
 
 SidePanel.propTypes = {
   web3Service: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  location: PropTypes.object.isRequired
 };
 
 export default SidePanel;
