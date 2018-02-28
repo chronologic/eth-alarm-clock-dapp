@@ -163,15 +163,9 @@ hr {
   padding: 40px;
 }
 
-@media (min-width:589px) {
-  .subsection .tab-content {
-    height: 560px;
-  }
-  .subsection .tab-pane.active {
-  	overflow-x: hidden;
-  	overflow-y: auto;
-  	height:90%;
-  }
+
+.subsection .tab-pane.active {
+	margin-bottom: 80px;
 }
 
 #scheduleWizard .footer-buttons, .subsection .footer-buttons{
