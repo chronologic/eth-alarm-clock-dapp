@@ -11,6 +11,8 @@ class ConfirmSettings extends Component {
 
   constructor(props){
     super(props);
+    this.infoSettingsValidations = this.infoSettingsValidations.bind(this);
+    this.bountySettingsValidations = this.bountySettingsValidations.bind(this);
   }
 
   totalCost() {
@@ -47,16 +49,12 @@ class ConfirmSettings extends Component {
     return !this.props.isWeb3Usable ? <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} /> : null;
   }
 
-  bountyFieldsError() {
-    return !this.props.bountySettingsValidations ? <Alert {...{ msg: 'Error in required fields on bounty tab' }} /> : null;
+  infoSettingsValidations() {
+    return !this.props.infoTabValidator ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
   }
 
-  infoFieldsError() {
-    return !this.props.infoSettingsValidations ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
-  }
-
-  timeFieldsError() {
-    return !this.props.infoSettingsValidations ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
+  bountySettingsValidations() {
+    return !this.props.bountyTabValidator ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
   }
 
   render() {
@@ -70,8 +68,8 @@ class ConfirmSettings extends Component {
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
-            {this.bountyFieldsError()}
-            {this.infoFieldsError()}
+            {this.infoSettingsValidations()}
+            {this.bountySettingsValidations()}
             <table className="table">
               <thead>
                 <tr>
@@ -151,8 +149,8 @@ ConfirmSettings.propTypes = {
   isWeb3Usable: PropTypes.any,
   isCustomWindow: PropTypes.any,
   TimeComponentValidations: PropTypes.any,
-  bountySettingsValidations: PropTypes.any,
-  infoSettingsValidations: PropTypes.any,
+  bountyTabValidator: PropTypes.any,
+  infoTabValidator: PropTypes.any,
 };
 
 export default ConfirmSettings;

@@ -103,7 +103,7 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
-  TimeComponentValidations() {
+ get TimeComponentValidations() {
     const { scheduleStore } = this.props;
     const _timeZone = Boolean(scheduleStore.timeZone) && this._validations.TimeSettings.TimeComponent.timeZone;
     const _transactionDate = Boolean(scheduleStore.transactionDate) && this._validations.TimeSettings.TimeComponent.transactionDate;
@@ -125,10 +125,10 @@ class ScheduleWizard extends Component {
     return _requireDeposit && _timeBounty && _deposit;
   }
 
-  get infoSettingsValidations() {
+ get infoSettingsValidations() {
     const { scheduleStore } = this.props;
     const _addr = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.toAddress;
-    const _gasAmount = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.gasAmount;
+    const _gasAmount = Boolean(scheduleStore.gasAmount) && this._validations.InfoSettings.gasAmount;
     const _amountToSend = Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
     const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
     const _yourData = Boolean(scheduleStore.yourData) && this._validations.InfoSettings.yourData;
@@ -196,7 +196,6 @@ class ScheduleWizard extends Component {
 
   render() {
     const _validationProps = { _validations: this._validations, _validationsErrors: this._validationsErrors };
-
     return (
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
@@ -230,7 +229,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps} />
           <InfoSettings {..._validationProps} />
           <BountySettings {..._validationProps} />
-          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow, bountySettingsValidation: this.bountySettingsValidation, infoSettingsValidations: this.infoSettingsValidations, TimeComponentValidations: this.TimeSComponentsValidations }} />
+          <ConfirmSettings infoTabValidator = {this.infoSettingsValidations} bountyTabValidator = {this.bountySettingsValidation} {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }} />
 
           <div className="d-sm-block d-md-none">
             <hr />
@@ -248,7 +247,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable || !this.props.infoSettingsValidations || !this.props.bountySettingsValidation}>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable || !this.infoSettingsValidations || !this.bountySettingsValidation }>
                     <span>Schedule</span>
                   </button>
                 </li>
