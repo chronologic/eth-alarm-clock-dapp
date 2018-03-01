@@ -124,15 +124,6 @@ class ScheduleWizard extends Component {
     return  _timeBounty && _deposit;
   }
 
-  get timeSettingsValidations() {
-    const { scheduleStore } = this.props;
-    if (scheduleStore.isUsingTime) {
-      this.TimeComponentValidations;
-    } else {
-      this.blockComponentValidations;
-    }
-  }
-
  get infoSettingsValidations() {
     const { scheduleStore } = this.props;
     const _addr = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.toAddress;
