@@ -10,12 +10,12 @@ const additionalMethods = {
     return web3.eth.contract(RequestLib).at(address);
   },
 
-  calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, deposit = 0) {
+  calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, payment = 0) {
     gasAmount = gasAmount || 0;
     amountToSend = amountToSend || 0;
     gasPrice = gasPrice || 0;
     fee = fee || 0;
-    deposit = deposit || 0;
+    payment = payment || 0;
 
     const { Util: { calcEndowment } } = this;
 
@@ -24,7 +24,7 @@ const additionalMethods = {
       new BigNumber(amountToSend),
       new BigNumber(gasPrice),
       new BigNumber(fee),
-      new BigNumber(deposit),
+      new BigNumber(payment)
     );
 
     return endowment;
