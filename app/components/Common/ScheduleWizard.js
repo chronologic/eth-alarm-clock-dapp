@@ -103,36 +103,35 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
-  get TimeComponentValidations() {
+  TimeComponentValidations() {
     const { scheduleStore } = this.props;
-    const _timeZone = scheduleStore.timeZone && this._validations.TimeSettings.TimeComponent.timeZone;
-    const _transactionDate = scheduleStore.transactionDate && this._validations.TimeSettings.TimeComponent.transactionDate;
-    const _transactionTime = scheduleStore.transactionTime && this._validations.TimeSettings.TimeComponent.transactionTime;
-    const _executionWindow = scheduleStore.executionWindow && this._validations.TimeSettings.TimeComponent.executionWindow;
-    const _customWindow = scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
-    return _timeZone && _transactionDate && _transactionTime && _executionWindow && _customWindow;
+    const _timeZone = Boolean(scheduleStore.timeZone) && this._validations.TimeSettings.TimeComponent.timeZone;
+    const _transactionDate = Boolean(scheduleStore.transactionDate) && this._validations.TimeSettings.TimeComponent.transactionDate;
+    const _transactionTime = Boolean(scheduleStore.transactionTime) && this._validations.TimeSettings.TimeComponent.transactionTime;
+    const _executionWindow = Boolean(scheduleStore.executionWindow) && this._validations.TimeSettings.TimeComponent.executionWindow;
+    return _timeZone && _transactionDate && _transactionTime && _executionWindow;
   }
   get BlockComponentValidations() {
     const { scheduleStore } = this.props;
-    const _blockNumber = scheduleStore.blockNumber && this._validations.InfoSettings.requireDeposit;
-    const _blockSize = scheduleStore.blockSize && this._validations.InfoSettings.blockSize;
+    const _blockNumber = Boolean(scheduleStore.blockNumber) && this._validations.TimeSettings.BlockComponent.blockNumber;
+    const _blockSize = Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
     return _blockNumber && _blockSize;
   }
   get bountySettingsValidation() {
     const { scheduleStore } = this.props;
-    const _requireDeposit = scheduleStore.requireDeposit && this._validations.InfoSettings.requireDeposit;
-    const _timeBounty = scheduleStore.timeBounty && this._validations.InfoSettings.timeBounty;
-    const _deposit = scheduleStore.deposit && this._validations.InfoSettings.deposit;
+    const _requireDeposit = Boolean(scheduleStore.requireDeposit) && this._validations.BountySettings.requireDeposit;
+    const _timeBounty = Boolean(scheduleStore.timeBounty) && this._validations.BountySettings.timeBounty;
+    const _deposit = Boolean(scheduleStore.deposit) && this._validations.BountySettings.deposit;
     return _requireDeposit && _timeBounty && _deposit;
   }
 
   get infoSettingsValidations() {
     const { scheduleStore } = this.props;
-    const _addr = scheduleStore.toAddress && this._validations.InfoSettings.toAddress;
-    const _gasAmount = scheduleStore.toAddress && this._validations.InfoSettings.gasAmount;
-    const _amountToSend = scheduleStore.amountToSend && this._validations.InfoSettings.amountToSend;
-    const _gasPrice = scheduleStore.gasPrice && this._validations.InfoSettings.gasPrice;
-    const _yourData = scheduleStore.yourData && this._validations.InfoSettings.yourData;
+    const _addr = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.toAddress;
+    const _gasAmount = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.gasAmount;
+    const _amountToSend = Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
+    const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
+    const _yourData = Boolean(scheduleStore.yourData) && this._validations.InfoSettings.yourData;
     return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
   }
 
@@ -249,7 +248,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable ||  !this.props.TimeComponentValidations || !this.props.infoSettingsValidations || !this.props.bountySettingsValidation}>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable || !this.props.infoSettingsValidations || !this.props.bountySettingsValidation}>
                     <span>Schedule</span>
                   </button>
                 </li>

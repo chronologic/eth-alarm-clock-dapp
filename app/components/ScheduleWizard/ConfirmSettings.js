@@ -72,7 +72,6 @@ class ConfirmSettings extends Component {
           <div className="col-sm-6 col-md-6">
             {this.bountyFieldsError()}
             {this.infoFieldsError()}
-            {this.timeFieldsError()}
             <table className="table">
               <thead>
                 <tr>
@@ -154,7 +153,6 @@ ConfirmSettings.propTypes = {
   TimeComponentValidations: PropTypes.any,
   bountySettingsValidations: PropTypes.any,
   infoSettingsValidations: PropTypes.any,
-  isCustomWindow: PropTypes.any
 };
 
 export default ConfirmSettings;
