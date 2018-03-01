@@ -43,6 +43,8 @@ class EacWorker {
 
     this.config.logger = logger;
     this.config.statsdb = statsDB;
+
+    this.config.statsdb.initialize(this.config.wallet.getAddresses());
     this.alarmClient = new Scanner(
       options.milliseconds,
       this.config
