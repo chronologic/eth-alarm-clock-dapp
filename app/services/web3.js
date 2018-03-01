@@ -147,6 +147,17 @@ export default class Web3Service {
             return true;
     }
 
+    @action
+    async getAccountUpdates () {
+        const accounts = await Bb.fromCallback( callback =>this.web3.eth.getAccounts(callback) );
+        const accountChanged = this.accounts.length !== accounts.length || (this.accounts.length > 0 && this.accounts[0] !== accounts[0]);
+
+        if (accountChanged) {
+            this.accounts = accounts;
+            this.web3.eth.defaultAccount = this.accounts[0];
+        }
+    }
+
     get network() {
         if (typeof Networks[this.netId] === 'undefined')
             return Networks[0];
