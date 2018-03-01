@@ -114,15 +114,14 @@ class ScheduleWizard extends Component {
   get BlockComponentValidations() {
     const { scheduleStore } = this.props;
     const _blockNumber = Boolean(scheduleStore.blockNumber) && this._validations.TimeSettings.BlockComponent.blockNumber;
-    const _blockSize = Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
+    const _blockSize = scheduleStore. Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
     return _blockNumber && _blockSize;
   }
   get bountySettingsValidation() {
     const { scheduleStore } = this.props;
-    const _requireDeposit = Boolean(scheduleStore.requireDeposit) && this._validations.BountySettings.requireDeposit;
     const _timeBounty = Boolean(scheduleStore.timeBounty) && this._validations.BountySettings.timeBounty;
-    const _deposit = Boolean(scheduleStore.deposit) && this._validations.BountySettings.deposit;
-    return _requireDeposit && _timeBounty && _deposit;
+    const _deposit = !scheduleStore.requireDeposit || (Boolean(scheduleStore.deposit) && this._validations.BountySettings.deposit);
+    return  _timeBounty && _deposit;
   }
 
  get infoSettingsValidations() {
@@ -131,7 +130,7 @@ class ScheduleWizard extends Component {
     const _gasAmount = Boolean(scheduleStore.gasAmount) && this._validations.InfoSettings.gasAmount;
     const _amountToSend = Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
     const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
-    const _yourData = Boolean(scheduleStore.yourData) && this._validations.InfoSettings.yourData;
+    const _yourData = !scheduleStore.useData || (Boolean(scheduleStore.yourData) && this._validations.yourData);
     return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
   }
 
