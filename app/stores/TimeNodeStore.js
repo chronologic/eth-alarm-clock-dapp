@@ -31,7 +31,7 @@ class SIGNATURE_ERRORS {
 
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
-const LOG_CAP = 10000;
+const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
@@ -79,7 +79,7 @@ export default class TimeNodeStore {
       keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,
-      milliseconds: 4000,
+      milliseconds: 15000,
       autostart: false,
       scan: 75,
       repl: false,
@@ -91,7 +91,7 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = event.data.etherGain;
+        this.claimedEth = this._web3Service.toEth(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
       }
     };
