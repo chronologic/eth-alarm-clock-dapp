@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
-import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
+import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 
 const INITIAL_STATE = {
@@ -117,7 +117,7 @@ class TransactionDetails extends ScrollbarComponent {
           <div className="footer-buttons col-md-10">
             <ul className="pager wizard no-style">
               <li className="next">
-                <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
+                <button className="btn btn-danger btn-cons" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
                   <span>Cancel</span>
                 </button>
               </li>
@@ -158,7 +158,7 @@ class TransactionDetails extends ScrollbarComponent {
                   <td>{callData}</td>
                 </tr>
                 <tr>
-                  <td>Block or Time</td>
+                  <td>{ isTimestamp ? 'Time' : 'Block' }</td>
                   <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
                 </tr>
                 <tr>
@@ -188,8 +188,8 @@ class TransactionDetails extends ScrollbarComponent {
               </tbody>
             </table>
           </div>
-          {this.getCancelSection()}
         </div>
+        {this.getCancelSection()}
       </div>
     );
   }

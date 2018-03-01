@@ -13,6 +13,7 @@ class SidePanel extends Component {
     this.state = {
       blocknumber: ''
     };
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   componentWillMount() {
@@ -28,8 +29,14 @@ class SidePanel extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
-
     jQuery.Pages.init();
+
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(this.getCurrentBlock, 10000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
@@ -63,6 +70,11 @@ class SidePanel extends Component {
         title: 'TimeNode',
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
+      },
+      {
+        title: 'Faucet',
+        titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
       },
     ];
 
@@ -121,6 +133,12 @@ class SidePanel extends Component {
                 <span className="title">Day Token Contract</span>
                 <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
               </a>
+            </li>
+            <li>
+              <NavLink to="/faucet">
+                <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                <span className={entryList[3].thumbnailClasses}><i className="fas fa-tint"></i></span>
+              </NavLink>
             </li>
             <li>
               <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">

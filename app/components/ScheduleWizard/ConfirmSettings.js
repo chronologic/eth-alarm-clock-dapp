@@ -147,7 +147,7 @@ class ConfirmSettings extends Component {
           </div>
 
         </div>
-        <h3 className="text-right m-t-20">Total cost: <strong>{ this.totalCost() } ETH</strong></h3>
+        <h3 className="text-right m-t-20">Total amount: <strong>{ this.totalCost() } ETH</strong></h3>
       </div>
         );
       }
