@@ -31,7 +31,7 @@ class SIGNATURE_ERRORS {
 
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
-const LOG_CAP = 10000;
+const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
@@ -79,7 +79,7 @@ export default class TimeNodeStore {
       keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,
-      milliseconds: 4000,
+      milliseconds: 15000,
       autostart: false,
       scan: 75,
       repl: false,
