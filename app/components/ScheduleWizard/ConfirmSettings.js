@@ -13,6 +13,8 @@ class ConfirmSettings extends Component {
     super(props);
     this.infoSettingsValidations = this.infoSettingsValidations.bind(this);
     this.bountySettingsValidations = this.bountySettingsValidations.bind(this);
+    this.timeSettingsValidations = this.timeSettingsValidations.bind(this);
+    this.blockComponentValidations = this.blockComponentValidations.bind(this);
   }
 
   totalCost() {
@@ -54,7 +56,15 @@ class ConfirmSettings extends Component {
   }
 
   bountySettingsValidations() {
-    return !this.props.bountyTabValidator ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
+    return !this.props.bountyTabValidator ? <Alert {...{ msg: 'Error in required fields on bounty tab' }} /> : null;
+  }
+
+  timeSettingsValidations() {
+    return !this.props.timeTabValidator ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
+  }block
+
+  blockComponentValidations() {
+    return !this.props.blockTabValidator ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
   }
 
   render() {
@@ -70,6 +80,7 @@ class ConfirmSettings extends Component {
           <div className="col-sm-6 col-md-6">
             {this.infoSettingsValidations()}
             {this.bountySettingsValidations()}
+            {((scheduleStore.isUsingTime && this.timeSettingsValidations()) || this.blockComponentValidations())}
             <table className="table">
               <thead>
                 <tr>
@@ -151,6 +162,8 @@ ConfirmSettings.propTypes = {
   TimeComponentValidations: PropTypes.any,
   bountyTabValidator: PropTypes.any,
   infoTabValidator: PropTypes.any,
+  timeTabValidator: PropTypes.any,
+  blockTabValidator: PropTypes.any
 };
 
 export default ConfirmSettings;

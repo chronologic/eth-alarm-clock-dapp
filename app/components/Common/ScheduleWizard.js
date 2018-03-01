@@ -103,18 +103,18 @@ class ScheduleWizard extends Component {
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
 
- get TimeComponentValidations() {
+  get TimeComponentValidations() {
     const { scheduleStore } = this.props;
     const _timeZone = Boolean(scheduleStore.timeZone) && this._validations.TimeSettings.TimeComponent.timeZone;
     const _transactionDate = Boolean(scheduleStore.transactionDate) && this._validations.TimeSettings.TimeComponent.transactionDate;
     const _transactionTime = Boolean(scheduleStore.transactionTime) && this._validations.TimeSettings.TimeComponent.transactionTime;
-    const _executionWindow = Boolean(scheduleStore.executionWindow) && this._validations.TimeSettings.TimeComponent.executionWindow;
+   const _executionWindow = (Boolean(scheduleStore.customWindow) && this._validations.TimeSettings.TimeComponent.customWindow) || (Boolean(scheduleStore.executionWindow) && this._validations.TimeSettings.TimeComponent.executionWindow);
     return _timeZone && _transactionDate && _transactionTime && _executionWindow;
   }
-  get BlockComponentValidations() {
+  get blockComponentValidations() {
     const { scheduleStore } = this.props;
     const _blockNumber = Boolean(scheduleStore.blockNumber) && this._validations.TimeSettings.BlockComponent.blockNumber;
-    const _blockSize = scheduleStore. Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
+    const _blockSize = Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
     return _blockNumber && _blockSize;
   }
   get bountySettingsValidation() {
@@ -122,6 +122,15 @@ class ScheduleWizard extends Component {
     const _timeBounty = Boolean(scheduleStore.timeBounty) && this._validations.BountySettings.timeBounty;
     const _deposit = !scheduleStore.requireDeposit || (Boolean(scheduleStore.deposit) && this._validations.BountySettings.deposit);
     return  _timeBounty && _deposit;
+  }
+
+  get timeSettingsValidations() {
+    const { scheduleStore } = this.props;
+    if (scheduleStore.isUsingTime) {
+      this.TimeComponentValidations;
+    } else {
+      this.blockComponentValidations;
+    }
   }
 
  get infoSettingsValidations() {
@@ -195,6 +204,7 @@ class ScheduleWizard extends Component {
 
   render() {
     const _validationProps = { _validations: this._validations, _validationsErrors: this._validationsErrors };
+    const { scheduleStore } = this.props;
     return (
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
@@ -228,7 +238,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps} />
           <InfoSettings {..._validationProps} />
           <BountySettings {..._validationProps} />
-          <ConfirmSettings infoTabValidator = {this.infoSettingsValidations} bountyTabValidator = {this.bountySettingsValidation} {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }} />
+          <ConfirmSettings infoTabValidator = {this.infoSettingsValidations} timeTabValidator = {this.TimeComponentValidations} blockTabValidator = {this.blockComponentValidations} bountyTabValidator = {this.bountySettingsValidation} {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }} />
 
           <div className="d-sm-block d-md-none">
             <hr />
@@ -246,7 +256,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable || !this.infoSettingsValidations || !this.bountySettingsValidation }>
+                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable || !this.infoSettingsValidations || !this.bountySettingsValidation || ((scheduleStore.isUsingTime && this.timeSettingsValidations) || this.blockComponentValidations)}>
                     <span>Schedule</span>
                   </button>
                 </li>
