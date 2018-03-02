@@ -42,6 +42,10 @@ export default class Web3Service {
         return ethValue;
     }
 
+    fromWei(wei) {
+        return window.web3.fromWei(wei);
+    }
+
     async fetchReceipt(hash) {
         let { web3 } = this;
         let receipt = await Bb.fromCallback(callback =>
