@@ -74,13 +74,12 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-
+        {this.infoSettingsValidations()}
+        {this.bountySettingsValidations()}
+        {((scheduleStore.isUsingTime && this.timeSettingsValidations()) || this.blockComponentValidations())}
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
-            {this.infoSettingsValidations()}
-            {this.bountySettingsValidations()}
-            {((scheduleStore.isUsingTime && this.timeSettingsValidations()) || this.blockComponentValidations())}
             <table className="table">
               <thead>
                 <tr>
