@@ -12,7 +12,7 @@ class TimeNodeStatistics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeNodeDisabled: TIMENODE_STATUS.DISABLED
+      timeNodeDisabled: null
     };
 
     this.refreshChart = this.refreshChart.bind(this);
