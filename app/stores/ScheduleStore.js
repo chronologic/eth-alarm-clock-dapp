@@ -1,7 +1,7 @@
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 
-export default class mobxStore {
+export default class ScheduleStore {
   //TimeComponent
   @observable timeZone = '';
   @observable transactionDate = '';
@@ -17,7 +17,7 @@ export default class mobxStore {
   //BountySettings
   @observable requireDeposit = true;
   @observable timeBounty = '';
-  @observable deposit = '';
+  @observable deposit = 0;
 
   //infoSettings
   @observable toAddress = '';
@@ -28,6 +28,35 @@ export default class mobxStore {
   @observable yourData = '';
 
   @observable isUsingTime = true;
+
+  /*
+   * Currently MobX doesn't have a more elegant
+   * way to reset to defaults.
+   */
+  @action reset = () => {
+    this.timeZone = '';
+    this.transactionDate = '';
+    this.transactionTime = '';
+    this.executionWindow = '';
+    this.customWindow = '';
+    this.fee = 0;
+
+    this.blockNumber = '';
+    this.blockSize = '';
+
+    this.requireDeposit = true;
+    this.timeBounty = '';
+    this.deposit = '';
+
+    this.toAddress = '';
+    this.gasAmount = 21000;
+    this.amountToSend = '';
+    this.gasPrice = '';
+    this.useData = false;
+    this.yourData = '';
+
+    this.isUsingTime = true;
+  }
 
   get transactionTimestamp() {
     return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);

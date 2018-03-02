@@ -9,7 +9,7 @@ import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
-import { LOGGER_MSG_TYPES } from '../lib/worker-logger.js';
+import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 
 /*
  * TimeNode classification based on the number
@@ -31,18 +31,19 @@ class SIGNATURE_ERRORS {
 
 // 1 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
   @observable hasWallet = false;
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
 
-  @observable logs = [];
-  @observable showLogTypes = Object.values(LOGGER_MSG_TYPES);
-  @computed get filteredLogs() {
-    return this.logs.filter(
-      log => this.showLogTypes.includes(log.type)
-    );
+  @observable basicLogs = [];
+  @observable detailedLogs = [];
+
+  @observable logType = LOG_TYPE.BASIC;
+  @computed get logs() {
+    return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
   }
 
   @observable executedTransactions = [];
@@ -78,7 +79,7 @@ export default class TimeNodeStore {
       keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,
-      milliseconds: 4000,
+      milliseconds: 15000,
       autostart: false,
       scan: 75,
       repl: false,
@@ -87,11 +88,10 @@ export default class TimeNodeStore {
 
     this.eacWorker.onmessage = (event) => {
       const { type } = event.data;
-
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
-        this.logs.push(event.data.value);
+        this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = event.data.etherGain;
+        this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
       }
     };
@@ -102,6 +102,23 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+  }
+
+  pushToLog(logs, log) {
+    if (logs.length === LOG_CAP) {
+      logs.shift();
+    }
+
+    logs.push(log);
+  }
+
+  handleLogMessage(log) {
+    if (log.type === LOGGER_MSG_TYPES.CACHE) return;
+    if (log.type !== LOGGER_MSG_TYPES.DEBUG) {
+      this.pushToLog(this.basicLogs, log);
+    }
+
+    this.pushToLog(this.detailedLogs, log);
   }
 
   sendActiveTimeNodeEvent() {
@@ -120,6 +137,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+    Cookies.set('isTimenodeScanning', true, { expires: 30 });
   }
 
   stopScanning() {
@@ -130,6 +148,7 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
     });
+    Cookies.remove('isTimenodeScanning');
   }
 
   encrypt(message) {
@@ -179,20 +198,19 @@ export default class TimeNodeStore {
   }
 
   async getBalance(address = this.getMyAddress()) {
-    const web3 = this._web3Service.web3;
-
     const balance = await this._eacService.Util.getBalance(address);
-    const balanceEther = web3.fromWei(balance, 'ether');
 
-    this.balanceETH = balanceEther;
-    return balanceEther;
+    this.balanceETH = balance.div(10**18).toNumber().toFixed(2);
+
+    return this.balanceETH;
   }
 
   async getDAYBalance(address = this.getMyAttachedAddress()) {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const contract = web3.eth.contract(dayTokenABI).at(process.env.DAY_FAUCET_ADDRESS);
+    const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
+    const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });

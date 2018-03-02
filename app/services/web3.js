@@ -42,6 +42,10 @@ export default class Web3Service {
         return ethValue;
     }
 
+    fromWei(wei) {
+        return window.web3.fromWei(wei);
+    }
+
     async fetchReceipt(hash) {
         let { web3 } = this;
         let receipt = await Bb.fromCallback(callback =>
@@ -123,15 +127,17 @@ export default class Web3Service {
             window.web3 = web3;
             this.web3 = web3;
         }
-        if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
-        this.accounts = web3.eth.accounts;
-        web3.eth.defaultAccount = this.accounts[0];
 
         const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
         runInAction(() => {
             this.netId = netId;
             this.explorer = Explorers[this.netId];
         });
+
+        if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
+
+        this.accounts = web3.eth.accounts;
+        web3.eth.defaultAccount = this.accounts[0];
     }
 
     async awaitInitialized() {
@@ -145,6 +151,17 @@ export default class Web3Service {
             return Promises;
         } else
             return true;
+    }
+
+    @action
+    async getAccountUpdates () {
+        const accounts = await Bb.fromCallback( callback =>this.web3.eth.getAccounts(callback) );
+        const accountChanged = this.accounts.length !== accounts.length || (this.accounts.length > 0 && this.accounts[0] !== accounts[0]);
+
+        if (accountChanged) {
+            this.accounts = accounts;
+            this.web3.eth.defaultAccount = this.accounts[0];
+        }
     }
 
     get network() {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
-import { BlockOrTimeDisplay } from '../Common/BlockOrTimeDisplay';
+import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 
 const INITIAL_STATE = {
@@ -81,7 +81,10 @@ class TransactionDetails extends ScrollbarComponent {
   async cancelTransaction() {
     const { transactionStore } = this.props;
     const { transaction } = this.state;
-    return await transactionStore.cancel(transaction);
+    await transactionStore.cancel(transaction);
+    this.setState({
+      status: TRANSACTION_STATUS.CANCELLED
+    });
   }
 
   async componentWillMount() {
@@ -107,22 +110,17 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getCancelSection() {
-    const { transaction, isFrozen } = this.state;
+    const { transaction, isFrozen, status } = this.state;
 
     const isOwner = this.isOwner(transaction);
 
-    if (isOwner && !isFrozen) {
+    if (isOwner && !isFrozen && status !== TRANSACTION_STATUS.CANCELLED) {
       return (
-        <div className="row">
-          <div className="footer-buttons col-md-10">
-            <ul className="pager wizard no-style">
-              <li className="next">
-                <button className="btn btn-danger btn-cons pull-right" disabled= { isFrozen !== false } onClick= { this.cancelTransaction } type="button">
-                  <span>Cancel</span>
-                </button>
-              </li>
-            </ul>
-          </div>
+        <div className="text-center mt-5">
+          <button className="btn btn-danger btn-cons" disabled={ isFrozen } onClick={ this.cancelTransaction } type="button">
+            <span>Cancel</span>
+          </button>
+          { isFrozen ? 'The transaction has been frozen.' : '' }
         </div>
       );
     }
@@ -136,60 +134,57 @@ class TransactionDetails extends ScrollbarComponent {
 
     return (
       <div className="tab-pane slide active show">
-        <div className="row">
-          <div className="col-md-10">
 
-            <table className="table">
-              <tbody>
-                <tr>
-                  <td>Status</td>
-                  <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
-                </tr>
-                <tr>
-                  <td>To Address</td>
-                  <td><a href="#">{toAddress}</a></td>
-                </tr>
-                <tr>
-                  <td>Value/Amount</td>
-                  <td><ValueDisplay priceInWei= { callValue } /></td>
-                </tr>
-                <tr>
-                  <td>Data</td>
-                  <td>{callData}</td>
-                </tr>
-                <tr>
-                  <td>Block or Time</td>
-                  <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
-                </tr>
-                <tr>
-                  <td>Window Size</td>
-                  <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
-                </tr>
-                <tr>
-                  <td>Gas Amount</td>
-                  <td> { callGas && callGas.toFixed() } </td>
-                </tr>
-                <tr>
-                  <td>Gas Price</td>
-                  <td><ValueDisplay priceInWei= { gasPrice } /></td>
-                </tr>
-                <tr>
-                  <td>Time Bounty</td>
-                  <td><ValueDisplay priceInWei= { bounty } /></td>
-                </tr>
-                <tr>
-                  <td>Fee</td>
-                  <td><ValueDisplay priceInWei= { fee } /></td>
-                </tr>
-                <tr>
-                  <td>Deposit</td>
-                  <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          {this.getCancelSection()}
-        </div>
+        <table className="table">
+          <tbody>
+            <tr>
+              <td>Status</td>
+              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
+            </tr>
+            <tr>
+              <td>To Address</td>
+              <td><a href="#">{toAddress}</a></td>
+            </tr>
+            <tr>
+              <td>Value/Amount</td>
+              <td><ValueDisplay priceInWei= { callValue } /></td>
+            </tr>
+            <tr>
+              <td>Data</td>
+              <td>{callData}</td>
+            </tr>
+            <tr>
+              <td>{ isTimestamp ? 'Time' : 'Block' }</td>
+              <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
+            </tr>
+            <tr>
+              <td>Window Size</td>
+              <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
+            </tr>
+            <tr>
+              <td>Gas Amount</td>
+              <td> { callGas && callGas.toFixed() } </td>
+            </tr>
+            <tr>
+              <td>Gas Price</td>
+              <td><ValueDisplay priceInWei= { gasPrice } /></td>
+            </tr>
+            <tr>
+              <td>Time Bounty</td>
+              <td><ValueDisplay priceInWei= { bounty } /></td>
+            </tr>
+            <tr>
+              <td>Fee</td>
+              <td><ValueDisplay priceInWei= { fee } /></td>
+            </tr>
+            <tr>
+              <td>Deposit</td>
+              <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {this.getCancelSection()}
       </div>
     );
   }

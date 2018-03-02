@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { inject, observer } from 'mobx-react';
-import { LOGGER_MSG_TYPES } from '../../lib/worker-logger.js';
-
+import { LOG_TYPE } from '../../lib/worker-logger';
 @inject('timeNodeStore')
 @observer
 class TimeNodeLogs extends Component {
@@ -11,15 +10,8 @@ class TimeNodeLogs extends Component {
     super(props);
   }
 
-  updateFilters() {
-    let types = [];
-
-    if (this.checkboxCache.checked) types.push(LOGGER_MSG_TYPES.CACHE);
-    if (this.checkboxInfo.checked) types.push(LOGGER_MSG_TYPES.INFO);
-    if (this.checkboxDebug.checked) types.push(LOGGER_MSG_TYPES.DEBUG);
-    if (this.checkboxError.checked) types.push(LOGGER_MSG_TYPES.ERROR);
-
-    this.props.timeNodeStore.showLogTypes = types;
+  updateType(event) {
+    this.props.timeNodeStore.logType = event.currentTarget.dataset.logType;
   }
 
   formatUnix(unix) {
@@ -29,85 +21,41 @@ class TimeNodeLogs extends Component {
   render() {
     return (
       <div id="timeNodeLogs">
-        <div className="row">
-
-          <div className="col-md-2 m-b-20">
-            <p><b>Filter:</b></p>
-
-            <div className="row">
-
-              <div className="col-6 col-md-12">
-                <div className="checkbox check-primary my-1">
-                  <input type="checkbox"
-                    id="checkboxCache"
-                    defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.CACHE)}
-                    ref={(el) => this.checkboxCache = el}
-                    onChange={() => this.updateFilters()} />
-                  <label htmlFor="checkboxCache">{LOGGER_MSG_TYPES.CACHE}</label>
-                </div>
-              </div>
-
-              <div className="col-6 col-md-12">
-                <div className="checkbox check-info my-1">
-                  <input type="checkbox"
-                    id="checkboxInfo"
-                    defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.INFO)}
-                    ref={(el) => this.checkboxInfo = el}
-                    onChange={() => this.updateFilters()} />
-                  <label htmlFor="checkboxInfo">{LOGGER_MSG_TYPES.INFO}</label>
-                </div>
-              </div>
-
-              <div className="col-6 col-md-12">
-                <div className="checkbox check-warning my-1">
-                  <input type="checkbox"
-                    id="checkboxDebug"
-                    defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.DEBUG)}
-                    ref={(el) => this.checkboxDebug = el}
-                    onChange={() => this.updateFilters()} />
-                  <label htmlFor="checkboxDebug">{LOGGER_MSG_TYPES.DEBUG}</label>
-                </div>
-              </div>
-
-              <div className="col-6 col-md-12">
-                <div className="checkbox check-danger my-1">
-                  <input type="checkbox"
-                    id="checkboxError"
-                    defaultChecked={this.props.timeNodeStore.showLogTypes.includes(LOGGER_MSG_TYPES.ERROR)}
-                    ref={(el) => this.checkboxError = el}
-                    onChange={() => this.updateFilters()} />
-                  <label htmlFor="checkboxError">{LOGGER_MSG_TYPES.ERROR}</label>
-                </div>
-              </div>
-
-            </div>
+        <div className="m-b-20">
+          <div className="btn-group" data-toggle="buttons">
+            <label className="btn btn-default active" aria-pressed="true" data-log-type={ LOG_TYPE.BASIC } onClick={this.updateType.bind(this)}>
+              <input type="radio" name="options" />
+              Basic
+            </label>
+            <label className="btn btn-default" aria-pressed="true" data-log-type={ LOG_TYPE.DETAILED } onClick={this.updateType.bind(this)}>
+              <input type="radio" name="options" checked="" />
+              Detailed
+            </label>
           </div>
-
-          <div className="col-md-10">
-            <div data-pages="card" className="card card-default">
-              <div className="card-header">
-                <div className="card-title">Logs</div>
-                <div className="card-controls">
-                  <ul>
-                    <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div id="timenodeLogsField" className="card-body">
-                {this.props.timeNodeStore.filteredLogs.map((log, index) => {
-                  return (
-                    <p key={index} className="no-margin">
-                      <span>{this.formatUnix(log.timestamp)}</span> [{log.type.toUpperCase()}] {log.message}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        <div data-pages="card" className="card card-default">
+          <div className="card-header">
+            <div className="card-title">Logs</div>
+            <div className="card-controls">
+              <ul>
+                <li>
+                  <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div id="timenodeLogsField" className="card-body">
+            {this.props.timeNodeStore.logs.map((log, index) => {
+              return (
+                <p key={index} className="no-margin">
+                  <span>{this.formatUnix(log.timestamp)}</span> [{log.type.toUpperCase()}] {log.message}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     );
   }

@@ -13,6 +13,7 @@ class SidePanel extends Component {
     this.state = {
       blocknumber: ''
     };
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   componentWillMount() {
@@ -28,8 +29,14 @@ class SidePanel extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
-
     jQuery.Pages.init();
+
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(this.getCurrentBlock, 10000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
@@ -63,6 +70,11 @@ class SidePanel extends Component {
         title: 'TimeNode',
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
+      },
+      {
+        title: 'Faucet',
+        titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
       },
     ];
 
@@ -123,15 +135,21 @@ class SidePanel extends Component {
               </a>
             </li>
             <li>
+              <NavLink to="/faucet">
+                <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                <span className={entryList[3].thumbnailClasses}><i className="fas fa-tint"></i></span>
+              </NavLink>
+            </li>
+            <li>
               <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">
                 <span className="title">Help</span>
                 <span className="icon-thumbnail"><i className="far fa-question-circle"></i></span>
               </a>
             </li>
 
-            <hr id="sidebar-separator" className="d-sm-block d-md-none mx-4"/>
+            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4"/>
 
-            <li className="d-sm-block d-md-none">
+            <li className="d-md-block d-lg-none">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
@@ -144,7 +162,7 @@ class SidePanel extends Component {
               </div>
             </li>
 
-            <li className="d-sm-block d-md-none">
+            <li className="d-md-block d-lg-none">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import TimeSettings from '../ScheduleWizard/TimeSettings';
-import InfoSettings from '../ScheduleWizard/InfoSettings';
-import BountySettings from '../ScheduleWizard/BountySettings';
-import ConfirmSettings from '../ScheduleWizard/ConfirmSettings';
-import PoweredByEAC from './PoweredByEAC';
+import TimeSettings from './TimeSettings';
+import InfoSettings from './InfoSettings';
+import BountySettings from './BountySettings';
+import ConfirmSettings from './ConfirmSettings';
+import PoweredByEAC from '../Common/PoweredByEAC';
+import { showNotification } from '../../services/notification';
 
 @inject('web3Service')
 @inject('scheduleStore')
@@ -104,6 +105,10 @@ class ScheduleWizard extends Component {
   }
 
   async scheduleTransaction() {
+    this.scheduleBtn.innerHTML = 'Scheduling...';
+    var originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
     let executionTime, executionWindow;
 
@@ -124,22 +129,33 @@ class ScheduleWizard extends Component {
     timeBounty = web3.toWei(timeBounty, 'ether');
     deposit = web3.toWei(deposit, 'ether');
 
-    const scheduled = await transactionStore.schedule(toAddress,
-                                                    yourData,
-                                                    gasAmount,
-                                                    amountToSend,
-                                                    executionWindow,
-                                                    executionTime,
-                                                    gasPrice,
-                                                    fee,
-                                                    timeBounty,
-                                                    deposit,
-                                                    false, //do not wait for mining to return values
-                                                    isUsingTime
-                                                  );
-    if (scheduled) {
+    try {
+      const scheduled = await transactionStore.schedule(
+        toAddress,
+        yourData,
+        gasAmount,
+        amountToSend,
+        executionWindow,
+        executionTime,
+        gasPrice,
+        fee,
+        timeBounty,
+        deposit,
+        false, //do not wait for mining to return values
+        isUsingTime
+      );
+
+      if (scheduled) {
+        scheduleStore.reset();
         history.push('/awaiting/scheduler/' + scheduled.transactionHash);
+        document.body.className = originalBodyCss;
       }
+    } catch (error) {
+      showNotification('Transaction cancelled by the user.', 'danger', 4000);
+    }
+
+    this.scheduleBtn.innerHTML = 'Schedule';
+    document.body.className = originalBodyCss;
   }
 
   componentDidMount() {
@@ -200,9 +216,6 @@ class ScheduleWizard extends Component {
           <BountySettings {..._validationProps}/>
           <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
-          <div className="d-sm-block d-md-none">
-            <hr/>
-          </div>
           <div className="row">
             <div className="d-none d-md-block col-md-2">
               <PoweredByEAC className="footer-buttons"/>
@@ -212,22 +225,26 @@ class ScheduleWizard extends Component {
               <ul className="pager wizard no-style">
                 <li className="next">
                   <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                    <span>Next</span>
+                    Next
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right" type="button" onClick={this.scheduleTransaction} disabled={!this.props.isWeb3Usable}>
-                    <span>Schedule</span>
+                  <button className="btn btn-primary btn-cons pull-right"
+                    type="button"
+                    ref={(el) => this.scheduleBtn = el}
+                    onClick={this.scheduleTransaction}
+                    disabled={!this.props.isWeb3Usable}>
+                    Schedule
                   </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                    <span>First</span>
+                    First
                   </button>
                   </li>
                 <li className="previous">
                   <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
-                    <span>Previous</span>
+                    Previous
                   </button>
                 </li>
               </ul>

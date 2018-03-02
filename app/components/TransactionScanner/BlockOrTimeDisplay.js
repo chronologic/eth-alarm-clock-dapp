@@ -24,7 +24,7 @@ export class BlockOrTimeDisplay extends Component {
       return moment.duration(seconds, 'seconds').format('d [days], h [hours], m [minutes]');
     }
 
-    return moment.unix(seconds).tz('Europe/Berlin').format('YYYY-MM-DD HH:MM z');
+    return moment.unix(seconds).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm z');
   }
 
   async getLastBlockTimestamp() {

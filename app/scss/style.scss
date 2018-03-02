@@ -159,19 +159,16 @@ hr {
   height: 100%;
 }
 
-
-@media (min-width:589px) {
-  .subsection .tab-content {
-    height: 560px;
-  }
-  .subsection .tab-pane.active {
-  	overflow-x: hidden;
-  	overflow-y: auto;
-  	height:90%;
-  }
+.subsection .tab-content {
+  padding: 40px;
 }
 
-#scheduleWizard .footer-buttons,.subsection .footer-buttons{
+
+.subsection .tab-pane.active {
+	margin-bottom: 80px;
+}
+
+#scheduleWizard .footer-buttons, .subsection .footer-buttons{
 	margin-top: 15px;
 	display:block;
 	height:6.5%;
@@ -195,10 +192,6 @@ hr {
   color: #fff;
 }
 
-#scheduleWizard .tab-content {
-  padding: 40px;
-}
-
 #scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
   border-top-color: transparent;
 }
@@ -218,4 +211,13 @@ hr {
 
 #sidebar-separator {
   border-color: #1D1F27;
+}
+
+#signatureCheck {
+  height: 250px;
+}
+
+.fade-me {
+  opacity: 0.5; 
+  background: #000;
 }

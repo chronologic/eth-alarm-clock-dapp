@@ -8,16 +8,15 @@ export const LOGGER_MSG_TYPES = {
   ERROR: 'Error'
 };
 
+export const LOG_TYPE = {
+  BASIC: 'basic',
+  DETAILED: 'detailed'
+};
+
 export default class WorkerLogger {
   // 1 - debug / cache
   // 2 - info
   // 3 - error
-
-  constructor(logLevel, logs) {
-    this.logLevel = logLevel;
-    this.logs = logs;
-  }
-
   cache(message) {
     this.log(message, LOGGER_MSG_TYPES.CACHE);
   }

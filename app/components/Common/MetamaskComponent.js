@@ -8,6 +8,10 @@ import Cookies from 'js-cookie';
 @observer
 class MetamaskComponent extends Component {
 
+  state = {
+    accounts: ''
+  }
+
   showAlert(args) {
     return (
       <Alert {...args} />
@@ -23,16 +27,14 @@ class MetamaskComponent extends Component {
     return (web3Service.web3.isConnected() && typeof web3Service.accounts !== 'undefined' && web3Service.accounts !== null && web3Service.accounts.length > 0);
   }
 
-  async resolveWeb3() {
+  runNotifications () {
     const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
-
     /*
-     * Detects if the Metamask state (installed/not installed)
-     * has changed since the last page refresh/state change.
-     * - Shows the notification only if the state has changed since previous load.
-     * - Uses cookies to save the states
-     */
+ * Detects if the Metamask state (installed/not installed)
+ * has changed since the last page refresh/state change.
+ * - Shows the notification only if the state has changed since previous load.
+ * - Uses cookies to save the states
+ */
     const metamaskInstalled = web3Service.web3.isConnected() && web3Service.connectedToMetaMask;
     const hasPreviousMetamaskState = Cookies.get('metamaskInstalled') !== undefined;
     const previousMetamaskState = Cookies.get('metamaskInstalled') === 'true';
@@ -41,10 +43,10 @@ class MetamaskComponent extends Component {
     if (!hasPreviousMetamaskState || hasChangedMetamaskState) {
       if (metamaskInstalled) {
         showNotification(`<b>Metamask connected</b>`, 'success');
-        showNotification(`You are connected to ${ web3Service.network }`, 'info');
+        showNotification(`You are connected to ${web3Service.network}`, 'info');
       } else {
-        showNotification(`<b>Metamask is not installed</b>`, undefined, undefined, false);
-        showNotification(`<b>Metamask</b> is required to use this Dapp <a href='https://metamask.io' target='_blank' >https://metamask.io</a>`,'warning');
+        showNotification(`<b>Metamask is not installed</b>`, undefined, undefined, undefined, false);
+        showNotification(`<b>Metamask</b> is required to use this Dapp <a href='https://metamask.io' target='_blank' >https://metamask.io</a>`, 'warning');
       }
       Cookies.set('metamaskInstalled', metamaskInstalled, { expires: 30 });
     }
@@ -66,8 +68,33 @@ class MetamaskComponent extends Component {
     }
   }
 
+  async scoutUpdates () {
+    const SCOUT_TIMEOUT = 1000;
+    const { web3Service } = this.props;
+    await web3Service.getAccountUpdates();
+    const accountsChanged = this.state.accounts.length !== web3Service.accounts.length || (this.state.accounts.length > 0 && this.state.accounts[0] !== web3Service.accounts[0]);
+    if (accountsChanged) {
+      this.setState({ accounts: web3Service.accounts });
+      showNotification(`Accounts updated`, 'info');
+    }
+    this.timeout = setTimeout ( () => this.scoutUpdates(), SCOUT_TIMEOUT );
+    this.runNotifications();
+  }
+
+  async resolveWeb3() {
+    const { web3Service } = this.props;
+    await web3Service.awaitInitialized();
+    this.setState({ accounts: web3Service.accounts });
+    this.scoutUpdates();
+    this.runNotifications();
+  }
+
   componentDidMount() {
     this.resolveWeb3();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
   }
 }
 
