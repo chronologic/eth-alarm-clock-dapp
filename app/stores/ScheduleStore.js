@@ -17,7 +17,7 @@ export default class ScheduleStore {
   //BountySettings
   @observable requireDeposit = true;
   @observable timeBounty = '';
-  @observable deposit = '';
+  @observable deposit = 0;
 
   //infoSettings
   @observable toAddress = '';
