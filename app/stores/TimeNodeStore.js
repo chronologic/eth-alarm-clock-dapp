@@ -137,6 +137,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+    Cookies.set('isTimenodeScanning', true, { expires: 30 });
   }
 
   stopScanning() {
@@ -147,6 +148,7 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
     });
+    Cookies.remove('isTimenodeScanning');
   }
 
   encrypt(message) {
