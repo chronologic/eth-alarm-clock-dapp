@@ -66,7 +66,7 @@ class TransactionsRow extends Component {
   async componentDidMount() {
     this._isMounted = true;
 
-    this.getUpdatedState();
+    await this.getUpdatedState();
   }
 
   async componentWillUnmount() {
