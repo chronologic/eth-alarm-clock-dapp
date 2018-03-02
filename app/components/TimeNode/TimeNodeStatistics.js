@@ -197,7 +197,7 @@ class TimeNodeStatistics extends Component {
 
         <div className="row">
 
-          <div className="col-md-3">
+          <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Claimed</div>
@@ -215,7 +215,7 @@ class TimeNodeStatistics extends Component {
             </div>
           </div>
 
-          <div className="col-md-3">
+          <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Executed: {this.props.timeNodeStore.totalExecuted}</div>
@@ -233,7 +233,7 @@ class TimeNodeStatistics extends Component {
             </div>
           </div>
 
-          <div className="col-md-3">
+          <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Balance</div>
