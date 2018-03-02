@@ -7,7 +7,9 @@ node_js:
 cache:
   directories:
     - node_modules
-install: npm install
+install: 
+  - npm install
+  - npm ls
 script:
   - npm run lint
   - npm run build
