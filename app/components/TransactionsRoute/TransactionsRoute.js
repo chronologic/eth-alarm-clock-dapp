@@ -12,7 +12,7 @@ import TransactionDetailsRoute from './TransactionDetailsRoute';
 class TransactionsRoute extends MetamaskComponent {
   render() {
     return (
-      <div id="transactionScanner" className="container-fluid container-fixed-lg padding-25 sm-padding-10 subsection">
+      <div id="transactionScanner" className="padding-25 sm-padding-10 subsection">
         <Switch>
           <Redirect exact path="/transactions" to="/transactions/completed"/>
           <Route path="/transactions/completed" component={TransactionsCompleted}/>
