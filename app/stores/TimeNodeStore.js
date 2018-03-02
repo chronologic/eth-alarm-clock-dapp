@@ -91,7 +91,7 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = this._web3Service.toEth(event.data.etherGain);
+        this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
       }
     };
@@ -137,6 +137,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+    Cookies.set('isTimenodeScanning', true, { expires: 30 });
   }
 
   stopScanning() {
@@ -147,6 +148,7 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
     });
+    Cookies.remove('isTimenodeScanning');
   }
 
   encrypt(message) {

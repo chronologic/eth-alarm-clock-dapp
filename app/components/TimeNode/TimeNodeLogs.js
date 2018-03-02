@@ -21,46 +21,41 @@ class TimeNodeLogs extends Component {
   render() {
     return (
       <div id="timeNodeLogs">
-        <div className="row">
-          <div className="col-md-2 m-b-20">
-            <p><b>Log:</b></p>
-            <div>
-              <div className="btn-group" data-toggle="buttons">
-                <label className="btn btn-default active" aria-pressed="true" data-log-type={ LOG_TYPE.BASIC } onClick={this.updateType.bind(this)}>
-                  <input type="radio" name="options" />
-                  Basic
-                </label>
-                <label className="btn btn-default" aria-pressed="true" data-log-type={ LOG_TYPE.DETAILED } onClick={this.updateType.bind(this)}>
-                  <input type="radio" name="options" checked="" />
-                  Detailed
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-10">
-            <div data-pages="card" className="card card-default">
-              <div className="card-header">
-                <div className="card-title">Logs</div>
-                <div className="card-controls">
-                  <ul>
-                    <li>
-                      <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div id="timenodeLogsField" className="card-body">
-                {this.props.timeNodeStore.logs.map((log, index) => {
-                  return (
-                    <p key={index} className="no-margin">
-                      <span>{this.formatUnix(log.timestamp)}</span> [{log.type.toUpperCase()}] {log.message}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
+        <div className="m-b-20">
+          <div className="btn-group" data-toggle="buttons">
+            <label className="btn btn-default active" aria-pressed="true" data-log-type={ LOG_TYPE.BASIC } onClick={this.updateType.bind(this)}>
+              <input type="radio" name="options" />
+              Basic
+            </label>
+            <label className="btn btn-default" aria-pressed="true" data-log-type={ LOG_TYPE.DETAILED } onClick={this.updateType.bind(this)}>
+              <input type="radio" name="options" checked="" />
+              Detailed
+            </label>
           </div>
         </div>
+
+        <div data-pages="card" className="card card-default">
+          <div className="card-header">
+            <div className="card-title">Logs</div>
+            <div className="card-controls">
+              <ul>
+                <li>
+                  <a data-toggle="refresh" className="card-refresh" href="#"><i className="card-icon card-icon-refresh"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div id="timenodeLogsField" className="card-body">
+            {this.props.timeNodeStore.logs.map((log, index) => {
+              return (
+                <p key={index} className="no-margin">
+                  <span>{this.formatUnix(log.timestamp)}</span> [{log.type.toUpperCase()}] {log.message}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     );
   }
