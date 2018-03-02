@@ -104,7 +104,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div ref={(el) => this.chartContainer = el} className="card-body no-padding">
-                {this.props.timeNodeStore.executedTransactions.length > 0 ? <ExecutedGraph /> : <p className="my-5 text-center">'No data yet.'</p>}
+                {this.props.timeNodeStore.executedTransactions.length > 0 ? <ExecutedGraph /> : <p className="my-5 text-center">No data yet.</p>}
               </div>
             </div>
           </div>
