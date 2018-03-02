@@ -24,7 +24,10 @@ export class TEMPORAL_UNIT {
 const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
   EmptyToAddress: 'Please enter recipient address.',
   CallGasTooHigh: 'Call gas is too high.',
-  ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.'
+  ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.',
+  InsufficientEndowment: 'Automatically calculated endowment is insufficient. Please contact developers.',
+  ReservedWindowBiggerThanExecutionWindow: 'Reserved window is bigger than execution window.',
+  InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
 };
 
 const SCHEDULING_GAS_LIMIT = 1500000;
@@ -228,8 +231,8 @@ export class TransactionStore {
         windowStart,
         callGas,
         callValue,
-        requiredDeposit,
-        1
+        gasPrice,
+        requiredDeposit
       ],
       callData,
       endowment
