@@ -53,9 +53,7 @@ class TransactionsRow extends Component {
     };
   }
 
-  async componentDidMount() {
-    this._isMounted = true;
-
+  async getUpdatedState() {
     const preparedState = await this.getPreparedState();
 
     if (!this._isMounted) {
@@ -65,11 +63,18 @@ class TransactionsRow extends Component {
     this.setState(preparedState);
   }
 
+  async componentDidMount() {
+    this._isMounted = true;
+
+    await this.getUpdatedState();
+  }
+
   async componentWillUnmount() {
     this._isMounted = false;
   }
 
   render() {
+    this.getUpdatedState();
     const { showStatus, transaction } = this.props;
     const { bounty, deposit, status, time, timeWindow, value } = this.state;
 
