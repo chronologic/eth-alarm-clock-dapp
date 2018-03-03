@@ -184,11 +184,13 @@ class ScheduleWizard extends Component {
       if (scheduled) {
         scheduleStore.reset();
         history.push('/awaiting/scheduler/' + scheduled.transactionHash);
+        document.body.className = originalBodyCss;
       }
     } catch (error) {
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
-      this.scheduleBtn.innerHTML = 'Schedule';
     }
+
+    this.scheduleBtn.innerHTML = 'Schedule';
     document.body.className = originalBodyCss;
   }
 
