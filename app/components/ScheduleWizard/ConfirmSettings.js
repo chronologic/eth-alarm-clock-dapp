@@ -52,19 +52,30 @@ class ConfirmSettings extends Component {
   }
 
   infoSettingsValidations() {
-    return !this.props.infoTabValidator ? <Alert {...{ msg: 'Error in required fields on info tab' }} /> : null;
+    return !this.props.infoTabValidator ? 'info' : null;
   }
 
   bountySettingsValidations() {
-    return !this.props.bountyTabValidator ? <Alert {...{ msg: 'Error in required fields on bounty tab' }} /> : null;
+    return !this.props.bountyTabValidator ? 'bounty' : null;
   }
 
   timeSettingsValidations() {
-    return !this.props.timeTabValidator ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
-  }block
+    const { scheduleStore } = this.props;
+    return scheduleStore.isUsingTime && !this.props.timeTabValidator ? 'time' : null;
+  }
 
   blockComponentValidations() {
-    return !this.props.blockTabValidator ? <Alert {...{ msg: 'Error in required fields on time tab' }} /> : null;
+    const { scheduleStore } = this.props;
+    return !scheduleStore.isUsingTime && !this.props.blockTabValidator ? 'block' : null;
+  }
+
+  tabValidations() {
+    const errors = [];
+    this.infoSettingsValidations() ? errors.push(this.infoSettingsValidations()) : null;
+    this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
+    this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
+    this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
+    return errors.length > 0 ? <Alert {...{ msg: 'Error found in tabs: ' + errors.join(',') }}  /> : null; 
   }
 
   render() {
@@ -74,9 +85,7 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-        {this.infoSettingsValidations()}
-        {this.bountySettingsValidations()}
-        {((scheduleStore.isUsingTime && this.timeSettingsValidations()) || this.blockComponentValidations())}
+        {this.tabValidations()}
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
