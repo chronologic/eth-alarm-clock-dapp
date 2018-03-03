@@ -103,6 +103,42 @@ class ScheduleWizard extends Component {
     const { scheduleStore } = this.props;
     return scheduleStore.customWindow && this._validations.TimeSettings.TimeComponent.customWindow;
   }
+  get TimeComponentValidations() {
+    const { scheduleStore } = this.props;
+    const _timeZone = Boolean(scheduleStore.timeZone) && this._validations.TimeSettings.TimeComponent.timeZone;
+    const _transactionDate = Boolean(scheduleStore.transactionDate) && this._validations.TimeSettings.TimeComponent.transactionDate;
+    const _transactionTime = Boolean(scheduleStore.transactionTime) && this._validations.TimeSettings.TimeComponent.transactionTime;
+    const _executionWindow = (Boolean(scheduleStore.customWindow) && this._validations.TimeSettings.TimeComponent.customWindow) || (Boolean(scheduleStore.executionWindow) && this._validations.TimeSettings.TimeComponent.executionWindow);
+    return _timeZone && _transactionDate && _transactionTime && _executionWindow;
+  }
+  get blockComponentValidations() {
+    const { scheduleStore } = this.props;
+    const _blockNumber = Boolean(scheduleStore.blockNumber) && this._validations.TimeSettings.BlockComponent.blockNumber;
+    const _blockSize = Boolean(scheduleStore.blockSize) && this._validations.TimeSettings.BlockComponent.blockSize;
+    return _blockNumber && _blockSize;
+  }
+  get bountySettingsValidation() {
+    const { scheduleStore } = this.props;
+    const _timeBounty = Boolean(scheduleStore.timeBounty) && this._validations.BountySettings.timeBounty;
+    const _deposit = !scheduleStore.requireDeposit || (Boolean(scheduleStore.deposit) && this._validations.BountySettings.deposit);
+    return _timeBounty && _deposit;
+  }
+
+  get infoSettingsValidations() {
+    const { scheduleStore } = this.props;
+    const _addr = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.toAddress;
+    const _gasAmount = Boolean(scheduleStore.gasAmount) && this._validations.InfoSettings.gasAmount;
+    const _amountToSend = Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
+    const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
+    const _yourData = !scheduleStore.useData || (Boolean(scheduleStore.yourData) && this._validations.yourData);
+    return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
+  }
+
+  get scheduleDisabled() {
+    const { scheduleStore } = this.props;
+    const validations = !this.bountySettingsValidation || !this.props.isWeb3Usable || !this.infoSettingsValidations || !((scheduleStore.isUsingTime && this.TimeComponentValidations) || this.blockComponentValidations);
+    return validations;
+  }
 
   async scheduleTransaction() {
     this.scheduleBtn.innerHTML = 'Scheduling...';
@@ -214,7 +250,7 @@ class ScheduleWizard extends Component {
           <TimeSettings {..._validationProps}/>
           <InfoSettings {..._validationProps}/>
           <BountySettings {..._validationProps}/>
-          <ConfirmSettings {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
+          <ConfirmSettings infoTabValidator={this.infoSettingsValidations} timeTabValidator={this.TimeComponentValidations} blockTabValidator={this.blockComponentValidations} bountyTabValidator={this.bountySettingsValidation} {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
           <div className="row">
             <div className="d-none d-md-block col-md-2">
@@ -233,7 +269,7 @@ class ScheduleWizard extends Component {
                     type="button"
                     ref={(el) => this.scheduleBtn = el}
                     onClick={this.scheduleTransaction}
-                    disabled={!this.props.isWeb3Usable}>
+                    disabled={this.scheduleDisabled}>
                     Schedule
                   </button>
                 </li>
