@@ -11,6 +11,10 @@ class ConfirmSettings extends Component {
 
   constructor(props){
     super(props);
+    this.infoSettingsValidations = this.infoSettingsValidations.bind(this);
+    this.bountySettingsValidations = this.bountySettingsValidations.bind(this);
+    this.timeSettingsValidations = this.timeSettingsValidations.bind(this);
+    this.blockComponentValidations = this.blockComponentValidations.bind(this);
   }
 
   totalCost() {
@@ -47,6 +51,33 @@ class ConfirmSettings extends Component {
     return !this.props.isWeb3Usable ? <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} /> : null;
   }
 
+  infoSettingsValidations() {
+    return !this.props.infoTabValidator ? 'info' : null;
+  }
+
+  bountySettingsValidations() {
+    return !this.props.bountyTabValidator ? 'bounty' : null;
+  }
+
+  timeSettingsValidations() {
+    const { scheduleStore } = this.props;
+    return scheduleStore.isUsingTime && !this.props.timeTabValidator ? 'time' : null;
+  }
+
+  blockComponentValidations() {
+    const { scheduleStore } = this.props;
+    return !scheduleStore.isUsingTime && !this.props.blockTabValidator ? 'block' : null;
+  }
+
+  tabValidations() {
+    const errors = [];
+    this.infoSettingsValidations() ? errors.push(this.infoSettingsValidations()) : null;
+    this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
+    this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
+    this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
+    return errors.length > 0 ? <Alert {...{ msg: 'errors found in tabs: ' + errors.join(',') }}  /> : null;
+  }
+
   render() {
     const { scheduleStore } = this.props;
     const emptyFieldSign = '-';
@@ -54,7 +85,7 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-
+        {this.tabValidations()}
         <div className="row">
 
           <div className="col-sm-6 col-md-6">
@@ -135,7 +166,12 @@ ConfirmSettings.propTypes = {
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   isWeb3Usable: PropTypes.any,
-  isCustomWindow: PropTypes.any
+  isCustomWindow: PropTypes.any,
+  TimeComponentValidations: PropTypes.any,
+  bountyTabValidator: PropTypes.any,
+  infoTabValidator: PropTypes.any,
+  timeTabValidator: PropTypes.any,
+  blockTabValidator: PropTypes.any
 };
 
 export default ConfirmSettings;
