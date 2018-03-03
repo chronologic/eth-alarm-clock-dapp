@@ -124,7 +124,6 @@ export default class Web3Service {
                 this.connectedToMetaMask = false;
             }
 
-            window.web3 = web3;
             this.web3 = web3;
         }
 
