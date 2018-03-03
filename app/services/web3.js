@@ -37,13 +37,13 @@ export default class Web3Service {
     }
 
      toEth(_wei){
-        const _toWei = window.web3.toWei(_wei,'gwei') ;
-        const ethValue = window.web3.fromWei(_toWei,'ether');
+        const _toWei = this.web3.toWei(_wei,'gwei') ;
+        const ethValue = this.web3.fromWei(_toWei,'ether');
         return ethValue;
     }
 
     fromWei(wei) {
-        return window.web3.fromWei(wei);
+        return this.web3.fromWei(wei);
     }
 
     async fetchReceipt(hash) {
