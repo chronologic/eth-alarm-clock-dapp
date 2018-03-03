@@ -91,7 +91,7 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = this._web3Service.toEth(event.data.etherGain);
+        this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
       }
     };
@@ -137,6 +137,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+    Cookies.set('isTimenodeScanning', true, { expires: 30 });
   }
 
   stopScanning() {
@@ -147,6 +148,7 @@ export default class TimeNodeStore {
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
     });
+    Cookies.remove('isTimenodeScanning');
   }
 
   encrypt(message) {
@@ -196,13 +198,11 @@ export default class TimeNodeStore {
   }
 
   async getBalance(address = this.getMyAddress()) {
-    const web3 = this._web3Service.web3;
-
     const balance = await this._eacService.Util.getBalance(address);
-    const balanceEther = web3.fromWei(balance, 'ether');
 
-    this.balanceETH = balanceEther;
-    return balanceEther;
+    this.balanceETH = balance.div(10**18).toNumber().toFixed(2);
+
+    return this.balanceETH;
   }
 
   async getDAYBalance(address = this.getMyAttachedAddress()) {
