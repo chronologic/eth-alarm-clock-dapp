@@ -75,7 +75,7 @@ class ConfirmSettings extends Component {
     this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
     this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
     this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
-    return errors.length > 0 ? <Alert {...{ msg: 'Error found in tabs: ' + errors.join(',') }}  /> : null; 
+    return errors.length > 0 ? <Alert {...{ msg: 'Error found in tabs: ' + errors.join(',') }}  /> : null;
   }
 
   render() {

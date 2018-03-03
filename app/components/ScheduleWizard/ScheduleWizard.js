@@ -137,7 +137,6 @@ class ScheduleWizard extends Component {
   get scheduleDisabled() {
     const { scheduleStore } = this.props;
     const validations = !this.bountySettingsValidation || !this.props.isWeb3Usable || !this.infoSettingsValidations || !((scheduleStore.isUsingTime && this.TimeComponentValidations) || this.blockComponentValidations);
-    console.log('validations', validations, this.bountySettingsValidation, this.props.isWeb3Usable);
     return validations;
   }
 
