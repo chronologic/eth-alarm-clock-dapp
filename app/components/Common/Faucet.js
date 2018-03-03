@@ -39,7 +39,7 @@ class Faucet extends Component {
   }
 
   get isEligible() {
-    return this.state.loaded && this.networkHasFaucet && this.waitTimeLeft == 0;
+    return this.state.loaded && this.networkHasFaucet && this.state.defaultAccount && this.waitTimeLeft == 0;
   }
 
   get printWaitTime () {
