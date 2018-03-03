@@ -39,7 +39,7 @@ class Faucet extends Component {
   }
 
   get isEligible() {
-    return this.state.loaded && this.networkHasFaucet && this.waitTimeLeft == 0;
+    return this.state.loaded && this.networkHasFaucet && this.state.defaultAccount && this.waitTimeLeft == 0;
   }
 
   get printWaitTime () {
@@ -116,8 +116,9 @@ class Faucet extends Component {
   }
 
   async componentDidMount() {
-    const { web3Service, web3Service: { accounts } } = this.props;
+    const { web3Service } = this.props;
     await web3Service.awaitInitialized();
+    const { accounts } = web3Service;
     this.state.defaultAccount = accounts[0];
     this.state.faucetAddress = JSON.parse(process.env.DAY_FAUCET_ADDRESS)[web3Service.netId];
     await this.loadInfo();
