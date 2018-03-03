@@ -70,7 +70,7 @@ class TimeNodeProve extends Component {
                 <li>Copy generated signature</li>
                 <li>Paste the whole generated signature into the Signature field</li>
               </ol>
-              <a target="_blank" rel="noopener noreferrer">Watch Tutorial</a>
+              <a  className='d-none' target='_blank' rel='noopener noreferrer'>Watch Tutorial</a>
             </div>
 
             <div className="col-md-6 mt-3">
