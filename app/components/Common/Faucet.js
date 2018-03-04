@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
+import { BeatLoader } from 'react-spinners';
 import dayFaucetABI from '../../abi/dayFaucetABI';
 import { showNotification } from '../../services/notification';
-import { BeatLoader } from 'react-spinners';
+import MetamaskComponent from '../Common/MetamaskComponent';
 
 const Eth = 1e+18;
 
 @inject('web3Service')
 @observer
-class Faucet extends Component {
+class Faucet extends MetamaskComponent {
   constructor(props) {
     super(props);
     this.useFaucet = this.useFaucet.bind(this);
@@ -39,7 +40,7 @@ class Faucet extends Component {
   }
 
   get isEligible() {
-    return this.state.loaded && this.networkHasFaucet && this.state.defaultAccount && this.waitTimeLeft == 0;
+    return this.isWeb3Usable && this.state.loaded && this.networkHasFaucet && this.state.defaultAccount && this.waitTimeLeft == 0;
   }
 
   get printWaitTime () {
@@ -81,13 +82,17 @@ class Faucet extends Component {
 
   async loadInfo() {
     this.setState({ loaded: false });
+    const { web3Service } = this.props;
+    await web3Service.awaitInitialized();
 
-    if (!this.state.faucetAddress) {
+    const { accounts } = web3Service;
+    this.setState({ defaultAccount: accounts[0], faucetAddress: JSON.parse(process.env.DAY_FAUCET_ADDRESS)[web3Service.netId] });
+
+    if (!this.isWeb3Usable || !this.state.faucetAddress) {
       return;
     }
 
     const { web3Service: { web3 } } = this.props;
-
     this.instance = web3.eth.contract(dayFaucetABI).at(this.state.faucetAddress);
     this.setState({
       faucetBalance: Number( await Bb.fromCallback(callback => this.instance.getTokensBalance(callback))),
@@ -116,16 +121,13 @@ class Faucet extends Component {
   }
 
   async componentDidMount() {
-    const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
-    const { accounts } = web3Service;
-    this.state.defaultAccount = accounts[0];
-    this.state.faucetAddress = JSON.parse(process.env.DAY_FAUCET_ADDRESS)[web3Service.netId];
+    super.componentDidMount();
     await this.loadInfo();
     this.startInterval();
   }
 
   componentWillUnmount() {
+    super.componentWillUnmount();
     this.cancelInterval();
   }
 
