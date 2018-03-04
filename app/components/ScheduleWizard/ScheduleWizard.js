@@ -188,9 +188,10 @@ class ScheduleWizard extends Component {
       }
     } catch (error) {
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
-      this.scheduleBtn.innerHTML = 'Schedule';
-      document.body.className = originalBodyCss;
     }
+
+    this.scheduleBtn.innerHTML = 'Schedule';
+    document.body.className = originalBodyCss;
   }
 
   componentDidMount() {
