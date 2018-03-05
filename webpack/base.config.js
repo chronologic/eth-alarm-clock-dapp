@@ -5,8 +5,9 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 
 // Extracts the SCSS to a file
-const extractSass = new ExtractTextPlugin({
-  filename: './main.css'
+const extractSASS = new ExtractTextPlugin({
+  filename: './main.css',
+  ignoreOrder: false
 });
 
 module.exports = {
@@ -58,11 +59,6 @@ module.exports = {
       },
 
       {
-        test: /\.json$/,
-        use: 'json-loader'
-      },
-
-      {
         test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,
         include: path.resolve(__dirname, '../app'),
@@ -103,7 +99,7 @@ module.exports = {
       Popper: ['popper.js', 'default']
     }),
 
-    extractSass
+    extractSASS
   ]
 
 };

@@ -7,7 +7,7 @@ const Dotenv = require('dotenv-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = merge(baseConfig, {
-
+  mode: 'production',
   module: {
     rules: [
       // Loader for the stylesheets
@@ -43,40 +43,46 @@ module.exports = merge(baseConfig, {
      'process.env':{
        'NODE_ENV': JSON.stringify('production')
      }
-    }),
-    // Uglifies and minifies the JS
-    new UglifyJSPlugin({
-      uglifyOptions: {
-        mangle: {
-          keep_fnames: true
-        },
-        compress: {
-          warnings: false,
-          pure_getters: true,
-          unsafe_comps: true,
-          conditionals: true,
-          unused: true,
-          comparisons: true,
-          sequences: true,
-          dead_code: true,
-          evaluate: true,
-          if_return: true,
-          join_vars: true
-        },
-        exclude: [/\.min\.js$/gi], // skip pre-minified libs,
-        output: {
-          comments: false
-        }
-      }
-    }),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new CompressionPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: /\.js$|\.css$|\.html$/,
-      threshold: 10240,
-      minRatio: 0
     })
-  ]
+  ],
+
+  optimization: {
+    minimize: true,
+    minimizer: [
+      // Uglifies and minifies the JS
+      new UglifyJSPlugin({
+        uglifyOptions: {
+          mangle: {
+            keep_fnames: true
+          },
+          compress: {
+            warnings: false,
+            pure_getters: true,
+            unsafe_comps: true,
+            conditionals: true,
+            unused: true,
+            comparisons: true,
+            sequences: true,
+            dead_code: true,
+            evaluate: true,
+            if_return: true,
+            join_vars: true
+          },
+          exclude: [/\.min\.js$/gi], // skip pre-minified libs,
+          output: {
+            comments: false
+          }
+        }
+      }),
+      new webpack.optimize.AggressiveMergingPlugin(),
+      new webpack.optimize.OccurrenceOrderPlugin(),
+      new CompressionPlugin({
+        asset: '[path].gz[query]',
+        algorithm: 'gzip',
+        test: /\.js$|\.css$|\.html$/,
+        threshold: 10240,
+        minRatio: 0
+      })
+    ]
+  }
 });
