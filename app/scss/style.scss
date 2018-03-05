@@ -13,9 +13,6 @@ $primary-color: #21FFFF;
 
 .page-content-wrapper {
 	background: url(../assets/img/background.jpg) no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
   background-size: cover;
 }
 
@@ -133,17 +130,17 @@ hr {
 }
 
 .absolute-center {
-    height: 200px;
-    position: relative;
-    text-align: center;
+  height: 200px;
+  position: relative;
+  text-align: center;
 }
 
 .absolute-center span {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .loader{
@@ -219,8 +216,6 @@ hr {
 #scheduleWizard .nav-tabs-linetriangle > li > a.active::after {
   margin-left: 0px;
   border-color: #fff;
-  -webkit-clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
-  -moz-clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
   clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
 }
 
