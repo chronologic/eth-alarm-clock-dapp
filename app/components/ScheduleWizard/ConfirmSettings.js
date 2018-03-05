@@ -75,7 +75,7 @@ class ConfirmSettings extends Component {
     this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
     this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
     this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
-    return errors.length > 0 ? <Alert {...{ msg: 'errors found in tabs: ' + errors.join(',') }}  /> : null;
+    return errors.length > 0 ? <Alert {...{ msg: 'in tabs: ' + errors.join(', ') }}  /> : null;
   }
 
   render() {
@@ -88,7 +88,7 @@ class ConfirmSettings extends Component {
         {this.tabValidations()}
         <div className="row">
 
-          <div className="col-sm-6 col-md-6">
+          <div className="col-lg-6">
             <table className="table">
               <thead>
                 <tr>
@@ -121,7 +121,7 @@ class ConfirmSettings extends Component {
             </table>
           </div>
 
-          <div className="col-sm-6 col-md-6">
+          <div className="col-lg-6">
             <table className="table">
               <thead>
                 <tr className="d-none d-md-table-row">

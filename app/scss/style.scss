@@ -183,7 +183,6 @@ hr {
 }
 
 #scheduleWizard .nav li a {
-  text-align: center;
   font-size: 15px;
   color: transparentize($color: #fff, $amount: 0.5);
 }
@@ -192,8 +191,45 @@ hr {
   color: #fff;
 }
 
+#scheduleWizard .row.nav-tabs-linetriangle {
+  margin: 0;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 #scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
-  border-top-color: transparent;
+  border-color: transparent;
+  margin-left: 0px;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li > a:after {
+  border-color: #fff;
+  width: inherit;
+  content: "";
+  display: block;
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 50px;
+  height: 20px;
+  background-color: #fff;
+  z-index: 121;
+  border-left: 0px;
+}
+
+#scheduleWizard .nav-tabs-linetriangle > li > a.active:after {
+  border-color: #fff;
+  -webkit-clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
+  -moz-clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+#scheduleWizard td {
+  width: 50%;
 }
 
 .active-timenodes {
@@ -220,4 +256,10 @@ hr {
 .fade-me {
   opacity: 0.5; 
   background: #000;
+}
+
+@media(max-width: 768px) {
+  #scheduleWizard .nav li a .tab-icon-wrapper {
+    text-align: center !important;
+  }
 }
