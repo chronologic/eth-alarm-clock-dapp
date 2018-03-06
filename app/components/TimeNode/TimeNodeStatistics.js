@@ -106,7 +106,7 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshChart()}><i className="card-icon card-icon-refresh"></i></a>
+                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshStats()}><i className="card-icon card-icon-refresh"></i></a>
                     </li>
                   </ul>
                 </div>
