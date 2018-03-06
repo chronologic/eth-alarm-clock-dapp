@@ -219,29 +219,53 @@ class ScheduleWizard extends Component {
 
     return (
       <div id="scheduleWizard" className="subsection">
-        <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator">
+        <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator p-b-10">
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
-              <i className="far fa-clock tab-icon"></i>&nbsp;
-              <span className="d-none d-md-inline">Date & Time</span>
+              <div className="row">
+                <div className="col-md-4 text-right tab-icon-wrapper">
+                  <i className="far fa-clock tab-icon"/>
+                </div>
+                <div className="col-md-8 text-left">
+                  <span className="d-none d-md-inline">Date & Time</span>
+                </div>
+              </div>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
-              <i className="fas fa-info tab-icon"></i>&nbsp;
-              <span className="d-none d-md-inline">Information</span>
+              <div className="row">
+                <div className="col-md-4 text-right tab-icon-wrapper">
+                  <i className="fas fa-info tab-icon"/>
+                </div>
+                <div className="col-md-8 text-left">
+                  <span className="d-none d-md-inline">Information</span>
+                </div>
+              </div>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
-              <i className="fab fa-ethereum tab-icon"></i>&nbsp;
-              <span className="d-none d-md-inline">Bounty</span>
+              <div className="row">
+                <div className="col-md-4 text-right tab-icon-wrapper">
+                  <i className="fab fa-ethereum tab-icon"/>
+                </div>
+                <div className="col-md-8 text-left">
+                  <span className="d-none d-md-inline">Bounty</span>
+                </div>
+              </div>
             </a>
           </li>
           <li className="col-3 col-md-3">
             <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
-              <i className="fas fa-cloud-upload-alt tab-icon"></i>&nbsp;
-              <span className="d-none d-md-inline">Confirm</span>
+              <div className="row">
+                <div className="col-md-4 text-right tab-icon-wrapper">
+                  <i className="fas fa-cloud-upload-alt tab-icon"/>
+                </div>
+                <div className="col-md-8 text-left">
+                  <span className="d-none d-md-inline">Confirm</span>
+                </div>
+              </div>
             </a>
           </li>
         </ul>
