@@ -103,13 +103,6 @@ class TimeNodeStatistics extends Component {
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Executed: {this.props.timeNodeStore.totalExecuted}</div>
-                <div className="card-controls">
-                  <ul>
-                    <li>
-                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshChart()}><i className="card-icon card-icon-refresh"></i></a>
-                    </li>
-                  </ul>
-                </div>
               </div>
               <div ref={(el) => this.chartContainer = el} className="card-body no-padding">
                 {this.props.timeNodeStore.executedTransactions.length > 0 ? <ExecutedGraph /> : <p className="my-5 text-center">No data yet.</p>}
