@@ -156,7 +156,7 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Active TimeNodes</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes }</span>
+                    <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes}</span>
                   </div>
                 </div>
               </div>

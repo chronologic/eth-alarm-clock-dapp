@@ -52,7 +52,7 @@ class Header extends Component {
             <span className="active-timenodes">
               <i className="fa fa-sitemap"/>&nbsp;&nbsp;Active TimeNodes:&nbsp;
             </span>
-            <span className="timenode-count">{this.props.keenStore.activeTimeNodes }</span>
+            <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
           <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
