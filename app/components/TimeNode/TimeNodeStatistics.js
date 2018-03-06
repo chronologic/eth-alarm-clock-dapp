@@ -7,6 +7,7 @@ import ExecutedGraph from './ExecutedGraph';
 import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
+@inject('keenStore')
 @observer
 class TimeNodeStatistics extends Component {
   constructor(props) {
@@ -42,10 +43,12 @@ class TimeNodeStatistics extends Component {
 
   startTimeNode() {
     this.props.timeNodeStore.startScanning();
+    this.props.keenStore.activeTimeNodes += 1;
   }
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
+    this.props.keenStore.activeTimeNodes -= 1;
   }
 
   async refreshBalances() {
@@ -151,7 +154,8 @@ class TimeNodeStatistics extends Component {
 }
 
 TimeNodeStatistics.propTypes = {
-  timeNodeStore: PropTypes.any
+  timeNodeStore: PropTypes.any,
+  keenStore: PropTypes.any
 };
 
 export default TimeNodeStatistics;

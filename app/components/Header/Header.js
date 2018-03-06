@@ -4,7 +4,6 @@ import { observer,inject } from 'mobx-react';
 
 @inject('web3Service')
 @inject('keenStore')
-@inject('timeNodeStore')
 @observer
 class Header extends Component {
 
@@ -53,7 +52,7 @@ class Header extends Component {
             <span className="active-timenodes">
               <i className="fa fa-sitemap"/>&nbsp;&nbsp;Active TimeNodes:&nbsp;
             </span>
-            <span className="timenode-count">{this.props.keenStore.activeTimeNodes + this.props.timeNodeStore.scanningStarted ? 1 : 0 }</span>
+            <span className="timenode-count">{this.props.keenStore.activeTimeNodes }</span>
           </div>
           <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
@@ -76,8 +75,7 @@ class Header extends Component {
 Header.propTypes = {
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
-  keenStore: PropTypes.any,
-  timeNodeStore: PropTypes.any
+  keenStore: PropTypes.any
 };
 
 export default Header;
