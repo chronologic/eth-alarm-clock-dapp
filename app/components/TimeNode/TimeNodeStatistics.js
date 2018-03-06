@@ -17,6 +17,7 @@ class TimeNodeStatistics extends Component {
     };
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
+    this.refreshStats = this.refreshStats.bind(this);
   }
 
   async componentWillMount() {
@@ -31,6 +32,10 @@ class TimeNodeStatistics extends Component {
     if (Cookies.get('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
       setTimeout(this.startTimeNode, 2000);
     }
+
+    this.refreshStats();
+    // Refreshes the stats every 5 seconds
+    this.interval = setInterval(this.refreshStats, 5000);
   }
 
   getStopButton() {
@@ -58,6 +63,10 @@ class TimeNodeStatistics extends Component {
 
   refreshStats() {
     this.props.timeNodeStore.updateStats();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
