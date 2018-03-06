@@ -224,9 +224,11 @@ export default class TimeNodeStore {
   }
 
   updateStats() {
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
-    });
+    if (this.eacWorker) {
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+      });
+    }
   }
 
   updateNodeStatus(balance) {
