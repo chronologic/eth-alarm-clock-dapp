@@ -7,6 +7,7 @@ import ExecutedGraph from './ExecutedGraph';
 import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
+@inject('keenStore')
 @observer
 class TimeNodeStatistics extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class TimeNodeStatistics extends Component {
     };
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
+    this.refreshStats = this.refreshStats.bind(this);
   }
 
   async componentWillMount() {
@@ -30,6 +32,10 @@ class TimeNodeStatistics extends Component {
     if (Cookies.get('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
       setTimeout(this.startTimeNode, 2000);
     }
+
+    this.refreshStats();
+    // Refreshes the stats every 5 seconds
+    this.interval = setInterval(this.refreshStats, 5000);
   }
 
   getStopButton() {
@@ -42,10 +48,12 @@ class TimeNodeStatistics extends Component {
 
   startTimeNode() {
     this.props.timeNodeStore.startScanning();
+    this.props.keenStore.activeTimeNodes += 1;
   }
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
+    this.props.keenStore.activeTimeNodes -= 1;
   }
 
   async refreshBalances() {
@@ -55,6 +63,10 @@ class TimeNodeStatistics extends Component {
 
   refreshStats() {
     this.props.timeNodeStore.updateStats();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
@@ -151,7 +163,8 @@ class TimeNodeStatistics extends Component {
 }
 
 TimeNodeStatistics.propTypes = {
-  timeNodeStore: PropTypes.any
+  timeNodeStore: PropTypes.any,
+  keenStore: PropTypes.any
 };
 
 export default TimeNodeStatistics;

@@ -18,15 +18,13 @@ module.exports = merge(baseConfig, {
             {
               loader: 'css-loader',
               options: {
-                minimize: true
+                minimize: true,
+                importLoaders: 1
               }
             },
-            {
-              loader: 'resolve-url-loader'
-            },
-            {
-              loader: 'sass-loader'
-            }
+            { loader: 'postcss-loader', options: { sourceMap: true } },
+            { loader: 'resolve-url-loader' },
+            { loader: 'sass-loader' }
           ],
           allChunks: false,
           fallback: 'style-loader'

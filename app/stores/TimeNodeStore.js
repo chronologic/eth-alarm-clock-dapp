@@ -81,7 +81,7 @@ export default class TimeNodeStore {
       logLevel: 1,
       milliseconds: 15000,
       autostart: false,
-      scan: 75,
+      scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
     };
@@ -224,9 +224,11 @@ export default class TimeNodeStore {
   }
 
   updateStats() {
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
-    });
+    if (this.eacWorker) {
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+      });
+    }
   }
 
   updateNodeStatus(balance) {
