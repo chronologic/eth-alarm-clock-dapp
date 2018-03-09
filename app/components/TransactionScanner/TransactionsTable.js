@@ -118,8 +118,8 @@ class TransactionsTable extends Component {
           </div>
         </div>
 
-        <div className={fetchingTransactions ? 'mt-4' : 'd-none'}>
-           <ScaleLoader loading={fetchingTransactions} color='blue'/>
+        <div className='loading-icon'>
+          <ScaleLoader loading={fetchingTransactions} color='#21FFFF'/>
         </div>
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
