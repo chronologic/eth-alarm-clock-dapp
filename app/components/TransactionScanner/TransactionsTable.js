@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TransactionRow from './TransactionRow';
+import { ScaleLoader } from 'halogenium';
 
 const INITIAL_STATE = {
   pages: [],
@@ -118,7 +119,7 @@ class TransactionsTable extends Component {
         </div>
 
         <div className={fetchingTransactions ? 'mt-4' : 'd-none'}>
-            Fetching transactions...
+           <ScaleLoader loading={fetchingTransactions} color='blue'/>
         </div>
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
