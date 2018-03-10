@@ -53,7 +53,7 @@ class TimeNodeStatistics extends Component {
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
-    this.props.keenStore.activeTimeNodes -= 1;
+    this.props.keenStore.activeTimeNodes = this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
   }
 
   async refreshBalances() {
