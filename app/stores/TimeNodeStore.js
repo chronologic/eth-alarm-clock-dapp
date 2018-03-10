@@ -129,7 +129,7 @@ export default class TimeNodeStore {
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
     }
-    
+
     this.scanningStarted = true;
 
     this.sendActiveTimeNodeEvent();
