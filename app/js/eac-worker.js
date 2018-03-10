@@ -61,10 +61,9 @@ class EacWorker {
   async startScanning() {
     await this.awaitalarmClientInitialized();
     if (!this.alarmClient) {
-      return this.startScanning();
+      return setTimeout(() => this.startScanning(), 100);
     }
       this.alarmClient.start();
-    //setTimeout( () => this.alarmClient.start(), 100 );
   }
 
   stopScanning() {
