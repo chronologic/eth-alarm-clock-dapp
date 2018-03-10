@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TransactionRow from './TransactionRow';
-import { ScaleLoader } from 'halogenium';
+import { PropagateLoader } from 'react-spinners';
 
 const INITIAL_STATE = {
   pages: [],
@@ -119,7 +119,7 @@ class TransactionsTable extends Component {
         </div>
 
         <div className='loading-icon'>
-          <ScaleLoader loading={fetchingTransactions} color='#21FFFF'/>
+          <PropagateLoader loading={fetchingTransactions} color='#21FFFF'/>
         </div>
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
