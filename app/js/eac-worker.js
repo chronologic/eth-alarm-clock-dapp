@@ -56,7 +56,9 @@ class EacWorker {
   }
 
   stopScanning() {
-    this.alarmClient.stop();
+    if (this.alarmClient) {
+      this.alarmClient.stop();
+    }
   }
 
   /*
