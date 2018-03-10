@@ -52,18 +52,20 @@ class EacWorker {
   }
 
   async awaitalarmClientInitialized () {
-    while (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
-      return setTimeout ( async () => await this.awaitalarmClientInitialized(), 500);
+    if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
+      let Promises = new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitalarmClientInitialized());
+        }, 500);
+      });
+      return Promises;
     }
     return true;
   }
 
   async startScanning() {
     await this.awaitalarmClientInitialized();
-    if (!this.alarmClient) {
-      return setTimeout(() => this.startScanning(), 100);
-    }
-      this.alarmClient.start();
+    this.alarmClient.start();
   }
 
   stopScanning() {

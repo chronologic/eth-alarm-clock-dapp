@@ -30,7 +30,7 @@ class TimeNodeStatistics extends Component {
   componentDidMount() {
     // Restarts the timenode in case the user refreshed the page with the timenode running
     if (Cookies.get('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
-      setTimeout(this.startTimeNode, 2000);
+      this.startTimeNode();
     }
 
     this.refreshStats();
