@@ -118,9 +118,11 @@ class TransactionsTable extends Component {
           </div>
         </div>
 
-        <div className='loading-icon'>
-          <PropagateLoader loading={fetchingTransactions} color='#21FFFF'/>
-        </div>
+        {fetchingTransactions &&
+          <div className='loading-icon'>
+            <PropagateLoader loading={fetchingTransactions} color='#21FFFF'/>
+          </div>
+        }
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
             No transactions.
