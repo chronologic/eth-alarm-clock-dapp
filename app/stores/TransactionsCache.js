@@ -143,7 +143,7 @@ export default class TransactionsCache {
       if (this.syncing) {
         await this.awaitSync();
       } else if (!cached || !this.running || this.allTransactions.length == 0) {
-        await this.getTransactions({});
+        return await this.getTransactions({});
       }
 
       await this.queryTransactions(this.allTransactions);
