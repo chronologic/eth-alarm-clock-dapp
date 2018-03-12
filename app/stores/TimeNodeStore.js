@@ -125,8 +125,26 @@ export default class TimeNodeStore {
     this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getMyAttachedAddress());
   }
 
-  startScanning() {
+  async awaitScanReady() {
+    if (!this.eacWorker || this.eacWorker === null || !this._keenStore || this._keenStore === null ) {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitScanReady());
+        }, 500);
+      });
+    }
+    return true;
+  }
+
+  async startScanning() {
+
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      return;
+    }
+
     this.scanningStarted = true;
+
+    await this.awaitScanReady();
 
     this.sendActiveTimeNodeEvent();
 
@@ -143,11 +161,15 @@ export default class TimeNodeStore {
   stopScanning() {
     this.scanningStarted = false;
 
-    clearInterval(this._timeNodeStatusCheckIntervalRef);
+    if (this._timeNodeStatusCheckIntervalRef) {
+      clearInterval(this._timeNodeStatusCheckIntervalRef);
+    }
 
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
-    });
+    if (this.eacWorker){
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
+      });
+    }
     Cookies.remove('isTimenodeScanning');
   }
 
@@ -219,6 +241,10 @@ export default class TimeNodeStore {
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
+
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      this.stopScanning();
+    }
 
     return balance;
   }

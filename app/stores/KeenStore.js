@@ -52,20 +52,31 @@ export class KeenStore {
     this.pollActiveTimeNodesCount();
   }
 
+  async awaitKeenInitialized () {
+    if (!this.networkId || !this.analysisClient || !this.trackingClient) {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitKeenInitialized());
+        }, 500);
+      });
+    }
+    return true;
+  }
+
   sendPageView() {
     this.trackingClient.recordEvent(COLLECTIONS.PAGEVIEWS, {
       title: document.title
     });
   }
 
-  sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
+  async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
     const event = {
       nodeAddress,
       dayAddress,
       networkId,
       status: 'active'
     };
-
+    await this.awaitKeenInitialized();
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 

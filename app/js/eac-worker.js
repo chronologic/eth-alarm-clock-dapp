@@ -51,12 +51,26 @@ class EacWorker {
     );
   }
 
-  startScanning() {
+  async awaitAlarmClientInitialized () {
+    if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitAlarmClientInitialized());
+        }, 500);
+      });
+    }
+    return true;
+  }
+
+  async startScanning() {
+    await this.awaitAlarmClientInitialized();
     this.alarmClient.start();
   }
 
   stopScanning() {
-    this.alarmClient.stop();
+    if (this.alarmClient) {
+      this.alarmClient.stop();
+    }
   }
 
   /*
