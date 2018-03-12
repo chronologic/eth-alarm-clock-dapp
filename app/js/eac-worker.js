@@ -53,12 +53,11 @@ class EacWorker {
 
   async awaitAlarmClientInitialized () {
     if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
-      let Promises = new Promise((resolve) => {
+      return new Promise((resolve) => {
         setTimeout(async () => {
           resolve(await this.awaitAlarmClientInitialized());
         }, 500);
       });
-      return Promises;
     }
     return true;
   }

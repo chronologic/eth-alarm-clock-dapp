@@ -127,12 +127,11 @@ export default class TimeNodeStore {
 
   async awaitScanReady() {
     if (!this.eacWorker || this.eacWorker === null || !this._keenStore || this._keenStore === null ) {
-      let Promises = new Promise((resolve) => {
+      return new Promise((resolve) => {
         setTimeout(async () => {
           resolve(await this.awaitScanReady());
         }, 500);
       });
-      return Promises;
     }
     return true;
   }

@@ -54,12 +54,11 @@ export class KeenStore {
 
   async awaitKeenInitialized () {
     if (!this.networkId || !this.analysisClient || !this.trackingClient) {
-      let Promises = new Promise((resolve) => {
+      return new Promise((resolve) => {
         setTimeout(async () => {
           resolve(await this.awaitKeenInitialized());
         }, 500);
       });
-      return Promises;
     }
     return true;
   }
