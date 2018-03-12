@@ -137,7 +137,7 @@ export default class TimeNodeStore {
   }
 
   async startScanning() {
-    
+
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
     }
