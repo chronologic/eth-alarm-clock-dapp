@@ -137,6 +137,11 @@ export default class TimeNodeStore {
   }
 
   async startScanning() {
+    
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      return;
+    }
+
     this.scanningStarted = true;
 
     await this.awaitScanReady();
@@ -156,11 +161,15 @@ export default class TimeNodeStore {
   stopScanning() {
     this.scanningStarted = false;
 
-    clearInterval(this._timeNodeStatusCheckIntervalRef);
+    if (this._timeNodeStatusCheckIntervalRef) {
+      clearInterval(this._timeNodeStatusCheckIntervalRef);
+    }
 
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
-    });
+    if (this.eacWorker){
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
+      });
+    }
     Cookies.remove('isTimenodeScanning');
   }
 
@@ -232,6 +241,10 @@ export default class TimeNodeStore {
 
     this.updateNodeStatus(balance);
     this.balanceDAY = balance;
+
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      this.stopScanning();
+    }
 
     return balance;
   }
