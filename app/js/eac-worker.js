@@ -51,11 +51,11 @@ class EacWorker {
     );
   }
 
-  async awaitalarmClientInitialized () {
+  async awaitAlarmClientInitialized () {
     if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
       let Promises = new Promise((resolve) => {
         setTimeout(async () => {
-          resolve(await this.awaitalarmClientInitialized());
+          resolve(await this.awaitAlarmClientInitialized());
         }, 500);
       });
       return Promises;
@@ -64,7 +64,7 @@ class EacWorker {
   }
 
   async startScanning() {
-    await this.awaitalarmClientInitialized();
+    await this.awaitAlarmClientInitialized();
     this.alarmClient.start();
   }
 
