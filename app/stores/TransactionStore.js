@@ -54,6 +54,7 @@ export class TransactionStore {
         transaction => matchesFilter.test(transaction.address)
       );
     }
+    return [];
   }
 
   get allTransactions () {
@@ -113,6 +114,10 @@ export class TransactionStore {
   async queryTransactions( { transactions, offset, limit, resolved } ) {
     const processed = [];
 
+    const total = transactions.length;
+
+    transactions = transactions.slice(offset, offset + limit);
+
     await this._cache.queryTransactions (transactions);
 
     for (let transaction of transactions) {
@@ -126,10 +131,6 @@ export class TransactionStore {
 
     transactions = processed;
 
-    const total = transactions.length;
-
-    transactions = transactions.slice(offset, offset + limit);
-
     return {
       transactions,
       total
@@ -139,7 +140,7 @@ export class TransactionStore {
   async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
     let transactions = await this.getTransactions( { startBlock, endBlock } );
 
-    if (typeof(resolved) !== 'undefined') {
+    if (typeof(resolved) !== 'undefined' && resolved !== null) {
       return this.queryTransactions( {
         transactions,
         offset,
