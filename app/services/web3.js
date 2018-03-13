@@ -174,7 +174,6 @@ export default class Web3Service {
         const ETHER_UNITS_VALUES_MAPPING = {
             WEI: 1,
             MWEI: 1000000,
-            FINNEY: 1000000000000000,
             ETH: 1000000000000000000
         };
 

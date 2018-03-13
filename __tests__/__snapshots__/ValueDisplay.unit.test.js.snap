@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ValueDisplay correctly displays prices 1`] = `"0 ETH"`;
+
+exports[`ValueDisplay correctly displays prices 2`] = `"1 WEI"`;
+
+exports[`ValueDisplay correctly displays prices 3`] = `"400 WEI"`;
+
+exports[`ValueDisplay correctly displays prices 4`] = `"0.00000000001 ETH"`;
+
+exports[`ValueDisplay correctly displays prices 5`] = `"0.00000000004 ETH"`;
+
+exports[`ValueDisplay correctly displays prices 6`] = `"6000 ETH"`;
