@@ -32,6 +32,7 @@ class TransactionScanner extends Component {
       offset
     };
 
+    options.resolveAll = this.props.resolveAll || false;
     if (this.props.includeResolved) {
       options.resolved = true;
     }
@@ -115,7 +116,8 @@ TransactionScanner.propTypes = {
   transactionStore: PropTypes.any,
   showStatus: PropTypes.bool,
   includeResolved: PropTypes.bool,
-  includeUnresolved: PropTypes.bool
+  includeUnresolved: PropTypes.bool,
+  resolveAll: PropTypes.bool
 };
 
 export default TransactionScanner;
