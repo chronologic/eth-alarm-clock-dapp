@@ -4,6 +4,7 @@ import EACJSClient from 'eac.js-client';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
+import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 
 const { Config, Scanner, StatsDB } = EACJSClient;
 
@@ -20,7 +21,15 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    this.browserDB = new Loki('stats.db');
+    const persistenceAdapter = new LokiIndexedAdapter();
+    this.browserDB = new Loki('stats.db', {
+      adapter: persistenceAdapter,
+      autoload: true,
+      // autoloadCallback: function() { console.log('Loaded stats.'); },
+      autosave: true,
+      // autosaveCallback: function() { console.log('Saved stats.'); }
+      autosaveInterval: 4000,
+    });
 
     const statsDB = new StatsDB(web3, this.browserDB);
 
@@ -44,7 +53,7 @@ class EacWorker {
     this.config.logger = logger;
     this.config.statsdb = statsDB;
 
-    this.config.statsdb.initialize(this.config.wallet.getAddresses());
+    await this.config.statsdb.initialize(this.config.wallet.getAddresses());
     this.alarmClient = new Scanner(
       options.milliseconds,
       this.config
@@ -75,7 +84,7 @@ class EacWorker {
 
   /*
    * Fetches the current stats of the Alarm Client
-   * And updates the TimeNodeStore.
+   * and updates the TimeNodeStore.
    */
   updateStats() {
     const stats = this.browserDB.getCollection('stats');
@@ -86,12 +95,12 @@ class EacWorker {
     // If it finds any data
     if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
-      etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
+      etherGain = accountStats.currentEther - accountStats.startingEther;
       executedTransactions = accountStats.executedTransactions;
 
     // Otherwise report the value as a zero
     } else {
-      etherGain = 0;
+      etherGain = null;
       executedTransactions = [];
     }
 
