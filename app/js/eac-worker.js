@@ -40,7 +40,7 @@ class EacWorker {
       scanSpread: options.scan,
       logfile: options.logfile,
       logLevel: options.logLevel,
-      walletFile: JSON.parse(options.keystore.toLowerCase()),
+      walletStore: JSON.parse(options.keystore.toLowerCase()),
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
@@ -52,8 +52,9 @@ class EacWorker {
 
     this.config.logger = logger;
     this.config.statsdb = statsDB;
+    const addresses = await this.config.wallet.getAddresses();
 
-    this.config.statsdb.initialize(this.config.wallet.getAddresses());
+    this.config.statsdb.initialize(addresses);
     this.alarmClient = new Scanner(
       options.milliseconds,
       this.config

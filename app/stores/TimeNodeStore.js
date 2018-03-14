@@ -233,13 +233,17 @@ export default class TimeNodeStore {
 
     const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
     const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
+
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });
-
     const balance = balanceNum.div(10**18).toNumber().toFixed(2);
 
-    this.updateNodeStatus(balance);
+    const mintingPower = await Bb.fromCallback((callback) => {
+      contract.getMintingPowerByAddress.call(address, callback);
+    });
+
+    this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
     this.balanceDAY = balance;
 
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
@@ -257,22 +261,20 @@ export default class TimeNodeStore {
     }
   }
 
-  updateNodeStatus(balance) {
+  getNodeStatus(balance, isTimeMint) {
     if (balance >= 3333) {
-      this.nodeStatus = TIMENODE_STATUS.MASTER_CHRONONODE;
+      return TIMENODE_STATUS.MASTER_CHRONONODE;
     } else if (balance >= 888) {
-      this.nodeStatus = TIMENODE_STATUS.CHRONONODE;
-    } else if (balance >= 333) {
-      this.nodeStatus = TIMENODE_STATUS.TIMENODE;
+      return TIMENODE_STATUS.CHRONONODE;
+    } else if (balance >= 333 || isTimeMint) {
+      return TIMENODE_STATUS.TIMENODE;
     } else {
-      this.nodeStatus = TIMENODE_STATUS.DISABLED;
+      return TIMENODE_STATUS.DISABLED;
     }
-
-    // TO-DO: TimeMint check
   }
 
   /*
-   * Checks if the signature from MyEtherWallet
+   * Checks if the signature from the wallet
    * (inputted by the user) is valid.
    */
   isSignatureValid(sigObject) {
