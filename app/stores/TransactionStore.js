@@ -54,6 +54,7 @@ export class TransactionStore {
         transaction => matchesFilter.test(transaction.address)
       );
     }
+    return [];
   }
 
   get allTransactions () {
@@ -110,8 +111,14 @@ export class TransactionStore {
     return transactions;
   }
 
-  async queryTransactions( { transactions, offset, limit, resolved } ) {
+  async queryTransactions( { transactions, offset, limit, resolved, resolveAll } ) {
     const processed = [];
+    let total = 0;
+
+    if (!resolveAll) {
+      total = transactions.length;
+      transactions = transactions.slice(offset, offset + limit);
+    }
 
     await this._cache.queryTransactions (transactions);
 
@@ -123,12 +130,12 @@ export class TransactionStore {
         processed.push(transaction);
       }
     }
-
     transactions = processed;
 
-    const total = transactions.length;
-
-    transactions = transactions.slice(offset, offset + limit);
+    if (resolveAll) {
+      total = transactions.length;
+      transactions = transactions.slice(offset, offset + limit);
+    }
 
     return {
       transactions,
@@ -136,15 +143,16 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
+  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved, resolveAll = false } ) {
     let transactions = await this.getTransactions( { startBlock, endBlock } );
 
-    if (typeof(resolved) !== 'undefined') {
+    if (typeof(resolved) !== 'undefined' && resolved !== null) {
       return this.queryTransactions( {
         transactions,
         offset,
         limit,
-        resolved
+        resolved,
+        resolveAll
       } );
     }
 
