@@ -190,7 +190,7 @@ class ScheduleWizard extends Component {
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
     }
 
-    this.scheduleBtn.innerHTML = 'Schedule';
+    if (this.scheduleBtn) this.scheduleBtn.innerHTML = 'Schedule';
     document.body.className = originalBodyCss;
   }
 
