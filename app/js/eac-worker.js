@@ -26,9 +26,7 @@ class EacWorker {
     this.browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
-      // autoloadCallback: function() { console.log('Loaded stats.'); },
       autosave: true,
-      // autosaveCallback: function() { console.log('Saved stats.'); },
       autosaveInterval: 4000
     });
 
