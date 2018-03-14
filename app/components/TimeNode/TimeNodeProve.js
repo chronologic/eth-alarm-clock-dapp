@@ -75,7 +75,7 @@ class TimeNodeProve extends Component {
 
             <div className='col-md-6 mt-3'>
               <div id='signatureCheck' className='form-group form-group-default'>
-                <label>Signature from MyEtherWallet</label>
+                <label>Signature from MyCrypto</label>
                 <textarea
                   placeholder='Paste Your Signature Here'
                   className='form-control h-100'
