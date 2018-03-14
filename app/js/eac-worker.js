@@ -5,6 +5,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
+import BigNumber from 'bignumber.js';
 
 const { Config, Scanner, StatsDB } = EACJSClient;
 
@@ -25,10 +26,10 @@ class EacWorker {
     this.browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
-      // autoloadCallback: function() { console.log('Loaded stats.'); },
+      autoloadCallback: function() { console.log('Loaded stats.'); },
       autosave: true,
-      // autosaveCallback: function() { console.log('Saved stats.'); }
-      autosaveInterval: 4000,
+      autosaveCallback: function() { console.log('Saved stats.'); },
+      autosaveInterval: 4000
     });
 
     const statsDB = new StatsDB(web3, this.browserDB);
@@ -96,7 +97,9 @@ class EacWorker {
     // If it finds any data
     if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
-      etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
+      const startingEth = BigNumber(accountStats.startingEther);
+      const currentEth = BigNumber(accountStats.currentEther);
+      etherGain = currentEth.minus(startingEth).toString();
       executedTransactions = accountStats.executedTransactions;
 
     // Otherwise report the value as a zero
