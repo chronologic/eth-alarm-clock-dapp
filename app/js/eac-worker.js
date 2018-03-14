@@ -53,7 +53,7 @@ class EacWorker {
     this.config.logger = logger;
     this.config.statsdb = statsDB;
 
-    await this.config.statsdb.initialize(this.config.wallet.getAddresses());
+    this.config.statsdb.initialize(this.config.wallet.getAddresses());
     this.alarmClient = new Scanner(
       options.milliseconds,
       this.config
@@ -95,7 +95,7 @@ class EacWorker {
     // If it finds any data
     if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
-      etherGain = accountStats.currentEther.minus(accountStats.startingEther);
+      etherGain = accountStats.currentEther.minus(accountStats.startingEther).toNumber();
       executedTransactions = accountStats.executedTransactions;
 
     // Otherwise report the value as a zero
