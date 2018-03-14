@@ -95,7 +95,7 @@ class EacWorker {
     // If it finds any data
     if (stats && stats.data && stats.data[0]) {
       const accountStats = stats.data[0];
-      etherGain = accountStats.currentEther - accountStats.startingEther;
+      etherGain = accountStats.currentEther.minus(accountStats.startingEther);
       executedTransactions = accountStats.executedTransactions;
 
     // Otherwise report the value as a zero
