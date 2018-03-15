@@ -43,20 +43,6 @@ export class TransactionStore {
 
   // Returns an array of transactions based on the current
   // state of the filter variable
-  @computed get filteredTransactions() {
-    const matchesFilter = new RegExp(this.filter, 'i');
-    if (!this.filter || this.filter.length < 20) {
-      return [];
-    }
-
-    if (this._cache.allTransactions) {
-      return this._cache.allTransactions.filter(
-        transaction => matchesFilter.test(transaction.address)
-      );
-    }
-    return [];
-  }
-
   @observable
   async getfilteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
