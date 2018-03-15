@@ -179,6 +179,8 @@ hr {
 
 #confirmSettings table td {
   padding: 10px 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .table tbody tr td {
@@ -223,10 +225,6 @@ hr {
   margin-left: 0px;
   border-color: #fff;
   clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
-}
-
-#scheduleWizard td {
-  width: 50%;
 }
 
 .active-timenodes {
