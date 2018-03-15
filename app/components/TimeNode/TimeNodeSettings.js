@@ -6,16 +6,46 @@ import { inject } from 'mobx-react';
 class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
-    this.resetVerify = this.resetVerify.bind(this);
+    this.resetWallet = this.resetWallet.bind(this);
+    this.clearStats = this.clearStats.bind(this);
   }
 
-  resetVerify() {
+  resetWallet() {
     this.props.timeNodeStore.resetWallet();
+    this.props.timeNodeStore.clearStats();
+  }
+
+  clearStats() {
+    this.props.timeNodeStore.clearStats();
+    this.props.timeNodeStore.updateStats();
   }
 
   render() {
     return (
       <div id="timeNodeSettings">
+
+        <div className="card card-transparent">
+          <div className="card-header separator">
+            <div className="card-title">
+              Clear Stats
+            </div>
+          </div>
+          <div className="card-block p-3">
+            <div className="row vertical-align">
+              <div className="col-md-8 col-lg-9 my-2">
+                <p className="m-0">You can reset your TimeNode statistics here - claimed ETH and executed transactions counter.</p>
+              </div>
+              <div className="col-md-4 col-lg-3">
+                <button className='btn btn-light'
+                  type='button'
+                  data-dismiss="modal"
+                  onClick={this.clearStats}>
+                  Clear Stats
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="card card-transparent">
           <div className="card-header separator">
@@ -36,7 +66,6 @@ class TimeNodeSettings extends Component {
             </div>
           </div>
         </div>
-
 
         <div className="modal fade stick-up" id="timeNodeDetachModal" tabIndex="-1" role="dialog" aria-labelledby="timeNodeDetachModalLabel" aria-hidden="true">
           <div className="modal-dialog">
@@ -65,7 +94,7 @@ class TimeNodeSettings extends Component {
                     <button className='btn btn-danger btn-block'
                       type='button'
                       data-dismiss="modal"
-                      onClick={this.resetVerify}>
+                      onClick={this.resetWallet}>
                       <strong>Detach</strong>
                     </button>
                   </div>

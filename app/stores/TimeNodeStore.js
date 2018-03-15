@@ -88,11 +88,18 @@ export default class TimeNodeStore {
 
     this.eacWorker.onmessage = (event) => {
       const { type } = event.data;
+
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         if (event.data.etherGain) this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
+        if (event.data.result) {
+          showNotification('Cleared the stats.', 'success');
+        } else {
+          showNotification('Unable to clear the stats.', 'danger', 3000);
+        }
       }
     };
 
@@ -261,6 +268,14 @@ export default class TimeNodeStore {
     }
   }
 
+  clearStats() {
+    if (this.eacWorker) {
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
+      });
+    }
+  }
+
   getNodeStatus(balance, isTimeMint) {
     if (balance >= 3333) {
       return TIMENODE_STATUS.MASTER_CHRONONODE;
@@ -357,6 +372,7 @@ export default class TimeNodeStore {
     Cookies.remove('attachedDAYAccount');
     this.hasWallet = false;
     this.attachedDAYAccount = '';
+    showNotification('Your wallet has been reset.', 'success');
   }
 
   checkPasswordMatchesKeystore(keystore, password) {
