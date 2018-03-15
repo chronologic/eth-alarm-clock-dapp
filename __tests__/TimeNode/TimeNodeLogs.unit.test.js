@@ -8,12 +8,12 @@ describe('TimeNodeLogs', () => {
     const timeNodeStore = {
       logs: [
         {
-          timestamp: '1521032727',
+          timestamp: 0,
           type: 'DEBUG',
           message: 'Scanning started.'
         },
         {
-          timestamp: '1521032730',
+          timestamp: 0,
           type: 'INFO',
           message: 'Transaction found.'
         }
