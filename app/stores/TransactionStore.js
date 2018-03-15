@@ -45,17 +45,47 @@ export class TransactionStore {
   // state of the filter variable
   @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
-    if (!this.filter && this.filter.length < 1) {
+    console.log(this.filter.length, this._cache.allTransactions)
+    if (!this.filter || this.filter.length < 20) {
       return [];
     }
 
     if (this._cache.allTransactions) {
       return this._cache.allTransactions.filter(
-        transaction => matchesFilter.test(transaction.address)
+        transaction => console.log(transaction) || matchesFilter.test(transaction.address)
       );
     }
     return [];
   }
+
+  @observable
+  async getfilteredTransactions() {
+    const matchesFilter = new RegExp(this.filter, 'i');
+    let addresses;
+    let transactions = [];
+
+    if (!this.filter || this.filter.length < 20) {
+      return [];
+    }
+
+    if (this._cache.allTransactionsAddresses) {
+      addresses = this._cache.allTransactionsAddresses.filter(
+        address => matchesFilter.test(address)
+      );
+      for (let address of addresses) {
+        console.log('new,', address)
+        const transaction = await this._cache.fetchCachedTransactionByAddress(address);
+        if (transaction) {
+          console.log(address, transaction.address)
+          transactions.push(transaction)
+        }
+      }
+      return transactions;
+    }
+
+    return [];
+  }
+
 
   get allTransactions () {
     return this._cache.allTransactions;

@@ -17,10 +17,18 @@ class SearchOverlay extends Component {
     };
   }
 
+  componentWillMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   async componentDidMount() {
     // This has to be changed after we implement a data layer (cache or db)
     // For now it always fetches all the transactions from eac.js on each page load
-    await this.props.transactionStore.getAllTransactions();
+    await this.props.transactionStore.getAllTransactionAddresses();
 
     this.setState({
       fetchedTransactions: true
