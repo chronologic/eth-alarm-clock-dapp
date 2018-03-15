@@ -29,7 +29,10 @@ class SidePanel extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
-    jQuery.Pages.init();
+
+    if (jQuery && jQuery.Pages) {
+      jQuery.Pages.init();
+    }
 
     // Check every 10 seconds if the block number changed
     this.interval = setInterval(this.getCurrentBlock, 10000);

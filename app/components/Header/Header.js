@@ -6,8 +6,6 @@ import { observer,inject } from 'mobx-react';
 @inject('keenStore')
 @observer
 class Header extends Component {
-
-
   constructor(props) {
     super(props);
     this.state = {

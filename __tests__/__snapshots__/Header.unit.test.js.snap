@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header displays current block number 1`] = `
+<div
+  className="header"
+>
+  <a
+    className="btn-link toggle-sidebar d-lg-none pg pg-menu"
+    data-toggle="sidebar"
+    href="#"
+  />
+  <div>
+    <div
+      className="brand inline"
+    >
+      <img
+        alt="logo"
+        data-src="img/logo-white.png"
+        height="36"
+        src="img/logo-white.png"
+      />
+    </div>
+  </div>
+  <div
+    className="d-flex align-items-center"
+  >
+    <div
+      className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none"
+    >
+      <span
+        className="active-timenodes"
+      >
+        <i
+          className="fa fa-sitemap"
+        />
+          Active TimeNodes: 
+      </span>
+      <span
+        className="timenode-count"
+      />
+    </div>
+    <div
+      className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none"
+    >
+      <span
+        className="active-timenodes"
+      >
+        <i
+          className="fa fa-th-large"
+        />
+         Current Block Number: 
+      </span>
+      <span
+        className="timenode-count"
+      >
+        5361200
+      </span>
+    </div>
+  </div>
+  <div
+    className="d-flex"
+  >
+    <div
+      className="search-link d-lg-inline-block d-none"
+      onClick={[Function]}
+    >
+      <i
+        className="pg-search"
+      />
+      Search by Address
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Header displays current block number 2`] = `
+<span
+  className="timenode-count"
+/>
+`;
