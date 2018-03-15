@@ -139,11 +139,11 @@ class TransactionDetails extends ScrollbarComponent {
           <tbody>
             <tr>
               <td>Status</td>
-              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href="#"> { executedAt } </a></span></td>
+              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
             </tr>
             <tr>
               <td>To Address</td>
-              <td><a href="#">{toAddress}</a></td>
+              <td><a href={this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
             </tr>
             <tr>
               <td>Value/Amount</td>

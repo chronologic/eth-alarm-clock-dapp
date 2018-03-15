@@ -159,7 +159,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Faucet Address</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.faucetAddress ? this.state.faucetAddress : <BeatLoader/>}
+                      {this.state.faucetAddress ? <a href={this.props.web3Service.explorer + 'address/' + this.state.faucetAddress } target='_blank' rel='noopener noreferrer'>{ this.state.faucetAddress }</a> : <BeatLoader/>}
                     </div>
                   </div>
 
@@ -177,7 +177,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Your Wallet Address</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.defaultAccount ? this.state.defaultAccount : <BeatLoader/>}
+                      {this.state.defaultAccount ? <a href={this.props.web3Service.explorer + 'address/' + this.state.defaultAccount } target='_blank' rel='noopener noreferrer'>{ this.state.defaultAccount }</a> : <BeatLoader/>}
                     </div>
                   </div>
 
