@@ -350,6 +350,15 @@ export default class TimeNodeStore {
     Cookies.set(key, value, { expires: 30 });
   }
 
+  resetWallet() {
+    Cookies.remove('tn');
+    Cookies.remove('tnp');
+    Cookies.remove('hasWallet');
+    Cookies.remove('attachedDAYAccount');
+    this.hasWallet = false;
+    this.attachedDAYAccount = '';
+  }
+
   checkPasswordMatchesKeystore(keystore, password) {
     try {
       ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
