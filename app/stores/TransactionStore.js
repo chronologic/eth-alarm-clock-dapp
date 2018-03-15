@@ -141,6 +141,15 @@ export class TransactionStore {
     return transactions;
   }
 
+  async getAllTransactionAddresses() {
+    if (this._cache.allTransactionsAddresses && this._cache.allTransactionsAddresses.length > 0) {
+      return this._cache.allTransactionsAddresses;
+    }
+
+    const addresses = await this._cache.getTransactions({}, true, true);
+    return addresses;
+  }
+
   async queryTransactions( { transactions, offset, limit, resolved, resolveAll } ) {
     const processed = [];
     let total = 0;
