@@ -274,6 +274,8 @@ export default class TimeNodeStore {
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
       });
     }
+    this.basicLogs = [];
+    this.detailedLogs = [];
   }
 
   getNodeStatus(balance, isTimeMint) {

@@ -33,7 +33,7 @@ class TimeNodeSettings extends Component {
           <div className="card-block p-3">
             <div className="row vertical-align">
               <div className="col-md-8 col-lg-9 my-2">
-                <p className="m-0">You can reset your TimeNode statistics here - claimed ETH and executed transactions counter.</p>
+                <p className="m-0">You can reset your TimeNode statistics here - claimed ETH, executed transactions counter and logs.</p>
               </div>
               <div className="col-md-4 col-lg-3">
                 <button className='btn btn-light'
