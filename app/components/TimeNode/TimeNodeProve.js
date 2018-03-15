@@ -10,6 +10,7 @@ class TimeNodeProve extends Component {
   constructor(props) {
     super(props);
     this.verifyDayTokens = this.verifyDayTokens.bind(this);
+    this.resetVerify = this.resetVerify.bind(this);
   }
 
   _handleEnterPress = event => {
@@ -32,6 +33,11 @@ class TimeNodeProve extends Component {
     if (signature) {
       await this.props.timeNodeStore.attachDayAccount(signature);
     }
+  }
+
+  resetVerify() {
+    this.props.timeNodeStore.hasWallet = false;
+    this.props.timeNodeStore.setCookie('hasWallet', false);
   }
 
   toClipboard() {
@@ -95,6 +101,10 @@ class TimeNodeProve extends Component {
               className='btn btn-primary pull-right mr-4 px-5'
               type='button'
               onClick={this.verifyDayTokens}>Verify</button>
+            <button id='resetVerifyBtn'
+              className='btn btn-light pull-right mr-4 px-5'
+              type='button'
+              onClick={this.resetVerify}>Reset</button>
           </div>
           <div className='d-sm-inline d-md-none'>
             <PoweredByEAC className='mt-5'/>
