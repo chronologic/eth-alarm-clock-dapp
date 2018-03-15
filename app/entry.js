@@ -1,12 +1,8 @@
-// Load all the JavaScript files
-//import './plugins/jquery-scrollbar/jquery.scrollbar.min.js'
-
+// Load JS files
 import './plugins/bootstrap-form-wizard/js/jquery.bootstrap.wizard.js';
-//import './plugins/bootstrap/js/bootstrap.min.js'
-
 import './pages/js/pages.js';
 
-// Load all the CSS files
+// Load CSS files
 import 'bootstrap-timepicker/css/bootstrap-timepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery.scrollbar/jquery.scrollbar.css';
