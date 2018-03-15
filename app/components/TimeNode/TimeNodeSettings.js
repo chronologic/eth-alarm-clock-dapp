@@ -45,7 +45,7 @@ class TimeNodeSettings extends Component {
                 <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
                   <i className="pg-close fs-14"></i>
                 </button>
-                <h3 className="m-0" style={{ fontSize: '20px' }}>Detach wallet from <span className="semi-bold">TimeNode</span></h3>
+                <h3 className="timenode-modal-title m-0">Detach wallet from <span className="semi-bold">TimeNode</span></h3>
               </div>
               <div className="modal-body">
                 <hr/>
