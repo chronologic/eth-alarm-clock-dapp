@@ -33,7 +33,7 @@ class TransactionsRow extends Component {
       time = await this.props.eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
     }
 
-    time = moment.unix(time).format('YYYY-MM-DD HH:MM');
+    time = moment.unix(time).format('YYYY-MM-DD HH:mm');
 
     let timeWindow = transaction.windowSize.toNumber();
 
