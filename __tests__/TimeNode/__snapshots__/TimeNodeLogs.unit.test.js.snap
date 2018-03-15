@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TimeNodeLogs correctly displays logs 1`] = `
+<div
+  id="timeNodeLogs"
+>
+  <div
+    className="m-b-20"
+  >
+    <div
+      className="btn-group"
+      data-toggle="buttons"
+    >
+      <label
+        aria-pressed="true"
+        className="btn btn-default active"
+        data-log-type="basic"
+        onClick={[Function]}
+      >
+        <input
+          name="options"
+          type="radio"
+        />
+        Basic
+      </label>
+      <label
+        aria-pressed="true"
+        className="btn btn-default"
+        data-log-type="detailed"
+        onClick={[Function]}
+      >
+        <input
+          checked=""
+          name="options"
+          type="radio"
+        />
+        Detailed
+      </label>
+    </div>
+  </div>
+  <div
+    className="card card-default"
+    data-pages="card"
+  >
+    <div
+      className="card-header"
+    >
+      <div
+        className="card-title"
+      >
+        Logs
+      </div>
+      <div
+        className="card-controls"
+      >
+        <ul>
+          <li>
+            <a
+              className="card-refresh"
+              data-toggle="refresh"
+              href="#"
+            >
+              <i
+                className="card-icon card-icon-refresh"
+              />
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div
+      className="card-body"
+      id="timenodeLogsField"
+    >
+      <p
+        className="no-margin"
+      >
+        <span>
+          14/03/2018 14:05:27
+        </span>
+         [
+        DEBUG
+        ] 
+        Scanning started.
+      </p>
+      <p
+        className="no-margin"
+      >
+        <span>
+          14/03/2018 14:05:30
+        </span>
+         [
+        INFO
+        ] 
+        Transaction found.
+      </p>
+    </div>
+  </div>
+</div>
+`;
