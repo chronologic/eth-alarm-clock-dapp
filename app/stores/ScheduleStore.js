@@ -3,31 +3,31 @@ import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class ScheduleStore {
   //TimeComponent
-  @observable timeZone = '';
-  @observable transactionDate = '';
-  @observable transactionTime = '';
-  @observable executionWindow = '';
-  @observable customWindow = '';
-  @observable fee = 0;
+  @observable timeZone;
+  @observable transactionDate;
+  @observable transactionTime;
+  @observable executionWindow;
+  @observable customWindow;
+  @observable fee;
 
   //BlockComponent
-  @observable blockNumber = '';
-  @observable blockSize = '';
+  @observable blockNumber;
+  @observable blockSize;
 
   //BountySettings
-  @observable requireDeposit = true;
-  @observable timeBounty = '';
-  @observable deposit = 0;
+  @observable requireDeposit;
+  @observable timeBounty;
+  @observable deposit;
 
   //infoSettings
-  @observable toAddress = '';
-  @observable gasAmount = 21000;
-  @observable amountToSend = '';
-  @observable gasPrice = '';
-  @observable useData = false;
-  @observable yourData = '';
+  @observable toAddress;
+  @observable gasAmount;
+  @observable amountToSend;
+  @observable gasPrice;
+  @observable useData;
+  @observable yourData;
 
-  @observable isUsingTime = true;
+  @observable isUsingTime;
 
   /*
    * Currently MobX doesn't have a more elegant
@@ -44,7 +44,7 @@ export default class ScheduleStore {
     this.blockNumber = '';
     this.blockSize = '';
 
-    this.requireDeposit = true;
+    this.requireDeposit = false;
     this.timeBounty = '';
     this.deposit = '';
 
@@ -58,16 +58,17 @@ export default class ScheduleStore {
     this.isUsingTime = true;
   }
 
+  constructor(source) {
+    Object.assign(this, source);
+    this.reset();
+    this.dateTimeValidatorStore = new DateTimeValidatorStore();
+  }
+
   get transactionTimestamp() {
     return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
   }
 
   get transactionTzTime() {
     return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).toString();
-  }
-
-  constructor(source) {
-    Object.assign(this, source);
-    this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
 }

@@ -106,7 +106,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div className="card-body">
-                <h1>{claimedEthStatus}</h1>
+                <h2>{claimedEthStatus}</h2>
               </div>
             </div>
           </div>
