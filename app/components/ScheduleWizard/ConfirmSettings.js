@@ -98,7 +98,7 @@ class ConfirmSettings extends Component {
               <tbody>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4"><strong>To Address</strong></td>
-                  <td className="d-inline-block col-6 col-sm-6 col-lg-8">{scheduleStore.toAddress ? <a href="#">{scheduleStore.toAddress}</a> : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6 col-sm-6 col-lg-8">{scheduleStore.toAddress ? <a href={this.props.web3Service.explorer + 'address/' + scheduleStore.toAddress } target='_blank' rel='noopener noreferrer'>{ scheduleStore.toAddress }</a> : emptyFieldSign}</td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4"><strong>Amount to Send</strong></td>
