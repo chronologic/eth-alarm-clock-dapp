@@ -13,6 +13,7 @@ class SearchOverlay extends Component {
       transactions: [],
       filter: '',
       fetchedTransactions: false,
+      filteredTransactions: [],
       updateSearchState: this.props.updateSearchState
     };
   }
@@ -35,10 +36,22 @@ class SearchOverlay extends Component {
     });
   }
 
+  async updateFiltered() {
+    this.setState({
+      fetchedTransactions: false
+    });
+    const transactions = await this.props.transactionStore.getfilteredTransactions();
+    if (this._isMounted) {
+      this.setState({ filteredTransactions: transactions, fetchedTransactions: true });
+    }
+  }
+
   filter(e) {
     this.props.transactionStore.filter = e.target.value;
+    this.updateFiltered();
     this.forceUpdate();
   }
+
 
   render() {
     let searchResultsString = '';
@@ -50,7 +63,7 @@ class SearchOverlay extends Component {
       searchResultsString = 'Search Results - Fetching...';
 
       if (this.state.fetchedTransactions) {
-        filteredTransactions = this.props.transactionStore.filteredTransactions;
+        filteredTransactions = this.state.filteredTransactions;
 
         const followUpText = 'Showing '.concat(
           filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length,

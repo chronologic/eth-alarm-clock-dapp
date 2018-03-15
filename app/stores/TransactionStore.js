@@ -45,14 +45,13 @@ export class TransactionStore {
   // state of the filter variable
   @computed get filteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
-    console.log(this.filter.length, this._cache.allTransactions)
     if (!this.filter || this.filter.length < 20) {
       return [];
     }
 
     if (this._cache.allTransactions) {
       return this._cache.allTransactions.filter(
-        transaction => console.log(transaction) || matchesFilter.test(transaction.address)
+        transaction => matchesFilter.test(transaction.address)
       );
     }
     return [];
@@ -73,11 +72,10 @@ export class TransactionStore {
         address => matchesFilter.test(address)
       );
       for (let address of addresses) {
-        console.log('new,', address)
         const transaction = await this._cache.fetchCachedTransactionByAddress(address);
         if (transaction) {
-          console.log(address, transaction.address)
-          transactions.push(transaction)
+          transaction.status = await this.getTxStatus(transaction);
+          transactions.push(transaction);
         }
       }
       return transactions;

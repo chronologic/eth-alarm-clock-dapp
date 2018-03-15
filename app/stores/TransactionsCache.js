@@ -182,6 +182,24 @@ export default class TransactionsCache {
         return false;
     }
 
+    async fetchCachedTransactionByAddress(address) {
+        const cached = this.allTransactions.find(cachedTransaction =>
+            cachedTransaction.address == address
+        );
+        if (cached) {
+            if (cached.instance) {
+                cached.refreshData();
+            } else {
+                await cached.fillData();
+            }
+            return cached;
+        } else {
+            return null;
+        }
+    }
+
+
+
     cacheContracts (requestContracts = [], updateType ) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
