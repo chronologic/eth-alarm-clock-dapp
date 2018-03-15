@@ -98,14 +98,14 @@ export default class TransactionsCache {
       return this.contracts;
     }
 
-    async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
+    async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault, onlyAddresses = false) {
 
         if (this.running && (cache || endBlock == 'latest')) {
             if (this.allTransactionsAddresses.length > 0) {
-                return this.allTransactions;
+                return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
             } else if (this.syncing) {
                 await this.awaitSync();
-                return this.allTransactions;
+                return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
             }
         }
 
@@ -123,7 +123,7 @@ export default class TransactionsCache {
           this.cacheTransactions(requestsCreated);
         }
 
-        return requestsCreated;
+        return onlyAddresses ? this.allTransactionsAddresses : requestsCreated;
     }
 
     async watchRequests( ) {
@@ -181,6 +181,26 @@ export default class TransactionsCache {
 
         return false;
     }
+
+    async fetchCachedTransactionByAddress(address) {
+        const cached = this.allTransactions.find(cachedTransaction =>
+            cachedTransaction.address == address
+        );
+
+        if (!cached) {
+            return null;
+        }
+
+        if (cached.instance) {
+            cached.refreshData();
+        } else {
+            await cached.fillData();
+        }
+
+        return cached;
+    }
+
+
 
     cacheContracts (requestContracts = [], updateType ) {
         const replace = updateType == 'replace';
