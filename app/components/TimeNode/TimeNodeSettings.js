@@ -16,22 +16,43 @@ class TimeNodeSettings extends Component {
   render() {
     return (
       <div id="timeNodeSettings">
-        <button className="btn btn-danger btn-lg" data-toggle="modal" data-target="#timeNodeDetachModal">
-          Detach wallet
-        </button>
+
+        <div className="card card-transparent">
+          <div className="card-header separator">
+            <div className="card-title">
+              Detach Wallet
+            </div>
+          </div>
+          <div className="card-block p-3">
+            <div className="row vertical-align">
+              <div className="col-md-8 col-lg-9 my-2">
+                <p className="m-0">If you wish to run a TimeNode using a different wallet, you can detach this wallet and recreate the TimeNode.</p>
+              </div>
+              <div className="col-md-4 col-lg-3">
+                <button className="btn btn-danger" data-toggle="modal" data-target="#timeNodeDetachModal">
+                  Detach wallet
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div className="modal fade stick-up" id="timeNodeDetachModal" tabIndex="-1" role="dialog" aria-labelledby="timeNodeDetachModalLabel" aria-hidden="true">
           <div className="modal-dialog">
             <div className="modal-content">
-              <div className="modal-header clearfix text-left">
+              <div className="modal-header clearfix text-left separator">
                 <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                <i className="pg-close fs-14"></i>
+                  <i className="pg-close fs-14"></i>
                 </button>
-                <h5>Detach wallet from <span className="semi-bold">TimeNode</span></h5>
-                <p>Are you sure you want to do this?</p>
-                <p><strong>This will erase all your TimeNode data.</strong></p>
+                <h3 className="m-0" style={{ fontSize: '20px' }}>Detach wallet from <span className="semi-bold">TimeNode</span></h3>
               </div>
               <div className="modal-body">
+                <hr/>
+                <p>Are you sure you want to do this?</p>
+                <span className="text-danger semi-bold">This will erase all your TimeNode data.</span>
+              </div>
+              <div className="modal-footer">
                 <div className="row">
                   <div className="col-md-6">
                     <button className='btn btn-light btn-block'

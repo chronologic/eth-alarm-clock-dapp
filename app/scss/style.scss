@@ -113,6 +113,11 @@ hr {
   border-color: #f6f6f6;
 }
 
+.vertical-align {
+  display: flex;
+  align-items: center;
+}
+
 .left-separator {
   border-left: 1px solid grey;
 }
