@@ -80,7 +80,7 @@ exports[`TimeNodeLogs correctly displays logs 1`] = `
         </span>
          [
         DEBUG
-        ] 
+        ]
         Scanning started.
       </p>
       <p
@@ -91,7 +91,7 @@ exports[`TimeNodeLogs correctly displays logs 1`] = `
         </span>
          [
         INFO
-        ] 
+        ]
         Transaction found.
       </p>
     </div>
