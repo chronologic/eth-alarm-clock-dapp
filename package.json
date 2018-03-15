@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "test": "jest",
+    "test-watch": "jest -u --watchAll",
     "build": "webpack --config webpack/prod.config.js",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check --hot",
     "prod": "node_modules/.bin/webpack-dev-server --config webpack/prod.config.js --host 0.0.0.0 --disable-host-check --hot",
