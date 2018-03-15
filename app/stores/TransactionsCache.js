@@ -186,16 +186,18 @@ export default class TransactionsCache {
         const cached = this.allTransactions.find(cachedTransaction =>
             cachedTransaction.address == address
         );
-        if (cached) {
-            if (cached.instance) {
-                cached.refreshData();
-            } else {
-                await cached.fillData();
-            }
-            return cached;
-        } else {
+
+        if (!cached) {
             return null;
         }
+
+        if (cached.instance) {
+            cached.refreshData();
+        } else {
+            await cached.fillData();
+        }
+
+        return cached;
     }
 
 
