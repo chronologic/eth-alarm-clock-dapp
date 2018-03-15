@@ -30,10 +30,7 @@ class SearchOverlay extends Component {
     // This has to be changed after we implement a data layer (cache or db)
     // For now it always fetches all the transactions from eac.js on each page load
     await this.props.transactionStore.getAllTransactionAddresses();
-
-    this.setState({
-      fetchedTransactions: true
-    });
+    this.updateFiltered();
   }
 
   async updateFiltered() {
