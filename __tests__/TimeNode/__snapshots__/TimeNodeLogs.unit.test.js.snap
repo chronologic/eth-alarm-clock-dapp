@@ -76,22 +76,22 @@ exports[`TimeNodeLogs correctly displays logs 1`] = `
         className="no-margin"
       >
         <span>
-          14/03/2018 14:05:27
+          14/03/2018 13:05:27
         </span>
          [
         DEBUG
-        ] 
+        ]
         Scanning started.
       </p>
       <p
         className="no-margin"
       >
         <span>
-          14/03/2018 14:05:30
+          14/03/2018 13:05:30
         </span>
          [
         INFO
-        ] 
+        ]
         Transaction found.
       </p>
     </div>
