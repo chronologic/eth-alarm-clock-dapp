@@ -91,7 +91,7 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
+        if (event.data.etherGain) this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
       }
     };
