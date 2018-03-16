@@ -5,6 +5,7 @@ import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
+import { showNotification } from '../../services/notification';
 
 const INITIAL_STATE = {
   callData: '',
@@ -81,10 +82,24 @@ class TransactionDetails extends ScrollbarComponent {
   async cancelTransaction() {
     const { transactionStore } = this.props;
     const { transaction } = this.state;
-    await transactionStore.cancel(transaction);
-    this.setState({
-      status: TRANSACTION_STATUS.CANCELLED
-    });
+
+    const originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+    this.cancelBtn.innerHTML = 'Canceling...';
+
+    try {
+      const success = await transactionStore.cancel(transaction);
+      if (success) {
+        this.setState({
+          status: TRANSACTION_STATUS.CANCELLED
+        });
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+      this.cancelBtn.innerHTML = 'Cancel';
+    }
+
+    document.body.className = originalBodyCss;
   }
 
   async componentWillMount() {
@@ -114,10 +129,14 @@ class TransactionDetails extends ScrollbarComponent {
 
     const isOwner = this.isOwner(transaction);
 
-    if (isOwner && !isFrozen && status !== TRANSACTION_STATUS.CANCELLED) {
+    if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       return (
         <div className="text-center mt-5">
-          <button className="btn btn-danger btn-cons" disabled={ isFrozen } onClick={ this.cancelTransaction } type="button">
+          <button className="btn btn-danger btn-cons"
+            disabled={ isFrozen }
+            onClick={ this.cancelTransaction }
+            type="button"
+            ref={(el) => this.cancelBtn = el}>
             <span>Cancel</span>
           </button>
           { isFrozen ? 'The transaction has been frozen.' : '' }
