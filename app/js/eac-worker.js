@@ -114,6 +114,34 @@ class EacWorker {
       executedTransactions: executedTransactions
     });
   }
+
+  /*
+   * Resets the stats saved in the IndexedDB.
+   */
+  clearStats() {
+    var DBDeleteRequest = indexedDB.deleteDatabase('LokiAKV');
+
+    DBDeleteRequest.onerror = function() {
+      postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
+        result: false
+      });
+    };
+
+    DBDeleteRequest.onsuccess = function() {
+      postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
+        result: true
+      });
+    };
+
+    DBDeleteRequest.onblocked = function () {
+      postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
+        result: false
+      });
+    };
+  }
 }
 
 let eacWorker = null;
@@ -137,6 +165,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
       eacWorker.updateStats();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
+      eacWorker.clearStats();
       break;
   }
 };
