@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TimeNodeStatistics from './TimeNodeStatistics';
 import TimeNodeLogs from './TimeNodeLogs';
+import TimeNodeSettings from './TimeNodeSettings';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
 class TimeNodeMain extends Component {
@@ -14,6 +15,9 @@ class TimeNodeMain extends Component {
           <li className="nav-item">
             <a className="px-5 py-3" href="#" data-toggle="tab" role="tab" data-target="#tabLogs">Logs</a>
           </li>
+          <li className="nav-item">
+            <a className="px-5 py-3" href="#" data-toggle="tab" role="tab" data-target="#tabSettings">Settings</a>
+          </li>
         </ul>
         <div className="tab-content padding-25">
           <div className="tab-pane active" id="tabStatistics">
@@ -21,6 +25,9 @@ class TimeNodeMain extends Component {
           </div>
           <div className="tab-pane " id="tabLogs">
             <TimeNodeLogs/>
+          </div>
+          <div className="tab-pane " id="tabSettings">
+            <TimeNodeSettings/>
           </div>
           <PoweredByEAC/>
         </div>

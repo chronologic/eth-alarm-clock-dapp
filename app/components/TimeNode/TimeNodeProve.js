@@ -36,8 +36,7 @@ class TimeNodeProve extends Component {
   }
 
   resetVerify() {
-    this.props.timeNodeStore.hasWallet = false;
-    this.props.timeNodeStore.setCookie('hasWallet', false);
+    this.props.timeNodeStore.resetWallet();
   }
 
   toClipboard() {
@@ -101,8 +100,7 @@ class TimeNodeProve extends Component {
               className='btn btn-primary pull-right mr-4 px-5'
               type='button'
               onClick={this.verifyDayTokens}>Verify</button>
-            <button id='resetVerifyBtn'
-              className='btn btn-light pull-right mr-4 px-5'
+            <button className='btn btn-light pull-right mr-4 px-5'
               type='button'
               onClick={this.resetVerify}>Reset</button>
           </div>
