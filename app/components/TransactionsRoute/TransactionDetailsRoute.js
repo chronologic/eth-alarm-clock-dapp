@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import TransactionDetails from '../TransactionScanner/TransactionDetails';
 import TransactionNotFound from '../TransactionScanner/TransactionNotFound';
-import { BeatLoader } from 'react-spinners';
+import { PropagateLoader } from 'react-spinners';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
 @inject('transactionStore')
@@ -48,8 +48,8 @@ class TransactionDetailsRoute extends Component {
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           <div className="tab-content p-4">
             { !this.state.fetchedTransactions &&
-              <div className='sweet-loading horizontal-center my-5'>
-                <BeatLoader loading={true} />
+              <div className='loading-icon'>
+                <PropagateLoader loading={true} color='#21FFFF'/>
               </div>
             }
             {content}
