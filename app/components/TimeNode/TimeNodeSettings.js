@@ -79,7 +79,7 @@ class TimeNodeSettings extends Component {
               <div className="modal-body">
                 <hr/>
                 <p>Are you sure you want to do this?</p>
-                <span className="semi-bold">This will erase all your TimeNode statistics.</span>
+                <span className="semi-bold">This will erase your TimeNode statistics.</span>
               </div>
               <div className="modal-footer">
                 <div className="row">
