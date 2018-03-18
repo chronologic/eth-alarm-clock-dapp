@@ -33,3 +33,7 @@ export const NAVIGATION_STEPS = {
 export const PROPERTIES = {
 
 };
+
+export const CONFIG = {
+  averageBlockTime: 15
+};
