@@ -35,7 +35,7 @@ class TimeNodeStatistics extends Component {
 
     this.refreshStats();
     // Refreshes the stats every 5 seconds
-    this.interval = setInterval(this.refreshStats, 5000);
+    this.interval = setInterval(this.refreshStats, 60000);
   }
 
   getStopButton() {
@@ -61,8 +61,10 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getDAYBalance();
   }
 
-  refreshStats() {
+  async refreshStats() {
     this.props.timeNodeStore.updateStats();
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
   }
 
   componentWillUnmount() {

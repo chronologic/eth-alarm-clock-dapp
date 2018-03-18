@@ -11,7 +11,7 @@ const { Config, Scanner, StatsDB } = EACJSClient;
 
 class EacWorker {
   alarmClient = null;
-  browserDB = null;
+  statsDB = null;
 
   async start(options) {
     const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
@@ -23,14 +23,12 @@ class EacWorker {
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
     const persistenceAdapter = new LokiIndexedAdapter();
-    this.browserDB = new Loki('stats.db', {
+    const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
       autosaveInterval: 4000
     });
-
-    const statsDB = new StatsDB(web3, this.browserDB);
 
     const configOptions = {
       web3,
@@ -50,7 +48,7 @@ class EacWorker {
     this.config = await Config.create(configOptions);
 
     this.config.logger = logger;
-    this.config.statsdb = statsDB;
+    this.config.statsdb = new StatsDB(web3, browserDB);
     const addresses = await this.config.wallet.getAddresses();
 
     this.config.statsdb.initialize(addresses);
@@ -89,20 +87,17 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   updateStats() {
-    const stats = this.browserDB.getCollection('stats');
-
     let etherGain;
     let executedTransactions;
 
-    // If it finds any data
-    if (stats && stats.data && stats.data[0]) {
-      const accountStats = stats.data[0];
+    if (this.config) {
+      const stats = this.config.statsdb.getStats();
+
+      const accountStats = stats[0];
       const startingEth = BigNumber(accountStats.startingEther);
       const currentEth = BigNumber(accountStats.currentEther);
       etherGain = currentEth.minus(startingEth).toString();
       executedTransactions = accountStats.executedTransactions;
-
-    // Otherwise report the value as a zero
     } else {
       etherGain = null;
       executedTransactions = [];
