@@ -35,7 +35,7 @@ class TimeNodeStatistics extends Component {
 
     this.refreshStats();
     // Refreshes the stats every 5 seconds
-    this.interval = setInterval(this.refreshStats, 60000);
+    this.interval = setInterval(this.refreshStats, 5000);
   }
 
   getStopButton() {
