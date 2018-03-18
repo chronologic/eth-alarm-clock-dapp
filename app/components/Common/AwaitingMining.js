@@ -131,7 +131,7 @@ class AwaitingMining extends Component {
             </div>
             {this.state.transactionHash &&
               <p className="horizontal-center">
-                Transcation Hash: <br />
+                Transaction Hash: <br />
               <a target="_blank" href={explorer + '/tx/' + transactionHash } > {this.state.transactionHash} </a>
               </p>
             }
