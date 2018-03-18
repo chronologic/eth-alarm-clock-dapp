@@ -61,8 +61,10 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getDAYBalance();
   }
 
-  refreshStats() {
+  async refreshStats() {
     this.props.timeNodeStore.updateStats();
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
   }
 
   componentWillUnmount() {
