@@ -75,6 +75,7 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     const options = {
+      networkId: this._web3Service.netId,
       keystore: this.decrypt(keystore),
       keystorePassword: this.decrypt(password),
       logfile: 'console',

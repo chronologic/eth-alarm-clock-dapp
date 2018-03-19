@@ -6,6 +6,7 @@ import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import BigNumber from 'bignumber.js';
+import { Networks } from '../config/web3Config.js';
 
 const { Config, Scanner, StatsDB } = EACJSClient;
 
@@ -14,8 +15,7 @@ class EacWorker {
   statsDB = null;
 
   async start(options) {
-    const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
-
+    const provider = new Web3.providers.HttpProvider(Networks[options.networkId].endpoint);
     const web3 = new Web3(provider);
 
     const eac = EAC(web3);
