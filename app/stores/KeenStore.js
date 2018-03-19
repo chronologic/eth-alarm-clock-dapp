@@ -4,7 +4,8 @@ import { observable } from 'mobx';
 
 const COLLECTIONS = {
   PAGEVIEWS: 'pageviews',
-  TIMENODES: 'timenodes'
+  TIMENODES: 'timenodes',
+  EACNODES: 'eacnodes'
 };
 
 // 5 minutes in milliseconds
@@ -12,6 +13,7 @@ const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
 
 export class KeenStore {
   @observable activeTimeNodes = 0;
+  @observable activeEacNodes = 0;
 
   projectId = '';
   writeKey = '';
@@ -104,9 +106,34 @@ export class KeenStore {
     });
   }
 
+  getActiveEacNodesCount(networkId) {
+    const count = new KeenAnalysis.Query('count_unique', {
+      event_collection: COLLECTIONS.EACNODES,
+      target_property: 'nodeAddress',
+      timeframe: 'previous_5_minutes',
+      filters: [
+        {
+          property_name: 'networkId',
+          operator: 'eq',
+          property_value: networkId
+        },
+        {
+          property_name: 'status',
+          operator: 'eq',
+          property_value: 'active'
+        }
+      ]
+    });
+
+    this.analysisClient.run(count, (err, response) => {
+      this.activeEacNodes = response.result;
+    });
+  }
+
   async pollActiveTimeNodesCount() {
     await this.getActiveTimeNodesCount(this.networkId);
+    await this.getActiveEacNodesCount(this.networkId);
 
-    setInterval(() => this.getActiveTimeNodesCount(this.networkId), ACTIVE_TIMENODES_POLLING_INTERVAL);
+    setInterval(() => this.getActiveTimeNodesCount(this.networkId) || this.getActiveEacNodesCount(this.networkId), ACTIVE_TIMENODES_POLLING_INTERVAL);
   }
 }

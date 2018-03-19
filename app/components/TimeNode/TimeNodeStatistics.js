@@ -49,11 +49,13 @@ class TimeNodeStatistics extends Component {
   startTimeNode() {
     this.props.timeNodeStore.startScanning();
     this.props.keenStore.activeTimeNodes += 1;
+    this.props.keenStore.activeEacNodes += 1;
   }
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
     this.props.keenStore.activeTimeNodes = this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
+    this.props.keenStore.activeEacNodes = this.props.keenStore.activeEacNodes > 0 ? this.props.keenStore.activeEacNodes - 1 : 0;
   }
 
   async refreshBalances() {
