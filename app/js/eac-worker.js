@@ -30,7 +30,7 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new LokiIndexedAdapter(network.name);
+    const persistenceAdapter = new LokiIndexedAdapter(options.networkId);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
