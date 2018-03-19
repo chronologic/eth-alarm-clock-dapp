@@ -1,4 +1,4 @@
-import Web3 from 'web3/index';
+      import Web3 from 'web3/index';
 import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
@@ -30,7 +30,7 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new LokiIndexedAdapter();
+    const persistenceAdapter = new LokiIndexedAdapter(network.name);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
