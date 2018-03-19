@@ -15,7 +15,15 @@ class EacWorker {
   statsDB = null;
 
   async start(options) {
-    const provider = new Web3.providers.HttpProvider(Networks[options.networkId].endpoint);
+    const network = Networks[options.networkId];
+    let provider = null;
+
+    if (network) {
+      provider = new Web3.providers.HttpProvider(network.endpoint);
+    } else {
+      provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
+    }
+
     const web3 = new Web3(provider);
 
     const eac = EAC(web3);
