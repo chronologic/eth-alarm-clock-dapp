@@ -1,4 +1,4 @@
-      import Web3 from 'web3/index';
+import Web3 from 'web3/index';
 import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
