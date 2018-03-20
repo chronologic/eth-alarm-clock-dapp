@@ -72,10 +72,12 @@ export class KeenStore {
   }
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
+    nodeAddress = this._web3.sha3(nodeAddress);
     const event = {
       nodeAddress,
       dayAddress,
       networkId,
+      nodeType: 'dapp',
       status: 'active'
     };
     await this.awaitKeenInitialized();
@@ -106,34 +108,9 @@ export class KeenStore {
     });
   }
 
-  getActiveEacNodesCount(networkId) {
-    const count = new KeenAnalysis.Query('count_unique', {
-      event_collection: COLLECTIONS.EACNODES,
-      target_property: 'nodeAddress',
-      timeframe: 'previous_5_minutes',
-      filters: [
-        {
-          property_name: 'networkId',
-          operator: 'eq',
-          property_value: networkId
-        },
-        {
-          property_name: 'status',
-          operator: 'eq',
-          property_value: 'active'
-        }
-      ]
-    });
-
-    this.analysisClient.run(count, (err, response) => {
-      this.activeEacNodes = response.result;
-    });
-  }
-
   async pollActiveTimeNodesCount() {
     await this.getActiveTimeNodesCount(this.networkId);
-    await this.getActiveEacNodesCount(this.networkId);
 
-    setInterval(() => this.getActiveTimeNodesCount(this.networkId) || this.getActiveEacNodesCount(this.networkId), ACTIVE_TIMENODES_POLLING_INTERVAL);
+    setInterval(() => this.getActiveTimeNodesCount(this.networkId), ACTIVE_TIMENODES_POLLING_INTERVAL);
   }
 }

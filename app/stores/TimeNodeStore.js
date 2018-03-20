@@ -81,6 +81,7 @@ export default class TimeNodeStore {
       logLevel: 1,
       milliseconds: 15000,
       autostart: false,
+      analysis: 'on',
       scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
