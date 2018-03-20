@@ -6,6 +6,7 @@ import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import BigNumber from 'bignumber.js';
+import { Networks } from '../config/web3Config.js';
 
 const { Config, Scanner, StatsDB } = EACJSClient;
 
@@ -14,7 +15,14 @@ class EacWorker {
   statsDB = null;
 
   async start(options) {
-    const provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
+    const network = Networks[options.networkId];
+    let provider = null;
+
+    if (network) {
+      provider = new Web3.providers.HttpProvider(network.endpoint);
+    } else {
+      provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
+    }
 
     const web3 = new Web3(provider);
 
@@ -22,7 +30,7 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new LokiIndexedAdapter();
+    const persistenceAdapter = new LokiIndexedAdapter(options.networkId);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
