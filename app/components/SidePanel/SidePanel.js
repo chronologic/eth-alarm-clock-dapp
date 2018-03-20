@@ -156,19 +156,6 @@ class SidePanel extends Component {
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
-                    <span className="active-timenodes">Active EacNodes</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.props.keenStore.activeEacNodes}</span>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li className="d-md-block d-lg-none">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
                     <span className="active-timenodes">Active TimeNodes</span>
                   </div>
                   <div className="col-4 px-0 text-right">

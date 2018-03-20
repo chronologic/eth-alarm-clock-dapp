@@ -33,21 +33,6 @@ exports[`Header displays current block number 1`] = `
         <i
           className="fa fa-sitemap"
         />
-          Active EacNodes: 
-      </span>
-      <span
-        className="timenode-count"
-      />
-    </div>
-    <div
-      className="left-separator pull-left p-l-10 p-r-10 fs-14 font-heading d-lg-block d-none"
-    >
-      <span
-        className="active-timenodes"
-      >
-        <i
-          className="fa fa-sitemap"
-        />
           Active TimeNodes: 
       </span>
       <span

@@ -4,8 +4,7 @@ import { observable } from 'mobx';
 
 const COLLECTIONS = {
   PAGEVIEWS: 'pageviews',
-  TIMENODES: 'timenodes',
-  EACNODES: 'eacnodes'
+  TIMENODES: 'timenodes'
 };
 
 // 5 minutes in milliseconds
@@ -13,7 +12,6 @@ const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
 
 export class KeenStore {
   @observable activeTimeNodes = 0;
-  @observable activeEacNodes = 0;
 
   projectId = '';
   writeKey = '';
