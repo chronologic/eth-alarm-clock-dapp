@@ -83,7 +83,7 @@ export class KeenStore {
   }
 
   getActiveTimeNodesCount(networkId) {
-    const count = new KeenAnalysis.Query('count_unique', {
+    const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
       timeframe: 'previous_5_minutes',
