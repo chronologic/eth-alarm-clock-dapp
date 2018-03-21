@@ -29,8 +29,8 @@ class SIGNATURE_ERRORS {
   static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
 }
 
-// 1 minute as milliseconds
-const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+// 2 minute as milliseconds
+const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
