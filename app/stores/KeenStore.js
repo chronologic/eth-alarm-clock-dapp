@@ -8,7 +8,7 @@ const COLLECTIONS = {
 };
 
 // 5 minutes in milliseconds
-const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
+const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
   @observable activeTimeNodes = 0;
@@ -86,7 +86,7 @@ export class KeenStore {
     const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
-      timeframe: 'previous_5_minutes',
+      timeframe: 'previous_2_minutes',
       filters: [
         {
           property_name: 'networkId',
