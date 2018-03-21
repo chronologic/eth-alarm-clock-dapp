@@ -70,7 +70,8 @@ export class KeenStore {
   }
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
-    nodeAddress = this._web3.sha3(nodeAddress);
+    await this.awaitKeenInitialized();
+    nodeAddress = this._web3Service.web3.sha3(nodeAddress);
     const event = {
       nodeAddress,
       dayAddress,
@@ -78,7 +79,6 @@ export class KeenStore {
       nodeType: 'dapp',
       status: 'active'
     };
-    await this.awaitKeenInitialized();
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
