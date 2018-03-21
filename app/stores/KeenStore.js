@@ -7,7 +7,7 @@ const COLLECTIONS = {
   TIMENODES: 'timenodes'
 };
 
-// 5 minutes in milliseconds
+// 2 minutes in milliseconds
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
