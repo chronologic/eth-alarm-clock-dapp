@@ -98,6 +98,7 @@ export default class TimeNodeStore {
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
           showNotification('Cleared the stats.', 'success');
+          this.updateStats();
         } else {
           showNotification('Unable to clear the stats.', 'danger', 3000);
         }
