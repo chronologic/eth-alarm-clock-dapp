@@ -7,7 +7,6 @@ class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
     this.resetWallet = this.resetWallet.bind(this);
-    this.clearStats = this.clearStats.bind(this);
   }
 
   resetWallet() {
@@ -15,37 +14,9 @@ class TimeNodeSettings extends Component {
     this.props.timeNodeStore.clearStats();
   }
 
-  clearStats() {
-    this.props.timeNodeStore.clearStats();
-    this.props.timeNodeStore.updateStats();
-  }
-
   render() {
     return (
       <div id="timeNodeSettings">
-
-        <div className="card card-transparent">
-          <div className="card-header separator">
-            <div className="card-title">
-              Clear Stats
-            </div>
-          </div>
-          <div className="card-block p-3">
-            <div className="row vertical-align">
-              <div className="col-md-8 col-lg-9 my-2">
-                <p className="m-0">You can reset your TimeNode statistics here - claimed ETH, executed transactions counter and logs.</p>
-              </div>
-              <div className="col-md-4 col-lg-3">
-                <button className='btn btn-light'
-                  type='button'
-                  data-dismiss="modal"
-                  onClick={this.clearStats}>
-                  Clear Stats
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div className="card card-transparent">
           <div className="card-header separator">
