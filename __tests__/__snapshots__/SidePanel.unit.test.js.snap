@@ -1,0 +1,301 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SidePanel is correctly rendered 1`] = `
+<nav
+  className="page-sidebar"
+  data-pages="sidebar"
+>
+  <div
+    className="sidebar-header"
+  >
+    <img
+      alt="logo"
+      className="brand"
+      data-src="img/logo-white.png"
+      height="36"
+      src="img/logo-white.png"
+    />
+    <div
+      className="sidebar-header-controls"
+    >
+      <button
+        className="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none"
+        data-toggle-pin="sidebar"
+        type="button"
+      >
+        <i
+          className="fa fa-lock"
+        />
+      </button>
+    </div>
+  </div>
+  <div
+    className="sidebar-menu"
+  >
+    <ul
+      className="menu-items"
+    >
+      <li
+        className="m-t-30 "
+      >
+        <a
+          aria-current={false}
+          className={undefined}
+          href="/"
+          onClick={[Function]}
+          style={undefined}
+        >
+          <span
+            className="title "
+          >
+            Schedule
+          </span>
+          <span
+            className="icon-thumbnail "
+          >
+            <i
+              className="pg-calender"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="#"
+          onClick={[Function]}
+        >
+          <span
+            className="title sub-title "
+          >
+            Transactions
+          </span>
+          <span
+            className="icon-thumbnail "
+          >
+            <i
+              className="pg-charts"
+            />
+          </span>
+        </a>
+        <ul
+          className="sub-menu"
+        >
+          <li>
+            <a
+              aria-current={false}
+              className={undefined}
+              href="/transactions/scheduled"
+              onClick={[Function]}
+              style={undefined}
+            >
+              <span
+                className="title"
+              >
+                Scheduled
+              </span>
+              <span
+                className="icon-thumbnail"
+              >
+                <i
+                  className="pg-plus_circle"
+                />
+              </span>
+            </a>
+          </li>
+          <li>
+            <a
+              aria-current={false}
+              className={undefined}
+              href="/transactions/completed"
+              onClick={[Function]}
+              style={undefined}
+            >
+              <span
+                className="title"
+              >
+                Completed
+              </span>
+              <span
+                className="icon-thumbnail"
+              >
+                <i
+                  className="fa fa-check"
+                />
+              </span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a
+          aria-current={false}
+          className={undefined}
+          href="/timenode"
+          onClick={[Function]}
+          style={undefined}
+        >
+          <span
+            className="title "
+          >
+            TimeNode
+          </span>
+          <span
+            className="icon-thumbnail "
+          >
+            <i
+              className="fa fa-sitemap"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://alpha.chronologic.network/debt/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            className="title"
+          >
+            Debt Smart Contract
+          </span>
+          <span
+            className="icon-thumbnail"
+          >
+            <i
+              className="fab fa-ethereum"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://alpha.chronologic.network/chronos/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            className="title"
+          >
+            Day Token Contract
+          </span>
+          <span
+            className="icon-thumbnail"
+          >
+            <i
+              className="far fa-clock"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          aria-current={false}
+          className={undefined}
+          href="/faucet"
+          onClick={[Function]}
+          style={undefined}
+        >
+          <span
+            className="title "
+          >
+            Faucet
+          </span>
+          <span
+            className="icon-thumbnail "
+          >
+            <i
+              className="fas fa-tint"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://blog.chronologic.network/chronos-platform/home"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            className="title"
+          >
+            Help
+          </span>
+          <span
+            className="icon-thumbnail"
+          >
+            <i
+              className="far fa-question-circle"
+            />
+          </span>
+        </a>
+      </li>
+      <hr
+        className="d-md-block d-lg-none mx-4"
+        id="sidebar-separator"
+      />
+      <li
+        className="d-md-block d-lg-none"
+      >
+        <div
+          className="container py-2"
+        >
+          <div
+            className="row p-l-20 p-r-15"
+          >
+            <div
+              className="col-8 px-0"
+            >
+              <span
+                className="active-timenodes"
+              >
+                Active TimeNodes
+              </span>
+            </div>
+            <div
+              className="col-4 px-0 text-right"
+            >
+              <span
+                className="timenode-count col-6"
+              />
+            </div>
+          </div>
+        </div>
+      </li>
+      <li
+        className="d-md-block d-lg-none"
+      >
+        <div
+          className="container py-2"
+        >
+          <div
+            className="row p-l-20 p-r-15"
+          >
+            <div
+              className="col-8 px-0"
+            >
+              <span
+                className="active-timenodes"
+              >
+                Current Block
+              </span>
+            </div>
+            <div
+              className="col-4 px-0 text-right"
+            >
+              <span
+                className="timenode-count col-6"
+              >
+                5361200
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div
+      className="clearfix"
+    />
+  </div>
+</nav>
+`;

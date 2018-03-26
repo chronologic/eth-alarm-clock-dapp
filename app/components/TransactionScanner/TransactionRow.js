@@ -4,6 +4,7 @@ import { inject } from 'mobx-react';
 import moment from 'moment';
 import ValueDisplay from '../Common/ValueDisplay';
 import { Link } from 'react-router-dom';
+import { CONFIG } from '../../lib/consts';
 
 const INITIAL_STATE = {
   time: ''
@@ -17,7 +18,7 @@ class TransactionsRow extends Component {
   _isMounted = false
 
   async getPreparedState() {
-    const { transaction, transactionStore } = this.props;
+    const { eacService, transaction, transactionStore } = this.props;
 
     await transaction.fillData();
 
@@ -30,15 +31,26 @@ class TransactionsRow extends Component {
     if (isTimestamp) {
       time = transaction.windowStart;
     } else {
-      time = await this.props.eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
+      const currentBlock = await eacService.Util.getBlockNumber();
+      const windowStart = transaction.windowStart.toNumber();
+
+      if (currentBlock > windowStart) {
+        time = await eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
+      } else {
+        const difference = windowStart - currentBlock;
+
+        const currentBlockTimestamp = await eacService.Util.getTimestampForBlock(currentBlock);
+
+        time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
+      }
     }
 
-    time = moment.unix(time).format('YYYY-MM-DD HH:MM');
+    time = moment.unix(time).format('YYYY-MM-DD HH:mm');
 
     let timeWindow = transaction.windowSize.toNumber();
 
     if (!isTimestamp) {
-      timeWindow = timeWindow * 15;
+      timeWindow = timeWindow * CONFIG.averageBlockTime;
     }
 
     timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');

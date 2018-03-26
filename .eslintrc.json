@@ -11,7 +11,8 @@
     "env": {
         "browser": true,
         "node": true,
-        "es6": true
+        "es6": true,
+        "jest/globals": true
      },
     "rules": {
         "linebreak-style": 0,
@@ -21,5 +22,6 @@
         "no-extra-semi": "error",
         "semi": ["error", "always"],
         "quotes": ["error", "single", { "allowTemplateLiterals": true }]
-    }
+    },
+    "plugins": ["jest"]
 }

@@ -17,6 +17,7 @@ class TimeNodeStatistics extends Component {
     };
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
+    this.refreshStats = this.refreshStats.bind(this);
   }
 
   async componentWillMount() {
@@ -29,8 +30,12 @@ class TimeNodeStatistics extends Component {
   componentDidMount() {
     // Restarts the timenode in case the user refreshed the page with the timenode running
     if (Cookies.get('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
-      setTimeout(this.startTimeNode, 2000);
+      this.startTimeNode();
     }
+
+    this.refreshStats();
+    // Refreshes the stats every 5 seconds
+    this.interval = setInterval(this.refreshStats, 5000);
   }
 
   getStopButton() {
@@ -48,7 +53,7 @@ class TimeNodeStatistics extends Component {
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
-    this.props.keenStore.activeTimeNodes -= 1;
+    this.props.keenStore.activeTimeNodes = this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
   }
 
   async refreshBalances() {
@@ -56,8 +61,14 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getDAYBalance();
   }
 
-  refreshStats() {
+  async refreshStats() {
     this.props.timeNodeStore.updateStats();
+    await this.props.timeNodeStore.getBalance();
+    await this.props.timeNodeStore.getDAYBalance();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
@@ -97,7 +108,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div className="card-body">
-                <h1>{claimedEthStatus}</h1>
+                <h2>{claimedEthStatus}</h2>
               </div>
             </div>
           </div>

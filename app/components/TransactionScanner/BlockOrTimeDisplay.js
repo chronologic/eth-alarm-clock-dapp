@@ -2,13 +2,12 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import moment from 'moment';
+import { CONFIG } from '../../lib/consts';
 
 const INITIAL_STATE = {
   block: '',
   time: ''
 };
-
-const AVERAGE_BLOCK_TIME = 15;
 
 @inject('web3Service')
 @inject('eacService')
@@ -46,7 +45,7 @@ export class BlockOrTimeDisplay extends Component {
 
     const currentBlockTimestamp = await eacService.Util.getTimestampForBlock(currentBlock);
 
-    return currentBlockTimestamp + difference * AVERAGE_BLOCK_TIME;
+    return currentBlockTimestamp + difference * CONFIG.averageBlockTime;
   }
 
   async updateState(props = this.props) {

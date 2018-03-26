@@ -7,8 +7,8 @@ const COLLECTIONS = {
   TIMENODES: 'timenodes'
 };
 
-// 5 minutes in milliseconds
-const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
+// 2 minutes in milliseconds
+const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
   @observable activeTimeNodes = 0;
@@ -52,28 +52,41 @@ export class KeenStore {
     this.pollActiveTimeNodesCount();
   }
 
+  async awaitKeenInitialized () {
+    if (!this.networkId || !this.analysisClient || !this.trackingClient) {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitKeenInitialized());
+        }, 500);
+      });
+    }
+    return true;
+  }
+
   sendPageView() {
     this.trackingClient.recordEvent(COLLECTIONS.PAGEVIEWS, {
       title: document.title
     });
   }
 
-  sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
+  async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
+    await this.awaitKeenInitialized();
+    nodeAddress = this._web3Service.web3.sha3(nodeAddress);
     const event = {
       nodeAddress,
       dayAddress,
       networkId,
+      nodeType: 'dapp',
       status: 'active'
     };
-
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
   getActiveTimeNodesCount(networkId) {
-    const count = new KeenAnalysis.Query('count_unique', {
+    const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
-      timeframe: 'previous_5_minutes',
+      timeframe: 'previous_2_minutes',
       filters: [
         {
           property_name: 'networkId',

@@ -165,16 +165,15 @@ export default class Web3Service {
 
     get network() {
         if (typeof Networks[this.netId] === 'undefined')
-            return Networks[0];
+            return Networks[0].name;
         else
-            return Networks[this.netId];
+            return Networks[this.netId].name;
     }
 
     humanizeCurrencyDisplay(priceInWei) {
         const ETHER_UNITS_VALUES_MAPPING = {
             WEI: 1,
             MWEI: 1000000,
-            FINNEY: 1000000000000000,
             ETH: 1000000000000000000
         };
 

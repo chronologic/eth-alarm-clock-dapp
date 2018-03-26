@@ -142,7 +142,7 @@ class ScheduleWizard extends Component {
 
   async scheduleTransaction() {
     this.scheduleBtn.innerHTML = 'Scheduling...';
-    var originalBodyCss = document.body.className;
+    const originalBodyCss = document.body.className;
     document.body.className += ' fade-me';
 
     const { scheduleStore, transactionStore, web3Service: { web3 } , history } = this.props;
@@ -190,7 +190,7 @@ class ScheduleWizard extends Component {
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
     }
 
-    this.scheduleBtn.innerHTML = 'Schedule';
+    if (this.scheduleBtn) this.scheduleBtn.innerHTML = 'Schedule';
     document.body.className = originalBodyCss;
   }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TransactionRow from './TransactionRow';
+import { PropagateLoader } from 'react-spinners';
 
 const INITIAL_STATE = {
   pages: [],
@@ -117,9 +118,11 @@ class TransactionsTable extends Component {
           </div>
         </div>
 
-        <div className={fetchingTransactions ? 'mt-4' : 'd-none'}>
-            Fetching transactions...
-        </div>
+        {fetchingTransactions &&
+          <div className='loading-icon'>
+            <PropagateLoader loading={fetchingTransactions} color='#21FFFF'/>
+          </div>
+        }
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
             No transactions.

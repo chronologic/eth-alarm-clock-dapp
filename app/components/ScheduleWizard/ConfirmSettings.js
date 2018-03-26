@@ -88,67 +88,65 @@ class ConfirmSettings extends Component {
         {this.tabValidations()}
         <div className="row">
 
-          <div className="col-lg-6">
+          <div className="col-lg-8">
             <table className="table">
               <thead>
                 <tr>
                   <th></th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><strong>To Address</strong></td>
-                  <td>{scheduleStore.toAddress ? <a href="#">{scheduleStore.toAddress}</a> : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6 col-lg-4"><strong>To Address</strong></td>
+                  <td className="d-inline-block col-6 col-sm-6 col-lg-8">{scheduleStore.toAddress ? <a href={this.props.web3Service.explorer + 'address/' + scheduleStore.toAddress } target='_blank' rel='noopener noreferrer'>{ scheduleStore.toAddress }</a> : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td><strong>Amount to Send</strong></td>
-                  <td>{scheduleStore.amountToSend ? scheduleStore.amountToSend + ' ETH' : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6 col-lg-4"><strong>Amount to Send</strong></td>
+                  <td className="d-inline-block col-6 col-lg-8">{scheduleStore.amountToSend ? scheduleStore.amountToSend + ' ETH' : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>Data</td>
-                  <td>{scheduleStore.yourData ? scheduleStore.yourData : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6 col-lg-4">Data</td>
+                  <td className="d-inline-block col-6 col-lg-8">{scheduleStore.yourData ? scheduleStore.yourData : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>{scheduleStore.isUsingTime ? 'Time' : 'Block Number'}</td>
-                  <td>{this.blockOrTime()}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6 col-lg-4">{scheduleStore.isUsingTime ? 'Time' : 'Block Number'}</td>
+                  <td className="d-inline-block col-6 col-lg-8">{this.blockOrTime()}</td>
                 </tr>
-                <tr>
-                  <td>Window Size</td>
-                  <td>{this.executionWindow || emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6 col-lg-4">Window Size</td>
+                  <td className="d-inline-block col-6 col-lg-8">{this.executionWindow || emptyFieldSign}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div className="col-lg-6">
+          <div className="col-lg-4">
             <table className="table">
               <thead>
-                <tr className="d-none d-md-table-row">
-                  <th></th>
+                <tr className="row m-0 d-none d-lg-table-row">
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Gas Amount</td>
-                  <td>{scheduleStore.gasAmount ? scheduleStore.gasAmount : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6">Gas Amount</td>
+                  <td className="d-inline-block col-6">{scheduleStore.gasAmount ? scheduleStore.gasAmount : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>Gas Price</td>
-                  <td>{scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6">Gas Price</td>
+                  <td className="d-inline-block col-6">{scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>Fee</td>
-                  <td>{scheduleStore.fee ? scheduleStore.fee : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6">Fee</td>
+                  <td className="d-inline-block col-6">{scheduleStore.fee ? scheduleStore.fee : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>Time Bounty</td>
-                  <td>{scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6">Time Bounty</td>
+                  <td className="d-inline-block col-6">{scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}</td>
                 </tr>
-                <tr>
-                  <td>Deposit</td>
-                  <td>{scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}</td>
+                <tr className="row m-0">
+                  <td className="d-inline-block col-6">Deposit</td>
+                  <td className="d-inline-block col-6">{scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}</td>
                 </tr>
               </tbody>
             </table>

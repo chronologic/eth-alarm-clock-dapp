@@ -1,4 +1,4 @@
-import { observable, computed } from 'mobx';
+import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 
 const requestFactoryStartBlocks = {
@@ -43,18 +43,33 @@ export class TransactionStore {
 
   // Returns an array of transactions based on the current
   // state of the filter variable
-  @computed get filteredTransactions() {
+  @observable
+  async getfilteredTransactions() {
     const matchesFilter = new RegExp(this.filter, 'i');
-    if (!this.filter && this.filter.length < 1) {
+    let addresses;
+    let transactions = [];
+
+    if (!this.filter || this.filter.length < 20) {
       return [];
     }
 
-    if (this._cache.allTransactions) {
-      return this._cache.allTransactions.filter(
-        transaction => matchesFilter.test(transaction.address)
+    if (this._cache.allTransactionsAddresses) {
+      addresses = this._cache.allTransactionsAddresses.filter(
+        address => matchesFilter.test(address)
       );
+      for (let address of addresses) {
+        const transaction = await this._cache.fetchCachedTransactionByAddress(address);
+        if (transaction) {
+          transaction.status = await this.getTxStatus(transaction);
+          transactions.push(transaction);
+        }
+      }
+      return transactions;
     }
+
+    return [];
   }
+
 
   get allTransactions () {
     return this._cache.allTransactions;
@@ -110,8 +125,23 @@ export class TransactionStore {
     return transactions;
   }
 
-  async queryTransactions( { transactions, offset, limit, resolved } ) {
+  async getAllTransactionAddresses() {
+    if (this._cache.allTransactionsAddresses && this._cache.allTransactionsAddresses.length > 0) {
+      return this._cache.allTransactionsAddresses;
+    }
+
+    const addresses = await this._cache.getTransactions({}, true, true);
+    return addresses;
+  }
+
+  async queryTransactions( { transactions, offset, limit, resolved, resolveAll } ) {
     const processed = [];
+    let total = 0;
+
+    if (!resolveAll) {
+      total = transactions.length;
+      transactions = transactions.slice(offset, offset + limit);
+    }
 
     await this._cache.queryTransactions (transactions);
 
@@ -123,12 +153,12 @@ export class TransactionStore {
         processed.push(transaction);
       }
     }
-
     transactions = processed;
 
-    const total = transactions.length;
-
-    transactions = transactions.slice(offset, offset + limit);
+    if (resolveAll) {
+      total = transactions.length;
+      transactions = transactions.slice(offset, offset + limit);
+    }
 
     return {
       transactions,
@@ -136,15 +166,16 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved } ) {
+  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved, resolveAll = false } ) {
     let transactions = await this.getTransactions( { startBlock, endBlock } );
 
-    if (typeof(resolved) !== 'undefined') {
+    if (typeof(resolved) !== 'undefined' && resolved !== null) {
       return this.queryTransactions( {
         transactions,
         offset,
         limit,
-        resolved
+        resolved,
+        resolveAll
       } );
     }
 

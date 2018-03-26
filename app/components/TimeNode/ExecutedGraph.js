@@ -29,7 +29,7 @@ class ExecutedGraph extends Component {
     // This section sorts the executed transactions by hour into an array
     for (let transaction of data) {
       const transactionDate = new Date(transaction.timestamp);
-      transactionDate.setHours(transactionDate.getUTCHours(),0,0,0);
+      transactionDate.setHours(transactionDate.getHours(), 0, 0, 0);
 
       let timeIntervalExists = false;
 
@@ -121,8 +121,8 @@ class ExecutedGraph extends Component {
   }
 
   compareDates(a, b) {
-    if (a.datetime.getTime() < b.datetime.getTime()) return -1;
-    if (a.datetime.getTime() > b.datetime.getTime()) return 1;
+    if (a.datetime < b.datetime) return -1;
+    if (a.datetime > b.datetime) return 1;
     return 0;
   }
 
