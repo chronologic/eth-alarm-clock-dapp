@@ -1,13 +1,11 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // Extracts the SCSS to a file
-const extractSASS = new ExtractTextPlugin({
-  filename: './main.css',
-  ignoreOrder: false
+const extractSASS = new MiniCssExtractPlugin({
+  filename: './main.css'
 });
 
 module.exports = {
