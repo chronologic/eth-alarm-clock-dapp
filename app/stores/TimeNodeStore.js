@@ -29,8 +29,8 @@ class SIGNATURE_ERRORS {
   static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
 }
 
-// 1 minute as milliseconds
-const STATUS_UPDATE_INTERVAL = 4 * 60 * 1000;
+// 2 minute as milliseconds
+const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
@@ -75,24 +75,33 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     const options = {
+      networkId: this._web3Service.netId,
       keystore: this.decrypt(keystore),
       keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,
       milliseconds: 15000,
       autostart: false,
-      scan: 75,
+      scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
     };
 
     this.eacWorker.onmessage = (event) => {
       const { type } = event.data;
+
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
+        if (event.data.etherGain) this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
         this.executedTransactions = event.data.executedTransactions;
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
+        if (event.data.result) {
+          showNotification('Cleared the stats.', 'success');
+          this.updateStats();
+        } else {
+          showNotification('Unable to clear the stats.', 'danger', 3000);
+        }
       }
     };
 
@@ -125,8 +134,26 @@ export default class TimeNodeStore {
     this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getMyAttachedAddress());
   }
 
-  startScanning() {
+  async awaitScanReady() {
+    if (!this.eacWorker || this.eacWorker === null || !this._keenStore || this._keenStore === null ) {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve(await this.awaitScanReady());
+        }, 500);
+      });
+    }
+    return true;
+  }
+
+  async startScanning() {
+
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      return;
+    }
+
     this.scanningStarted = true;
+
+    await this.awaitScanReady();
 
     this.sendActiveTimeNodeEvent();
 
@@ -143,11 +170,15 @@ export default class TimeNodeStore {
   stopScanning() {
     this.scanningStarted = false;
 
-    clearInterval(this._timeNodeStatusCheckIntervalRef);
+    if (this._timeNodeStatusCheckIntervalRef) {
+      clearInterval(this._timeNodeStatusCheckIntervalRef);
+    }
 
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
-    });
+    if (this.eacWorker){
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
+      });
+    }
     Cookies.remove('isTimenodeScanning');
   }
 
@@ -211,40 +242,58 @@ export default class TimeNodeStore {
 
     const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
     const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
+
     const balanceNum = await Bb.fromCallback((callback) => {
       contract.balanceOf.call(address, callback);
     });
-
     const balance = balanceNum.div(10**18).toNumber().toFixed(2);
 
-    this.updateNodeStatus(balance);
+    const mintingPower = await Bb.fromCallback((callback) => {
+      contract.getMintingPowerByAddress.call(address, callback);
+    });
+
+    this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
     this.balanceDAY = balance;
+
+    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
+      this.stopScanning();
+    }
 
     return balance;
   }
 
   updateStats() {
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
-    });
+    if (this.eacWorker) {
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+      });
+    }
   }
 
-  updateNodeStatus(balance) {
-    if (balance >= 3333) {
-      this.nodeStatus = TIMENODE_STATUS.MASTER_CHRONONODE;
-    } else if (balance >= 888) {
-      this.nodeStatus = TIMENODE_STATUS.CHRONONODE;
-    } else if (balance >= 333) {
-      this.nodeStatus = TIMENODE_STATUS.TIMENODE;
-    } else {
-      this.nodeStatus = TIMENODE_STATUS.DISABLED;
+  clearStats() {
+    if (this.eacWorker) {
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
+      });
     }
+    this.basicLogs = [];
+    this.detailedLogs = [];
+  }
 
-    // TO-DO: TimeMint check
+  getNodeStatus(balance, isTimeMint) {
+    if (balance >= 3333) {
+      return TIMENODE_STATUS.MASTER_CHRONONODE;
+    } else if (balance >= 888) {
+      return TIMENODE_STATUS.CHRONONODE;
+    } else if (balance >= 333 || isTimeMint) {
+      return TIMENODE_STATUS.TIMENODE;
+    } else {
+      return TIMENODE_STATUS.DISABLED;
+    }
   }
 
   /*
-   * Checks if the signature from MyEtherWallet
+   * Checks if the signature from the wallet
    * (inputted by the user) is valid.
    */
   isSignatureValid(sigObject) {
@@ -318,6 +367,16 @@ export default class TimeNodeStore {
 
   setCookie(key, value) {
     Cookies.set(key, value, { expires: 30 });
+  }
+
+  resetWallet() {
+    Cookies.remove('tn');
+    Cookies.remove('tnp');
+    Cookies.remove('hasWallet');
+    Cookies.remove('attachedDAYAccount');
+    this.hasWallet = false;
+    this.attachedDAYAccount = '';
+    showNotification('Your wallet has been reset.', 'success');
   }
 
   checkPasswordMatchesKeystore(keystore, password) {

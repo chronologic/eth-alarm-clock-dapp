@@ -26,6 +26,7 @@ export default class TransactionsCache {
 
         this.running = true;
         this.runFetchTicker();
+        this.watchRequests();
     }
 
     async runFetchTicker () {
@@ -58,6 +59,19 @@ export default class TransactionsCache {
         this.fetcher = false;
     }
 
+    async stopWatcher () {
+        if (this.requestWatcher) {
+            const requestFactory = await this._eac.requestFactory();
+            await requestFactory.stopWatch(this.requestWatcher);
+        }
+        this.requestWatcher = null;
+    }
+
+    stopAll () {
+        this.stopFetchTicker();
+        this.stopWatcher();
+    }
+
     updateLastBlock() {
         const { getBlockNumber } = this._eac.Util;
         getBlockNumber()
@@ -84,9 +98,15 @@ export default class TransactionsCache {
       return this.contracts;
     }
 
-    async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault) {
-        if (cache && this.running && this.contracts.length > 0) {
-          return this.allTransactions;
+    async getTransactions({ startBlock = this.requestFactoryStartBlock, endBlock = 'latest' }, cache = this.cacheDefault, onlyAddresses = false) {
+
+        if (this.running && (cache || endBlock == 'latest')) {
+            if (this.allTransactionsAddresses.length > 0) {
+                return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
+            } else if (this.syncing) {
+                await this.awaitSync();
+                return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
+            }
         }
 
         const requestFactory = await this._eac.requestFactory();
@@ -103,14 +123,27 @@ export default class TransactionsCache {
           this.cacheTransactions(requestsCreated);
         }
 
-        return requestsCreated;
+        return onlyAddresses ? this.allTransactionsAddresses : requestsCreated;
+    }
+
+    async watchRequests( ) {
+        const requestFactory = await this._eac.requestFactory();
+
+        this.requestWatcher = await requestFactory.watchRequests(this.requestFactoryStartBlock, request => {
+            const exists = this.allTransactionsAddresses.find(cachedRequest => cachedRequest === request);
+            if (!exists) {
+                const txRequest = this._eac.transactionRequest(request);
+                this.cacheContracts([request], 'top');
+                this.cacheTransactions([txRequest], 'top');
+            }
+        });
     }
 
     async getAllTransactions(cached = this.cacheDefault) {
       if (this.syncing) {
         await this.awaitSync();
       } else if (!cached || !this.running || this.allTransactions.length == 0) {
-        await this.getTransactions({});
+        return await this.getTransactions({});
       }
 
       await this.queryTransactions(this.allTransactions);
@@ -149,26 +182,60 @@ export default class TransactionsCache {
         return false;
     }
 
+    async fetchCachedTransactionByAddress(address) {
+        const cached = this.allTransactions.find(cachedTransaction =>
+            cachedTransaction.address == address
+        );
+
+        if (!cached) {
+            return null;
+        }
+
+        if (cached.instance) {
+            cached.refreshData();
+        } else {
+            await cached.fillData();
+        }
+
+        return cached;
+    }
+
+
+
     cacheContracts (requestContracts = [], updateType ) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
+        const unshift = updateType == 'top';
         if ( replace || this.contracts.length < requestContracts.length ) {
             this.contracts = requestContracts;
-        } else if (append) {
-            this.contracts.push(requestContracts);
+        } else {
+            requestContracts.forEach ( request => {
+                if (append) {
+                    this.contracts.push(request);
+                } else if (unshift) {
+                    this.contracts.unshift(request);
+                }
+            });
         }
     }
 
     cacheTransactions(transactions = [], updateType) {
         const replace = updateType == 'replace';
         const append = updateType == 'append';
+        const unshift = updateType == 'top';
 
         this.fillUpTransactions(transactions);
 
         if (this.transactions.length < transactions.length || replace) {
           this.transactions = transactions;
-        } else if (append) {
-          this.transactions.push(transactions);
+        } else {
+            transactions.forEach(transaction => {
+                if (append) {
+                    this.transactions.push(transaction);
+                } else if (unshift) {
+                    this.transactions.unshift(transaction);
+                }
+            });
         }
     }
 }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { inject, observer } from 'mobx-react';
 import { LOG_TYPE } from '../../lib/worker-logger';
+
 @inject('timeNodeStore')
 @observer
 class TimeNodeLogs extends Component {

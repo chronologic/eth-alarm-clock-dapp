@@ -146,7 +146,7 @@ class TimeComponent extends AbstractSetting {
     return (
       <div id="timeComponent">
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-lg-3">
             <div className={'form-group form-group-default form-group-default-select2 required'+(_validations.timeZone?'':' has-error')}>
               <label className="">Timezone</label>
               <select id="timezoneSelect" className="full-width" value={scheduleStore.timeZone} onBlur={this.validate('timeZone')} onChange={this.onChange('timeZone')} >
@@ -160,7 +160,7 @@ class TimeComponent extends AbstractSetting {
               }
           </div>
 
-          <div className="col-md-3">
+          <div className="col-lg-3">
             <div className={'form-group form-group-default input-group required'+(_validations.transactionDate?'':' has-error')}>
               <div className="form-input-group">
                 <label>Transaction Date</label>
@@ -175,7 +175,7 @@ class TimeComponent extends AbstractSetting {
               }
           </div>
 
-          <div className="col-md-3">
+          <div className="col-lg-3">
             <div className={'form-group form-group-default input-group required'+(_validations.transactionTime?'':' has-error')}>
               <div className="form-input-group">
                 <label>Transaction Time</label>
@@ -191,7 +191,7 @@ class TimeComponent extends AbstractSetting {
           </div>
 
 
-          <div className="col-md-3">
+          <div className="col-lg-3">
             <div className="d-sm-block d-md-none">
               <hr/>
             </div>

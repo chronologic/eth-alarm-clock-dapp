@@ -62,15 +62,7 @@ module.exports = {
         test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,
         include: path.resolve(__dirname, '../app'),
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015', 'env', 'react'],
-          plugins: [
-              'transform-runtime',
-              'transform-decorators-legacy',
-              'transform-class-properties'
-          ]
-        }
+        loader: 'babel-loader'
       }
     ]
   },

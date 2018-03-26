@@ -10,6 +10,7 @@ class TimeNodeProve extends Component {
   constructor(props) {
     super(props);
     this.verifyDayTokens = this.verifyDayTokens.bind(this);
+    this.resetVerify = this.resetVerify.bind(this);
   }
 
   _handleEnterPress = event => {
@@ -32,6 +33,10 @@ class TimeNodeProve extends Component {
     if (signature) {
       await this.props.timeNodeStore.attachDayAccount(signature);
     }
+  }
+
+  resetVerify() {
+    this.props.timeNodeStore.resetWallet();
   }
 
   toClipboard() {
@@ -70,12 +75,12 @@ class TimeNodeProve extends Component {
                 <li>Copy generated signature</li>
                 <li>Paste the whole generated signature into the Signature field</li>
               </ol>
-              <a  className='d-none' target='_blank' rel='noopener noreferrer'>Watch Tutorial</a>
+              <a href='https://medium.com/@chronologicnetwork/3dc1333c74ef' target='_blank' rel='noopener noreferrer'>Watch Tutorial</a>
             </div>
 
             <div className='col-md-6 mt-3'>
               <div id='signatureCheck' className='form-group form-group-default'>
-                <label>Signature from MyEtherWallet</label>
+                <label>Signature from MyCrypto</label>
                 <textarea
                   placeholder='Paste Your Signature Here'
                   className='form-control h-100'
@@ -95,6 +100,9 @@ class TimeNodeProve extends Component {
               className='btn btn-primary pull-right mr-4 px-5'
               type='button'
               onClick={this.verifyDayTokens}>Verify</button>
+            <button className='btn btn-light pull-right mr-4 px-5'
+              type='button'
+              onClick={this.resetVerify}>Reset</button>
           </div>
           <div className='d-sm-inline d-md-none'>
             <PoweredByEAC className='mt-5'/>

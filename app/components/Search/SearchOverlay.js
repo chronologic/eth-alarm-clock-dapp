@@ -13,24 +13,42 @@ class SearchOverlay extends Component {
       transactions: [],
       filter: '',
       fetchedTransactions: false,
+      filteredTransactions: [],
       updateSearchState: this.props.updateSearchState
     };
+  }
+
+  componentWillMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   async componentDidMount() {
     // This has to be changed after we implement a data layer (cache or db)
     // For now it always fetches all the transactions from eac.js on each page load
-    await this.props.transactionStore.getAllTransactions();
+    await this.props.transactionStore.getAllTransactionAddresses();
+    this.updateFiltered();
+  }
 
+  async updateFiltered() {
     this.setState({
-      fetchedTransactions: true
+      fetchedTransactions: false
     });
+    const transactions = await this.props.transactionStore.getfilteredTransactions();
+    if (this._isMounted) {
+      this.setState({ filteredTransactions: transactions, fetchedTransactions: true });
+    }
   }
 
   filter(e) {
     this.props.transactionStore.filter = e.target.value;
+    this.updateFiltered();
     this.forceUpdate();
   }
+
 
   render() {
     let searchResultsString = '';
@@ -42,7 +60,7 @@ class SearchOverlay extends Component {
       searchResultsString = 'Search Results - Fetching...';
 
       if (this.state.fetchedTransactions) {
-        filteredTransactions = this.props.transactionStore.filteredTransactions;
+        filteredTransactions = this.state.filteredTransactions;
 
         const followUpText = 'Showing '.concat(
           filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length,
