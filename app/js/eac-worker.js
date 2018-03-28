@@ -45,7 +45,7 @@ class EacWorker {
       scanSpread: options.scan,
       logfile: options.logfile,
       logLevel: options.logLevel,
-      walletStore: JSON.parse(options.keystore.toLowerCase()),
+      walletStores: options.keystore,
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
