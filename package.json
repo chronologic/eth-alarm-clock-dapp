@@ -94,7 +94,8 @@
     "react-spinners": "^0.2.6",
     "select2": "^4.0.4",
     "smooth-scrollbar": "^8.2.6",
-    "web3": "^0.20.0"
+    "web3": "^0.20.0",
+    "web3-providers-ws": "^1.0.0-beta.33"
   },
   "pre-commit": [
     "lint"
