@@ -89,6 +89,15 @@ class InfoSettings extends AbstractSetting {
           </div>
           <div className="row">
             <div className="col-md-4">
+              <div className={'form-group form-group-default required' + (_validations.amountToSend ? '' : ' has-error')}>
+                <label>Value/Amount to Send</label>
+                <input type="number" placeholder="Enter Value/Amount in ETH" value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')} className="form-control"></input>
+              </div>
+              {!_validations.amountToSend &&
+                <label className="error">{_validationsErrors.amountToSend}</label>
+              }
+            </div>
+            <div className="col-md-4">
               <div className={'form-group form-group-default required' + (_validations.gasAmount ? '' : ' has-error')}>
                 <label>Gas Amount</label>
                 <input type="number" placeholder="Enter Gas Amount" value={scheduleStore.gasAmount} onBlur={this.validate('gasAmount')} onChange={this.onChange('gasAmount')} className="form-control"></input>
@@ -96,15 +105,6 @@ class InfoSettings extends AbstractSetting {
               {!_validations.gasAmount &&
                 <label className="error">{_validationsErrors.gasAmount}</label>
               }
-            </div>
-            <div className="col-md-4">
-              <div className={'form-group form-group-default required'+(_validations.amountToSend?'':' has-error')}>
-                <label>Value/Amount to Send</label>
-                <input type="number" placeholder="Enter Value/Amount in ETH" value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')}  className="form-control"></input>
-              </div>
-              {!_validations.amountToSend &&
-                <label className="error">{_validationsErrors.amountToSend}</label>
-                }
             </div>
             <div className="col-md-4">
               <div className={'form-group form-group-default required'+(_validations.gasPrice?'':' has-error')}>
