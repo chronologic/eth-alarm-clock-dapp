@@ -43,7 +43,8 @@ class ScheduleWizard extends Component {
       gasAmount: true,
       amountToSend: true,
       gasPrice: true,
-      yourData: true
+      yourData: true,
+      receiverAddress: true,
     },
     ConfirmSettings: {
       timeZone: true,

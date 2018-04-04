@@ -33,7 +33,8 @@ class InfoSettings extends AbstractSetting {
         errors: [
           'Kindly provide valid input Data'
         ]
-      }
+      },
+      receiverAddress: this.ethereumAddressValidator()
     }
 
     async calculateMinimumGas () {
@@ -55,13 +56,21 @@ class InfoSettings extends AbstractSetting {
     }
 
     toggleYourData(){
+    toggleField = (property) => () => {
       const { scheduleStore } = this.props;
-      scheduleStore.useData = !scheduleStore.useData;
+      scheduleStore[property] = !scheduleStore[property];
+      scheduleStore.isTokenTransfer ? this.calculateTokenTransferMinimumGas() : this.calculateMinimumGas();
     }
 
     onChangeCheck = (property) => async(event) => {
       let { target: { value } } = event;
-      await this.calculateMinimumGas();
+      const { scheduleStore } = this.props;
+
+      if (scheduleStore.isTokenTransfer) {
+        await this.tokenChangeCheck(property);
+      } else {
+        await this.calculateMinimumGas();
+      }
 
       this.onChange(property)({ target: { value: value } });
       this.forceUpdate();
@@ -73,9 +82,9 @@ class InfoSettings extends AbstractSetting {
       this.validators.gasAmount = this.integerValidator(this.state.minGas);
 
       return (
-        <div id="infoSettings" className="tab-pane slide">
-          <div className="d-sm-block d-md-none">
-            <h2 className="m-b-20">Information</h2>
+        <div id='infoSettings' className='tab-pane slide'>
+          <div className='d-sm-block d-md-none'>
+            <h2 className='m-b-20'>Information</h2>
             <hr/>
           </div>
           <div className='row'>
@@ -90,7 +99,7 @@ class InfoSettings extends AbstractSetting {
             <div className={!scheduleStore.isTokenTransfer ? 'col-md-12': 'col-lg-6 col-md-12' }>
               <div className={'form-group form-group-default required'+(_validations.toAddress?'':' has-error')}>
                 <label>{ scheduleStore.isTokenTransfer ? 'Token Address' : 'To Address' }</label>
-                <input type='text' placeholder='Enter address' value={scheduleStore.toAddress} onChange={this.onChangeCheck('toAddress')}  onBlur={this.validate('toAddress')} className='form-control'></input>
+                <input type='text' placeholder='Enter address' value={scheduleStore.toAddress} onChange={this.onChangeCheck('toAddress')} onKeyUp={this.onChangeCheck('toAddress')}  onBlur={this.validate('toAddress')} className='form-control'></input>
               </div>
               {!_validations.toAddress &&
                 <label className='error'>{_validationsErrors.toAddress}</label>

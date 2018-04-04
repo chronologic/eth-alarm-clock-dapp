@@ -27,6 +27,9 @@ export default class ScheduleStore {
   @observable useData;
   @observable yourData;
 
+  //Token Transfer settings
+  @observable receiverAddress;
+
   @observable isUsingTime;
   @observable isTokenTransfer;
 
@@ -55,6 +58,8 @@ export default class ScheduleStore {
     this.gasPrice = '';
     this.useData = false;
     this.yourData = '';
+
+    this.receiverAddress = '';
 
     this.isUsingTime = true;
     this.isTokenTransfer = false;
