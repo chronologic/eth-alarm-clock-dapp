@@ -75,7 +75,7 @@ class MetamaskComponent extends Component {
     const accountsChanged = this.state.accounts.length !== web3Service.accounts.length || (this.state.accounts.length > 0 && this.state.accounts[0] !== web3Service.accounts[0]);
     if (accountsChanged) {
       this.setState({ accounts: web3Service.accounts });
-      showNotification(`Accounts updated`, 'info');
+      showNotification(`Accounts updated`, 'info', 4000);
     }
     this.timeout = setTimeout ( () => this.scoutUpdates(), SCOUT_TIMEOUT );
     this.runNotifications();
