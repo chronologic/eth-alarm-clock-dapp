@@ -12,7 +12,8 @@ class InfoSettings extends AbstractSetting {
       super(props);
 
       this.state = {
-        minGas: 21000
+        minGas: 21000,
+        token: {}
       };
       const { _validations,_validationsErrors } = this.props;
       this._validations = _validations.InfoSettings;
@@ -56,6 +57,30 @@ class InfoSettings extends AbstractSetting {
     }
 
     toggleYourData(){
+
+  async tokenChangeCheck(property) {
+    const { scheduleStore, web3Service: { web3 } } = this.props;
+    const isAddress = this.ethereumAddressValidator().validator;
+    if (isAddress(scheduleStore.toAddress, web3) === 0) {
+      console.log(property)
+      
+      if (property == 'toAddress') {
+        this.getTokenDetails();
+      }
+      await this.calculateTokenTransferMinimumGas();
+    }
+  }
+
+    async getTokenDetails () {
+      const { web3Service, scheduleStore } = this.props;
+      if (this.state.token.address === scheduleStore.toAddress) {
+        return;
+      }
+      const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
+      console.log(tokenDetails)
+      this.setState({token: tokenDetails });
+    }
+
     toggleField = (property) => () => {
       const { scheduleStore } = this.props;
       scheduleStore[property] = !scheduleStore[property];
@@ -122,15 +147,15 @@ class InfoSettings extends AbstractSetting {
                   <div className='row'>
                     <div className='col-sm-4'>
                       <label> Name :</label>
-                      <span className='form-control'></span>
+                      <span className='form-control'>{this.state.token.name}</span>
                     </div>
                     <div className='col-sm-4'>
                       <label> Decimals :</label>
-                      <span className='form-control'></span>
+                    <span className='form-control'>{this.state.token.decimals}</span>
                     </div>
                     <div className='col-sm-4'>
                       <label> Balance :</label>
-                      <span className='form-control'></span>
+                    <span className='form-control'>{this.state.token.balance}</span>
                     </div>
                   </div>
                 </div>

@@ -9,6 +9,7 @@ import {
     Networks,
     Explorers
 } from '../config/web3Config.js';
+import standardTokenAbi from '../abi/standardToken';
 
 let instance = null;
 
@@ -44,6 +45,17 @@ export default class Web3Service {
 
     fromWei(wei) {
         return this.web3.fromWei(wei);
+    }
+
+    async fetchTokenDetails(address) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(address);
+        const details = {
+            address: address,
+            name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
+            decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf(),
+            balance: (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf()
+        }
+        return details;
     }
 
     async fetchReceipt(hash) {
