@@ -28,6 +28,7 @@ export default class ScheduleStore {
   @observable yourData;
 
   @observable isUsingTime;
+  @observable isTokenTransfer;
 
   /*
    * Currently MobX doesn't have a more elegant
@@ -56,6 +57,7 @@ export default class ScheduleStore {
     this.yourData = '';
 
     this.isUsingTime = true;
+    this.isTokenTransfer = false;
   }
 
   constructor(source) {
