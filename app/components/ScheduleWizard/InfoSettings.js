@@ -57,7 +57,6 @@ class InfoSettings extends AbstractSetting {
       return estimate;
     }
 
-    toggleYourData(){
 
     async checkAccountUpdate() {
       if (!this._mounted) {
