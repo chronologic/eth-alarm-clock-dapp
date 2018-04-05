@@ -227,11 +227,13 @@ class InfoSettings extends AbstractSetting {
                 }
             </div>
           </div>
-          <div className='checkbox check-primary'>
-            <input type='checkbox' id='checkboxAddData' onChange={this.toggleField('useData')} checked={scheduleStore.useData} />
-            <label htmlFor='checkboxAddData'>Add Data</label>
-          </div>
-          {scheduleStore.useData &&
+          { !scheduleStore.isTokenTransfer && 
+            <div className='checkbox check-primary'>
+              <input type='checkbox' id='checkboxAddData' onChange={this.toggleField('useData')} checked={scheduleStore.useData} />
+              <label htmlFor='checkboxAddData'>Add Data</label>
+            </div>
+          }
+          { scheduleStore.useData &&
             <div className='row'>
               <div className='col-md-4'>
                 <div className={'form-group form-group-default required'+(_validations.yourData?'':' has-error')}>
