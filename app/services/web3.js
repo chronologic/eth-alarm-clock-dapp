@@ -53,9 +53,14 @@ export default class Web3Service {
             address: address,
             name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
             decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf(),
-            balance: (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf()
         }
         return details;
+    }
+
+    async fetchTokenBalance(address) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(address);
+        const balance = this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-'
+        return balance;
     }
 
     async fetchReceipt(hash) {

@@ -12,6 +12,7 @@ class InfoSettings extends AbstractSetting {
       super(props);
 
       this.state = {
+        account: '',
         minGas: 21000,
         token: {}
       };
@@ -58,27 +59,29 @@ class InfoSettings extends AbstractSetting {
 
     toggleYourData(){
 
-  async tokenChangeCheck(property) {
-    const { scheduleStore, web3Service: { web3 } } = this.props;
-    const isAddress = this.ethereumAddressValidator().validator;
-    if (isAddress(scheduleStore.toAddress, web3) === 0) {
-      console.log(property)
-      
-      if (property == 'toAddress') {
-        this.getTokenDetails();
-      }
-      await this.calculateTokenTransferMinimumGas();
-    }
-  }
-
-    async getTokenDetails () {
-      const { web3Service, scheduleStore } = this.props;
-      if (this.state.token.address === scheduleStore.toAddress) {
+    async checkAccountUpdate() {
+      if (!this._mounted) {
         return;
       }
-      const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
-      console.log(tokenDetails)
-      this.setState({token: tokenDetails });
+      const { web3Service, web3Service: { web3 }, scheduleStore } = this.props;
+      const isAddress = this.ethereumAddressValidator().validator;
+      if (!web3Service.accounts || web3Service.accounts[0] === this.state.account) {
+        return;
+      }
+      this.setState({ account: web3Service.accounts[0] });
+      if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
+        await this.getTokenDetails(true);
+      }
+    }
+
+    async getTokenDetails (onlyBalance = false) {
+      const { web3Service, scheduleStore } = this.props;
+      if (!onlyBalance) {
+        const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
+        this.setState({ token: tokenDetails });
+      }
+      const balance = await web3Service.fetchTokenBalance(scheduleStore.toAddress);
+      this.setState({ token: Object.assign(this.state.token, { balance }) });
     }
 
     toggleField = (property) => () => {
@@ -87,9 +90,23 @@ class InfoSettings extends AbstractSetting {
       scheduleStore.isTokenTransfer ? this.calculateTokenTransferMinimumGas() : this.calculateMinimumGas();
     }
 
+    async tokenChangeCheck(property) {
+      const { scheduleStore, web3Service: { web3 } } = this.props;
+      const isAddress = this.ethereumAddressValidator().validator;
+      if (isAddress(scheduleStore.toAddress, web3) !== 0) {
+        this.setState({ token: {} })
+        return;
+      }
+      if (property == 'toAddress' ) {
+        this.getTokenDetails();
+      }
+      await this.calculateTokenTransferMinimumGas();
+    }
+
     onChangeCheck = (property) => async(event) => {
       let { target: { value } } = event;
       const { scheduleStore } = this.props;
+      this.onChange(property)({ target: { value: value } });
 
       if (scheduleStore.isTokenTransfer) {
         await this.tokenChangeCheck(property);
@@ -97,8 +114,21 @@ class InfoSettings extends AbstractSetting {
         await this.calculateMinimumGas();
       }
 
-      this.onChange(property)({ target: { value: value } });
       this.forceUpdate();
+    }
+
+    componentDidMount () {
+      this._mounted = true;
+      this.checkAccountUpdate();
+      console.log('interval')
+      this.updateInterval = setInterval(() => this.checkAccountUpdate(), 2000);
+    }
+
+    componentWillUnmount () {
+      if (this.updateInterval) {
+        this.clearInterval(this.updateInterval)
+      }
+      this._mounted = false;
     }
 
     render() {
@@ -113,12 +143,32 @@ class InfoSettings extends AbstractSetting {
             <hr/>
           </div>
           <div className='row'>
-            <div className='col-md-12'>
+            <div className='col-md-4 col-sm-12'>
               <div className={'form-group'}>
                 <Switch onChange={this.toggleField('isTokenTransfer')} checked={scheduleStore.isTokenTransfer} onHandleColor='#21ffff' offColor='#ddd' onColor='#000' uncheckedIcon={false} checkedIcon={false}/>
                 <span className='switch-label' > Token transfer </span>
               </div>
             </div>
+            {scheduleStore.isTokenTransfer &&
+              <div className='col-md-8 col-sm-12'>
+                <div className={'form-group'}>
+                  <div className='row'>
+                    <div className='col-sm-4'>
+                      <label> Name :</label>
+                      <span className='w-100 d-block'>{this.state.token.name}</span>
+                    </div>
+                    <div className='col-sm-4'>
+                      <label> Decimals :</label>
+                      <span className='w-100 d-block'>{this.state.token.decimals}</span>
+                    </div>
+                    <div className='col-sm-4'>
+                      <label> Balance :</label>
+                      <span className='w-100 d-block'>{this.state.token.balance}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
           <div className='row'>
             <div className={!scheduleStore.isTokenTransfer ? 'col-md-12': 'col-lg-6 col-md-12' }>
@@ -140,28 +190,7 @@ class InfoSettings extends AbstractSetting {
               }
             </div>
           </div>
-          {scheduleStore.isTokenTransfer &&
-            <div className='row'>
-              <div className='col-md-12'>
-                <div className={'form-group form-group-default'}>
-                  <div className='row'>
-                    <div className='col-sm-4'>
-                      <label> Name :</label>
-                      <span className='form-control'>{this.state.token.name}</span>
-                    </div>
-                    <div className='col-sm-4'>
-                      <label> Decimals :</label>
-                    <span className='form-control'>{this.state.token.decimals}</span>
-                    </div>
-                    <div className='col-sm-4'>
-                      <label> Balance :</label>
-                    <span className='form-control'>{this.state.token.balance}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
+          
           <div className='row'>
             <div className='col-md-4'>
               <div className={'form-group form-group-default required' + (_validations.amountToSend ? '' : ' has-error')}>
