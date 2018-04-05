@@ -60,6 +60,34 @@ class AbstractSetting extends Component {
     };
   }
 
+  integerMinMaxValidator( min, max, minError, maxError) {
+    const { _validations } = this.props;
+    min = min || 1;
+    return {
+      validator: (value) => {
+        if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
+        if (min) {
+          minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+          if (Number(value) < Number(min)) {
+            return 2;
+          }
+        }
+        if (max) {
+          maxError = maxError || `Value / amount shall be less or equal to maximum value of ${max}`;
+          if (Number(value) > Number(max)) {
+            return 3;
+          }
+        }
+        return 0;
+      },
+      errors: [
+        _validations.Errors.numeric,
+        minError || _validations.Errors.minimum_numeric,
+        maxError || `Value / amount shall be less or equal to maximum value of ${max}`
+      ]
+    };
+  }
+
   booleanValidator (){
     return {
       validator: (value)=> {

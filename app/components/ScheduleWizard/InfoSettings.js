@@ -80,14 +80,21 @@ class InfoSettings extends AbstractSetting {
         const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
         this.setState({ token: tokenDetails });
       }
-      const balance = await web3Service.fetchTokenBalance(scheduleStore.toAddress);
+      const _balance = Number(await web3Service.fetchTokenBalance(scheduleStore.toAddress) / 10 ** this.state.token.decimals);
+      const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
       this.setState({ token: Object.assign(this.state.token, { balance }) });
+      this.validators.amountToSend = this.integerMinMaxValidator(1, balance );
     }
 
     toggleField = (property) => () => {
       const { scheduleStore } = this.props;
       scheduleStore[property] = !scheduleStore[property];
-      scheduleStore.isTokenTransfer ? this.calculateTokenTransferMinimumGas() : this.calculateMinimumGas();
+      if (scheduleStore.isTokenTransfer) {
+        this.tokenChangeCheck('toAddress');
+       } else {
+        this.validators.amountToSend = this.decimalValidator();
+         this.calculateMinimumGas();
+       }
     }
 
     async tokenChangeCheck(property) {
