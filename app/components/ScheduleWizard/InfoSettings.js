@@ -57,6 +57,25 @@ class InfoSettings extends AbstractSetting {
       return estimate;
     }
 
+    async calculateTokenTransferMinimumGas() {
+      const { web3Service, web3Service: { web3 }, scheduleStore } = this.props;
+      const isAddress = this.ethereumAddressValidator().validator;
+      const minEstimate = 21000;
+      let estimate;
+      if (isAddress(scheduleStore.toAddress, web3) === 0 && isAddress(scheduleStore.receiverAddress, web3) == 0) {
+        const transactionParams = [{ type: 'address', value: scheduleStore.receiverAddress }, { type: 'uint256', value: scheduleStore.amountToSend }];
+        const transactionData = web3Service.encodeTransactionData('transfer', transactionParams);
+        estimate = await Bb.fromCallback(callback =>
+          web3.eth.estimateGas({
+            to: scheduleStore.toAddress,
+            data: transactionData
+          }, callback)
+        );
+      }
+      estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
+      this.setState({ minGas: estimate });
+      return estimate;
+    }
 
     async checkAccountUpdate() {
       if (!this._mounted) {
@@ -90,7 +109,7 @@ class InfoSettings extends AbstractSetting {
       scheduleStore[property] = !scheduleStore[property];
       if (scheduleStore.isTokenTransfer) {
         this.tokenChangeCheck('toAddress');
-       } else {
+       } else {         
         this.validators.amountToSend = this.decimalValidator();
          this.calculateMinimumGas();
        }
@@ -126,7 +145,6 @@ class InfoSettings extends AbstractSetting {
     componentDidMount () {
       this._mounted = true;
       this.checkAccountUpdate();
-      console.log('interval')
       this.updateInterval = setInterval(() => this.checkAccountUpdate(), 2000);
     }
 
@@ -191,8 +209,8 @@ class InfoSettings extends AbstractSetting {
                 <label> Receiver Address</label>
                 <input type='text' placeholder='Enter address' value={scheduleStore.receiverAddress} onChange={this.onChangeCheck('receiverAddress')} onBlur={this.validate('receiverAddress')} className='form-control'></input>
               </div>
-              {!_validations.toAddress &&
-                <label className='error'>{_validationsErrors.toAddress}</label>
+              {!_validations.receiverAddress &&
+                <label className='error'>{_validationsErrors.receiverAddress}</label>
               }
             </div>
           </div>
@@ -232,7 +250,7 @@ class InfoSettings extends AbstractSetting {
               <label htmlFor='checkboxAddData'>Add Data</label>
             </div>
           }
-          { scheduleStore.useData &&
+          { !scheduleStore.isTokenTransfer && scheduleStore.useData &&
             <div className='row'>
               <div className='col-md-4'>
                 <div className={'form-group form-group-default required'+(_validations.yourData?'':' has-error')}>

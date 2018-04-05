@@ -47,6 +47,33 @@ export default class Web3Service {
         return this.web3.fromWei(wei);
     }
 
+    encodeFunctionName(functionName) {
+        if (typeof functionName === 'undefined') {
+            return;
+        }
+        const encoded = this.web3.toHex(functionName);
+        console.log(encoded)
+        return encoded.substring(0,10);
+    }
+
+    encodeTransactionData (functionName,params) {
+        if (typeof functionName === 'undefined' || params.length < 1) {
+            return;
+        }
+        let types = [];
+        let values = [];
+        const Coder = require('web3/lib/solidity/coder');
+        for (let p = 0; p < params.length; p++) {
+            types.push(params[p].type);
+            values.push(params[p].value);
+        }
+        const funcName = `${ functionName }(${ types.join(',') })`;
+        console.log(funcName)
+        const func = this.encodeFunctionName(funcName);
+        const encoded =  Coder.encodeParams(types, values);
+        return func+encoded;
+    }
+
     async fetchTokenDetails(address) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(address);
         const details = {
