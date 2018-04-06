@@ -17,7 +17,7 @@ const Networks = {
   },
   42: {
     name: 'Kovan',
-    endpoint: 'https://kovan.infura.io'
+    endpoint: 'https://kovan.infura.io/6M6ROam68gmdp9OeNmym'
   }
 };
 
