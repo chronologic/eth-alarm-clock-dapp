@@ -101,7 +101,7 @@ class InfoSettings extends AbstractSetting {
       const _balance = Number(await web3Service.fetchTokenBalance(scheduleStore.toAddress) / 10 ** this.state.token.decimals);
       const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
       this.setState({ token: Object.assign(this.state.token, { balance }) });
-      this.validators.amountToSend = this.integerMinMaxValidator(1, balance );
+      this.validators.amountToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
     }
 
     toggleField = (property) => () => {
