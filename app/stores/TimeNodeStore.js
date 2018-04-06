@@ -76,7 +76,7 @@ export default class TimeNodeStore {
 
     const options = {
       networkId: this._web3Service.netId,
-      keystore: this.decrypt(keystore),
+      keystore: [this.decrypt(keystore)],
       keystorePassword: this.decrypt(password),
       logfile: 'console',
       logLevel: 1,

@@ -75,7 +75,7 @@ class TimeNodeProve extends Component {
                 <li>Copy generated signature</li>
                 <li>Paste the whole generated signature into the Signature field</li>
               </ol>
-              <a href='https://medium.com/@chronologicnetwork/3dc1333c74ef' target='_blank' rel='noopener noreferrer'>Watch Tutorial</a>
+              <a href='https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef' target='_blank' rel='noopener noreferrer'>Watch Tutorial</a>
             </div>
 
             <div className='col-md-6 mt-3'>

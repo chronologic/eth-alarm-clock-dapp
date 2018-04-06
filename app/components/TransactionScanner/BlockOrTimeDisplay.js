@@ -23,7 +23,7 @@ export class BlockOrTimeDisplay extends Component {
       return moment.duration(seconds, 'seconds').format('d [days], h [hours], m [minutes]');
     }
 
-    return moment.unix(seconds).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm z');
+    return moment.unix(seconds).tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z');
   }
 
   async getLastBlockTimestamp() {

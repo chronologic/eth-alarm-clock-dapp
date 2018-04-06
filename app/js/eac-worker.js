@@ -1,12 +1,13 @@
 import Web3 from 'web3/index';
+import Web3WsProvider from 'web3-providers-ws';
 import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
-import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
-import WorkerLogger from '../lib/worker-logger';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import BigNumber from 'bignumber.js';
 import { Networks } from '../config/web3Config.js';
+import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
+import WorkerLogger from '../lib/worker-logger';
 
 const { Config, Scanner, StatsDB } = EACJSClient;
 
@@ -19,7 +20,15 @@ class EacWorker {
     let provider = null;
 
     if (network) {
-      provider = new Web3.providers.HttpProvider(network.endpoint);
+      provider = (() => {
+        if ( new RegExp('ws://').test(network.endpoint) || new RegExp('wss://').test(network.endpoint)) {
+          const ws = new Web3WsProvider(`${network.endpoint}`);
+          ws.__proto__.sendAsync = ws.__proto__.send;
+          return ws;
+        } else if ( new RegExp('http://').test(network.endpoint) || new RegExp('https://').test(network.endpoint)) {
+          return new Web3.providers.HttpProvider(`${network.endpoint}`);
+        }
+      })();
     } else {
       provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
     }
@@ -45,7 +54,7 @@ class EacWorker {
       scanSpread: options.scan,
       logfile: options.logfile,
       logLevel: options.logLevel,
-      walletStore: JSON.parse(options.keystore.toLowerCase()),
+      walletStores: options.keystore,
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,

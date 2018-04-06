@@ -11,7 +11,7 @@ const COLLECTIONS = {
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
-  @observable activeTimeNodes = 0;
+  @observable activeTimeNodes = '-';
 
   projectId = '';
   writeKey = '';
@@ -102,6 +102,9 @@ export class KeenStore {
     });
 
     this.analysisClient.run(count, (err, response) => {
+      if (err) {
+        this.activeTimeNodes = '-';
+      }
       this.activeTimeNodes = response.result;
     });
   }

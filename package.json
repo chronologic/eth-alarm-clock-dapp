@@ -67,7 +67,7 @@
     "chart.js": "^2.7.2",
     "crypto-js": "^3.1.9-1",
     "dotenv-webpack": "^1.5.5",
-    "eac.js-client": "^2.2.4",
+    "eac.js-client": "^2.4.0",
     "eac.js-lib": "^1.2.0",
     "ethereumjs-util": "^5.1.4",
     "ethereumjs-wallet": "^0.6.0",
@@ -94,7 +94,8 @@
     "react-spinners": "^0.2.6",
     "select2": "^4.0.4",
     "smooth-scrollbar": "^8.2.6",
-    "web3": "^0.20.0"
+    "web3": "^0.20.0",
+    "web3-providers-ws": "^1.0.0-beta.33"
   },
   "pre-commit": [
     "lint"
