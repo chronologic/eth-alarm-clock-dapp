@@ -219,7 +219,7 @@ class InfoSettings extends AbstractSetting {
             <div className='col-md-4'>
               <div className={'form-group form-group-default required' + (_validations.amountToSend ? '' : ' has-error')}>
                 <label>Value/Amount to Send</label>
-                <input type='number' placeholder='Enter Value/Amount in ETH' value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')} className='form-control'></input>
+                <input type='number' placeholder={`Enter Value/Amount in ${scheduleStore.isTokenTransfer ? this.state.token.symbol : 'ETH'}`} value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')} className='form-control'></input>
               </div>
               {!_validations.amountToSend &&
                 <label className='error'>{_validationsErrors.amountToSend}</label>

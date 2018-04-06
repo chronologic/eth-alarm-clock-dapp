@@ -79,6 +79,7 @@ export default class Web3Service {
         const details = {
             address: address,
             name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
+            symbol: (await Bb.fromCallback(callback => contract.symbol.call(callback))).valueOf(),
             decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf(),
         }
         return details;
