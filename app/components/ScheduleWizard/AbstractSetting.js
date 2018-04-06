@@ -40,7 +40,7 @@ class AbstractSetting extends Component {
 
   decimalValidator(min, minError){
     const { _validations } = this.props;
-    minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+    minError = minError || _validations.Errors.minimum_decimal;
     return {
       validator: (value)=> {
         if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
@@ -55,7 +55,7 @@ class AbstractSetting extends Component {
       },
       errors: [
         _validations.Errors.numeric,
-        minError || _validations.Errors.minimum_decimal
+        minError
       ]
     };
   }

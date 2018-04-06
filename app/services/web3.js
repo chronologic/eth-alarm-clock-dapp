@@ -52,7 +52,6 @@ export default class Web3Service {
             return;
         }
         const encoded = this.web3.toHex(functionName);
-        console.log(encoded)
         return encoded.substring(0,10);
     }
 
@@ -68,10 +67,15 @@ export default class Web3Service {
             values.push(params[p].value);
         }
         const funcName = `${ functionName }(${ types.join(',') })`;
-        console.log(funcName)
         const func = this.encodeFunctionName(funcName);
         const encoded =  Coder.encodeParams(types, values);
         return func+encoded;
+    }
+
+    async estimateTokenTransfer ( token, receiver, amount ) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const estimate = await Bb.fromCallback(callback => contract.transfer.estimateGas(receiver, amount, callback) );
+        return estimate;        
     }
 
     async fetchTokenDetails(address) {

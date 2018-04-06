@@ -54,6 +54,7 @@ class InfoSettings extends AbstractSetting {
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas:estimate });
+      this.validate('gasAmount')();
       return estimate;
     }
 
@@ -63,17 +64,11 @@ class InfoSettings extends AbstractSetting {
       const minEstimate = 21000;
       let estimate;
       if (isAddress(scheduleStore.toAddress, web3) === 0 && isAddress(scheduleStore.receiverAddress, web3) == 0) {
-        const transactionParams = [{ type: 'address', value: scheduleStore.receiverAddress }, { type: 'uint256', value: scheduleStore.amountToSend }];
-        const transactionData = web3Service.encodeTransactionData('transfer', transactionParams);
-        estimate = await Bb.fromCallback(callback =>
-          web3.eth.estimateGas({
-            to: scheduleStore.toAddress,
-            data: transactionData
-          }, callback)
-        );
+        estimate = await web3Service.estimateTokenTransfer(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.amountToSend * 10 ** this.state.token.decimals);
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas: estimate });
+      this.validate('gasAmount')();
       return estimate;
     }
 
@@ -102,6 +97,14 @@ class InfoSettings extends AbstractSetting {
       const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
       this.setState({ token: Object.assign(this.state.token, { balance }) });
       this.validators.amountToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
+      this.checkAmountValidation()
+    }
+
+    checkAmountValidation () {
+      const { scheduleStore } = this.props;
+      if (scheduleStore.amountToSend !== '') {
+        this.validate('amountToSend')();
+      }
     }
 
     toggleField = (property) => () => {
@@ -109,9 +112,10 @@ class InfoSettings extends AbstractSetting {
       scheduleStore[property] = !scheduleStore[property];
       if (scheduleStore.isTokenTransfer) {
         this.tokenChangeCheck('toAddress');
-       } else {         
+       } else {
         this.validators.amountToSend = this.decimalValidator();
-         this.calculateMinimumGas();
+        this.checkAmountValidation()
+        this.calculateMinimumGas();
        }
     }
 
