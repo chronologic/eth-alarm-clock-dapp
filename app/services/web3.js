@@ -91,7 +91,7 @@ export default class Web3Service {
 
     async fetchTokenBalance(address) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(address);
-        const balance = this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-'
+        const balance = this.accounts && this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-'
         return balance;
     }
 
