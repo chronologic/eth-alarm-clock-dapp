@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import MetamaskComponent from '../Common/MetamaskComponent';
 import ScheduleWizard from './ScheduleWizard';
+import intl from 'react-intl-universal';
 
 
 @inject('web3Service')
@@ -11,7 +12,7 @@ export class ScheduleRoute extends MetamaskComponent {
   render() {
     return (
       <div className="container padding-25 sm-padding-10">
-        <h1 className="view-title">Schedule Transaction</h1>
+        <h1 className="view-title">{intl.get('schedule-transaction')}</h1>
         <Route render={routeProps => <ScheduleWizard {...Object.assign({ isWeb3Usable: this.isWeb3Usable }, routeProps)} />} />
       </div>
     );

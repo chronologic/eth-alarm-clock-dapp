@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
+import http from 'axios';
+import intl from 'react-intl-universal';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
@@ -11,13 +14,30 @@ import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
+
+const SUPPORTED_LOCALES = [
+  {
+    name: 'English',
+    value: 'en-US'
+  },
+  {
+    name: 'Portuguese',
+    value: 'pt-BR'
+  },
+  {
+    name: 'Spanish',
+    value: 'es-ES'
+  }
+];
+
 @withRouter
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      showSearchOverlay: false
+      showSearchOverlay: false,
+      initDone: false,
     };
     this.updateSearchState = this.updateSearchState.bind(this);
     this.onEscKey = this.onEscKey.bind(this);
@@ -43,8 +63,38 @@ class App extends Component {
     }
   }
 
+  /*
+    Load locales and resume page initialisation after that is done.
+  */
+  loadLocales(){
+    let currentLocale = intl.determineLocale({
+      urlLocaleKey: 'lang',
+      //cookieLocaleKey: 'lang',
+      // TODO: Implement locale detection via navigator.language or navigator.userLanguage
+    });
+    if (!_.find(SUPPORTED_LOCALES, { value: currentLocale })) {
+      currentLocale = 'en-US';
+    }
+
+    http
+      .get(`app/locales/${currentLocale}.json`)
+      .then(res => {
+        return intl.init({
+          currentLocale,
+          locales: {
+            [currentLocale]: res.data
+          }
+        });
+      })
+      .then(() => {
+        // After loading CLDR locale data, start to render
+        this.setState({ initDone: true });
+      });
+  }
+
   componentDidMount(){
     document.addEventListener('keydown', this.onEscKey, false);
+    this.loadLocales();
   }
 
   render() {
@@ -54,6 +104,7 @@ class App extends Component {
     }
 
     return (
+      this.state.initDone &&
       <div className="app-container">
         <SidePanel {...this.props} />
         <div className="page-container">

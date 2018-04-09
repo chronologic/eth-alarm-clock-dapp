@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer,inject } from 'mobx-react';
+import intl from 'react-intl-universal';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -60,22 +61,22 @@ class SidePanel extends Component {
 
     const entryList = [
       {
-        title: 'Schedule',
+        title: intl.get('schedule'),
         titleClasses: titleClasses + this.isUrlActive('/', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/', 'thumbnail')
       },
       {
-        title: 'Transactions',
+        title: intl.get('transactions'),
         titleClasses: titleClasses + subtitleClasses + this.isUrlActive('/transactions', 'title', true),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true),
       },
       {
-        title: 'TimeNode',
+        title: intl.get('timenode'),
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
       },
       {
-        title: 'Faucet',
+        title: intl.get('faucet'),
         titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
       },
@@ -127,13 +128,13 @@ class SidePanel extends Component {
             </li>
             <li>
               <a href="https://alpha.chronologic.network/debt/" target="_blank" rel="noopener noreferrer">
-                <span className="title">Debt Smart Contract</span>
+                <span className="title">{intl.get('debt-smart-contract')}</span>
                 <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
               </a>
             </li>
             <li>
               <a href="https://alpha.chronologic.network/chronos/" target="_blank" rel="noopener noreferrer">
-                <span className="title">Day Token Contract</span>
+                <span className="title">{intl.get('day-token-contract')}</span>
                 <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
               </a>
             </li>
