@@ -162,18 +162,19 @@ class ScheduleWizard extends Component {
       executionWindow = scheduleStore.blockSize;
     }
 
-    let { toAddress, yourData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime } = scheduleStore;
+    let { toAddress, yourData, tokenData, gasAmount, amountToSend, gasPrice, fee, timeBounty, deposit, isUsingTime, isTokenTransfer } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
     fee = web3.toWei(fee, 'ether');
     timeBounty = web3.toWei(timeBounty, 'ether');
     deposit = web3.toWei(deposit, 'ether');
+    const data = isTokenTransfer ? tokenData : yourData;
 
     try {
       const scheduled = await transactionStore.schedule(
         toAddress,
-        yourData,
+        data,
         gasAmount,
         amountToSend,
         executionWindow,
@@ -193,10 +194,9 @@ class ScheduleWizard extends Component {
       }
     } catch (error) {
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
+      document.body.className = originalBodyCss;
+      this.scheduleBtn.innerHTML = 'Schedule';
     }
-
-    if (this.scheduleBtn) this.scheduleBtn.innerHTML = 'Schedule';
-    document.body.className = originalBodyCss;
   }
 
   componentDidMount() {
