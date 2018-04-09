@@ -45,6 +45,7 @@ class ScheduleWizard extends Component {
       gasPrice: true,
       yourData: true,
       receiverAddress: true,
+      tokenToSend: true
     },
     ConfirmSettings: {
       timeZone: true,
@@ -63,7 +64,7 @@ class ScheduleWizard extends Component {
       gasAmount: true,
       amountToSend: true,
       gasPrice: true,
-      yourData: true,
+      yourData: true
     },
     Errors:{
       numeric: 'Please enter valid value/amount',
@@ -128,11 +129,14 @@ class ScheduleWizard extends Component {
   get infoSettingsValidations() {
     const { scheduleStore } = this.props;
     const _addr = Boolean(scheduleStore.toAddress) && this._validations.InfoSettings.toAddress;
+    const _receiverAddress = !scheduleStore.isTokenTransfer || (Boolean(scheduleStore.receiverAddress) && this._validations.InfoSettings.receiverAddress);
+    const _amountToSend = !scheduleStore.isTokenTransfer && Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
+    const _tokenToSend = Boolean(scheduleStore.tokenToSend) && this._validations.InfoSettings.tokenToSend;
     const _gasAmount = Boolean(scheduleStore.gasAmount) && this._validations.InfoSettings.gasAmount;
-    const _amountToSend = Boolean(scheduleStore.amountToSend) && this._validations.InfoSettings.amountToSend;
     const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
-    const _yourData = !scheduleStore.useData || (Boolean(scheduleStore.yourData) && this._validations.yourData);
-    return _addr && _gasAmount && _amountToSend && _gasPrice && _yourData;
+    const _yourData = (!scheduleStore.useData && !scheduleStore.isTokenTransfer) || (Boolean(scheduleStore.yourData) && this._validations.yourData);
+    const _tokenData = scheduleStore.isTokenTransfer && Boolean(scheduleStore.tokenData);
+    return _addr && _receiverAddress && _gasAmount && (_amountToSend || _tokenToSend) && _gasPrice && (_yourData || _tokenData) ;
   }
 
   get scheduleDisabled() {

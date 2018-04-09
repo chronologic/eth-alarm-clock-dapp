@@ -72,9 +72,20 @@ export default class Web3Service {
         return func+encoded;
     }
 
-    async estimateTokenTransfer ( token, receiver, amount ) {
+    async getTokenTransferData(token, receiver, amount) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-        const estimate = await Bb.fromCallback(callback => contract.transfer.estimateGas(receiver, amount, callback) );
+        const sender = this.accounts[0];
+        const data =  contract.transferFrom.getData(sender, receiver, amount);
+        return data;
+    }
+
+    async estimateTokenTransfer ( token, receiver, amount ) {
+        if (Number(amount) === 0) {
+            return 0;
+        }
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const sender = this.accounts[0];
+        const estimate = await Bb.fromCallback( callback => contract.transfer.estimateGas(receiver, amount, callback) );
         return estimate;        
     }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import Switch from "react-switch";
@@ -36,7 +37,8 @@ class InfoSettings extends AbstractSetting {
           'Kindly provide valid input Data'
         ]
       },
-      receiverAddress: this.ethereumAddressValidator()
+      receiverAddress: this.ethereumAddressValidator(),
+      tokenToSend: this.decimalValidator()
     }
 
     async calculateMinimumGas () {
@@ -58,18 +60,20 @@ class InfoSettings extends AbstractSetting {
       return estimate;
     }
 
-    async calculateTokenTransferMinimumGas() {
+  @action async calculateTokenTransferMinimumGasandData() {
       const { web3Service, web3Service: { web3 }, scheduleStore } = this.props;
       const isAddress = this.ethereumAddressValidator().validator;
       const minEstimate = 21000;
       let estimate;
+      scheduleStore.tokenData = '';
       if (isAddress(scheduleStore.toAddress, web3) === 0 && isAddress(scheduleStore.receiverAddress, web3) == 0) {
-        estimate = await web3Service.estimateTokenTransfer(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.amountToSend * 10 ** this.state.token.decimals);
+        estimate = await web3Service.estimateTokenTransfer(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
+        estimate = estimate + 20000;
+        scheduleStore.tokenData = await web3Service.getTokenTransferData(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas: estimate });
       this.validate('gasAmount')();
-      return estimate;
     }
 
     async checkAccountUpdate() {
@@ -84,6 +88,7 @@ class InfoSettings extends AbstractSetting {
       this.setState({ account: web3Service.accounts[0] });
       if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
         await this.getTokenDetails(true);
+        this.calculateTokenTransferMinimumGasandData();
       }
     }
 
@@ -92,12 +97,13 @@ class InfoSettings extends AbstractSetting {
       if (!onlyBalance) {
         const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
         this.setState({ token: tokenDetails });
+        scheduleStore.tokenSymbol = tokenDetails.symbol;
       }
       let _balance = await web3Service.fetchTokenBalance(scheduleStore.toAddress);
       _balance = _balance == '-' ? _balance : Number(_balance / 10 ** this.state.token.decimals);
       const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
       this.setState({ token: Object.assign(this.state.token, { balance }) });
-      this.validators.amountToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
+      this.validators.tokenToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
       this.checkAmountValidation()
     }
 
@@ -114,8 +120,7 @@ class InfoSettings extends AbstractSetting {
       if (scheduleStore.isTokenTransfer) {
         this.tokenChangeCheck('toAddress');
        } else {
-        this.validators.amountToSend = this.decimalValidator();
-        this.checkAmountValidation()
+        this.checkAmountValidation();
         this.calculateMinimumGas();
        }
     }
@@ -124,13 +129,15 @@ class InfoSettings extends AbstractSetting {
       const { scheduleStore, web3Service: { web3 } } = this.props;
       const isAddress = this.ethereumAddressValidator().validator;
       if (isAddress(scheduleStore.toAddress, web3) !== 0) {
-        this.setState({ token: {} })
+        this.setState({ token: {} });
+        scheduleStore.tokenSymbol = '';
+        this.validators.tokenToSend = this.decimalValidator();
         return;
       }
       if (property == 'toAddress' ) {
         this.getTokenDetails();
       }
-      await this.calculateTokenTransferMinimumGas();
+      await this.calculateTokenTransferMinimumGasandData();
     }
 
     onChangeCheck = (property) => async(event) => {
@@ -155,7 +162,7 @@ class InfoSettings extends AbstractSetting {
 
     componentWillUnmount () {
       if (this.updateInterval) {
-        this.clearInterval(this.updateInterval)
+        clearInterval(this.updateInterval)
       }
       this._mounted = false;
     }
@@ -221,15 +228,28 @@ class InfoSettings extends AbstractSetting {
           </div>
           
           <div className='row'>
-            <div className='col-md-4'>
-              <div className={'form-group form-group-default required' + (_validations.amountToSend ? '' : ' has-error')}>
-                <label>Value/Amount to Send</label>
-                <input type='number' placeholder={`Enter Value/Amount in ${scheduleStore.isTokenTransfer ? this.state.token.symbol : 'ETH'}`} value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')} className='form-control'></input>
+            { scheduleStore.isTokenTransfer &&
+              <div className='col-md-4'>
+                <div className={'form-group form-group-default required' + (_validations.tokenToSend ? '' : ' has-error')}>
+                  <label>Value/Amount to Send</label>
+                <input type='number' placeholder={`Enter Value/Amount in ${scheduleStore.tokenSymbol}`} value={scheduleStore.tokenToSend} onBlur={this.validate('tokenToSend')} onChange={this.onChangeCheck('tokenToSend')} className='form-control'></input>
+                </div>
+                {!_validations.tokenToSend &&
+                  <label className='error'>{_validationsErrors.tokenToSend}</label>
+                }
               </div>
-              {!_validations.amountToSend &&
-                <label className='error'>{_validationsErrors.amountToSend}</label>
-              }
-            </div>
+            }
+            { !scheduleStore.isTokenTransfer &&
+              <div className='col-md-4'>
+                <div className={'form-group form-group-default required' + (_validations.amountToSend ? '' : ' has-error')}>
+                  <label>Value/Amount to Send</label>
+                  <input type='number' placeholder={`Enter Value/Amount in ETH`} value={scheduleStore.amountToSend} onBlur={this.validate('amountToSend')} onChange={this.onChangeCheck('amountToSend')} className='form-control'></input>
+                </div>
+                {!_validations.amountToSend &&
+                  <label className='error'>{_validationsErrors.amountToSend}</label>
+                }
+              </div>
+            }
             <div className='col-md-4'>
               <div className={'form-group form-group-default required' + (_validations.gasAmount ? '' : ' has-error')}>
                 <label>Gas Amount</label>
