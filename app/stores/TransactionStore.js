@@ -41,6 +41,28 @@ export class TransactionStore {
 
   @observable filter = '';
 
+  constructor(eac, web3, cache) {
+    this._web3 = web3;
+    this._eac = eac;
+    this._cache = cache;
+
+    this.setup();
+  }
+
+  get allTransactions() {
+    return this._cache.allTransactions;
+  }
+
+  // Returns an array of only the addresses of all transactions
+  get allTransactionsAddresses() {
+    return this._cache.allTransactionsAddresses;
+  }
+
+  get requestFactoryStartBlock() {
+    const { netId } = this._web3;
+    return requestFactoryStartBlocks[netId] || 0;
+  }
+
   // Returns an array of transactions based on the current
   // state of the filter variable
   @observable
