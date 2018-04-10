@@ -1,9 +1,13 @@
 {
-    "schedule-transaction": "Programar transacción",
-    "schedule": "Programar",
-    "transactions": "Transacciones",
-    "timenode": "TimeNode",
-    "faucet": "Grifo",
-    "debt-smart-contract": "Contrato Inteligente de Deuda",
-    "day-token-contract": "Contrato Inteligente de DAY"
+    "SCHEDULE-TRANSACTION": "Programar transacción",
+    "SCHEDULE": "Programar",
+    "TRANSACTIONS": "Transacciones",
+    "TIMENODE": "TimeNode",
+    "FAUCET": "Grifo",
+    "DEBT-SMART-CONTRACT": "Contrato Inteligente de Deuda",
+    "DAY-TOKEN-CONTRACT": "Contrato Inteligente de DAY",
+    "SCHEDULED-TRANSITIVE": "Scheduled",
+    "COMPLETED-TRANSITIVE": "Completed",
+    "ACTIVE-TIMENODES": "TimeNodes activos",
+    "HELP": "Ayuda"
 }

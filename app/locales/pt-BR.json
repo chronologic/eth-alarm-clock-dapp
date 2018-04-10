@@ -1,9 +1,9 @@
 {
-    "schedule-transaction": "Programar transacción",
-    "schedule": "",
-    "transactions": "",
-    "timenode": "",
-    "faucet": "",
-    "debt-smart-contract": "",
-    "day-token-contract": ""
+    "SCHEDULE-TRANSACTION": "Programar transacción",
+    "SCHEDULE": "",
+    "TRANSACTIONS": "",
+    "TIMENODE": "",
+    "FAUCET": "",
+    "DEBT-SMART-CONTRACT": "",
+    "DAY-TOKEN-CONTRACT": ""
 }

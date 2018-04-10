@@ -1,9 +1,13 @@
 {
-    "schedule-transaction": "Schedule Transaction",
-    "schedule": "Schedule",
-    "transactions": "Transactions",
-    "timenode": "TimeNode",
-    "faucet": "Faucet",
-    "debt-smart-contract": "Debt Smart Contract",
-    "day-token-contract": "Day Token Contract"
+    "SCHEDULE-TRANSACTION": "Schedule Transaction",
+    "SCHEDULE": "Schedule",
+    "TRANSACTIONS": "Transactions",
+    "TIMENODE": "TimeNode",
+    "FAUCET": "Faucet",
+    "DEBT-SMART-CONTRACT": "Debt Smart Contract",
+    "DAY-TOKEN-CONTRACT": "Day Token Contract",
+    "SCHEDULED-TRANSITIVE": "Scheduled",
+    "COMPLETED-TRANSITIVE": "Completed",
+    "ACTIVE-TIMENODES": "Active TimeNodes",
+    "HELP": "Help"
 }
