@@ -204,11 +204,11 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getApproveSection() {
-    const { transaction, status, isTokenTransfer } = this.state;
+    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
 
     const isOwner = this.isOwner(transaction);
 
-    if (isTokenTransfer && isOwner && status === TRANSACTION_STATUS.SCHEDULED) {
+    if (isOwner && isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)) {
       return (
         <div className='d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6'>
           <button className='btn btn-defaukt btn-cons'
@@ -231,7 +231,7 @@ class TransactionDetails extends ScrollbarComponent {
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       messages.push('The transaction has been frozen.');
     }
-    if (isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED) ) {
+    if (isOwner && isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)) {
       messages.push('Kindly approve token transfer.');
     }
     return (
