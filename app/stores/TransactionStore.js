@@ -92,29 +92,6 @@ export class TransactionStore {
     return [];
   }
 
-
-  get allTransactions () {
-    return this._cache.allTransactions;
-  }
-
-  // Returns an array of only the addresses of all transactions
-  get allTransactionsAddresses() {
-    return this._cache.allTransactionsAddresses;
-  }
-
-  get requestFactoryStartBlock () {
-    const { netId } = this._web3;
-    return requestFactoryStartBlocks[netId] || 0;
-  }
-
-  constructor(eac, web3, cache) {
-    this._web3 = web3;
-    this._eac = eac;
-    this._cache = cache;
-
-    this.setup();
-  }
-
   async setup() {
     if (this.isSetup) {
       return;
