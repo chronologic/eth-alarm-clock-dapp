@@ -105,15 +105,16 @@ export default class Web3Service {
         return Number(allowance) >= Number(value);
     }
 
-    async getTokenTransferValueFromData(callData) {
+    async getTokenTransferInfoFromData(callData) {
         const functionName = 'transferFrom';
         const params = [
-            { type: 'address' },
-            { type: 'address' },
-            {type: 'uint256' }
+            { type: 'address', name: 'owner' },
+            { type: 'address', name: 'sender' },
+            {type: 'uint256', name: 'value' }
         ];
         const details = this.decodeTransactionData(callData, functionName, params);
-        return details[2].valueOf();
+        details.map((val, index) => details[ params[index].name ] = val );
+        return details;
     }
 
     async getTokenTransferData(token, receiver, amount) {

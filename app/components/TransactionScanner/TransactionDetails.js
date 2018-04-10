@@ -13,7 +13,8 @@ const INITIAL_STATE = {
   status: '',
   transaction: {},
   executedAt: '',
-  token: {}
+  token: {},
+  isTokenTransfer: false
 };
 
 @inject('transactionStore')
@@ -85,10 +86,10 @@ class TransactionDetails extends ScrollbarComponent {
     if (isTokenTransfer) {
       await this.fetchTokenTransferInfo();
 
-      const value = await web3Service.getTokenTransferValueFromData(this.state.callData);
-      this.setState({ token: Object.assign(this.state.token, { value }) });
+      const info = await web3Service.getTokenTransferInfoFromData(this.state.callData);
+      this.setState({ token: Object.assign(this.state.token, { info }) });
 
-      tokenTransferapproved = await web3Service.isTokenTransferApproved(toAddress, address, this.state.token.value);
+      tokenTransferapproved = await web3Service.isTokenTransferApproved(toAddress, address, this.state.token.info.value);
     }
     this.setState({ isTokenTransfer, tokenTransferapproved });
 
@@ -139,14 +140,14 @@ class TransactionDetails extends ScrollbarComponent {
   async approveTokenTransfer(event) {
     const { target } = event;
     const { web3Service } = this.props;
-    const { toAddress } = this.state.transaction;
+    const { address, toAddress } = this.state.transaction;
 
     const originalBodyCss = document.body.className;
     document.body.className += ' fade-me';
     target.innerHTML = 'Approving...';
 
     try{
-      const approved = await web3Service.approveTokenTransfer(toAddress, this.state.callData);
+      const approved = await web3Service.approveTokenTransfer(toAddress, address, this.state.token.info.value);
       if (approved) {
         this.setState({ tokenTransferapproved : true });
       }
@@ -253,12 +254,18 @@ class TransactionDetails extends ScrollbarComponent {
               <td className='d-inline-block col-7 col-md-9'>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
             </tr>
             <tr className='row'>
-              <td className='d-inline-block col-5 col-md-3'>To Address</td>
-              <td className='d-inline-block col-7 col-md-9'><a href={ this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
+              <td className='d-inline-block col-5 col-md-3'>{ !this.state.isTokenTransfer ? 'To Address' : 'Token Address' }</td>
+              <td className='d-inline-block col-7 col-md-9'><a href={this.props.web3Service.explorer + 'address/' + toAddress} target='_blank' rel='noopener noreferrer'>{toAddress}</a></td>
             </tr>
+            { this.state.isTokenTransfer &&
+              <tr className='row'>
+                <td className='d-inline-block col-5 col-md-3'>To Address</td>
+              <td className='d-inline-block col-7 col-md-9'><a href={this.props.web3Service.explorer + 'address/' + this.state.token.info.sender} target='_blank' rel='noopener noreferrer'>{this.state.token.info.sender}</a></td>
+              </tr>
+            }
             <tr className='row'>
               <td className='d-inline-block col-5 col-md-3'>Value/Amount</td>
-              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { callValue } /></td>
+              <td className='d-inline-block col-7 col-md-9'>{ !this.state.isTokenTransfer ? <ValueDisplay priceInWei= { callValue } /> : `${(this.state.token.info.value / 10**this.state.token.decimals)} ${this.state.token.symbol}`}</td>
             </tr>
             <tr className='row'>
               <td className='d-inline-block col-5 col-md-3'>Data</td>
