@@ -2,7 +2,7 @@ import React from 'react';
 import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
-import Switch from "react-switch";
+import Switch from 'react-switch';
 import AbstractSetting from './AbstractSetting';
 
 @inject('scheduleStore')
