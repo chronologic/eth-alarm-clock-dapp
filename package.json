@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "ajv": "^6.2.0",
-    "axios": "^0.18.0",
     "babel-runtime": "^6.26.0",
     "bignumber.js": "^6.0.0",
     "bluebird": "^3.5.1",

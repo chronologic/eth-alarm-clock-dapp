@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import http from 'axios';
 import intl from 'react-intl-universal';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
@@ -76,8 +75,7 @@ class App extends Component {
       currentLocale = 'en-US';
     }
 
-    http
-      .get(`app/locales/${currentLocale}.json`)
+    fetch(`/app/locales/${currentLocale}.json`)
       .then(res => {
         return intl.init({
           currentLocale,
