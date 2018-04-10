@@ -72,16 +72,17 @@ class App extends Component {
     });
 
     // Fall back to en-US if language can't be found or is undefined
-    if (SUPPORTED_LOCALES.find(a => a.value != currentLocale)) {
+    if (!SUPPORTED_LOCALES.find(a => a.value == currentLocale)) {
       currentLocale = 'en-US';
     }
 
     fetch(`/app/locales/${currentLocale}.json`)
-      .then(res => {
+      .then(res => res.json())
+      .then(data => {
         return intl.init({
           currentLocale,
           locales: {
-            [currentLocale]: res.data
+            [currentLocale]: data
           }
         });
       })
