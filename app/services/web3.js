@@ -216,7 +216,7 @@ export default class Web3Service {
 
     async approveTokenTransfer( token, receiver, amount) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-        const approve = await Bb.fromCallback( contract.approve( receiver, amount, callback ) );
+        const approve = await Bb.fromCallback( callback => contract.approve( receiver, amount, {from: this.defaultAccount}, callback ) );
         return approve;
     }
 

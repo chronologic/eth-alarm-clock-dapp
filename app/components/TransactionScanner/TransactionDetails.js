@@ -78,6 +78,7 @@ class TransactionDetails extends ScrollbarComponent {
 
   async testToken() {
     const { web3Service } = this.props;
+    const { status, isFrozen } = this.state;
     const { address, toAddress } = this.state.transaction;
 
     let tokenTransferapproved;
@@ -93,7 +94,7 @@ class TransactionDetails extends ScrollbarComponent {
     }
     this.setState({ isTokenTransfer, tokenTransferapproved });
 
-    if (isTokenTransfer && !tokenTransferapproved) {
+    if (isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED) ) {
       showNotification('Kindly approve token transfer.', 'warning');
     }
   }
