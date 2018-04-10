@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import intl from 'react-intl-universal';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
@@ -71,7 +70,9 @@ class App extends Component {
       //cookieLocaleKey: 'lang',
       // TODO: Implement locale detection via navigator.language or navigator.userLanguage
     });
-    if (!_.find(SUPPORTED_LOCALES, { value: currentLocale })) {
+
+    // Fall back to en-US if language can't be found or is undefined
+    if (SUPPORTED_LOCALES.find(a => a.value != currentLocale)) {
       currentLocale = 'en-US';
     }
 
