@@ -98,7 +98,6 @@ class TransactionDetails extends ScrollbarComponent {
       showNotification('Action cancelled by the user.', 'danger', 4000);
       this.cancelBtn.innerHTML = 'Cancel';
     }
-
     document.body.className = originalBodyCss;
   }
 
@@ -131,11 +130,11 @@ class TransactionDetails extends ScrollbarComponent {
 
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       return (
-        <div className="text-center mt-5">
-          <button className="btn btn-danger btn-cons"
+        <div className='text-center mt-5'>
+          <button className='btn btn-danger btn-cons'
             disabled={ isFrozen }
             onClick={ this.cancelTransaction }
-            type="button"
+            type='button'
             ref={(el) => this.cancelBtn = el}>
             <span>Cancel</span>
           </button>
@@ -152,53 +151,53 @@ class TransactionDetails extends ScrollbarComponent {
     const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
 
     return (
-      <div className="tab-pane slide active show">
+      <div className='tab-pane slide active show'>
 
-        <table className="table">
-          <tbody>
-            <tr>
-              <td>Status</td>
-              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
+        <table className='table d-block'>
+          <tbody className='d-block'>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Status</td>
+              <td className='d-inline-block col-7 col-md-9'>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
             </tr>
-            <tr>
-              <td>To Address</td>
-              <td><a href={this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>To Address</td>
+              <td className='d-inline-block col-7 col-md-9'><a href={ this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
             </tr>
-            <tr>
-              <td>Value/Amount</td>
-              <td><ValueDisplay priceInWei= { callValue } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Value/Amount</td>
+              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { callValue } /></td>
             </tr>
-            <tr>
-              <td>Data</td>
-              <td>{callData}</td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Data</td>
+              <td className='d-inline-block col-7 col-md-9' title={callData} >{callData}</td>
             </tr>
-            <tr>
-              <td>{ isTimestamp ? 'Time' : 'Block' }</td>
-              <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>{ isTimestamp ? 'Time' : 'Block' }</td>
+              <td className='d-inline-block col-7 col-md-9'><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
             </tr>
-            <tr>
-              <td>Window Size</td>
-              <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Window Size</td>
+              <td className='d-inline-block col-7 col-md-9'><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
             </tr>
-            <tr>
-              <td>Gas Amount</td>
-              <td> { callGas && callGas.toFixed() } </td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Gas Amount</td>
+              <td className='d-inline-block col-7 col-md-9'> { callGas && callGas.toFixed() } </td>
             </tr>
-            <tr>
-              <td>Gas Price</td>
-              <td><ValueDisplay priceInWei= { gasPrice } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Gas Price</td>
+              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { gasPrice } /></td>
             </tr>
-            <tr>
-              <td>Time Bounty</td>
-              <td><ValueDisplay priceInWei= { bounty } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Time Bounty</td>
+              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { bounty } /></td>
             </tr>
-            <tr>
-              <td>Fee</td>
-              <td><ValueDisplay priceInWei= { fee } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Fee</td>
+              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { fee } /></td>
             </tr>
-            <tr>
-              <td>Deposit</td>
-              <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
+            <tr className='row'>
+              <td className='d-inline-block col-5 col-md-3'>Deposit</td>
+              <td className='d-inline-block col-7 col-md-9'><ValueDisplay priceInWei= { requiredDeposit } /></td>
             </tr>
           </tbody>
         </table>
