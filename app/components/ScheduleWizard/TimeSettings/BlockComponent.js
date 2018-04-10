@@ -2,6 +2,7 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import AbstractSetting from '../AbstractSetting';
+import BlockMeterComponent from '../BlockMeterComponent';
 
 const MINIMUM_BLOCK_WINDOW = 16;
 
@@ -67,6 +68,8 @@ class BlockComponent extends AbstractSetting {
               {!_validations.blockNumber &&
                 <label className="error">{_validationsErrors.blockNumber}</label>
                 }
+
+              <BlockMeterComponent blockId={this.blockNumber}/>
             </div>
             <div className="col-md-4">
               <div className={'form-group form-group-default required' + (_validations.blockSize ? '' : ' has-error')}>
