@@ -12,7 +12,8 @@ const INITIAL_STATE = {
   isTimestamp: false,
   status: '',
   transaction: {},
-  executedAt: ''
+  executedAt: '',
+  token: {}
 };
 
 @inject('transactionStore')
@@ -28,6 +29,7 @@ class TransactionDetails extends ScrollbarComponent {
 
     this.state = INITIAL_STATE;
     this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
   }
 
   getExecutedEvents(requestLib) {
@@ -68,14 +70,38 @@ class TransactionDetails extends ScrollbarComponent {
       isFrozen: ''
     } );
 
+    this.getFrozenStatus();
     this.testToken();
     
   }
 
   async testToken() {
-    const { transactionStore, web3Service } = this.props;
+    const { web3Service } = this.props;
+    const { address, toAddress } = this.state.transaction;
+
+    let tokenTransferapproved;
     const isTokenTransfer = web3Service.isTokenTransferTransaction(this.state.callData);
-    this.setState({ isTokenTransfer });
+
+    if (isTokenTransfer) {
+      await this.fetchTokenTransferInfo();
+
+      const value = await web3Service.getTokenTransferValueFromData(this.state.callData);
+      this.setState({ token: Object.assign(this.state.token, { value }) });
+
+      tokenTransferapproved = await web3Service.isTokenTransferApproved(toAddress, address, this.state.token.value);
+    }
+    this.setState({ isTokenTransfer, tokenTransferapproved });
+
+    if (isTokenTransfer && !tokenTransferapproved) {
+      showNotification('Kindly approve token transfer.', 'warning');
+    }
+  }
+
+  async fetchTokenTransferInfo () {
+    const { web3Service } = this.props;
+    const { toAddress } = this.state.transaction;
+    const tokenDetails = await web3Service.fetchTokenDetails(toAddress);
+    this.setState({ token: tokenDetails });
   }
 
   async getFrozenStatus() {
@@ -110,6 +136,28 @@ class TransactionDetails extends ScrollbarComponent {
     document.body.className = originalBodyCss;
   }
 
+  async approveTokenTransfer(event) {
+    const { target } = event;
+    const { web3Service } = this.props;
+    const { toAddress } = this.state.transaction;
+
+    const originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+    target.innerHTML = 'Approving...';
+
+    try{
+      const approved = await web3Service.approveTokenTransfer(toAddress, this.state.callData);
+      if (approved) {
+        this.setState({ tokenTransferapproved : true });
+      }
+
+     } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+      target.innerHTML = 'Approve';
+    }
+    document.body.className = originalBodyCss;
+  }
+
   async componentWillMount() {
     await this.fetchData();
   }
@@ -124,7 +172,6 @@ class TransactionDetails extends ScrollbarComponent {
   componentDidMount() {
     super.componentDidMount();
     this._isMounted = true;
-    this.getFrozenStatus();
   }
 
   componentWillUnmount() {
@@ -147,7 +194,6 @@ class TransactionDetails extends ScrollbarComponent {
             ref={(el) => this.cancelBtn = el}>
             <span>Cancel</span>
           </button>
-          { isFrozen ? 'The transaction has been frozen.' : '' }
         </div>
       );
     }
@@ -156,7 +202,7 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getApproveSection() {
-    const { transaction, isFrozen, status, isTokenTransfer } = this.state;
+    const { transaction, status, isTokenTransfer } = this.state;
 
     const isOwner = this.isOwner(transaction);
 
@@ -173,6 +219,24 @@ class TransactionDetails extends ScrollbarComponent {
     }
 
     return <div className='col-6'></div>;
+  }
+
+  getInfoMessage () {
+    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+    const isOwner = this.isOwner(transaction);
+
+    let messages = [];
+    if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
+      messages.push('The transaction has been frozen.');
+    }
+    if (isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED) ) {
+      messages.push('Kindly approve token transfer.');
+    }
+    return (
+      <div>
+        {messages.map(msg => <div key={msg}>{msg}</div>)}
+      </div>
+    )
   }
 
   render() {
@@ -238,6 +302,9 @@ class TransactionDetails extends ScrollbarComponent {
               {this.getApproveSection()}
               {this.getCancelSection()}
             </div>
+          </div>
+          <div className='col-12'>
+            {this.getInfoMessage()}
           </div>
         </div>
       </div>
