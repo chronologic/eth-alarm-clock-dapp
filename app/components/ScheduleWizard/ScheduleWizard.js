@@ -223,92 +223,92 @@ class ScheduleWizard extends Component {
     const _validationProps = { _validations:this._validations,_validationsErrors:this._validationsErrors };
 
     return (
-      <div id="scheduleWizard" className="subsection">
-        <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator p-b-10">
-          <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#timeSettings" onClick={ this.initiateScrollbar }>
-              <div className="row">
-                <div className="col-md-4 text-right tab-icon-wrapper">
-                  <i className="far fa-clock tab-icon"/>
+      <div id='scheduleWizard' className='subsection'>
+        <ul className='row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator p-b-10'>
+          <li className='col-3 col-md-3'>
+            <a data-toggle='tab' href='#timeSettings' onClick={ this.initiateScrollbar }>
+              <div className='row'>
+                <div className='col-md-4 text-right tab-icon-wrapper'>
+                  <i className='far fa-clock tab-icon'/>
                 </div>
-                <div className="col-md-8 text-left">
-                  <span className="d-none d-md-inline">Date & Time</span>
-                </div>
-              </div>
-            </a>
-          </li>
-          <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#infoSettings" onClick={ this.initiateScrollbar }>
-              <div className="row">
-                <div className="col-md-4 text-right tab-icon-wrapper">
-                  <i className="fas fa-info tab-icon"/>
-                </div>
-                <div className="col-md-8 text-left">
-                  <span className="d-none d-md-inline">Information</span>
+                <div className='col-md-8 text-left'>
+                  <span className='d-none d-md-inline'>Date & Time</span>
                 </div>
               </div>
             </a>
           </li>
-          <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#bountySettings" onClick={ this.initiateScrollbar }>
-              <div className="row">
-                <div className="col-md-4 text-right tab-icon-wrapper">
-                  <i className="fab fa-ethereum tab-icon"/>
+          <li className='col-3 col-md-3'>
+            <a data-toggle='tab' href='#infoSettings' onClick={ this.initiateScrollbar }>
+              <div className='row'>
+                <div className='col-md-4 text-right tab-icon-wrapper'>
+                  <i className='fas fa-info tab-icon'/>
                 </div>
-                <div className="col-md-8 text-left">
-                  <span className="d-none d-md-inline">Bounty</span>
+                <div className='col-md-8 text-left'>
+                  <span className='d-none d-md-inline'>Information</span>
                 </div>
               </div>
             </a>
           </li>
-          <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#confirmSettings" onClick={ this.initiateScrollbar }>
-              <div className="row">
-                <div className="col-md-4 text-right tab-icon-wrapper">
-                  <i className="fas fa-cloud-upload-alt tab-icon"/>
+          <li className='col-3 col-md-3'>
+            <a data-toggle='tab' href='#bountySettings' onClick={ this.initiateScrollbar }>
+              <div className='row'>
+                <div className='col-md-4 text-right tab-icon-wrapper'>
+                  <i className='fab fa-ethereum tab-icon'/>
                 </div>
-                <div className="col-md-8 text-left">
-                  <span className="d-none d-md-inline">Confirm</span>
+                <div className='col-md-8 text-left'>
+                  <span className='d-none d-md-inline'>Bounty</span>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li className='col-3 col-md-3'>
+            <a data-toggle='tab' href='#confirmSettings' onClick={ this.initiateScrollbar }>
+              <div className='row'>
+                <div className='col-md-4 text-right tab-icon-wrapper'>
+                  <i className='fas fa-cloud-upload-alt tab-icon'/>
+                </div>
+                <div className='col-md-8 text-left'>
+                  <span className='d-none d-md-inline'>Confirm</span>
                 </div>
               </div>
             </a>
           </li>
         </ul>
 
-        <div className="tab-content">
+        <div className='tab-content'>
           <TimeSettings {..._validationProps}/>
           <InfoSettings {..._validationProps}/>
           <BountySettings {..._validationProps}/>
           <ConfirmSettings infoTabValidator={this.infoSettingsValidations} timeTabValidator={this.TimeComponentValidations} blockTabValidator={this.blockComponentValidations} bountyTabValidator={this.bountySettingsValidation} {...{ isWeb3Usable: this.props.isWeb3Usable, isCustomWindow: this.isCustomWindow }}/>
 
-          <div className="row">
-            <div className="d-none d-md-block col-md-2">
-              <PoweredByEAC className="footer-buttons"/>
+          <div className='row'>
+            <div className='d-none d-md-block col-md-2'>
+              <PoweredByEAC className='footer-buttons'/>
             </div>
 
-            <div className="footer-buttons col-md-10">
-              <ul className="pager wizard no-style">
-                <li className="next">
-                  <button className="btn btn-primary btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+            <div className='footer-buttons col-md-10'>
+              <ul className='pager wizard no-style'>
+                <li className='next'>
+                  <button className='btn btn-primary btn-cons pull-right' onClick={ this.initiateScrollbar } type='button'>
                     Next
                   </button>
                 </li>
-                <li className="next finish" style={{ display: 'none' }}>
-                  <button className="btn btn-primary btn-cons pull-right"
-                    type="button"
+                <li className='next finish' style={{ display: 'none' }}>
+                  <button className='btn btn-primary btn-cons pull-right'
+                    type='button'
                     ref={(el) => this.scheduleBtn = el}
                     onClick={this.scheduleTransaction}
                     disabled={this.scheduleDisabled}>
                     Schedule
                   </button>
                 </li>
-                <li className="previous first" style={{ display: 'none' }}>
-                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <li className='previous first' style={{ display: 'none' }}>
+                  <button className='btn btn-white btn-cons pull-right' onClick={ this.initiateScrollbar } type='button'>
                     First
                   </button>
                   </li>
-                <li className="previous">
-                  <button className="btn btn-white btn-cons pull-right" onClick={ this.initiateScrollbar } type="button">
+                <li className='previous'>
+                  <button className='btn btn-white btn-cons pull-right' onClick={ this.initiateScrollbar } type='button'>
                     Previous
                   </button>
                 </li>
@@ -316,8 +316,8 @@ class ScheduleWizard extends Component {
             </div>
           </div>
 
-          <div className="d-sm-inline d-md-none">
-            <PoweredByEAC className="col-md-2 footer-buttons mt-5"/>
+          <div className='d-sm-inline d-md-none'>
+            <PoweredByEAC className='col-md-2 footer-buttons mt-5'/>
           </div>
         </div>
       </div>
