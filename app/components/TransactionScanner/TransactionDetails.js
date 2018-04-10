@@ -67,6 +67,15 @@ class TransactionDetails extends ScrollbarComponent {
       executedAt,
       isFrozen: ''
     } );
+
+    this.testToken();
+    
+  }
+
+  async testToken() {
+    const { transactionStore, web3Service } = this.props;
+    const isTokenTransfer = web3Service.isTokenTransferTransaction(this.state.callData);
+    this.setState({ isTokenTransfer });
   }
 
   async getFrozenStatus() {
@@ -130,7 +139,7 @@ class TransactionDetails extends ScrollbarComponent {
 
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       return (
-        <div className='text-center mt-5'>
+        <div className='d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6'>
           <button className='btn btn-danger btn-cons'
             disabled={ isFrozen }
             onClick={ this.cancelTransaction }
@@ -143,7 +152,27 @@ class TransactionDetails extends ScrollbarComponent {
       );
     }
 
-    return <div></div>;
+    return <div className='col-6'></div>;
+  }
+
+  getApproveSection() {
+    const { transaction, isFrozen, status, isTokenTransfer } = this.state;
+
+    const isOwner = this.isOwner(transaction);
+
+    if (isTokenTransfer && isOwner && status === TRANSACTION_STATUS.SCHEDULED) {
+      return (
+        <div className='d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6'>
+          <button className='btn btn-defaukt btn-cons'
+            onClick={this.approveTokenTransfer}
+            type='button' >
+            <span>Approve</span>
+          </button>
+        </div>
+      );
+    }
+
+    return <div className='col-6'></div>;
   }
 
   render() {
@@ -201,8 +230,16 @@ class TransactionDetails extends ScrollbarComponent {
             </tr>
           </tbody>
         </table>
-
-        {this.getCancelSection()}
+        <div className='row'>
+          <div className='col-2 col-sm-4 col-md-6 col-lg-8'>
+          </div>
+          <div className='col-10 col-sm-8 col-md-6 col-lg-4'>
+            <div className='row'>
+              {this.getApproveSection()}
+              {this.getCancelSection()}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
