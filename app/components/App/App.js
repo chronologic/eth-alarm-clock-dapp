@@ -67,8 +67,6 @@ class App extends Component {
   loadLocales(){
     let currentLocale = intl.determineLocale({
       urlLocaleKey: 'lang',
-      //cookieLocaleKey: 'lang',
-      // TODO: Implement locale detection via navigator.language or navigator.userLanguage
     });
 
     // Fall back to en-US if language can't be found or is undefined
