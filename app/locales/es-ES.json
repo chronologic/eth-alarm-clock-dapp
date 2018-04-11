@@ -13,5 +13,7 @@
     "NEXT": "Siguiente",
     "SCHEDULE-VERB-INFINITIE": "Programar",
     "FIRST": "Primero",
-    "PREVIOUS": "Anterior"
+    "PREVIOUS": "Anterior",
+    "CURRENT-BLOCK-NUMBER": "Bloque Actual",
+    "SEARCH-BY-ADDRESS": "Buscar por dirección"
 }

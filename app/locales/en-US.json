@@ -13,5 +13,7 @@
     "NEXT": "Next",
     "SCHEDULE-VERB-INFINITIE": "Schedule",
     "FIRST": "First",
-    "PREVIOUS": "Previous"
+    "PREVIOUS": "Previous",
+    "CURRENT-BLOCK-NUMBER": "Current Block Number",
+    "SEARCH-BY-ADDRESS": "Search by Address"
 }

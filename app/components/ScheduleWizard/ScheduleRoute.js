@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
+import intl from 'react-intl-universal';
 import MetamaskComponent from '../Common/MetamaskComponent';
 import ScheduleWizard from './ScheduleWizard';
-import intl from 'react-intl-universal';
 
 
 @inject('web3Service')

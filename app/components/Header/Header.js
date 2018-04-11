@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer,inject } from 'mobx-react';
+import intl from 'react-intl-universal';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -48,13 +49,13 @@ class Header extends Component {
         <div className="d-flex align-items-center">
           <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa fa-sitemap"/>&nbsp;&nbsp;Active TimeNodes:&nbsp;
+              <i className="fa fa-sitemap"/>&nbsp;&nbsp;{intl.get('ACTIVE-TIMENODES').d('Active TimeNodes')}:&nbsp;
             </span>
             <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
           <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa fa-th-large" />&nbsp;Current Block Number:&nbsp;
+              <i className="fa fa-th-large" />&nbsp;{intl.get('CURRENT-BLOCK-NUMBER').d('Current Block Number')}:&nbsp;
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
@@ -62,7 +63,7 @@ class Header extends Component {
         <div className="d-flex">
           <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true);}}>
             <i className="pg-search"></i>
-            Search by Address
+            {intl.get('SEARCH-BY-ADDRESS').d('Search by Address')}
           </div>
         </div>
       </div>
