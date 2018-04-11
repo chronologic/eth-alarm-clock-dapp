@@ -9,5 +9,9 @@
     "SCHEDULED-TRANSITIVE": "Scheduled",
     "COMPLETED-TRANSITIVE": "Completed",
     "ACTIVE-TIMENODES": "TimeNodes activos",
-    "HELP": "Ayuda"
+    "HELP": "Ayuda",
+    "NEXT": "Siguiente",
+    "SCHEDULE-VERB-INFINITIE": "Programar",
+    "FIRST": "Primero",
+    "PREVIOUS": "Anterior"
 }
