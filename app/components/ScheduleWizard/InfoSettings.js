@@ -61,7 +61,7 @@ class InfoSettings extends AbstractSetting {
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas:estimate });
-      this.revalidateGasAmount();      
+      this.revalidateGasAmount();
       return estimate;
     }
 
@@ -93,7 +93,7 @@ class InfoSettings extends AbstractSetting {
       if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
         await this.getTokenDetails(true);
         await this.calculateTokenTransferMinimumGasandData();
-        this.revalidateGasAmount();      
+        this.revalidateGasAmount();
       }
     }
 
@@ -143,7 +143,7 @@ class InfoSettings extends AbstractSetting {
         await this.getTokenDetails();
       }
       await this.calculateTokenTransferMinimumGasandData();
-      this.revalidateGasAmount();      
+      this.revalidateGasAmount();
     }
 
     onChangeCheck = (property) => async(event) => {

@@ -71,7 +71,7 @@ class ConfirmSettings extends Component {
 
   @action
   tabValidations() {
-    let errors = {}
+    let errors = {};
     errors.info = this.infoSettingsValidations() ? true : false;
     errors.time = this.timeSettingsValidations() ? true : false;
     errors.bounty = this.bountySettingsValidations() ? true : false;
@@ -88,7 +88,7 @@ class ConfirmSettings extends Component {
   }
 
   componentDidUpdate () {
-    this.tabValidations();    
+    this.tabValidations();
   }
 
   componentWillUnmount () {
