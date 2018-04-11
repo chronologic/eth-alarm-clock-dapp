@@ -1,5 +1,4 @@
 import React from 'react';
-import { action } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import Switch from 'react-switch';
@@ -41,6 +40,12 @@ class InfoSettings extends AbstractSetting {
       tokenToSend: this.decimalValidator()
     }
 
+    revalidateGasAmount() {
+      const { scheduleStore } = this.props;
+      this.onChange('gasAmount')({ target: { value: scheduleStore.gasAmount } });
+      this.forceUpdate();
+    }
+
     async calculateMinimumGas () {
       const { web3Service: { web3 },scheduleStore } = this.props;
       const isAddress = this.ethereumAddressValidator().validator;
@@ -56,11 +61,11 @@ class InfoSettings extends AbstractSetting {
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas:estimate });
-      this.validate('gasAmount')();
+      this.revalidateGasAmount();      
       return estimate;
     }
 
-  @action async calculateTokenTransferMinimumGasandData() {
+    async calculateTokenTransferMinimumGasandData() {
       const { web3Service, web3Service: { web3 }, scheduleStore } = this.props;
       const isAddress = this.ethereumAddressValidator().validator;
       const minEstimate = 21000;
@@ -73,7 +78,6 @@ class InfoSettings extends AbstractSetting {
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas: estimate });
-      this.validate('gasAmount')();
     }
 
     async checkAccountUpdate() {
@@ -88,7 +92,8 @@ class InfoSettings extends AbstractSetting {
       this.setState({ account: web3Service.accounts[0] });
       if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
         await this.getTokenDetails(true);
-        this.calculateTokenTransferMinimumGasandData();
+        await this.calculateTokenTransferMinimumGasandData();
+        this.revalidateGasAmount();      
       }
     }
 
@@ -135,9 +140,10 @@ class InfoSettings extends AbstractSetting {
         return;
       }
       if (property == 'toAddress' ) {
-        this.getTokenDetails();
+        await this.getTokenDetails();
       }
       await this.calculateTokenTransferMinimumGasandData();
+      this.revalidateGasAmount();      
     }
 
     onChangeCheck = (property) => async(event) => {

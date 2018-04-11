@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { action } from 'mobx';
 import { inject,observer } from 'mobx-react';
 import Alert from '../Common/Alert';
 
@@ -11,10 +12,9 @@ class ConfirmSettings extends Component {
 
   constructor(props){
     super(props);
-    this.infoSettingsValidations = this.infoSettingsValidations.bind(this);
-    this.bountySettingsValidations = this.bountySettingsValidations.bind(this);
-    this.timeSettingsValidations = this.timeSettingsValidations.bind(this);
-    this.blockComponentValidations = this.blockComponentValidations.bind(this);
+    this.state = {
+      errors: {}
+    };
   }
 
   totalCost() {
@@ -69,23 +69,44 @@ class ConfirmSettings extends Component {
     return !scheduleStore.isUsingTime && !this.props.blockTabValidator ? 'block' : null;
   }
 
+  @action
   tabValidations() {
-    const errors = [];
-    this.infoSettingsValidations() ? errors.push(this.infoSettingsValidations()) : null;
-    this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
-    this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
-    this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
-    return errors.length > 0 ? <Alert {...{ msg: 'in tabs: ' + errors.join(', ') }}  /> : null;
+    let errors = {}
+    errors.info = this.infoSettingsValidations() ? true : false;
+    errors.time = this.timeSettingsValidations() ? true : false;
+    errors.bounty = this.bountySettingsValidations() ? true : false;
+    errors.block = this.blockComponentValidations() ? true : false;
+
+    if (this._mounted && JSON.stringify(this.state.errors) !== JSON.stringify(errors)) {
+      this.setState(Object.assign( this.state.errors, errors ));
+    }
+  }
+
+  componentDidMount () {
+    this._mounted = true;
+    this.tabValidations();
+  }
+
+  componentDidUpdate () {
+    this.tabValidations();    
+  }
+
+  componentWillUnmount () {
+    this._mounted = false;
   }
 
   render() {
     const { scheduleStore } = this.props;
     const emptyFieldSign = '-';
+    let errMsg = [];
+    Object.keys(this.state.errors).map(section => { this.state.errors[section] ? errMsg.push(section) : null; } );
     return (
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
-        {this.web3Error()}
-        {this.tabValidations()}
+        { this.web3Error() }
+        { errMsg.length > 0 &&
+          <Alert {...{ msg: 'in tabs: ' + errMsg.join(',') }} />
+        }
         <div className="row">
 
           <div className="col-lg-8">
