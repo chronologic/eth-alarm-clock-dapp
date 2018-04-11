@@ -77,7 +77,6 @@ export default class Web3Service {
             return;
         }
         let types = [];
-        let values = [];
         const Coder = require('web3/lib/solidity/coder');
         for (let p = 0; p < params.length; p++) {
             types.push(params[p].type);
@@ -110,7 +109,7 @@ export default class Web3Service {
         const params = [
             { type: 'address', name: 'owner' },
             { type: 'address', name: 'sender' },
-            {type: 'uint256', name: 'value' }
+            { type: 'uint256', name: 'value' }
         ];
         const details = this.decodeTransactionData(callData, functionName, params);
         details.map((val, index) => details[ params[index].name ] = val );
@@ -129,9 +128,8 @@ export default class Web3Service {
             return 0;
         }
         const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-        const sender = this.accounts[0];
         const estimate = await Bb.fromCallback( callback => contract.transfer.estimateGas(receiver, amount, callback) );
-        return estimate;        
+        return estimate;
     }
 
     async fetchTokenDetails(address) {
@@ -141,13 +139,13 @@ export default class Web3Service {
             name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
             symbol: (await Bb.fromCallback(callback => contract.symbol.call(callback))).valueOf(),
             decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf(),
-        }
+        };
         return details;
     }
 
     async fetchTokenBalance(address) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(address);
-        const balance = this.accounts && this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-'
+        const balance = this.accounts && this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-';
         return balance;
     }
 
@@ -216,7 +214,7 @@ export default class Web3Service {
 
     async approveTokenTransfer( token, receiver, amount) {
         const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-        const approve = await Bb.fromCallback( callback => contract.approve( receiver, amount, {from: this.defaultAccount}, callback ) );
+        const approve = await Bb.fromCallback( callback => contract.approve( receiver, amount, { from: this.defaultAccount }, callback ) );
         return approve;
     }
 

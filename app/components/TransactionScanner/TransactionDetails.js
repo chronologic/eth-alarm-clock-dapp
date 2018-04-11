@@ -73,7 +73,7 @@ class TransactionDetails extends ScrollbarComponent {
 
     this.getFrozenStatus();
     this.testToken();
-    
+
   }
 
   async testToken() {
@@ -147,7 +147,7 @@ class TransactionDetails extends ScrollbarComponent {
     document.body.className += ' fade-me';
     target.innerHTML = 'Approving...';
 
-    try{
+    try {
       const approved = await web3Service.approveTokenTransfer(toAddress, address, this.state.token.info.value);
       if (approved) {
         this.setState({ tokenTransferapproved : true });
@@ -238,7 +238,7 @@ class TransactionDetails extends ScrollbarComponent {
       <div>
         {messages.map(msg => <div key={msg}>{msg}</div>)}
       </div>
-    )
+    );
   }
 
   render() {

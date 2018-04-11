@@ -104,7 +104,7 @@ class InfoSettings extends AbstractSetting {
       const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
       this.setState({ token: Object.assign(this.state.token, { balance }) });
       this.validators.tokenToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
-      this.checkAmountValidation()
+      this.checkAmountValidation();
     }
 
     checkAmountValidation () {
@@ -162,7 +162,7 @@ class InfoSettings extends AbstractSetting {
 
     componentWillUnmount () {
       if (this.updateInterval) {
-        clearInterval(this.updateInterval)
+        clearInterval(this.updateInterval);
       }
       this._mounted = false;
     }
@@ -226,7 +226,7 @@ class InfoSettings extends AbstractSetting {
               }
             </div>
           </div>
-          
+
           <div className='row'>
             { scheduleStore.isTokenTransfer &&
               <div className='col-md-4'>
@@ -269,7 +269,7 @@ class InfoSettings extends AbstractSetting {
                 }
             </div>
           </div>
-          { !scheduleStore.isTokenTransfer && 
+          { !scheduleStore.isTokenTransfer &&
             <div className='checkbox check-primary'>
               <input type='checkbox' id='checkboxAddData' onChange={this.toggleField('useData')} checked={scheduleStore.useData} />
               <label htmlFor='checkboxAddData'>Add Data</label>

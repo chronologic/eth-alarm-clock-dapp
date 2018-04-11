@@ -26,7 +26,7 @@ export default class ScheduleStore {
   @observable gasPrice;
   @observable useData;
   @observable yourData;
-  
+
   //Token Transfer settings
   @observable receiverAddress;
   @observable tokenToSend;
