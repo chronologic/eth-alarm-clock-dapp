@@ -20,7 +20,7 @@ describe('SidePanel', () => {
   it('is correctly rendered', () => {
     intl.init({
       currentLocale: 'en-US',
-      locales: locales
+      locales
     });
 
     const CURRENT_BLOCK = 5361200;

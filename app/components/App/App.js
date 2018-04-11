@@ -64,30 +64,28 @@ class App extends Component {
   /*
     Load locales and resume page initialisation after that is done.
   */
-  loadLocales(){
+  async loadLocales() {
     let currentLocale = intl.determineLocale({
       urlLocaleKey: 'lang',
     });
 
     // Fall back to en-US if language can't be found or is undefined
-    if (!SUPPORTED_LOCALES.find(a => a.value == currentLocale)) {
+    if (!SUPPORTED_LOCALES.find(a => a.value === currentLocale)) {
       currentLocale = 'en-US';
     }
 
-    fetch(`/app/locales/${currentLocale}.json`)
-      .then(res => res.json())
-      .then(data => {
-        return intl.init({
-          currentLocale,
-          locales: {
-            [currentLocale]: data
-          }
-        });
-      })
-      .then(() => {
-        // After loading CLDR locale data, start to render
-        this.setState({ initDone: true });
-      });
+    let response = await fetch(`/app/locales/${currentLocale}.json`);
+    let data = await response.json();
+
+    intl.init({
+      currentLocale,
+      locales: {
+        [currentLocale]: data
+      }
+    });
+
+    // After loading CLDR locale data, start to render
+    this.setState({ initDone: true });
   }
 
   componentDidMount(){
