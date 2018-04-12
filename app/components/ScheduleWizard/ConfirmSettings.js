@@ -107,6 +107,9 @@ class ConfirmSettings extends Component {
         { errMsg.length > 0 &&
           <Alert {...{ msg: 'in tabs: ' + errMsg.join(',') }} />
         }
+        { scheduleStore.isTokenTransfer &&
+          <Alert {...{ type: 'info', close: false, msg: ': Please note that you will be prompted to send additional transaction to set token allowance required to complete tokens transfer scheduling, after successful deployment' }} />
+        }
         <div className="row">
 
           <div className="col-lg-8">

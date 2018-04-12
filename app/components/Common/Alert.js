@@ -15,7 +15,7 @@ class Alert extends Component {
     return (
       <div className={'alert alert-'+type} role='alert'>
         { close &&
-          <button className='close' data-dismiss='alert'></button>        
+          <button className='close' data-dismiss='alert'></button>
         }
         <strong> {Titles[type]} </strong>{this.props.msg}
       </div>
