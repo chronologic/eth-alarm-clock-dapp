@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import Switch from 'react-switch';
 import AbstractSetting from './AbstractSetting';
+import Alert from '../Common/Alert';
 
 @inject('scheduleStore')
 @inject('web3Service')
@@ -47,6 +48,16 @@ class InfoSettings extends AbstractSetting {
       this.forceUpdate();
     }
 
+    checkAmountValidation () {
+      const { scheduleStore } = this.props;
+      if (!scheduleStore.isTokenTransfer && scheduleStore.amountToSend !== '') {
+        this.validate('amountToSend')();
+      }
+      if (scheduleStore.isTokenTransfer && scheduleStore.tokenToSend !== '') {
+        this.validate('tokenToSend')();
+      }
+    }
+
     async calculateMinimumGas () {
       const { web3Service: { web3 },scheduleStore } = this.props;
       const isAddress = this.ethereumAddressValidator().validator;
@@ -71,14 +82,21 @@ class InfoSettings extends AbstractSetting {
       const isAddress = this.ethereumAddressValidator().validator;
       const minEstimate = 21000;
       let estimate;
-      scheduleStore.tokenData = '';
+      scheduleStore.tokenData = '0x';
       if (isAddress(scheduleStore.toAddress, web3) === 0 && isAddress(scheduleStore.receiverAddress, web3) == 0) {
-        estimate = await web3Service.estimateTokenTransfer(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
-        estimate = estimate + 20000;
-        scheduleStore.tokenData = await web3Service.getTokenTransferData(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
+        try {
+          estimate = await web3Service.estimateTokenTransfer(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
+          estimate = estimate + 20000;
+          scheduleStore.tokenData = await web3Service.getTokenTransferData(scheduleStore.toAddress, scheduleStore.receiverAddress, scheduleStore.tokenToSend * 10 ** this.state.token.decimals);
+        } catch (e) {
+          scheduleStore.tokenData = '';
+          return;
+        }
       }
       estimate = Number(estimate) > minEstimate ? Number(estimate) : minEstimate;
       this.setState({ minGas: estimate });
+      this.revalidateGasAmount();
+      return estimate;
     }
 
     async checkAccountUpdate() {
@@ -94,7 +112,6 @@ class InfoSettings extends AbstractSetting {
       if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
         await this.getTokenDetails(true);
         await this.calculateTokenTransferMinimumGasandData();
-        this.revalidateGasAmount();
       }
     }
 
@@ -111,13 +128,7 @@ class InfoSettings extends AbstractSetting {
       this.setState({ token: Object.assign(this.state.token, { balance }) });
       this.validators.tokenToSend = this.integerMinMaxValidator(1/10 ** this.state.token.decimals, balance );
       this.checkAmountValidation();
-    }
-
-    checkAmountValidation () {
-      const { scheduleStore } = this.props;
-      if (scheduleStore.amountToSend !== '') {
-        this.validate('amountToSend')();
-      }
+      this.forceUpdate();
     }
 
     toggleField = (property) => () => {
@@ -144,7 +155,7 @@ class InfoSettings extends AbstractSetting {
         await this.getTokenDetails();
       }
       await this.calculateTokenTransferMinimumGasandData();
-      this.revalidateGasAmount();
+      this.forceUpdate();
     }
 
     onChangeCheck = (property) => async(event) => {
@@ -185,6 +196,9 @@ class InfoSettings extends AbstractSetting {
             <h2 className='m-b-20'>Information</h2>
             <hr/>
           </div>
+          {scheduleStore.isTokenTransfer && (scheduleStore.tokenToSend && scheduleStore.toAddress && scheduleStore.receiverAddress) && (_validations.tokenToSend && _validations.toAddress && _validations.receiverAddress) && !scheduleStore.tokenData &&
+            <Alert {...{ msg: ' Unable to generate transaction Data, check transferrable balance.' }} />
+          }
           <div className='row'>
             <div className='col-md-4 col-sm-12'>
               <div className={'form-group'}>
