@@ -79,7 +79,6 @@ class TransactionDetails extends ScrollbarComponent {
 
   async testToken() {
     const { web3Service } = this.props;
-    const { status, isFrozen } = this.state;
     const { address, toAddress } = this.state.transaction;
 
     let tokenTransferapproved;
@@ -233,7 +232,7 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getInfoMessage () {
-    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+    const { transaction, status, isFrozen } = this.state;
     const isOwner = this.isOwner(transaction);
 
     let messages = [];
