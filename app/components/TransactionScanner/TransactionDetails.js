@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
+import Alert from '../Common/Alert';
 import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
@@ -93,10 +94,6 @@ class TransactionDetails extends ScrollbarComponent {
       tokenTransferapproved = await web3Service.isTokenTransferApproved(toAddress, address, this.state.token.info.value);
     }
     this.setState({ isTokenTransfer, tokenTransferapproved });
-
-    if (isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED) ) {
-      showNotification('Kindly approve token transfer.', 'warning');
-    }
   }
 
   async fetchTokenTransferInfo () {
@@ -150,6 +147,7 @@ class TransactionDetails extends ScrollbarComponent {
     try {
       const approved = await web3Service.approveTokenTransfer(toAddress, address, this.state.token.info.value);
       if (approved) {
+        showNotification(`Token Transfer approved: ${approved}`, 'success');
         this.setState({ tokenTransferapproved : true });
       }
 
@@ -223,6 +221,17 @@ class TransactionDetails extends ScrollbarComponent {
     return <div className='col-6'></div>;
   }
 
+  getTokenNotificationSection () {
+    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+
+    const isOwner = this.isOwner(transaction);
+
+    if (isOwner && isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)) {
+      return (<Alert {...{ type: 'warning', close: false, msg: `: This transaction schedules token transfer. Minimum allowance of ${(this.state.token.info.value / 10 ** this.state.token.decimals)} ${this.state.token.symbol} tokens are required to be approved to complete the scheduling.` }} />);
+    }
+    return null;
+  }
+
   getInfoMessage () {
     const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
     const isOwner = this.isOwner(transaction);
@@ -230,9 +239,6 @@ class TransactionDetails extends ScrollbarComponent {
     let messages = [];
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       messages.push('The transaction has been frozen.');
-    }
-    if (isOwner && isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)) {
-      messages.push('Kindly approve token transfer.');
     }
     return (
       <div>
@@ -247,7 +253,9 @@ class TransactionDetails extends ScrollbarComponent {
 
     return (
       <div className='tab-pane slide active show'>
-
+        <div>
+          {this.getTokenNotificationSection()}
+        </div>
         <table className='table d-block'>
           <tbody className='d-block'>
             <tr className='row'>
