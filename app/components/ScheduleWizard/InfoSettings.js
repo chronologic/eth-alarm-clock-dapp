@@ -42,7 +42,8 @@ class InfoSettings extends AbstractSetting {
 
     revalidateGasAmount() {
       const { scheduleStore } = this.props;
-      this.onChange('gasAmount')({ target: { value: scheduleStore.gasAmount } });
+      const minimumGas = this.state.minGas > scheduleStore.gasAmount ? this.state.minGas : scheduleStore.gasAmount;
+      this.onChange('gasAmount')({ target: { value: minimumGas } });
       this.forceUpdate();
     }
 
