@@ -198,6 +198,10 @@ hr {
   padding: 0.75rem;
 }
 
+.flex-strech {
+  flex-grow: 1 !important;
+}
+
 #scheduleWizard .nav li a {
   font-size: 15px;
   color: transparentize($color: #fff, $amount: 0.5);
