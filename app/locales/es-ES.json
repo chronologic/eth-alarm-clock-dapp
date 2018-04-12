@@ -15,5 +15,10 @@
     "FIRST": "Primero",
     "PREVIOUS": "Anterior",
     "CURRENT-BLOCK-NUMBER": "Bloque Actual",
-    "SEARCH-BY-ADDRESS": "Buscar por dirección"
+    "SEARCH-BY-ADDRESS": "Buscar por dirección",
+    "404": {
+        "SORRY-NOT-FOUND": "Disculpe, no pudimos encontrar la página",
+        "PAGE-DOES-NOT-EXIST": "La página solicitada no existe.",
+        "REPORT-THIS": "Reportar esto?"
+    }
 }
