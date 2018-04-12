@@ -11,9 +11,12 @@ const Titles = {
 class Alert extends Component {
   render() {
     const type = this.props.type || 'danger';
+    const close = typeof this.props.close !== 'undefined' ? this.props.close : true;
     return (
       <div className={'alert alert-'+type} role='alert'>
-        <button className='close' data-dismiss='alert'></button>
+        { close &&
+          <button className='close' data-dismiss='alert'></button>        
+        }
         <strong> {Titles[type]} </strong>{this.props.msg}
       </div>
     );
@@ -22,7 +25,8 @@ class Alert extends Component {
 
 Alert.propTypes = {
   msg: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
+  close: PropTypes.any
 };
 
 export default Alert;
