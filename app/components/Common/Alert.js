@@ -38,7 +38,8 @@ class Alert extends Component {
 Alert.propTypes = {
   msg: PropTypes.string,
   type: PropTypes.string,
-  close: PropTypes.any
+  close: PropTypes.any,
+  action: PropTypes.any
 };
 
 export default Alert;

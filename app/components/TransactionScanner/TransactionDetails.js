@@ -224,7 +224,7 @@ class TransactionDetails extends ScrollbarComponent {
     const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
 
     const isOwner = this.isOwner(transaction);
-    const approve = <button className='btn btn-default' onClick={this.approveTokenTransfer}> Approve Now</button>                
+    const approve = <button className='btn btn-default' onClick={this.approveTokenTransfer}> Approve Now</button>;
 
     if (isOwner && isTokenTransfer && !tokenTransferapproved && (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)) {
       return (<Alert {...{ type: 'warning', close: false, action: approve, msg: `: This transaction schedules token transfer. Minimum allowance of ${(this.state.token.info.value / 10 ** this.state.token.decimals)} ${this.state.token.symbol} tokens are required to be approved to complete the scheduling.` }} />);
