@@ -71,10 +71,8 @@ class AbstractSetting extends Component {
         if (Number(value) < Number(min)) {
           return 2;
         }
-        if (max) {
-          if (Number(value) > Number(max)) {
+        if (max && Number(value) > Number(max)) {
             return 3;
-          }
         }
         return 0;
       },
