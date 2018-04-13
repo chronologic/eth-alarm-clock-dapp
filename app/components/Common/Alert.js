@@ -20,7 +20,7 @@ class Alert extends Component {
             <strong> {Titles[type]} </strong>{this.props.msg}
           </div>
           {callToAction &&
-            <div className='d-inline-block ml-2' >
+            <div className='d-inline-block ml-0 ml-sm-2 mt-2 mt-sm-0' >
               {callToAction}
             </div>
           }
