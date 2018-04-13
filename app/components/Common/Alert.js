@@ -14,9 +14,9 @@ class Alert extends Component {
     const close = typeof this.props.close !== 'undefined' ? this.props.close : true;
     const callToAction = this.props.action || null;
     return (
-      <div className={' d-flex flex-nowrap alert alert-'+type} role='alert'>
-        <div className='d-flex flex-wrap flex-strech flex-sm-nowrap justify-content-center justify-content-sm-start align-items-center '>
-          <div className='flex-strech'>
+      <div className={'d-flex flex-nowrap alert alert-'+type} role='alert'>
+        <div className='d-flex flex-wrap flex-stretch flex-sm-nowrap justify-content-center justify-content-sm-start align-items-center '>
+          <div className='flex-stretch'>
             <strong> {Titles[type]} </strong>{this.props.msg}
           </div>
           {callToAction &&

@@ -16,7 +16,7 @@ class AbstractSetting extends Component {
   integerValidator (min,minError){
     const { _validations } = this.props;
     if (min) {
-      minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
+      minError = minError || `Value / amount should be greater or equal to minimum value of ${min}`;
     }
 
     return {
@@ -63,8 +63,8 @@ class AbstractSetting extends Component {
   integerMinMaxValidator( min, max, minError, maxError) {
     const { _validations } = this.props;
     min = min || 1;
-    minError = minError || `Value / amount shall be greater or equal to minimum value of ${min}`;
-    maxError = max ? maxError || `Value / amount shall be less or equal to maximum value of ${max}` : null;
+    minError = minError || `Value / amount should be greater or equal to minimum value of ${min}`;
+    maxError = max ? maxError || `Value / amount should be less or equal to maximum value of ${max}` : null;
     return {
       validator: (value) => {
         if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
@@ -81,7 +81,7 @@ class AbstractSetting extends Component {
       errors: [
         _validations.Errors.numeric,
         minError || _validations.Errors.minimum_numeric,
-        maxError || `Value / amount shall be less or equal to maximum value of ${max}`
+        maxError || `Value / amount should be less or equal to maximum value of ${max}`
       ]
     };
   }
