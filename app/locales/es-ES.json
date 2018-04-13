@@ -14,7 +14,8 @@
     "SCHEDULE-VERB-INFINITIE": "Programar",
     "FIRST": "Primero",
     "PREVIOUS": "Anterior",
-    "CURRENT-BLOCK-NUMBER": "Bloque Actual",
+    "CURRENT-BLOCK": "Bloque Actual",
+    "CURRENT-BLOCK-NUMBER": "# de Bloque Actual",
     "SEARCH-BY-ADDRESS": "Buscar por dirección",
     "404": {
         "SORRY-NOT-FOUND": "Disculpe, no pudimos encontrar la página",

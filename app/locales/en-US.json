@@ -14,6 +14,7 @@
     "SCHEDULE-VERB-INFINITIE": "Schedule",
     "FIRST": "First",
     "PREVIOUS": "Previous",
+    "CURRENT-BLOCK": "Current Block",
     "CURRENT-BLOCK-NUMBER": "Current Block Number",
     "SEARCH-BY-ADDRESS": "Search by Address",
     "404": {
