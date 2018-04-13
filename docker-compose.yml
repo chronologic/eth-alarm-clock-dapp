@@ -9,15 +9,25 @@ services:
     ports:
       - 9545:8545
 
-  contracts:
+  eac_protocol:
     build:
       context: .
-      dockerfile: ./docker/contracts/Dockerfile
+      dockerfile: ./docker/eac_protocol/Dockerfile
     command: sh /startup.sh
     depends_on:
       - ganache
     volumes:
-      - app-volume:/usr/src/contracts/
+      - app-volume:/usr/src/shared/
+
+  faucet_day:
+    build:
+      context: .
+      dockerfile: ./docker/faucet_day/Dockerfile
+    command: sh /startup.sh
+    depends_on:
+      - ganache
+    volumes:
+      - app-volume:/usr/src/shared/
 
   dapp:
     restart: always
@@ -29,9 +39,10 @@ services:
       - 8080:8080
     depends_on:
       - ganache
-      - contracts
+      - eac_protocol
+      - faucet_day
     volumes:
-      - app-volume:/usr/src/contracts/
+      - app-volume:/usr/src/shared/
       - .:/usr/src/app
       - /usr/src/app/node_modules/
 

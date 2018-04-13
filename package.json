@@ -15,7 +15,7 @@
     "validate": "npm ls",
     "docker-build": "docker-compose build && docker-compose up -d",
     "docker-remove": "docker-compose stop && docker-compose rm -f",
-    "docker-rebuild": "npm run docker-build && npm run docker-remove"
+    "docker-rebuild": "npm run docker-remove && npm run docker-build"
   },
   "devDependencies": {
     "autoprefixer": "^8.1.0",
