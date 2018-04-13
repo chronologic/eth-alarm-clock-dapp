@@ -9,6 +9,7 @@ import {
     Networks,
     Explorers
 } from '../config/web3Config.js';
+import standardTokenAbi from '../abi/standardToken';
 
 let instance = null;
 
@@ -44,6 +45,108 @@ export default class Web3Service {
 
     fromWei(wei) {
         return this.web3.fromWei(wei);
+    }
+
+    encodeFunctionName(functionName) {
+        if (typeof functionName === 'undefined') {
+            return;
+        }
+        const encoded = this.web3.sha3(functionName);
+        return encoded.substring(0,10);
+    }
+
+    encodeTransactionData (functionName,params) {
+        if (typeof functionName === 'undefined' || params.length < 1) {
+            return;
+        }
+        let types = [];
+        let values = [];
+        const Coder = require('web3/lib/solidity/coder');
+        for (let p = 0; p < params.length; p++) {
+            types.push(params[p].type);
+            values.push(params[p].value);
+        }
+        const funcName = `${ functionName }(${ types.join(',') })`;
+        const func = this.encodeFunctionName(funcName);
+        const encoded =  Coder.encodeParams(types, values);
+        return func+encoded;
+    }
+
+    decodeTransactionData(callData, functionName, params) {
+        if (typeof functionName === 'undefined' || params.length < 1) {
+            return;
+        }
+        let types = [];
+        const Coder = require('web3/lib/solidity/coder');
+        for (let p = 0; p < params.length; p++) {
+            types.push(params[p].type);
+        }
+        const funcName = `${functionName}(${types.join(',')})`;
+        const func = this.encodeFunctionName(funcName);
+        const preparedData = callData.substring(func.length);
+        const decoded = Coder.decodeParams(types, preparedData);
+        return decoded;
+    }
+
+    isTokenTransferTransaction(callData) {
+        if (!callData) {
+            return false;
+        }
+        const functionName = 'transferFrom(address,address,uint256)';
+        const encodedFunction = this.encodeFunctionName(functionName);
+        return new RegExp(encodedFunction).test(callData);
+    }
+
+    async isTokenTransferApproved(token, sender, value) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const owner = this.accounts[0];
+        const allowance = await Bb.fromCallback( callback => contract.allowance(owner, sender, callback) );
+        return Number(allowance) >= Number(value);
+    }
+
+    async getTokenTransferInfoFromData(callData) {
+        const functionName = 'transferFrom';
+        const params = [
+            { type: 'address', name: 'owner' },
+            { type: 'address', name: 'sender' },
+            { type: 'uint256', name: 'value' }
+        ];
+        const details = this.decodeTransactionData(callData, functionName, params);
+        details.map((val, index) => details[ params[index].name ] = val );
+        return details;
+    }
+
+    async getTokenTransferData(token, receiver, amount) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const sender = this.accounts[0];
+        const data =  contract.transferFrom.getData(sender, receiver, amount);
+        return data;
+    }
+
+    async estimateTokenTransfer ( token, receiver, amount ) {
+        if (Number(amount) === 0) {
+            return 0;
+        }
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const estimate = await Bb.fromCallback( callback => contract.transfer.estimateGas(receiver, amount, callback) );
+        return estimate;
+    }
+
+    async fetchTokenDetails(address) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(address);
+        const details = {
+            address: address,
+            name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
+            symbol: (await Bb.fromCallback(callback => contract.symbol.call(callback))).valueOf(),
+            decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf(),
+        };
+        return details;
+    }
+
+    async fetchTokenBalance(address) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(address);
+        const balance = this.accounts && this.accounts[0] ? (await Bb.fromCallback(callback => contract.balanceOf.call(this.accounts[0], callback))).valueOf() : '-';
+        return balance;
     }
 
     async fetchReceipt(hash) {
@@ -107,6 +210,12 @@ export default class Web3Service {
         const { web3 } = this;
         const code = await Bb.fromCallback(callback => web3.eth.getCode(address,callback) );
         return code.toString() != '0x0';
+    }
+
+    async approveTokenTransfer( token, receiver, amount) {
+        const contract = this.web3.eth.contract(standardTokenAbi).at(token);
+        const approve = await Bb.fromCallback( callback => contract.approve( receiver, amount, { from: this.defaultAccount }, callback ) );
+        return approve;
     }
 
     @action

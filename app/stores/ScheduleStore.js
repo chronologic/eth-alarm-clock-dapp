@@ -27,7 +27,14 @@ export default class ScheduleStore {
   @observable useData;
   @observable yourData;
 
+  //Token Transfer settings
+  @observable receiverAddress;
+  @observable tokenToSend;
+  @observable tokenData;
+  @observable tokenSymbol;
+
   @observable isUsingTime;
+  @observable isTokenTransfer;
 
   /*
    * Currently MobX doesn't have a more elegant
@@ -55,7 +62,13 @@ export default class ScheduleStore {
     this.useData = false;
     this.yourData = '';
 
+    this.receiverAddress = '';
+    this.tokenToSend = '';
+    this.tokenData = '';
+    this.tokenSymbol = '';
+
     this.isUsingTime = true;
+    this.isTokenTransfer = false;
   }
 
   constructor(source) {

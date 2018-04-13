@@ -11,10 +11,25 @@ const Titles = {
 class Alert extends Component {
   render() {
     const type = this.props.type || 'danger';
+    const close = typeof this.props.close !== 'undefined' ? this.props.close : true;
+    const callToAction = this.props.action || null;
     return (
-      <div className={'alert alert-'+type} role='alert'>
-        <button className='close' data-dismiss='alert'></button>
-        <strong> {Titles[type]} </strong>{this.props.msg}
+      <div className={'d-flex flex-nowrap alert alert-'+type} role='alert'>
+        <div className='d-flex flex-wrap flex-stretch flex-sm-nowrap justify-content-center justify-content-sm-start align-items-center '>
+          <div className='flex-stretch'>
+            <strong> {Titles[type]} </strong>{this.props.msg}
+          </div>
+          {callToAction &&
+            <div className='d-inline-block ml-0 ml-sm-2 mt-2 mt-sm-0' >
+              {callToAction}
+            </div>
+          }
+        </div>
+        <div>
+          {close &&
+            <button className='close' data-dismiss='alert'></button>
+          }
+        </div>
       </div>
     );
   }
@@ -22,7 +37,9 @@ class Alert extends Component {
 
 Alert.propTypes = {
   msg: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
+  close: PropTypes.any,
+  action: PropTypes.any
 };
 
 export default Alert;
