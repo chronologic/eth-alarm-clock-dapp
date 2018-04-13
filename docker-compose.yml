@@ -1,0 +1,40 @@
+version: '2.1'
+
+services:
+  ganache:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/ganache/Dockerfile
+    ports:
+      - 9545:8545
+
+  contracts:
+    build:
+      context: .
+      dockerfile: ./docker/contracts/Dockerfile
+    command: sh /startup.sh
+    depends_on:
+      - ganache
+    volumes:
+      - app-volume:/usr/src/contracts/
+
+  dapp:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/dapp/Dockerfile
+    command: sh /startup.sh
+    ports:
+      - 8080:8080
+    depends_on:
+      - ganache
+      - contracts
+    volumes:
+      - app-volume:/usr/src/contracts/
+      - .:/usr/src/app
+      - /usr/src/app/node_modules/
+
+volumes:
+  app-volume:
+  node_modules:
