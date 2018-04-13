@@ -12,7 +12,10 @@
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "clean": "./tools/clean.sh",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "docker-build": "docker-compose build && docker-compose up -d",
+    "docker-remove": "docker-compose stop && docker-compose rm -f",
+    "docker-rebuild": "npm run docker-build && npm run docker-remove"
   },
   "devDependencies": {
     "autoprefixer": "^8.1.0",
