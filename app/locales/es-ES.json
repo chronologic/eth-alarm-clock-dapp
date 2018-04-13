@@ -20,5 +20,11 @@
         "SORRY-NOT-FOUND": "Disculpe, no pudimos encontrar la página",
         "PAGE-DOES-NOT-EXIST": "La página solicitada no existe.",
         "REPORT-THIS": "Reportar esto?"
+    },
+    "ALERTS": {
+        "ERROR": "Error",
+        "INFO": "Información",
+        "WARNING": "Atención",
+        "SUCCESS": "Hecho."
     }
 }
