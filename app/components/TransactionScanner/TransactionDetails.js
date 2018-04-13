@@ -237,7 +237,7 @@ class TransactionDetails extends ScrollbarComponent {
     const isOwner = this.isOwner(transaction);
 
     let messages = [];
-    if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
+    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       messages.push('The transaction has been frozen.');
     }
     return (

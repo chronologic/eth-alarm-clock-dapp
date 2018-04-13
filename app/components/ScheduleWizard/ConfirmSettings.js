@@ -127,7 +127,7 @@ class ConfirmSettings extends Component {
                 {scheduleStore.isTokenTransfer &&
                   <tr className="row m-0">
                     <td className="d-inline-block col-6 col-lg-4">To address</td>
-                  <td className="d-inline-block col-6 col-lg-8" >{scheduleStore.receiverAddress}</td>
+                  <td className="d-inline-block col-6 col-sm-6 col-lg-8"><a href={this.props.web3Service.explorer + 'address/' + scheduleStore.receiverAddress} target='_blank' rel='noopener noreferrer'>{scheduleStore.receiverAddress}</a></td>
                   </tr>
                 }
                 <tr className="row m-0">
