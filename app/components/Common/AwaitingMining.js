@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
+import intl from 'react-intl-universal';
 import { services } from '../../services';
 import Coder from 'web3/lib/solidity/coder';
 import { PacmanLoader } from 'react-spinners';
@@ -116,10 +117,10 @@ class AwaitingMining extends Component {
     return (
       <div id="awaitingMining" className="container padding-25 sm-padding-10 horizontal-center">
         {this.state.deploying &&
-          <h1 className="view-title">Deploying</h1>
+          <h1 className="view-title">{intl.get('AWAITING-MINING.DEPLOYING').d('Deploying')}</h1>
         }
         {this.state.minning &&
-          <h1 className="view-title">Awaiting Mining</h1>
+          <h1 className="view-title">{intl.get('AWAITING-MINING.AWAITING-MINING').d('Awaiting Mining')}</h1>
         }
         {!this.state.deploying && !this.state.minning &&
           <h1 className="view-title"> ... </h1>
@@ -131,13 +132,13 @@ class AwaitingMining extends Component {
             </div>
             {this.state.transactionHash &&
               <p className="horizontal-center">
-                Transaction Hash: <br />
+                {intl.get('AWAITING-MINING.TRANSACTION-HASH').d('Transaction Hash')}: <br />
               <a target="_blank" href={explorer + '/tx/' + transactionHash } > {this.state.transactionHash} </a>
               </p>
             }
             {this.state.newContract &&
               <p className="horizontal-center">
-                Contract Address: <br />
+                {intl.get('AWAITING-MINING.CONTRACT-ADDRESS').d('Contract Address')}: <br />
               <a target="_blank" href={explorer + '/address/' + newContract } > {this.state.newContract} </a>
               </p>
             }

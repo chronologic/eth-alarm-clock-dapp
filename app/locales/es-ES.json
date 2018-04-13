@@ -26,5 +26,11 @@
         "INFO": "Información",
         "WARNING": "Atención",
         "SUCCESS": "Hecho."
+    },
+    "AWAITING-MINING": {
+        "DEPLOYING": "Desplegando",
+        "AWAITING-MINING": "Esperando Minería",
+        "TRANSACTION-HASH": "Hash de Transacción",
+        "CONTRACT-ADDRESS": "Dirección de Contrato"
     }
 }
