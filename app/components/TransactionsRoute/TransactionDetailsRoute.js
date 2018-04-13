@@ -18,7 +18,7 @@ class TransactionDetailsRoute extends Component {
   render() {
     const { txAddress } = this.props.match.params;
 
-    let content = <div></div>;
+    let content = <div />;
 
     // If the list of transactions has been fetched
     if (this.props.transactionStore.allTransactionsAddresses.length > 0) {
@@ -27,21 +27,23 @@ class TransactionDetailsRoute extends Component {
         content = <TransactionDetails address={txAddress} />;
       } else {
         // Throw a 404 if the transaction with that address does not exist
-        content = <TransactionNotFound address={txAddress}/>;
+        content = <TransactionNotFound address={txAddress} />;
       }
     } else {
-      content = <div className='loading-icon'>
-        <PropagateLoader loading={true} color='#21FFFF'/>
-      </div>;
+      content = (
+        <div className="loading-icon">
+          <PropagateLoader loading={true} color="#21FFFF" />
+        </div>
+      );
     }
 
     return (
       <div className="container">
-        <h1 className="view-title">Transaction details <span className="view-subtitle">{txAddress}</span></h1>
+        <h1 className="view-title">
+          Transaction details <span className="view-subtitle">{txAddress}</span>
+        </h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
-          <div className="tab-content p-4">
-            {content}
-          </div>
+          <div className="tab-content p-4">{content}</div>
           <PoweredByEAC className="mb-4 ml-4" />
         </div>
       </div>

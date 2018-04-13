@@ -32,13 +32,15 @@ class AwaitingMining extends Component {
       transactionHash: '',
       newContract: '',
       deploying: false,
-      minning: false,
+      minning: false
     };
   }
 
   async loadUp() {
     const { web3Service } = this.props;
-    const { web3Service: { web3 } } = this.props;
+    const {
+      web3Service: { web3 }
+    } = this.props;
     const { hash, type } = this.props.match.params;
     let unmined = true;
     let unconfirmed = true;
@@ -81,7 +83,7 @@ class AwaitingMining extends Component {
 
       if (mineDestinations[type].logEventTypes && mineDestinations[type].logEventHex) {
         const log = await web3Service.fetchLog(transactionHash, mineDestinations[type].logEventHex);
-        const data = log.data.substring(2);//truncate data for decoding
+        const data = log.data.substring(2); //truncate data for decoding
         const args = Coder.decodeParams(mineDestinations[type].logEventTypes, data);
         let newSate = {};
         newSate[mineDestinations[type].prop] = args[mineDestinations[type].nextParameterPosition];
@@ -110,37 +112,39 @@ class AwaitingMining extends Component {
   }
 
   render() {
-    const { web3Service: { explorer } } = this.props;
-    const { transactionHash,newContract } = this.state;
+    const {
+      web3Service: { explorer }
+    } = this.props;
+    const { transactionHash, newContract } = this.state;
 
     return (
       <div id="awaitingMining" className="container padding-25 sm-padding-10 horizontal-center">
-        {this.state.deploying &&
-          <h1 className="view-title">Deploying</h1>
-        }
-        {this.state.minning &&
-          <h1 className="view-title">Awaiting Mining</h1>
-        }
-        {!this.state.deploying && !this.state.minning &&
-          <h1 className="view-title"> ... </h1>
-        }
-        <div className='card card-body'>
-          <div className='tabs-content'>
+        {this.state.deploying && <h1 className="view-title">Deploying</h1>}
+        {this.state.minning && <h1 className="view-title">Awaiting Mining</h1>}
+        {!this.state.deploying && !this.state.minning && <h1 className="view-title"> ... </h1>}
+        <div className="card card-body">
+          <div className="tabs-content">
             <div className="loader">
               <PacmanLoader {...Object.assign({ loading: true }, loaderConfig)} />
             </div>
-            {this.state.transactionHash &&
+            {this.state.transactionHash && (
               <p className="horizontal-center">
                 Transaction Hash: <br />
-              <a target="_blank" href={explorer + '/tx/' + transactionHash } > {this.state.transactionHash} </a>
+                <a target="_blank" href={explorer + '/tx/' + transactionHash}>
+                  {' '}
+                  {this.state.transactionHash}{' '}
+                </a>
               </p>
-            }
-            {this.state.newContract &&
+            )}
+            {this.state.newContract && (
               <p className="horizontal-center">
                 Contract Address: <br />
-              <a target="_blank" href={explorer + '/address/' + newContract } > {this.state.newContract} </a>
+                <a target="_blank" href={explorer + '/address/' + newContract}>
+                  {' '}
+                  {this.state.newContract}{' '}
+                </a>
               </p>
-            }
+            )}
           </div>
         </div>
       </div>
@@ -154,6 +158,5 @@ AwaitingMining.propTypes = {
   transactionStore: PropTypes.any,
   history: PropTypes.object.isRequired
 };
-
 
 export default AwaitingMining;

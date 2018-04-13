@@ -59,14 +59,14 @@ class TransactionDetails extends ScrollbarComponent {
       executedAt = events[0].transactionHash;
     }
 
-    this.setState( {
+    this.setState({
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
       status: await transactionStore.getTxStatus(transaction),
       transaction,
       executedAt,
       isFrozen: ''
-    } );
+    });
   }
 
   async getFrozenStatus() {
@@ -76,7 +76,7 @@ class TransactionDetails extends ScrollbarComponent {
       return;
     }
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
-    this.setState( { isFrozen: isFrozen || transaction.isCancelled } );
+    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
   async cancelTransaction() {
@@ -106,9 +106,13 @@ class TransactionDetails extends ScrollbarComponent {
     await this.fetchData();
   }
 
-  isOwner( transaction){
+  isOwner(transaction) {
     const { owner } = transaction;
-    const { web3Service: { eth: { accounts } } } = this.props;
+    const {
+      web3Service: {
+        eth: { accounts }
+      }
+    } = this.props;
     const isOwner = accounts[0] == owner;
     return isOwner;
   }
@@ -132,73 +136,118 @@ class TransactionDetails extends ScrollbarComponent {
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       return (
         <div className="text-center mt-5">
-          <button className="btn btn-danger btn-cons"
-            disabled={ isFrozen }
-            onClick={ this.cancelTransaction }
+          <button
+            className="btn btn-danger btn-cons"
+            disabled={isFrozen}
+            onClick={this.cancelTransaction}
             type="button"
-            ref={(el) => this.cancelBtn = el}>
+            ref={el => (this.cancelBtn = el)}
+          >
             <span>Cancel</span>
           </button>
-          { isFrozen ? 'The transaction has been frozen.' : '' }
+          {isFrozen ? 'The transaction has been frozen.' : ''}
         </div>
       );
     }
 
-    return <div></div>;
+    return <div />;
   }
 
   render() {
     const { callData, executedAt, isTimestamp, status, transaction } = this.state;
-    const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
+    const {
+      bounty,
+      callGas,
+      callValue,
+      fee,
+      gasPrice,
+      requiredDeposit,
+      toAddress,
+      windowStart,
+      windowSize
+    } = transaction;
 
     return (
       <div className="tab-pane slide active show">
-
         <table className="table">
           <tbody>
             <tr>
               <td>Status</td>
-              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
+              <td>
+                {status}
+                <span className={status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : ''}>
+                  &nbsp;at{' '}
+                  <a
+                    href={this.props.web3Service.explorer + 'tx/' + executedAt}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {executedAt}
+                  </a>
+                </span>
+              </td>
             </tr>
             <tr>
               <td>To Address</td>
-              <td><a href={this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
+              <td>
+                <a
+                  href={this.props.web3Service.explorer + 'address/' + toAddress}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {toAddress}
+                </a>
+              </td>
             </tr>
             <tr>
               <td>Value/Amount</td>
-              <td><ValueDisplay priceInWei= { callValue } /></td>
+              <td>
+                <ValueDisplay priceInWei={callValue} />
+              </td>
             </tr>
             <tr>
               <td>Data</td>
               <td>{callData}</td>
             </tr>
             <tr>
-              <td>{ isTimestamp ? 'Time' : 'Block' }</td>
-              <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
+              <td>{isTimestamp ? 'Time' : 'Block'}</td>
+              <td>
+                <BlockOrTimeDisplay model={windowStart} isTimestamp={isTimestamp} />
+              </td>
             </tr>
             <tr>
               <td>Window Size</td>
-              <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
+              <td>
+                <BlockOrTimeDisplay model={windowSize} isTimestamp={isTimestamp} duration={true} />
+              </td>
             </tr>
             <tr>
               <td>Gas Amount</td>
-              <td> { callGas && callGas.toFixed() } </td>
+              <td> {callGas && callGas.toFixed()} </td>
             </tr>
             <tr>
               <td>Gas Price</td>
-              <td><ValueDisplay priceInWei= { gasPrice } /></td>
+              <td>
+                <ValueDisplay priceInWei={gasPrice} />
+              </td>
             </tr>
             <tr>
               <td>Time Bounty</td>
-              <td><ValueDisplay priceInWei= { bounty } /></td>
+              <td>
+                <ValueDisplay priceInWei={bounty} />
+              </td>
             </tr>
             <tr>
               <td>Fee</td>
-              <td><ValueDisplay priceInWei= { fee } /></td>
+              <td>
+                <ValueDisplay priceInWei={fee} />
+              </td>
             </tr>
             <tr>
               <td>Deposit</td>
-              <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
+              <td>
+                <ValueDisplay priceInWei={requiredDeposit} />
+              </td>
             </tr>
           </tbody>
         </table>

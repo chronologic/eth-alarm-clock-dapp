@@ -12,9 +12,10 @@ class Alert extends Component {
   render() {
     const type = this.props.type || 'danger';
     return (
-      <div className={'alert alert-'+type} role='alert'>
-        <button className='close' data-dismiss='alert'></button>
-        <strong> {Titles[type]} </strong>{this.props.msg}
+      <div className={'alert alert-' + type} role="alert">
+        <button className="close" data-dismiss="alert" />
+        <strong> {Titles[type]} </strong>
+        {this.props.msg}
       </div>
     );
   }

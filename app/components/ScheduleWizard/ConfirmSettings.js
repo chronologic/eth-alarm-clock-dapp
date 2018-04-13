@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { inject,observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import Alert from '../Common/Alert';
 
 @inject('scheduleStore')
@@ -8,8 +8,7 @@ import Alert from '../Common/Alert';
 @inject('web3Service')
 @observer
 class ConfirmSettings extends Component {
-
-  constructor(props){
+  constructor(props) {
     super(props);
     this.infoSettingsValidations = this.infoSettingsValidations.bind(this);
     this.bountySettingsValidations = this.bountySettingsValidations.bind(this);
@@ -18,13 +17,17 @@ class ConfirmSettings extends Component {
   }
 
   totalCost() {
-    const { scheduleStore, eacService,web3Service: { web3 } } = this.props;
+    const {
+      scheduleStore,
+      eacService,
+      web3Service: { web3 }
+    } = this.props;
     let { gasAmount, amountToSend, gasPrice, fee, timeBounty } = scheduleStore;
 
     amountToSend = web3.toWei(amountToSend, 'ether');
     gasPrice = web3.toWei(gasPrice, 'gwei');
     fee = web3.toWei(fee, 'ether');
-    timeBounty = web3.toWei(timeBounty,'ether');
+    timeBounty = web3.toWei(timeBounty, 'ether');
 
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
@@ -33,22 +36,24 @@ class ConfirmSettings extends Component {
 
   get executionWindow() {
     const { scheduleStore, isCustomWindow } = this.props;
-    if (scheduleStore.isUsingTime){
-      return `${(isCustomWindow ? scheduleStore.customWindow : scheduleStore.executionWindow)} mins`;
+    if (scheduleStore.isUsingTime) {
+      return `${isCustomWindow ? scheduleStore.customWindow : scheduleStore.executionWindow} mins`;
     }
-      return `${scheduleStore.blockSize} blocks`;
+    return `${scheduleStore.blockSize} blocks`;
   }
 
-  blockOrTime(){
+  blockOrTime() {
     const { scheduleStore } = this.props;
-    if (scheduleStore.isUsingTime){
+    if (scheduleStore.isUsingTime) {
       return scheduleStore.transactionTzTime;
     }
     return scheduleStore.blockNumber ? scheduleStore.blockNumber : '-';
   }
 
   web3Error() {
-    return !this.props.isWeb3Usable ? <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} /> : null;
+    return !this.props.isWeb3Usable ? (
+      <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} />
+    ) : null;
   }
 
   infoSettingsValidations() {
@@ -75,7 +80,7 @@ class ConfirmSettings extends Component {
     this.bountySettingsValidations() ? errors.push(this.bountySettingsValidations()) : null;
     this.timeSettingsValidations() ? errors.push(this.timeSettingsValidations()) : null;
     this.blockComponentValidations() ? errors.push(this.blockComponentValidations()) : null;
-    return errors.length > 0 ? <Alert {...{ msg: 'in tabs: ' + errors.join(', ') }}  /> : null;
+    return errors.length > 0 ? <Alert {...{ msg: 'in tabs: ' + errors.join(', ') }} /> : null;
   }
 
   render() {
@@ -87,34 +92,61 @@ class ConfirmSettings extends Component {
         {this.web3Error()}
         {this.tabValidations()}
         <div className="row">
-
           <div className="col-lg-8">
             <table className="table">
               <thead>
                 <tr>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
                 <tr className="row m-0">
-                  <td className="d-inline-block col-6 col-lg-4"><strong>To Address</strong></td>
-                  <td className="d-inline-block col-6 col-sm-6 col-lg-8">{scheduleStore.toAddress ? <a href={this.props.web3Service.explorer + 'address/' + scheduleStore.toAddress } target='_blank' rel='noopener noreferrer'>{ scheduleStore.toAddress }</a> : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6 col-lg-4">
+                    <strong>To Address</strong>
+                  </td>
+                  <td className="d-inline-block col-6 col-sm-6 col-lg-8">
+                    {scheduleStore.toAddress ? (
+                      <a
+                        href={
+                          this.props.web3Service.explorer + 'address/' + scheduleStore.toAddress
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {scheduleStore.toAddress}
+                      </a>
+                    ) : (
+                      emptyFieldSign
+                    )}
+                  </td>
                 </tr>
                 <tr className="row m-0">
-                  <td className="d-inline-block col-6 col-lg-4"><strong>Amount to Send</strong></td>
-                  <td className="d-inline-block col-6 col-lg-8">{scheduleStore.amountToSend ? scheduleStore.amountToSend + ' ETH' : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6 col-lg-4">
+                    <strong>Amount to Send</strong>
+                  </td>
+                  <td className="d-inline-block col-6 col-lg-8">
+                    {scheduleStore.amountToSend
+                      ? scheduleStore.amountToSend + ' ETH'
+                      : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4">Data</td>
-                  <td className="d-inline-block col-6 col-lg-8">{scheduleStore.yourData ? scheduleStore.yourData : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6 col-lg-8">
+                    {scheduleStore.yourData ? scheduleStore.yourData : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
-                  <td className="d-inline-block col-6 col-lg-4">{scheduleStore.isUsingTime ? 'Time' : 'Block Number'}</td>
+                  <td className="d-inline-block col-6 col-lg-4">
+                    {scheduleStore.isUsingTime ? 'Time' : 'Block Number'}
+                  </td>
                   <td className="d-inline-block col-6 col-lg-8">{this.blockOrTime()}</td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4">Window Size</td>
-                  <td className="d-inline-block col-6 col-lg-8">{this.executionWindow || emptyFieldSign}</td>
+                  <td className="d-inline-block col-6 col-lg-8">
+                    {this.executionWindow || emptyFieldSign}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -124,40 +156,51 @@ class ConfirmSettings extends Component {
             <table className="table">
               <thead>
                 <tr className="row m-0 d-none d-lg-table-row">
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Gas Amount</td>
-                  <td className="d-inline-block col-6">{scheduleStore.gasAmount ? scheduleStore.gasAmount : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6">
+                    {scheduleStore.gasAmount ? scheduleStore.gasAmount : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Gas Price</td>
-                  <td className="d-inline-block col-6">{scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6">
+                    {scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Fee</td>
-                  <td className="d-inline-block col-6">{scheduleStore.fee ? scheduleStore.fee : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6">
+                    {scheduleStore.fee ? scheduleStore.fee : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Time Bounty</td>
-                  <td className="d-inline-block col-6">{scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6">
+                    {scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}
+                  </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Deposit</td>
-                  <td className="d-inline-block col-6">{scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}</td>
+                  <td className="d-inline-block col-6">
+                    {scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
-
         </div>
-        <h3 className="text-right m-t-20">Total amount: <strong>{ this.totalCost() } ETH</strong></h3>
+        <h3 className="text-right m-t-20">
+          Total amount: <strong>{this.totalCost()} ETH</strong>
+        </h3>
       </div>
-        );
-      }
+    );
   }
+}
 
 ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any,
