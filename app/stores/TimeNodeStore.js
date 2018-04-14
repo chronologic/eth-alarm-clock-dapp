@@ -11,6 +11,8 @@ import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 
+import { Networks } from '../config/web3Config.js';
+
 /*
  * TimeNode classification based on the number
  * of DAY tokens held by the owner.
@@ -240,7 +242,7 @@ export default class TimeNodeStore {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
+    const dayTokenAddress = this.getDAYTokenAddress(this._web3Service.netId);
     const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
 
     const balanceNum = await Bb.fromCallback((callback) => {
@@ -260,6 +262,13 @@ export default class TimeNodeStore {
     }
 
     return balance;
+  }
+
+  getDAYTokenAddress(networkId) {
+    if (Networks.hasOwnProperty(networkId)) {
+      return JSON.parse(process.env.DAY_TOKEN_ADDRESS)[networkId];
+    }
+    return process.env.DAY_TOKEN_ADDRESS_DOCKER;
   }
 
   updateStats() {

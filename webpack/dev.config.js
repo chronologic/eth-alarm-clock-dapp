@@ -35,6 +35,11 @@ module.exports = merge(baseConfig, {
     new Dotenv({
       path: '.env.dev'
     }),
+    new webpack.DefinePlugin({
+     'process.env':{
+       'DAY_TOKEN_ADDRESS_DOCKER': JSON.stringify(process.env.DAY_TOKEN_ADDRESS_DOCKER)
+     }
+    }),
     new webpack.HotModuleReplacementPlugin(),
   ]
 });

@@ -6,6 +6,7 @@ import { BeatLoader } from 'react-spinners';
 import dayFaucetABI from '../../abi/dayFaucetABI';
 import { showNotification } from '../../services/notification';
 import MetamaskComponent from '../Common/MetamaskComponent';
+import { Networks } from '../../config/web3Config.js';
 
 const Eth = 1e+18;
 
@@ -80,13 +81,23 @@ class Faucet extends MetamaskComponent {
     this.startInterval();
   }
 
+  getFaucetAddress(networkId) {
+    if (Networks.hasOwnProperty(networkId)) {
+      return JSON.parse(process.env.DAY_TOKEN_ADDRESS)[networkId];
+    }
+    return process.env.DAY_TOKEN_ADDRESS_DOCKER;
+  }
+
   async loadInfo() {
     this.setState({ loaded: false });
     const { web3Service } = this.props;
     await web3Service.awaitInitialized();
 
     const { accounts } = web3Service;
-    this.setState({ defaultAccount: accounts[0], faucetAddress: JSON.parse(process.env.DAY_FAUCET_ADDRESS)[web3Service.netId] });
+    this.setState({
+      defaultAccount: accounts[0],
+      faucetAddress: this.getFaucetAddress(web3Service.netId)
+    });
 
     if (!this.isWeb3Usable || !this.state.faucetAddress) {
       return;
