@@ -18,7 +18,7 @@ export default class Web3Service {
     @observable initialized = false;
     @observable connectedToMetaMask = null;
     @observable accounts = null;
-    @observable netId = null;
+    @observable network = null;
     @observable explorer = null;
 
     constructor(props) {
@@ -127,10 +127,15 @@ export default class Web3Service {
             this.web3 = web3;
         }
 
-        const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+        let netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+
+        // If it has a high network ID
+        // we assume it's a local docker ganache
+        if (netId > parseInt(process.env.LATEST_NETWORK_ID)) netId = 9545;
+
         runInAction(() => {
-            this.netId = netId;
-            this.explorer = Explorers[this.netId];
+            this.network = Networks[netId];
+            this.explorer = Explorers[netId];
         });
 
         if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
@@ -161,13 +166,6 @@ export default class Web3Service {
             this.accounts = accounts;
             this.web3.eth.defaultAccount = this.accounts[0];
         }
-    }
-
-    get network() {
-        if (typeof Networks[this.netId] === 'undefined')
-            return Networks[0].name;
-        else
-            return Networks[this.netId].name;
     }
 
     humanizeCurrencyDisplay(priceInWei) {
