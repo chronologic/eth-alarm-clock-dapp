@@ -95,6 +95,7 @@
     "moment": "^2.20.1",
     "moment-duration-format": "^2.2.1",
     "moment-timezone": "^0.5.14",
+    "npm": "^5.8.0",
     "popper": "^1.0.1",
     "popper.js": "^1.13.0",
     "prop-types": "^15.6.1",
