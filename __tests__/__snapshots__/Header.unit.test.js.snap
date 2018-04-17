@@ -33,7 +33,9 @@ exports[`Header displays current block number 1`] = `
         <i
           className="fa fa-sitemap"
         />
-          Active TimeNodes: 
+          
+        Active TimeNodes
+        : 
       </span>
       <span
         className="timenode-count"
@@ -48,7 +50,9 @@ exports[`Header displays current block number 1`] = `
         <i
           className="fa fa-th-large"
         />
-         Current Block Number: 
+         
+        Current Block Number
+        : 
       </span>
       <span
         className="timenode-count"
