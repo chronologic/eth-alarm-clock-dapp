@@ -99,11 +99,16 @@ class Faucet extends MetamaskComponent {
     const faucetAbi = web3Service.network.dayFaucetAbi;
     this.instance = web3.eth.contract(faucetAbi).at(this.state.faucetAddress);
 
+    const faucetBalance = Number( await Bb.fromCallback(callback => this.instance.getTokensBalance(callback)));
+    const lastUsed = Number( await Bb.fromCallback(callback => this.instance.lastRequest(this.state.defaultAccount, callback)));
+    const waitTime = Number(await Bb.fromCallback(callback => this.instance.waitTime(callback)));
+    const allowedTokens = Number( await Bb.fromCallback(callback => this.instance.allowedTokens(callback)));
+
     this.setState({
-      faucetBalance: Number( await Bb.fromCallback(callback => this.instance.getTokensBalance(callback))),
-      lastUsed: Number( await Bb.fromCallback(callback => this.instance.lastRequest(this.state.defaultAccount, callback))),
-      waitTime: Number(await Bb.fromCallback(callback => this.instance.waitTime(callback))),
-      allowedTokens: Number( await Bb.fromCallback(callback => this.instance.allowedTokens(callback)))
+      faucetBalance,
+      lastUsed,
+      waitTime,
+      allowedTokens
     });
 
     this.setWaitTime();
@@ -121,7 +126,7 @@ class Faucet extends MetamaskComponent {
       showNotification(`Transaction successful \r\n <a target='_blank' href='${explorer + 'tx/' + transaction}'> ${transaction}<a>`, 'success');
       await this.restartInterval();
     } catch (e) {
-      showNotification(`Transaction Failed !!!`);
+      showNotification(`The transactions was unsuccessful.`);
     }
   }
 
@@ -164,7 +169,15 @@ class Faucet extends MetamaskComponent {
                       <strong>Faucet Address</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.faucetAddress ? <a href={this.props.web3Service.explorer + 'address/' + this.state.faucetAddress } target='_blank' rel='noopener noreferrer'>{ this.state.faucetAddress }</a> : <BeatLoader/>}
+                      {
+                        this.state.faucetAddress
+                        ? <a href={this.props.web3Service.explorer + 'address/' + this.state.faucetAddress }
+                            target='_blank'
+                            rel='noopener noreferrer'>
+                            { this.state.faucetAddress }
+                          </a>
+                        : <BeatLoader/>
+                      }
                     </div>
                   </div>
 
@@ -173,7 +186,11 @@ class Faucet extends MetamaskComponent {
                       <strong>Faucet Balance</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.faucetBalance > 0 ? this.state.faucetBalance / Eth : <BeatLoader/>}
+                      {
+                        this.state.faucetBalance > 0
+                        ? this.state.faucetBalance / Eth
+                        : <BeatLoader/>
+                      }
                     </div>
                   </div>
 
@@ -182,7 +199,15 @@ class Faucet extends MetamaskComponent {
                       <strong>Your Wallet Address</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.defaultAccount ? <a href={this.props.web3Service.explorer + 'address/' + this.state.defaultAccount } target='_blank' rel='noopener noreferrer'>{ this.state.defaultAccount }</a> : <BeatLoader/>}
+                      {
+                        this.state.defaultAccount
+                        ? <a href={this.props.web3Service.explorer + 'address/' + this.state.defaultAccount }
+                          target='_blank'
+                          rel='noopener noreferrer'>
+                            { this.state.defaultAccount }
+                          </a>
+                        : <BeatLoader/>
+                      }
                     </div>
                   </div>
 
@@ -191,7 +216,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Remaining Wait Time</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {this.state.lastUsed ? this.printWaitTime : <BeatLoader/>}
+                      {this.state.lastUsed >=0 ? this.printWaitTime : <BeatLoader/>}
                     </div>
                   </div>
                 </div>
