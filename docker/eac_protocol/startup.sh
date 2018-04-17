@@ -1,4 +1,5 @@
 #!/bin/sh
-rm -rf build/ development.json
+rm -rf build/
 truffle migrate
-cp development.json /usr/src/shared/eac_contracts.json
+node getContractsInfo.js
+cp contracts.json /usr/src/shared/eac_contracts.json

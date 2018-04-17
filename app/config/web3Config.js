@@ -55,4 +55,7 @@ const Explorers = {
   42: 'https://kovan.etherscan.io/'
 };
 
-export { Networks, Explorers };
+export {
+  Networks,
+  Explorers
+};
