@@ -10,7 +10,7 @@ const INITIAL_STATE = {
 };
 
 class TransactionsTable extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
   constructor() {
     super(...arguments);
@@ -65,11 +65,11 @@ class TransactionsTable extends Component {
   }
 
   getNextPageButton() {
-    return <i className="fa fa-angle-right"></i>;
+    return <i className="fa fa-angle-right" />;
   }
 
   getPreviousPageButton() {
-    return <i className="fa fa-angle-left"></i>;
+    return <i className="fa fa-angle-left" />;
   }
 
   render() {
@@ -104,30 +104,45 @@ class TransactionsTable extends Component {
             <div className={transactions.length ? 'col-md-6' : 'd-none'}>
               Showing {offset + 1} to {offset + transactions.length} of {total} entries
             </div>
-            {this.state.lastPage !== 1 &&
+            {this.state.lastPage !== 1 && (
               <div className="col-md-6 text-right">
-                <span className={this.showPreviousPageButton ? '' : 'd-none'} onClick={() => this.goToPage(currentPage - 1)}>{this.getPreviousPageButton()}&nbsp;</span>
+                <span
+                  className={this.showPreviousPageButton ? '' : 'd-none'}
+                  onClick={() => this.goToPage(currentPage - 1)}
+                >
+                  {this.getPreviousPageButton()}&nbsp;
+                </span>
 
                 {this.state.pages.map(page => (
-                  <span key={page} className={page === currentPage ? 'bold' : ''} onClick={() => this.goToPage(page)}>{page}&nbsp;</span>
+                  <span
+                    key={page}
+                    className={page === currentPage ? 'bold' : ''}
+                    onClick={() => this.goToPage(page)}
+                  >
+                    {page}&nbsp;
+                  </span>
                 ))}
 
-                <span className={this.showNextPageButton ? '' : 'd-none'}onClick={() => this.goToPage(currentPage + 1)}>{this.getNextPageButton()}</span>
+                <span
+                  className={this.showNextPageButton ? '' : 'd-none'}
+                  onClick={() => this.goToPage(currentPage + 1)}
+                >
+                  {this.getNextPageButton()}
+                </span>
               </div>
-            }
+            )}
           </div>
         </div>
 
-        {fetchingTransactions &&
-          <div className='loading-icon'>
-            <PropagateLoader loading={fetchingTransactions} color='#21FFFF'/>
+        {fetchingTransactions && (
+          <div className="loading-icon">
+            <PropagateLoader loading={fetchingTransactions} color="#21FFFF" />
           </div>
-        }
+        )}
 
         <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
-            No transactions.
+          No transactions.
         </div>
-
       </div>
     );
   }
