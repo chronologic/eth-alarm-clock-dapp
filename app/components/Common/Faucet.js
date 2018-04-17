@@ -126,7 +126,7 @@ class Faucet extends MetamaskComponent {
       showNotification(`Transaction successful \r\n <a target='_blank' href='${explorer + 'tx/' + transaction}'> ${transaction}<a>`, 'success');
       await this.restartInterval();
     } catch (e) {
-      showNotification(`The transactions was unsuccessful.`);
+      showNotification(`The transaction was unsuccessful.`);
     }
   }
 

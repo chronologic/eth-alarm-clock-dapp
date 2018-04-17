@@ -1,4 +1,5 @@
 import dayFaucetABI from '../abi/dayFaucetABI';
+import dayTokenABI from '../abi/dayTokenABI';
 
 const Networks = {
   0: {
@@ -17,7 +18,9 @@ const Networks = {
     name: 'Ropsten',
     endpoint: 'https://ropsten.infura.io/6M6ROam68gmdp9OeNmym',
     dayTokenAddress: '0x7941bc77E1d6BD4628467b6cD3650F20F745dB06',
-    dayFaucetAddress: '0xfc5c1dc438411dce1cee4971fa333ecd3c3fa7d3'
+    dayTokenAbi: dayTokenABI,
+    dayFaucetAddress: '0xfc5c1dc438411dce1cee4971fa333ecd3c3fa7d3',
+    dayFaucetAbi: dayFaucetABI
   },
   4: {
     id: 4,
@@ -29,6 +32,7 @@ const Networks = {
     name: 'Kovan',
     endpoint: 'https://kovan.infura.io/6M6ROam68gmdp9OeNmym',
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
+    dayTokenAbi: dayTokenABI,
     dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
     dayFaucetAbi: dayFaucetABI
   },
@@ -37,6 +41,7 @@ const Networks = {
     name: 'Docker',
     endpoint: 'http://ganache:8545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,
+    dayTokenAbi: JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER),
     dayFaucetAddress: process.env.DAY_FAUCET_ADDRESS_DOCKER,
     dayFaucetAbi: JSON.parse(process.env.DAY_FAUCET_ABI_DOCKER)
   }
