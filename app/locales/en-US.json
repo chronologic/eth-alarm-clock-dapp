@@ -33,5 +33,14 @@
         "AWAITING-MINING": "Awaiting Mining",
         "TRANSACTION-HASH": "Transaction Hash",
         "CONTRACT-ADDRESS": "Contract Address"
+    },
+    "FAUCET-COMP": {
+        "GET-TEST-DAY": "Get test DAY tokens on a testnet of your choice",
+        "TESTNET-NETWORK": "Testnet network",
+        "FAUCET-ADDRESS": "Faucet Address",
+        "FAUCET-BALANCE": "Faucet Balance",
+        "WALLET-ADDRESS": "Your Wallet Address",
+        "REMAINING-WAIT-TIME": "Remaining Wait Time",
+        "GET-TESTNET-DAY": "Get Testnet DAY"
     }
 }

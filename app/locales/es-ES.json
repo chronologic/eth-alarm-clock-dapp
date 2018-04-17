@@ -33,5 +33,14 @@
         "AWAITING-MINING": "Esperando Minería",
         "TRANSACTION-HASH": "Hash de Transacción",
         "CONTRACT-ADDRESS": "Dirección de Contrato"
+    },
+    "FAUCET-COMP": {
+        "GET-TEST-DAY": "Obtenga DAY de la red de prueba de tu elección",
+        "TESTNET-NETWORK": "Red de prueba",
+        "FAUCET-ADDRESS": "Dirección del Faucet",
+        "FAUCET-BALANCE": "Balance del Faucet",
+        "WALLET-ADDRESS": "Tu dirección del wallet",
+        "REMAINING-WAIT-TIME": "Tiempo restante",
+        "GET-TESTNET-DAY": "Obtenga DAY de prueba"
     }
 }
