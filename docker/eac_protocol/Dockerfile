@@ -13,6 +13,6 @@ WORKDIR ./ethereum-alarm-clock
 RUN git checkout tags/0.9.3
 
 COPY ./docker/ganache/truffle.js ./truffle.js
-COPY ./docker/eac_protocol/getContractsInfo.js ./getContractsInfo.js
+COPY ./docker/eac_protocol/extractContractsInfo.js ./extractContractsInfo.js
 
 RUN npm install

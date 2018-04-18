@@ -1,6 +1,7 @@
 #!/bin/sh
 rm -rf build/
 truffle migrate
-node getContractsInfo.js
+node extractContractsInfo.js
 cp contracts.json /usr/src/shared/eac_contracts.json
-cp -r build/contracts /usr/src/shared/
+echo '{}' > abi/copy_confirmation.json 
+cp -r abi/ /usr/src/shared/

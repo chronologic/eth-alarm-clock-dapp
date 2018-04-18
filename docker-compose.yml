@@ -34,7 +34,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/dapp/Dockerfile
-    command: sh /startup.sh
+    command: bash -c "echo 'Waiting contracts deployment...' && while ping -c1 eac_protocol &>/dev/null; do sleep 10; done && sh /startup.sh"
     ports:
       - 8080:8080
     depends_on:

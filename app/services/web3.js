@@ -129,10 +129,6 @@ export default class Web3Service {
 
         let netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
 
-        // If it has a high network ID
-        // we assume it's a local docker ganache
-        if (netId > parseInt(process.env.LATEST_NETWORK_ID)) netId = 9545;
-
         runInAction(() => {
             this.network = Networks[netId];
             this.explorer = Explorers[netId];

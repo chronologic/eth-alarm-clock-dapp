@@ -36,8 +36,8 @@ const Networks = {
     dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
     dayFaucetAbi: dayFaucetABI
   },
-  9545: {
-    id: 9545,
+  1001: {
+    id: 1001,
     name: 'Docker',
     endpoint: 'http://ganache:8545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,

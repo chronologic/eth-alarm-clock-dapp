@@ -3,8 +3,7 @@ echo "Copying the necessary files..."
 rm -rf node_modules/eac.js-lib/lib/build/abi/*
 rm -rf node_modules/eac.js-lib/lib/build/contracts/*
 cp -v ../shared/eac_contracts.json node_modules/eac.js-lib/lib/assets/tester.json
-mkdir node_modules/eac.js-lib/lib/build/contracts/
-cp -v ../shared/contracts/* node_modules/eac.js-lib/lib/build/contracts/
+cp -v ../shared/abi/* node_modules/eac.js-lib/lib/build/abi/
 
 echo "Setting the env variables..."
 export DAY_TOKEN_ADDRESS_DOCKER=$(jq -r '.DAYToken' ../shared/DAY_addresses.json)
@@ -18,4 +17,5 @@ echo "DAY_FAUCET_ADDRESS_DOCKER=$DAY_FAUCET_ADDRESS_DOCKER"
 echo "DAY_TOKEN_ABI_DOCKER=$DAY_TOKEN_ABI_DOCKER"
 echo "DAY_FAUCET_ABI_DOCKER=$DAY_FAUCET_ABI_DOCKER"
 
+echo "Running the dev server..."
 npm run dev-docker
