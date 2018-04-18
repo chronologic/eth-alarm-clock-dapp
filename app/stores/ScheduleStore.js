@@ -27,13 +27,21 @@ export default class ScheduleStore {
   @observable useData;
   @observable yourData;
 
+  //Token Transfer settings
+  @observable receiverAddress;
+  @observable tokenToSend;
+  @observable tokenData;
+  @observable tokenSymbol;
+
   @observable isUsingTime;
+  @observable isTokenTransfer;
 
   /*
    * Currently MobX doesn't have a more elegant
    * way to reset to defaults.
    */
-  @action reset = () => {
+  @action
+  reset = () => {
     this.timeZone = '';
     this.transactionDate = '';
     this.transactionTime = '';
@@ -55,8 +63,14 @@ export default class ScheduleStore {
     this.useData = false;
     this.yourData = '';
 
+    this.receiverAddress = '';
+    this.tokenToSend = '';
+    this.tokenData = '';
+    this.tokenSymbol = '';
+
     this.isUsingTime = true;
-  }
+    this.isTokenTransfer = false;
+  };
 
   constructor(source) {
     Object.assign(this, source);
@@ -65,10 +79,16 @@ export default class ScheduleStore {
   }
 
   get transactionTimestamp() {
-    return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
+    return this.dateTimeValidatorStore.ts(
+      this.transactionDate,
+      this.transactionTime,
+      this.timeZone
+    );
   }
 
   get transactionTzTime() {
-    return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).toString();
+    return this.dateTimeValidatorStore
+      .parse(this.transactionDate, this.transactionTime, this.timeZone)
+      .toString();
   }
 }

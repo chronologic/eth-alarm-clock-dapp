@@ -47,6 +47,11 @@ class TimeNodeLogs extends Component {
             </div>
           </div>
           <div id="timenodeLogsField" className="card-body">
+            {(!this.props.timeNodeStore.logs || this.props.timeNodeStore.logs.length === 0) &&
+              <p>
+                No logs yet. Kindly start your TimeNode to begin.
+              </p>
+            }
             {this.props.timeNodeStore.logs.map((log, index) => {
               return (
                 <p key={index} className="no-margin">

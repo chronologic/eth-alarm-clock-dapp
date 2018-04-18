@@ -6,7 +6,7 @@ import { BeatLoader } from 'react-spinners';
 import { showNotification } from '../../services/notification';
 import MetamaskComponent from '../Common/MetamaskComponent';
 
-const Eth = 1e+18;
+const Eth = 1e18;
 
 @inject('web3Service')
 @observer
@@ -26,7 +26,7 @@ class Faucet extends MetamaskComponent {
     lastUsed: ''
   };
 
-  instance = {}
+  instance = {};
 
   get networkHasFaucet() {
     return Boolean(this.state.faucetAddress && this.state.faucetAddress != '0x0');
@@ -39,10 +39,16 @@ class Faucet extends MetamaskComponent {
   }
 
   get isEligible() {
-    return this.isWeb3Usable && this.state.loaded && this.networkHasFaucet && this.state.defaultAccount && this.waitTimeLeft == 0;
+    return (
+      this.isWeb3Usable &&
+      this.state.loaded &&
+      this.networkHasFaucet &&
+      this.state.defaultAccount &&
+      this.waitTimeLeft == 0
+    );
   }
 
-  get printWaitTime () {
+  get printWaitTime() {
     let waitMins = 0;
     let waitSecs = 0;
     const Min = 60 * 1000;
@@ -94,41 +100,55 @@ class Faucet extends MetamaskComponent {
       return;
     }
 
-    const { web3Service: { web3 } } = this.props;
+    const {
+      web3Service: { web3 }
+    } = this.props;
 
     const faucetAbi = web3Service.network.dayFaucetAbi;
     this.instance = web3.eth.contract(faucetAbi).at(this.state.faucetAddress);
-
-    const faucetBalance = Number( await Bb.fromCallback(callback => this.instance.getTokensBalance(callback)));
-    const lastUsed = Number( await Bb.fromCallback(callback => this.instance.lastRequest(this.state.defaultAccount, callback)));
-    const waitTime = Number(await Bb.fromCallback(callback => this.instance.waitTime(callback)));
-    const allowedTokens = Number( await Bb.fromCallback(callback => this.instance.allowedTokens(callback)));
-
+    
     this.setState({
-      faucetBalance,
-      lastUsed,
-      waitTime,
-      allowedTokens
+      faucetBalance: Number(
+        await Bb.fromCallback(callback => this.instance.getTokensBalance(callback))
+      ),
+      lastUsed: Number(
+        await Bb.fromCallback(callback =>
+          this.instance.lastRequest(this.state.defaultAccount, callback)
+        )
+      ),
+      waitTime: Number(await Bb.fromCallback(callback => this.instance.waitTime(callback))),
+      allowedTokens: Number(
+        await Bb.fromCallback(callback => this.instance.allowedTokens(callback))
+      )
     });
 
     this.setWaitTime();
     this.setState({ loaded: true });
   }
 
-  useFaucet = async (event) => {
+  useFaucet = async event => {
     const { target } = event;
-    const {  web3Service: { explorer } } = this.props;
+    const {
+      web3Service: { explorer }
+    } = this.props;
 
     target.disabled = true;
     let transaction;
     try {
-      transaction = await Bb.fromCallback(callback => this.instance.useFaucet({ from: this.state.defaultAccount }, callback));
-      showNotification(`Transaction successful \r\n <a target='_blank' href='${explorer + 'tx/' + transaction}'> ${transaction}<a>`, 'success');
+      transaction = await Bb.fromCallback(callback =>
+        this.instance.useFaucet({ from: this.state.defaultAccount }, callback)
+      );
+      showNotification(
+        `Transaction successful \r\n <a target='_blank' href='${explorer +
+          'tx/' +
+          transaction}'> ${transaction}<a>`,
+        'success'
+      );
       await this.restartInterval();
     } catch (e) {
       showNotification(`The transaction was unsuccessful.`);
     }
-  }
+  };
 
   async componentDidMount() {
     super.componentDidMount();
@@ -145,74 +165,81 @@ class Faucet extends MetamaskComponent {
     const { web3Service } = this.props;
 
     return (
-      <div className='container subsection'>
-        <h1 className='view-title'>DAY Token Faucet</h1>
-        <div className='card card-body'>
-          <div id='faucet' className='tab-content'>
-            <div className='tab-pane active show'>
-
+      <div className="container subsection">
+        <h1 className="view-title">DAY Token Faucet</h1>
+        <div className="card card-body">
+          <div id="faucet" className="tab-content">
+            <div className="tab-pane active show">
               <p>Get test DAY tokens on a testnet of your choice.</p>
 
-              <div className='row'>
-                <div className='col-md-8 offset-md-2'>
-                  <div className='row my-3'>
-                    <div className='col-md-6 text-sm-right'>
+              <div className="row">
+                <div className="col-md-8 offset-md-2">
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
                       <strong>Testnet Network</strong>
                     </div>
                     <div className='col-md-6 text-left'>
-                      {web3Service.network ? web3Service.network.name : <BeatLoader/>}
+                      {web3Service.network ? web3Service.network.name : <BeatLoader />}
                     </div>
                   </div>
 
-                  <div className='row my-3'>
-                    <div className='col-md-6 text-sm-right'>
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
                       <strong>Faucet Address</strong>
                     </div>
-                    <div className='col-md-6 text-left'>
-                      {
-                        this.state.faucetAddress
-                        ? <a href={this.props.web3Service.explorer + 'address/' + this.state.faucetAddress }
-                            target='_blank'
-                            rel='noopener noreferrer'>
-                            { this.state.faucetAddress }
-                          </a>
-                        : <BeatLoader/>
-                      }
+                    <div className="col-md-6 text-left">
+                      {this.state.faucetAddress ? (
+                        <a
+                          href={
+                            this.props.web3Service.explorer + 'address/' + this.state.faucetAddress
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {this.state.faucetAddress}
+                        </a>
+                      ) : (
+                        <BeatLoader />
+                      )}
                     </div>
                   </div>
 
-                  <div className='row my-3'>
-                    <div className='col-md-6 text-sm-right'>
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
                       <strong>Faucet Balance</strong>
                     </div>
-                    <div className='col-md-6 text-left'>
-                      {
-                        this.state.faucetBalance > 0
-                        ? this.state.faucetBalance / Eth
-                        : <BeatLoader/>
-                      }
+                    <div className="col-md-6 text-left">
+                      {this.state.faucetBalance > 0 ? (
+                        this.state.faucetBalance / Eth
+                      ) : (
+                        <BeatLoader />
+                      )}
                     </div>
                   </div>
 
-                  <div className='row my-3'>
-                    <div className='col-md-6 text-sm-right'>
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
                       <strong>Your Wallet Address</strong>
                     </div>
-                    <div className='col-md-6 text-left'>
-                      {
-                        this.state.defaultAccount
-                        ? <a href={this.props.web3Service.explorer + 'address/' + this.state.defaultAccount }
-                          target='_blank'
-                          rel='noopener noreferrer'>
-                            { this.state.defaultAccount }
-                          </a>
-                        : <BeatLoader/>
-                      }
+                    <div className="col-md-6 text-left">
+                      {this.state.defaultAccount ? (
+                        <a
+                          href={
+                            this.props.web3Service.explorer + 'address/' + this.state.defaultAccount
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {this.state.defaultAccount}
+                        </a>
+                      ) : (
+                        <BeatLoader />
+                      )}
                     </div>
                   </div>
 
-                  <div className='row my-3'>
-                    <div className='col-md-6 text-sm-right'>
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
                       <strong>Remaining Wait Time</strong>
                     </div>
                     <div className='col-md-6 text-left'>
@@ -221,9 +248,12 @@ class Faucet extends MetamaskComponent {
                   </div>
                 </div>
               </div>
-
             </div>
-            <button className='btn btn-primary pull-right btn-lg' disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens } onClick={this.useFaucet} >
+            <button
+              className="btn btn-primary pull-right btn-lg"
+              disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens}
+              onClick={this.useFaucet}
+            >
               Get Testnet DAY
             </button>
           </div>

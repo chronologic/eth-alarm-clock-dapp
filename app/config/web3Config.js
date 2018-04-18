@@ -41,14 +41,14 @@ const Networks = {
     name: 'Docker',
     endpoint: 'http://localhost:9545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,
-    dayTokenAbi: JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER),
+    dayTokenAbi: process.env.DAY_TOKEN_ABI_DOCKER ? JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER) : '[]',
     dayFaucetAddress: process.env.DAY_FAUCET_ADDRESS_DOCKER,
-    dayFaucetAbi: JSON.parse(process.env.DAY_FAUCET_ABI_DOCKER)
+    dayFaucetAbi: process.env.DAY_FAUCET_ABI_DOCKER ? JSON.parse(process.env.DAY_FAUCET_ABI_DOCKER) : '[]'
   }
 };
 
 const Explorers = {
-  0: '127.0.0.1:7545',//Ganache
+  0: '127.0.0.1:7545', //Ganache
   1: 'https://etherscan.io/',
   3: 'https://ropsten.etherscan.io/',
   4: 'https://rinkeby.etherscan.io/',

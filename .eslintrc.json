@@ -21,7 +21,8 @@
         "keyword-spacing": "error",
         "no-extra-semi": "error",
         "semi": ["error", "always"],
-        "quotes": ["error", "single", { "allowTemplateLiterals": true }]
+        "quotes": ["error", "single", { "allowTemplateLiterals": true }],
+        "jsx-quotes": ["error", "prefer-double"]
     },
     "plugins": ["jest"]
 }
