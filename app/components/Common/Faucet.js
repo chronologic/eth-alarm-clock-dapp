@@ -106,7 +106,7 @@ class Faucet extends MetamaskComponent {
 
     const faucetAbi = web3Service.network.dayFaucetAbi;
     this.instance = web3.eth.contract(faucetAbi).at(this.state.faucetAddress);
-    
+
     this.setState({
       faucetBalance: Number(
         await Bb.fromCallback(callback => this.instance.getTokensBalance(callback))
