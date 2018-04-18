@@ -163,6 +163,20 @@ class Faucet extends MetamaskComponent {
 
   render() {
     const { web3Service } = this.props;
+    const explorer = web3Service.explorer;
+
+    const hrefProps = {
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    };
+
+    const faucetAddressProps = hrefProps;
+    const yourAddressProps = hrefProps;
+
+    if (explorer) {
+      faucetAddressProps.href = explorer + 'address/' + this.state.faucetAddress;
+      yourAddressProps.href = explorer + 'address/' + this.state.defaultAccount;
+    }
 
     return (
       <div className="container subsection">
@@ -189,13 +203,7 @@ class Faucet extends MetamaskComponent {
                     </div>
                     <div className="col-md-6 text-left">
                       {this.state.faucetAddress ? (
-                        <a
-                          href={
-                            this.props.web3Service.explorer + 'address/' + this.state.faucetAddress
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a {...faucetAddressProps}>
                           {this.state.faucetAddress}
                         </a>
                       ) : (
@@ -223,13 +231,7 @@ class Faucet extends MetamaskComponent {
                     </div>
                     <div className="col-md-6 text-left">
                       {this.state.defaultAccount ? (
-                        <a
-                          href={
-                            this.props.web3Service.explorer + 'address/' + this.state.defaultAccount
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a {...yourAddressProps}>
                           {this.state.defaultAccount}
                         </a>
                       ) : (
