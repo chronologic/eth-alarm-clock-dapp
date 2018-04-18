@@ -25,7 +25,8 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
   EmptyToAddress: 'Please enter recipient address.',
   CallGasTooHigh: 'Call gas is too high.',
   ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.',
-  InsufficientEndowment: 'Automatically calculated endowment is insufficient. Please contact developers.',
+  InsufficientEndowment:
+    'Automatically calculated endowment is insufficient. Please contact developers.',
   ReservedWindowBiggerThanExecutionWindow: 'Reserved window is bigger than execution window.',
   InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
 };
@@ -41,6 +42,28 @@ export class TransactionStore {
 
   @observable filter = '';
 
+  constructor(eac, web3, cache) {
+    this._web3 = web3;
+    this._eac = eac;
+    this._cache = cache;
+
+    this.setup();
+  }
+
+  get allTransactions() {
+    return this._cache.allTransactions;
+  }
+
+  // Returns an array of only the addresses of all transactions
+  get allTransactionsAddresses() {
+    return this._cache.allTransactionsAddresses;
+  }
+
+  get requestFactoryStartBlock() {
+    const { netId } = this._web3;
+    return requestFactoryStartBlocks[netId] || 0;
+  }
+
   // Returns an array of transactions based on the current
   // state of the filter variable
   @observable
@@ -54,8 +77,8 @@ export class TransactionStore {
     }
 
     if (this._cache.allTransactionsAddresses) {
-      addresses = this._cache.allTransactionsAddresses.filter(
-        address => matchesFilter.test(address)
+      addresses = this._cache.allTransactionsAddresses.filter(address =>
+        matchesFilter.test(address)
       );
       for (let address of addresses) {
         const transaction = await this._cache.fetchCachedTransactionByAddress(address);
@@ -70,35 +93,12 @@ export class TransactionStore {
     return [];
   }
 
-
-  get allTransactions () {
-    return this._cache.allTransactions;
-  }
-
-  // Returns an array of only the addresses of all transactions
-  get allTransactionsAddresses() {
-    return this._cache.allTransactionsAddresses;
-  }
-
-  get requestFactoryStartBlock () {
-    const { netId } = this._web3;
-    return requestFactoryStartBlocks[netId] || 0;
-  }
-
-  constructor(eac, web3, cache) {
-    this._web3 = web3;
-    this._eac = eac;
-    this._cache = cache;
-
-    this.setup();
-  }
-
   async setup() {
     if (this.isSetup) {
       return;
     }
 
-    this._eacScheduler = this._eacScheduler || await this._eac.scheduler();
+    this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
     await this._web3.awaitInitialized();
 
@@ -111,12 +111,12 @@ export class TransactionStore {
   async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
     await this.setup();
 
-    startBlock = startBlock || this.requestFactoryStartBlock;//allow all components preload
-    return await this._cache.getTransactions({ startBlock , endBlock }, cached);
+    startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
+    return await this._cache.getTransactions({ startBlock, endBlock }, cached);
   }
 
   async getAllTransactions(cached) {
-    const transactions =  await this._cache.getAllTransactions(cached);
+    const transactions = await this._cache.getAllTransactions(cached);
 
     for (let transaction of transactions) {
       transaction.status = await this.getTxStatus(transaction);
@@ -134,7 +134,7 @@ export class TransactionStore {
     return addresses;
   }
 
-  async queryTransactions( { transactions, offset, limit, resolved, resolveAll } ) {
+  async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
     const processed = [];
     let total = 0;
 
@@ -143,10 +143,9 @@ export class TransactionStore {
       transactions = transactions.slice(offset, offset + limit);
     }
 
-    await this._cache.queryTransactions (transactions);
+    await this._cache.queryTransactions(transactions);
 
     for (let transaction of transactions) {
-
       const isResolved = await this.isTransactionResolved(transaction);
 
       if (isResolved === resolved) {
@@ -166,17 +165,24 @@ export class TransactionStore {
     };
   }
 
-  async getTransactionsFiltered( { startBlock, endBlock, limit = DEFAULT_LIMIT, offset = 0, resolved, resolveAll = false } ) {
-    let transactions = await this.getTransactions( { startBlock, endBlock } );
+  async getTransactionsFiltered({
+    startBlock,
+    endBlock,
+    limit = DEFAULT_LIMIT,
+    offset = 0,
+    resolved,
+    resolveAll = false
+  }) {
+    let transactions = await this.getTransactions({ startBlock, endBlock });
 
-    if (typeof(resolved) !== 'undefined' && resolved !== null) {
-      return this.queryTransactions( {
+    if (typeof resolved !== 'undefined' && resolved !== null) {
+      return this.queryTransactions({
         transactions,
         offset,
         limit,
         resolved,
         resolveAll
-      } );
+      });
     }
 
     const total = transactions.length;
@@ -193,7 +199,9 @@ export class TransactionStore {
     let status = TRANSACTION_STATUS.SCHEDULED;
 
     if (transaction.wasCalled) {
-      status = transaction.data.meta.wasSuccessful ? TRANSACTION_STATUS.EXECUTED : TRANSACTION_STATUS.FAILED;
+      status = transaction.data.meta.wasSuccessful
+        ? TRANSACTION_STATUS.EXECUTED
+        : TRANSACTION_STATUS.FAILED;
     }
 
     if (transaction.isCancelled) {
@@ -232,11 +240,24 @@ export class TransactionStore {
     return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
-  async cancel(transaction,txParameters) {
+  async cancel(transaction, txParameters) {
     return await transaction.cancel(txParameters);
   }
 
-  async validateRequestParams(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, isTimestamp, endowment) {
+  async validateRequestParams(
+    toAddress,
+    callData = '',
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    fee,
+    payment,
+    requiredDeposit,
+    isTimestamp,
+    endowment
+  ) {
     const requestFactory = await this._eac.requestFactory();
     const temporalUnit = isTimestamp ? 2 : 1;
     const freezePeriod = isTimestamp ? 3 * 60 : 10; // 3 minutes or 10 blocks
@@ -246,11 +267,7 @@ export class TransactionStore {
     const fromAddress = this._web3.eth.defaultAccount;
 
     const serializedParams = [
-      [
-        fromAddress,
-        feeRecipient,
-        toAddress
-      ],
+      [fromAddress, feeRecipient, toAddress],
       [
         fee,
         payment,
@@ -288,7 +305,20 @@ export class TransactionStore {
     };
   }
 
-  async schedule(toAddress, callData = '', callGas, callValue, windowSize, windowStart, gasPrice, fee, payment, requiredDeposit, waitForMined, isTimestamp) {
+  async schedule(
+    toAddress,
+    callData = '',
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    fee,
+    payment,
+    requiredDeposit,
+    waitForMined,
+    isTimestamp
+  ) {
     const endowment = this._eac.calcEndowment(callGas, callValue, gasPrice, fee, payment);
 
     const { paramsValid, errors } = await this.validateRequestParams(
@@ -307,7 +337,9 @@ export class TransactionStore {
     );
 
     if (!paramsValid && errors.length > 0) {
-      errors.forEach(error => error && showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[error], 'danger', 4000));
+      errors.forEach(
+        error => error && showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[error], 'danger', 4000)
+      );
 
       return;
     }

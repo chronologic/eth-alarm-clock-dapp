@@ -5,24 +5,24 @@ const Networks = {
   },
   1: {
     name: 'Mainnet',
-    endpoint: 'https://mainnet.infura.io'
+    endpoint: 'https://mainnet.infura.io/6M6ROam68gmdp9OeNmym'
   },
   3: {
     name: 'Ropsten',
-    endpoint: 'https://ropsten.infura.io'
+    endpoint: 'https://ropsten.infura.io/6M6ROam68gmdp9OeNmym'
   },
   4: {
     name: 'Rinkeby',
-    endpoint: 'https://rinkeby.infura.io'
+    endpoint: 'https://rinkeby.infura.io/6M6ROam68gmdp9OeNmym'
   },
   42: {
     name: 'Kovan',
-    endpoint: 'https://kovan.infura.io'
+    endpoint: 'https://kovan.infura.io/6M6ROam68gmdp9OeNmym'
   }
 };
 
 const Explorers = {
-  0: '127.0.0.1:7545',//Ganache
+  0: '127.0.0.1:7545', //Ganache
   1: 'https://etherscan.io/',
   3: 'https://ropsten.etherscan.io/',
   4: 'https://rinkeby.etherscan.io/',
