@@ -13,8 +13,7 @@ try {
 }
 
 const contracts = {};
-
-let networkId = null;
+const networkId = '1001';
 
 fs.readdir(artifactsDir, (err, files) => {
   files.forEach(file => {
@@ -24,10 +23,6 @@ fs.readdir(artifactsDir, (err, files) => {
     const abi = parsedContent.abi;
     const contractName = uncapitalize(file.split('.json')[0]);
     const outputFilePath = path.join(dest, file);
-
-    if (!networkId) {
-      networkId = Object.keys(parsedContent.networks)[0];
-    }
 
     if (parsedContent.networks[networkId] && contractName !== 'migrations') {
       const address = parsedContent.networks[networkId].address;

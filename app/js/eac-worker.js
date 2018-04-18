@@ -33,7 +33,6 @@ class EacWorker {
     }
 
     const web3 = new Web3(provider);
-
     const eac = EAC(web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);

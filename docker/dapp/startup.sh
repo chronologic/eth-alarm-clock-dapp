@@ -2,7 +2,7 @@
 echo "Copying the necessary files..."
 rm -rf node_modules/eac.js-lib/lib/build/abi/*
 rm -rf node_modules/eac.js-lib/lib/build/contracts/*
-cp -v ../shared/eac_contracts.json node_modules/eac.js-lib/lib/assets/tester.json
+cp -v ../shared/eac_contracts.json node_modules/eac.js-lib/lib/assets/docker.json
 cp -v ../shared/abi/* node_modules/eac.js-lib/lib/build/abi/
 
 echo "Setting the env variables..."

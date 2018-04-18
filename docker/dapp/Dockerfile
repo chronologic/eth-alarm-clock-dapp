@@ -1,6 +1,6 @@
 FROM node:carbon
 
-RUN apt update && apt install jq
+RUN apt update && apt install jq nano
 
 COPY ./docker/dapp/startup.sh /startup.sh
 RUN chmod 755 /startup.sh

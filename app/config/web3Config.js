@@ -39,7 +39,7 @@ const Networks = {
   1001: {
     id: 1001,
     name: 'Docker',
-    endpoint: 'http://ganache:8545',
+    endpoint: 'http://localhost:9545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,
     dayTokenAbi: JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER),
     dayFaucetAddress: process.env.DAY_FAUCET_ADDRESS_DOCKER,
