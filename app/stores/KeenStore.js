@@ -52,9 +52,9 @@ export class KeenStore {
     this.pollActiveTimeNodesCount();
   }
 
-  async awaitKeenInitialized () {
+  async awaitKeenInitialized() {
     if (!this.networkId || !this.analysisClient || !this.trackingClient) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitKeenInitialized());
         }, 500);
@@ -112,6 +112,9 @@ export class KeenStore {
   async pollActiveTimeNodesCount() {
     await this.getActiveTimeNodesCount(this.networkId);
 
-    setInterval(() => this.getActiveTimeNodesCount(this.networkId), ACTIVE_TIMENODES_POLLING_INTERVAL);
+    setInterval(
+      () => this.getActiveTimeNodesCount(this.networkId),
+      ACTIVE_TIMENODES_POLLING_INTERVAL
+    );
   }
 }

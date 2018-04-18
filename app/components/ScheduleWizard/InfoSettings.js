@@ -330,7 +330,9 @@ class InfoSettings extends AbstractSetting {
                 <label>Value/Amount to Send</label>
                 <input
                   type="number"
-                  placeholder={`Enter Value/Amount ${scheduleStore.tokenSymbol ? 'in ' + scheduleStore.tokenSymbol : ''}`}
+                  placeholder={`Enter Value/Amount ${
+                    scheduleStore.tokenSymbol ? 'in ' + scheduleStore.tokenSymbol : ''
+                  }`}
                   value={scheduleStore.tokenToSend}
                   onBlur={this.validate('tokenToSend')}
                   onChange={this.onChangeCheck('tokenToSend')}
