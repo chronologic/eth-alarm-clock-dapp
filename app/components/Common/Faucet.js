@@ -178,7 +178,7 @@ class Faucet extends MetamaskComponent {
                     <div className="col-md-6 text-sm-right">
                       <strong>Testnet Network</strong>
                     </div>
-                    <div className='col-md-6 text-left'>
+                    <div className="col-md-6 text-left">
                       {web3Service.network ? web3Service.network.name : <BeatLoader />}
                     </div>
                   </div>
@@ -242,8 +242,8 @@ class Faucet extends MetamaskComponent {
                     <div className="col-md-6 text-sm-right">
                       <strong>Remaining Wait Time</strong>
                     </div>
-                    <div className='col-md-6 text-left'>
-                      {this.state.lastUsed >=0 ? this.printWaitTime : <BeatLoader/>}
+                    <div className="col-md-6 text-left">
+                      {this.state.lastUsed >=0 ? this.printWaitTime : <BeatLoader />}
                     </div>
                   </div>
                 </div>
