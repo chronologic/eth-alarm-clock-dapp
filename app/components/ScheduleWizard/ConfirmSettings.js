@@ -111,7 +111,7 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-        {errMsg.length > 0 && <Alert {...{ msg: 'in tabs: ' + errMsg.join(',') }} />}
+        {errMsg.length > 0 && <Alert {...{ msg: 'in tabs: ' + errMsg.join(','), close: false }} />}
         {scheduleStore.isTokenTransfer && (
           <Alert
             {...{
