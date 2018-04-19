@@ -1,6 +1,6 @@
-FROM node:carbon
+FROM node:carbon-alpine
 
-RUN apt update && apt install jq nano
+RUN apk update && apk add --no-cache bash git jq nano python alpine-sdk
 
 COPY ./docker/dapp/startup.sh /startup.sh
 RUN chmod 755 /startup.sh

@@ -1,9 +1,9 @@
-FROM node:8.0.0-alpine
+FROM node:carbon-alpine
 
 COPY ./docker/eac_protocol/startup.sh /startup.sh
 RUN chmod 755 /startup.sh
 
-RUN apk update && apk upgrade && apk add --no-cache bash git
+RUN apk update && apk add --no-cache bash git
 
 RUN npm install -g truffle@4.0.7
 
