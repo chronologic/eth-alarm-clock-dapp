@@ -58,6 +58,23 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
+          <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
+            <span className="left-separator d-lg"></span>
+            <span className="active-timenodes" data-toggle="dropdown">
+              <i className="fa fa-file-alt ml-2" />&nbsp;
+            </span>
+            <div class="dropdown-menu notification-toggle" role="menu" aria-labelledby="notification-center">
+              <div class="notification-panel">
+                <div class="notification-item  clearfix">
+                  <div class="heading">
+                    <span class="pull-left">Timestamp Sceduler</span>
+                    <a href="#" class="pull-right">
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="d-flex">
           <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true);}}>
