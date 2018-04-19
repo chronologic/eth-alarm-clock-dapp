@@ -35,7 +35,7 @@ export class KeenStore {
   async initialize() {
     await this._web3Service.awaitInitialized();
 
-    this.networkId = this._web3Service.netId;
+    this.networkId = this._web3Service.network.id;
 
     this.analysisClient = new KeenAnalysis({
       projectId: this.projectId,
