@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import { BeatLoader } from 'react-spinners';
-import dayFaucetABI from '../../abi/dayFaucetABI';
 import { showNotification } from '../../services/notification';
 import MetamaskComponent from '../Common/MetamaskComponent';
 
@@ -94,7 +93,7 @@ class Faucet extends MetamaskComponent {
     const { accounts } = web3Service;
     this.setState({
       defaultAccount: accounts[0],
-      faucetAddress: JSON.parse(process.env.DAY_FAUCET_ADDRESS)[web3Service.netId]
+      faucetAddress: web3Service.network.dayFaucetAddress
     });
 
     if (!this.isWeb3Usable || !this.state.faucetAddress) {
@@ -104,7 +103,10 @@ class Faucet extends MetamaskComponent {
     const {
       web3Service: { web3 }
     } = this.props;
-    this.instance = web3.eth.contract(dayFaucetABI).at(this.state.faucetAddress);
+
+    const faucetAbi = web3Service.network.dayFaucetAbi;
+    this.instance = web3.eth.contract(faucetAbi).at(this.state.faucetAddress);
+
     this.setState({
       faucetBalance: Number(
         await Bb.fromCallback(callback => this.instance.getTokensBalance(callback))
@@ -144,7 +146,7 @@ class Faucet extends MetamaskComponent {
       );
       await this.restartInterval();
     } catch (e) {
-      showNotification(`Transaction Failed !!!`);
+      showNotification(`The transaction was unsuccessful.`);
     }
   };
 
@@ -161,6 +163,20 @@ class Faucet extends MetamaskComponent {
 
   render() {
     const { web3Service } = this.props;
+    const explorer = web3Service.explorer;
+
+    const hrefProps = {
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    };
+
+    const faucetAddressProps = hrefProps;
+    const yourAddressProps = hrefProps;
+
+    if (explorer) {
+      faucetAddressProps.href = explorer + 'address/' + this.state.faucetAddress;
+      yourAddressProps.href = explorer + 'address/' + this.state.defaultAccount;
+    }
 
     return (
       <div className="container subsection">
@@ -177,7 +193,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Testnet Network</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {(this.state.loaded || web3Service.network) ? web3Service.network : <BeatLoader />}
+                      {(this.state.loaded || web3Service.network) ? web3Service.network.name : <BeatLoader />}
                     </div>
                   </div>
 
@@ -187,13 +203,7 @@ class Faucet extends MetamaskComponent {
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || this.state.faucetAddress) ? (
-                        <a
-                          href={
-                            this.props.web3Service.explorer + 'address/' + this.state.faucetAddress
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a {...faucetAddressProps}>
                           {this.state.faucetAddress}
                         </a>
                       ) : (
@@ -221,13 +231,7 @@ class Faucet extends MetamaskComponent {
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || this.state.defaultAccount) ? (
-                        <a
-                          href={
-                            this.props.web3Service.explorer + 'address/' + this.state.defaultAccount
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a {...yourAddressProps}>
                           {this.state.defaultAccount}
                         </a>
                       ) : (

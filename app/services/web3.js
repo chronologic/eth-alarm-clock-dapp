@@ -7,12 +7,13 @@ import standardTokenAbi from '../abi/standardToken';
 let instance = null;
 
 export default class Web3Service {
+
   web3 = null;
   tokenInstance = null;
   @observable initialized = false;
   @observable connectedToMetaMask = null;
   @observable accounts = null;
-  @observable netId = null;
+  @observable network = null;
   @observable explorer = null;
 
   constructor(props) {
@@ -236,8 +237,8 @@ export default class Web3Service {
 
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
     runInAction(() => {
-      this.netId = netId;
-      this.explorer = Explorers[this.netId];
+      this.network = Networks[netId];
+      this.explorer = Explorers[netId];
     });
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
@@ -269,11 +270,6 @@ export default class Web3Service {
       this.accounts = accounts;
       this.web3.eth.defaultAccount = this.accounts[0];
     }
-  }
-
-  get network() {
-    if (typeof Networks[this.netId] === 'undefined') return Networks[0].name;
-    else return Networks[this.netId].name;
   }
 
   humanizeCurrencyDisplay(priceInWei) {
