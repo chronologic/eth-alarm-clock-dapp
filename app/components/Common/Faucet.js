@@ -193,7 +193,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Testnet Network</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {web3Service.network ? web3Service.network.name : <BeatLoader />}
+                      {(this.state.loaded || web3Service.network) ? web3Service.network.name : <BeatLoader />}
                     </div>
                   </div>
 
@@ -202,7 +202,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Faucet Address</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {this.state.faucetAddress ? (
+                      {(this.state.loaded || this.state.faucetAddress) ? (
                         <a {...faucetAddressProps}>
                           {this.state.faucetAddress}
                         </a>
@@ -217,8 +217,8 @@ class Faucet extends MetamaskComponent {
                       <strong>Faucet Balance</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {this.state.faucetBalance > 0 ? (
-                        this.state.faucetBalance / Eth
+                      {(this.state.loaded || (this.state.faucetAddress && typeof this.state.faucetBalance !== 'undefined')) ? (
+                        this.state.faucetBalance > 0 ? this.state.faucetBalance/ Eth : 0
                       ) : (
                         <BeatLoader />
                       )}
@@ -230,7 +230,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Your Wallet Address</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {this.state.defaultAccount ? (
+                      {(this.state.loaded || this.state.defaultAccount) ? (
                         <a {...yourAddressProps}>
                           {this.state.defaultAccount}
                         </a>
@@ -245,7 +245,7 @@ class Faucet extends MetamaskComponent {
                       <strong>Remaining Wait Time</strong>
                     </div>
                     <div className="col-md-6 text-left">
-                      {this.state.lastUsed >=0 ? this.printWaitTime : <BeatLoader />}
+                      {(this.state.loaded || (this.state.defaultAccount && typeof this.state.lastUsed !== 'undefined')) ? this.printWaitTime : <BeatLoader />}
                     </div>
                   </div>
                 </div>
