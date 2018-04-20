@@ -19,10 +19,16 @@ describe('Header', () => {
     });
 
     const keenStore = {};
+    const eacService = {
+      getActiveContracts: () => {
+        return {};
+      }
+    };
 
     const injectables = {
       keenStore,
-      web3Service
+      web3Service,
+      eacService
     };
 
     let mockedRender = renderer.create(
