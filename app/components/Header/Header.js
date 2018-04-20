@@ -75,7 +75,6 @@ class Header extends Component {
             <div className="dropdown-menu notification-toggle" role="menu" aria-labelledby="notification-center">
               <div className="notification-panel">
                 <div className="scroll-wrapper notification-body scrollable">
-
                     <div className="notification-body d-block scrollable scroll-content scroll-visible">
                       <div className="notification-item clearfix">
                         <div className="heading row">
@@ -107,7 +106,6 @@ class Header extends Component {
                             }
                           </div>
                         </div>
-
                       <div className="notification-item clearfix">
                         <div className="heading row">
                           <span className="d-block text-uppercase font-weight-bold text-dark">Libraries</span>
