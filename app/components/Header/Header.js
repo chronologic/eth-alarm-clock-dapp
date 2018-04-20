@@ -83,25 +83,25 @@ class Header extends Component {
                       </div>
                         <div className="notification-item clearfix">
                           <div className="heading row">
-                            <span className="d-block text-uppercase font-weight-bold text-dark">Schedulers</span>
+                            <div className="d-block text-uppercase font-weight-bold text-dark">Schedulers</div>
                             {this.state.eacContracts.timestampScheduler &&
                               <div className="content">
-                                <span className="d-block">Time: </span>
-                                <span className="d-block text-ellipsis">
+                                <div className="d-block">Time: </div>
+                                <div className="d-block text-ellipsis">
                                   <a href={`${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
                                     {this.state.eacContracts.timestampScheduler}
                                   </a>
-                                </span>
+                                </div>
                               </div>
                             }
                             {this.state.eacContracts.blockScheduler &&
                           <div className="content">
-                                <span className="d-block">Block: </span>
-                                <span className="d-block text-ellipsis">
+                                <div className="d-block">Block: </div>
+                                <div className="d-block text-ellipsis">
                                   <a href={`${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
                                     {this.state.eacContracts.blockScheduler}
                                   </a>
-                                </span>
+                                </div>
                               </div>
                             }
                           </div>
