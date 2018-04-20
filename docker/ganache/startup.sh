@@ -7,7 +7,7 @@ mkdir db
 
  # Can be improved, for now it relies on contracts to be deployed within 60 sec
 echo "Running a blockchain with automine to deploy contracts faster..."
-timeout 360 node ./build/cli.node.js -i $NETWORK_ID -m "$MNEMONIC" --db ./db/
+timeout 60 node ./build/cli.node.js -i $NETWORK_ID -m "$MNEMONIC" --db ./db/
 echo "Killed automine ganache."
 
 echo "Running ganache with blockTime of ${BLOCK_TIME} sec..."
