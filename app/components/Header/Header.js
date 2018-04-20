@@ -88,7 +88,7 @@ class Header extends Component {
                               <div className="content">
                                 <div className="d-block">Time: </div>
                                 <div className="d-block text-ellipsis">
-                                  <a href={ web3Service.explore ? `${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  <a href={ web3Service.explorer ? `${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
                                     {this.state.eacContracts.timestampScheduler}
                                   </a>
                                 </div>
@@ -98,7 +98,7 @@ class Header extends Component {
                           <div className="content">
                                 <div className="d-block">Block: </div>
                                 <div className="d-block text-ellipsis">
-                                  <a href={ web3Service.explore ? `${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  <a href={ web3Service.explorer ? `${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
                                     {this.state.eacContracts.blockScheduler}
                                   </a>
                                 </div>
@@ -114,7 +114,7 @@ class Header extends Component {
                               <div className="content" key={found}>
                               <div className="d-block">{found} </div>
                                 <div className="d-block text-ellipsis">
-                                  <a href={ web3Service.explore ? `${web3Service.explorer}/address/${this.state.eacContracts[found]}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  <a href={ web3Service.explorer ? `${web3Service.explorer}/address/${this.state.eacContracts[found]}` : '' } className="text-complete" target="_blank" rel="noopener noreferrer">
                                     {this.state.eacContracts[found]}
                                   </a>
                                 </div>
