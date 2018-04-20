@@ -3,7 +3,8 @@ MNEMONIC='candy maple cake sugar pudding cream honey rich smooth crumble sweet t
 NETWORK_ID='1001'
 BLOCK_TIME='15'
 
-mkdir db
+# Clean the db dir
+rm -rf db && mkdir db
 
  # Can be improved, for now it relies on contracts to be deployed within 60 sec
 echo "Running a blockchain with automine to deploy contracts faster..."
