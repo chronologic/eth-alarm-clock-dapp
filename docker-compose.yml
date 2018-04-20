@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  ganache:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/ganache/Dockerfile
+    entrypoint: sh /startup.sh
+    ports:
+      - 9545:8545
+
+  eac_protocol:
+    build:
+      context: .
+      dockerfile: ./docker/eac_protocol/Dockerfile
+    command: sh /startup.sh
+    depends_on:
+      - ganache
+    volumes:
+      - app-volume:/usr/src/shared/
+
+  faucet_day:
+    build:
+      context: .
+      dockerfile: ./docker/faucet_day/Dockerfile
+    command: sh /startup.sh
+    depends_on:
+      - ganache
+    volumes:
+      - app-volume:/usr/src/shared/
+
+  dapp:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/dapp/Dockerfile
+    command: bash -c "echo 'Waiting contracts deployment...' && while ping -c1 eac_protocol &>/dev/null; do sleep 10; done && sh /startup.sh"
+    ports:
+      - 8080:8080
+    depends_on:
+      - ganache
+      - eac_protocol
+      - faucet_day
+    volumes:
+      - app-volume:/usr/src/shared/
+      - .:/usr/src/app
+      - /usr/src/app/node_modules/
+
+volumes:
+  app-volume:
+  node_modules:

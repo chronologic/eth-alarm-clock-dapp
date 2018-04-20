@@ -4,7 +4,6 @@ import { inject, observer } from 'mobx-react';
 import MetamaskComponent from '../Common/MetamaskComponent';
 import ScheduleWizard from './ScheduleWizard';
 
-
 @inject('web3Service')
 @observer
 export class ScheduleRoute extends MetamaskComponent {

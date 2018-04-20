@@ -1,11 +1,10 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // Extracts the SCSS to a file
-const extractSass = new ExtractTextPlugin({
+const extractSASS = new MiniCssExtractPlugin({
   filename: './main.css'
 });
 
@@ -58,11 +57,6 @@ module.exports = {
       },
 
       {
-        test: /\.json$/,
-        use: 'json-loader'
-      },
-
-      {
         test: /\.js[x]?$/,
         exclude: /(node_modules|bower_components)/,
         include: path.resolve(__dirname, '../app'),
@@ -95,7 +89,7 @@ module.exports = {
       Popper: ['popper.js', 'default']
     }),
 
-    extractSass
+    extractSASS
   ]
 
 };

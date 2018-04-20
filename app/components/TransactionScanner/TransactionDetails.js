@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
+import Alert from '../Common/Alert';
 import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
@@ -12,7 +13,9 @@ const INITIAL_STATE = {
   isTimestamp: false,
   status: '',
   transaction: {},
-  executedAt: ''
+  executedAt: '',
+  token: {},
+  isTokenTransfer: false
 };
 
 @inject('transactionStore')
@@ -28,6 +31,7 @@ class TransactionDetails extends ScrollbarComponent {
 
     this.state = INITIAL_STATE;
     this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
   }
 
   getExecutedEvents(requestLib) {
@@ -59,14 +63,46 @@ class TransactionDetails extends ScrollbarComponent {
       executedAt = events[0].transactionHash;
     }
 
-    this.setState( {
+    this.setState({
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
       status: await transactionStore.getTxStatus(transaction),
       transaction,
       executedAt,
       isFrozen: ''
-    } );
+    });
+
+    this.getFrozenStatus();
+    this.testToken();
+  }
+
+  async testToken() {
+    const { web3Service } = this.props;
+    const { address, toAddress } = this.state.transaction;
+
+    let tokenTransferapproved;
+    const isTokenTransfer = web3Service.isTokenTransferTransaction(this.state.callData);
+
+    if (isTokenTransfer) {
+      await this.fetchTokenTransferInfo();
+
+      const info = await web3Service.getTokenTransferInfoFromData(this.state.callData);
+      this.setState({ token: Object.assign(this.state.token, { info }) });
+
+      tokenTransferapproved = await web3Service.isTokenTransferApproved(
+        toAddress,
+        address,
+        this.state.token.info.value
+      );
+    }
+    this.setState({ isTokenTransfer, tokenTransferapproved });
+  }
+
+  async fetchTokenTransferInfo() {
+    const { web3Service } = this.props;
+    const { toAddress } = this.state.transaction;
+    const tokenDetails = await web3Service.fetchTokenDetails(toAddress);
+    this.setState({ token: tokenDetails });
   }
 
   async getFrozenStatus() {
@@ -76,7 +112,7 @@ class TransactionDetails extends ScrollbarComponent {
       return;
     }
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
-    this.setState( { isFrozen: isFrozen || transaction.isCancelled } );
+    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
   async cancelTransaction() {
@@ -98,7 +134,32 @@ class TransactionDetails extends ScrollbarComponent {
       showNotification('Action cancelled by the user.', 'danger', 4000);
       this.cancelBtn.innerHTML = 'Cancel';
     }
+    document.body.className = originalBodyCss;
+  }
 
+  async approveTokenTransfer(event) {
+    const { target } = event;
+    const { web3Service } = this.props;
+    const { address, toAddress } = this.state.transaction;
+
+    const originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+    target.innerHTML = 'Approving...';
+
+    try {
+      const approved = await web3Service.approveTokenTransfer(
+        toAddress,
+        address,
+        this.state.token.info.value
+      );
+      if (approved) {
+        showNotification(`Token Transfer approved: ${approved}`, 'success');
+        this.setState({ tokenTransferapproved: true });
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+      target.innerHTML = 'Approve';
+    }
     document.body.className = originalBodyCss;
   }
 
@@ -106,9 +167,13 @@ class TransactionDetails extends ScrollbarComponent {
     await this.fetchData();
   }
 
-  isOwner( transaction){
+  isOwner(transaction) {
     const { owner } = transaction;
-    const { web3Service: { eth: { accounts } } } = this.props;
+    const {
+      web3Service: {
+        eth: { accounts }
+      }
+    } = this.props;
     const isOwner = accounts[0] == owner;
     return isOwner;
   }
@@ -116,7 +181,6 @@ class TransactionDetails extends ScrollbarComponent {
   componentDidMount() {
     super.componentDidMount();
     this._isMounted = true;
-    this.getFrozenStatus();
   }
 
   componentWillUnmount() {
@@ -131,79 +195,230 @@ class TransactionDetails extends ScrollbarComponent {
 
     if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       return (
-        <div className="text-center mt-5">
-          <button className="btn btn-danger btn-cons"
-            disabled={ isFrozen }
-            onClick={ this.cancelTransaction }
+        <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
+          <button
+            className="btn btn-danger btn-cons"
+            disabled={isFrozen}
+            onClick={this.cancelTransaction}
             type="button"
-            ref={(el) => this.cancelBtn = el}>
+            ref={el => (this.cancelBtn = el)}
+          >
             <span>Cancel</span>
           </button>
-          { isFrozen ? 'The transaction has been frozen.' : '' }
         </div>
       );
     }
 
-    return <div></div>;
+    return <div className="col-6" />;
+  }
+
+  getApproveSection() {
+    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+
+    const isOwner = this.isOwner(transaction);
+
+    if (
+      isOwner &&
+      isTokenTransfer &&
+      !tokenTransferapproved &&
+      (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
+    ) {
+      return (
+        <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
+          <button
+            className="btn btn-defaukt btn-cons"
+            onClick={this.approveTokenTransfer}
+            type="button"
+          >
+            <span>Approve</span>
+          </button>
+        </div>
+      );
+    }
+
+    return <div className="col-6" />;
+  }
+
+  getTokenNotificationSection() {
+    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+
+    const isOwner = this.isOwner(transaction);
+    const approve = (
+      <button className="btn btn-default" onClick={this.approveTokenTransfer}>
+        Approve Now
+      </button>
+    );
+
+    if (
+      isOwner &&
+      isTokenTransfer &&
+      !tokenTransferapproved &&
+      (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
+    ) {
+      return (
+        <Alert
+          {...{
+            type: 'warning',
+            close: false,
+            action: approve,
+            msg: `: This transaction schedules a token transfer. A minimum allowance of ${this.state
+              .token.info.value /
+              10 ** this.state.token.decimals} ${
+              this.state.token.symbol
+            } tokens is required to be approved to complete the scheduling.`
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
+  getInfoMessage() {
+    const { transaction, status, isFrozen } = this.state;
+    const isOwner = this.isOwner(transaction);
+
+    let messages = [];
+    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
+      messages.push('The transaction has been frozen.');
+    }
+    return <div>{messages.map(msg => <div key={msg}>{msg}</div>)}</div>;
   }
 
   render() {
     const { callData, executedAt, isTimestamp, status, transaction } = this.state;
-    const { bounty, callGas, callValue, fee, gasPrice, requiredDeposit, toAddress, windowStart, windowSize } = transaction;
+    const {
+      bounty,
+      callGas,
+      callValue,
+      fee,
+      gasPrice,
+      requiredDeposit,
+      toAddress,
+      windowStart,
+      windowSize
+    } = transaction;
 
     return (
       <div className="tab-pane slide active show">
-
-        <table className="table">
-          <tbody>
-            <tr>
-              <td>Status</td>
-              <td>{status}<span className= { status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : '' } >&nbsp;at <a href={ this.props.web3Service.explorer + 'tx/' + executedAt }  target='_blank' rel='noopener noreferrer'>{ executedAt }</a></span></td>
+        <div>{this.getTokenNotificationSection()}</div>
+        <table className="table d-block">
+          <tbody className="d-block">
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Status</td>
+              <td className="d-inline-block col-7 col-md-9">
+                {status}
+                <span className={status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : ''}>
+                  &nbsp;at{' '}
+                  <a
+                    href={this.props.web3Service.explorer + 'tx/' + executedAt}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {executedAt}
+                  </a>
+                </span>
+              </td>
             </tr>
-            <tr>
-              <td>To Address</td>
-              <td><a href={this.props.web3Service.explorer + 'address/' + toAddress } target='_blank' rel='noopener noreferrer'>{ toAddress }</a></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">
+                {!this.state.isTokenTransfer ? 'To Address' : 'Token Address'}
+              </td>
+              <td className="d-inline-block col-7 col-md-9">
+                <a
+                  href={this.props.web3Service.explorer + 'address/' + toAddress}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {toAddress}
+                </a>
+              </td>
             </tr>
-            <tr>
-              <td>Value/Amount</td>
-              <td><ValueDisplay priceInWei= { callValue } /></td>
+            {this.state.isTokenTransfer && (
+              <tr className="row">
+                <td className="d-inline-block col-5 col-md-3">To Address</td>
+                <td className="d-inline-block col-7 col-md-9">
+                  <a
+                    href={
+                      this.props.web3Service.explorer + 'address/' + this.state.token.info.sender
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {this.state.token.info.sender}
+                  </a>
+                </td>
+              </tr>
+            )}
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Value/Amount</td>
+              <td className="d-inline-block col-7 col-md-9">
+                {!this.state.isTokenTransfer ? (
+                  <ValueDisplay priceInWei={callValue} />
+                ) : (
+                  `${this.state.token.info.value / 10 ** this.state.token.decimals} ${
+                    this.state.token.symbol
+                  }`
+                )}
+              </td>
             </tr>
-            <tr>
-              <td>Data</td>
-              <td>{callData}</td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Data</td>
+              <td className="d-inline-block col-7 col-md-9" title={callData}>
+                {callData}
+              </td>
             </tr>
-            <tr>
-              <td>{ isTimestamp ? 'Time' : 'Block' }</td>
-              <td><BlockOrTimeDisplay model= { windowStart } isTimestamp= { isTimestamp } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">{isTimestamp ? 'Time' : 'Block'}</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <BlockOrTimeDisplay model={windowStart} isTimestamp={isTimestamp} />
+              </td>
             </tr>
-            <tr>
-              <td>Window Size</td>
-              <td><BlockOrTimeDisplay model= { windowSize } isTimestamp= { isTimestamp } duration= { true } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Window Size</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <BlockOrTimeDisplay model={windowSize} isTimestamp={isTimestamp} duration={true} />
+              </td>
             </tr>
-            <tr>
-              <td>Gas Amount</td>
-              <td> { callGas && callGas.toFixed() } </td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Gas Amount</td>
+              <td className="d-inline-block col-7 col-md-9"> {callGas && callGas.toFixed()} </td>
             </tr>
-            <tr>
-              <td>Gas Price</td>
-              <td><ValueDisplay priceInWei= { gasPrice } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Gas Price</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <ValueDisplay priceInWei={gasPrice} />
+              </td>
             </tr>
-            <tr>
-              <td>Time Bounty</td>
-              <td><ValueDisplay priceInWei= { bounty } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Time Bounty</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <ValueDisplay priceInWei={bounty} />
+              </td>
             </tr>
-            <tr>
-              <td>Fee</td>
-              <td><ValueDisplay priceInWei= { fee } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Fee</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <ValueDisplay priceInWei={fee} />
+              </td>
             </tr>
-            <tr>
-              <td>Deposit</td>
-              <td><ValueDisplay priceInWei= { requiredDeposit } /></td>
+            <tr className="row">
+              <td className="d-inline-block col-5 col-md-3">Deposit</td>
+              <td className="d-inline-block col-7 col-md-9">
+                <ValueDisplay priceInWei={requiredDeposit} />
+              </td>
             </tr>
           </tbody>
         </table>
-
-        {this.getCancelSection()}
+        <div className="row">
+          <div className="col-2 col-sm-4 col-md-6 col-lg-8" />
+          <div className="col-10 col-sm-8 col-md-6 col-lg-4">
+            <div className="row">
+              {this.getApproveSection()}
+              {this.getCancelSection()}
+            </div>
+          </div>
+          <div className="col-12">{this.getInfoMessage()}</div>
+        </div>
       </div>
     );
   }
