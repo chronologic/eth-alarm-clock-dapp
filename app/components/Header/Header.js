@@ -74,67 +74,77 @@ class Header extends Component {
             </span>
             <div className="dropdown-menu notification-toggle" role="menu" aria-labelledby="notification-center">
               <div className="notification-panel">
-                <div className="notification-body d-block scrollable scroll-content scroll-visible">
-                  {this.state.eacContracts.timestampScheduler &&
-                    <div className="notification-item clearfix">
-                      <div className="heading row">
-                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Timestamp Sceduler: </span>
-                      <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
-                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                            {this.state.eacContracts.timestampScheduler}
-                          </a>
-                        </span>
+                <div className="scroll-wrapper notification-body scrollable">
+
+                    <div className="notification-body d-block scrollable scroll-content scroll-visible">
+                      <div className="notification-item clearfix">
+                        <div className="heading row">
+                        <span className="d-block text-capitalize font-weight-bold text-dark">Ethereum Alarm Clock contracts </span>
+                        </div>
+                      </div>
+                      
+                        <div className="notification-item clearfix">
+                          <div className="heading row">
+                            <span className="d-block text-capitalize font-weight-bold text-dark">Schedulers - </span>
+                            {this.state.eacContracts.timestampScheduler &&
+                              <div className="content">
+                                <span className="d-block">Time: </span>
+                                <span className="d-block text-ellipsis">
+                                  <a href={`${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                    {this.state.eacContracts.timestampScheduler}
+                                  </a>
+                                </span>
+                              </div>
+                            }
+                            {this.state.eacContracts.blockScheduler &&
+                          <div className="content">
+                                <span className="d-block">Block: </span>
+                                <span className="d-block text-ellipsis">
+                                  <a href={`${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                    {this.state.eacContracts.blockScheduler}
+                                  </a>
+                                </span>
+                              </div>
+                            }
+                          </div>
+                        </div>
+
+                      <div className="notification-item clearfix">
+                        <div className="heading row">
+                          <span className="d-block text-capitalize font-weight-bold text-dark">Libraries - </span>
+                          {this.state.eacContracts.schedulerLib &&
+                            <div className="content">
+                              <span className="d-block">Scheduler: </span>
+                              <span className="d-block text-ellipsis">
+                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.schedulerLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  {this.state.eacContracts.schedulerLib}
+                                </a>
+                              </span>
+                            </div>
+                          }
+                          {this.state.eacContracts.executionLib &&
+                            <div className="content">
+                              <span className="d-block">Execution: </span>
+                              <span className="d-block text-ellipsis">
+                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.executionLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  {this.state.eacContracts.executionLib}
+                                </a>
+                              </span>
+                            </div>
+                          }
+                          {this.state.eacContracts.claimLib &&
+                            <div className="content">
+                              <span className="d-block">Claim: </span>
+                              <span className="d-block text-ellipsis">
+                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.claimLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                  {this.state.eacContracts.claimLib}
+                                </a>
+                              </span>
+                            </div>
+                          }
+                        </div>
                       </div>
                     </div>
-                  }
-                  {this.state.eacContracts.blockScheduler &&
-                    <div className="notification-item clearfix">
-                      <div className="heading row">
-                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Block Sceduler: </span>
-                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
-                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                            {this.state.eacContracts.blockScheduler}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  {this.state.eacContracts.schedulerLib &&
-                    <div className="notification-item clearfix">
-                      <div className="heading row">
-                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Sceduler Lib: </span>
-                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
-                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.schedulerLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                            {this.state.eacContracts.schedulerLib}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  {this.state.eacContracts.executionLib &&
-                    <div className="notification-item clearfix">
-                      <div className="heading row">
-                      <span className="d-inline-block col-5 col-md-4 col-lg-6">Execution Lib: </span>
-                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
-                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.executionLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                            {this.state.eacContracts.executionLib}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  {this.state.eacContracts.claimLib &&
-                    <div className="notification-item clearfix">
-                      <div className="heading row">
-                      <span className="d-inline-block col-5 col-md-4 col-lg-6">Claim Lib: </span>
-                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
-                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.claimLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                            {this.state.eacContracts.claimLib}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
-                  }
                 </div>
               </div>
             </div>

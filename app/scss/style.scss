@@ -147,6 +147,12 @@ hr {
   overflow: hidden;
 }
 
+.notification-item .heading .content {
+  line-height: 25px;
+  margin-left: 15px;
+  width: 100%;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
