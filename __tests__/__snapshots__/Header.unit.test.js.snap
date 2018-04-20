@@ -92,7 +92,7 @@ exports[`Header displays current block number 1`] = `
                   className="heading row"
                 >
                   <span
-                    className="d-block text-capitalize font-weight-bold text-dark"
+                    className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Ethereum Alarm Clock contracts 
                   </span>
@@ -105,7 +105,7 @@ exports[`Header displays current block number 1`] = `
                   className="heading row"
                 >
                   <span
-                    className="d-block text-capitalize font-weight-bold text-dark"
+                    className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Schedulers
                   </span>
@@ -118,7 +118,7 @@ exports[`Header displays current block number 1`] = `
                   className="heading row"
                 >
                   <span
-                    className="d-block text-capitalize font-weight-bold text-dark"
+                    className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Libraries
                   </span>

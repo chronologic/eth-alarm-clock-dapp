@@ -20,8 +20,8 @@ describe('Header', () => {
 
     const keenStore = {};
     const eacService = {
-      getActiveContracts: ()=>{
-        return{};
+      getActiveContracts: () => {
+        return {};
       }
     };
 

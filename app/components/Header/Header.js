@@ -82,7 +82,6 @@ class Header extends Component {
                         <span className="d-block text-uppercase font-weight-bold text-dark">Ethereum Alarm Clock contracts </span>
                         </div>
                       </div>
-                      
                         <div className="notification-item clearfix">
                           <div className="heading row">
                             <span className="d-block text-uppercase font-weight-bold text-dark">Schedulers</span>
