@@ -141,6 +141,16 @@ hr {
   color: #ccc;
 }
 
+.text-ellipsis {
+  text-overflow: ellipsis;
+  word-wrap: normal;
+  overflow: hidden;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .horizontal-center {
 	text-align: center;
 }

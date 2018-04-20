@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import { observer,inject } from 'mobx-react';
 
 @inject('web3Service')
+@inject('eacService')
 @inject('keenStore')
 @observer
 class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      blocknumber: ''
+      blocknumber: '',
+      eacContracts: {}
     };
     this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
@@ -21,6 +23,12 @@ class Header extends Component {
   componentDidMount() {
     // Check every 10 seconds if the block number changed
     this.interval = setInterval(this.getCurrentBlock, 10000);
+    this.fetchEacContracts();
+  }
+
+  async fetchEacContracts() {
+    const eacContracts = await this.props.eacService.getActiveContracts();
+    this.setState({ eacContracts });
   }
 
   getCurrentBlock() {
@@ -36,6 +44,7 @@ class Header extends Component {
   }
 
   render() {
+    const { web3Service } = this.props;
     return (
       <div className="header">
         <a href="#" className="btn-link toggle-sidebar d-lg-none pg pg-menu" data-toggle="sidebar">
@@ -58,19 +67,74 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{this.state.blocknumber}</span>
           </div>
-          <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
+          <div className="pull-left p-l-10 fs-14 font-heading d-block">
             <span className="left-separator d-lg"></span>
             <span className="active-timenodes" data-toggle="dropdown">
-              <i className="fa fa-file-alt ml-2" />&nbsp;
+              <i className="fa fa-file-alt ml-2 cursor-pointer" />&nbsp;
             </span>
-            <div class="dropdown-menu notification-toggle" role="menu" aria-labelledby="notification-center">
-              <div class="notification-panel">
-                <div class="notification-item  clearfix">
-                  <div class="heading">
-                    <span class="pull-left">Timestamp Sceduler</span>
-                    <a href="#" class="pull-right">
-                    </a>
-                  </div>
+            <div className="dropdown-menu notification-toggle" role="menu" aria-labelledby="notification-center">
+              <div className="notification-panel">
+                <div className="notification-body d-block scrollable scroll-content scroll-visible">
+                  {this.state.eacContracts.timestampScheduler &&
+                    <div className="notification-item clearfix">
+                      <div className="heading row">
+                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Timestamp Sceduler: </span>
+                      <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
+                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.timestampScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                            {this.state.eacContracts.timestampScheduler}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  {this.state.eacContracts.blockScheduler &&
+                    <div className="notification-item clearfix">
+                      <div className="heading row">
+                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Block Sceduler: </span>
+                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
+                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.blockScheduler}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                            {this.state.eacContracts.blockScheduler}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  {this.state.eacContracts.schedulerLib &&
+                    <div className="notification-item clearfix">
+                      <div className="heading row">
+                        <span className="d-inline-block col-5 col-md-4 col-lg-6">Sceduler Lib: </span>
+                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
+                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.schedulerLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                            {this.state.eacContracts.schedulerLib}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  {this.state.eacContracts.executionLib &&
+                    <div className="notification-item clearfix">
+                      <div className="heading row">
+                      <span className="d-inline-block col-5 col-md-4 col-lg-6">Execution Lib: </span>
+                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
+                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.executionLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                            {this.state.eacContracts.executionLib}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  {this.state.eacContracts.claimLib &&
+                    <div className="notification-item clearfix">
+                      <div className="heading row">
+                      <span className="d-inline-block col-5 col-md-4 col-lg-6">Claim Lib: </span>
+                        <span className="d-inline-block col-7 col-md-8 col-lg-6 text-ellipsis">
+                          <a href={`${web3Service.explorer}/address/${this.state.eacContracts.claimLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                            {this.state.eacContracts.claimLib}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
@@ -90,6 +154,7 @@ class Header extends Component {
 Header.propTypes = {
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
+  eacService: PropTypes.any,
   keenStore: PropTypes.any
 };
 
