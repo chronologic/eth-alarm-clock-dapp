@@ -85,7 +85,7 @@ class Header extends Component {
                       
                         <div className="notification-item clearfix">
                           <div className="heading row">
-                            <span className="d-block text-capitalize font-weight-bold text-dark">Schedulers - </span>
+                            <span className="d-block text-capitalize font-weight-bold text-dark">Schedulers</span>
                             {this.state.eacContracts.timestampScheduler &&
                               <div className="content">
                                 <span className="d-block">Time: </span>
@@ -111,7 +111,7 @@ class Header extends Component {
 
                       <div className="notification-item clearfix">
                         <div className="heading row">
-                          <span className="d-block text-capitalize font-weight-bold text-dark">Libraries - </span>
+                          <span className="d-block text-capitalize font-weight-bold text-dark">Libraries</span>
                           {this.state.eacContracts.schedulerLib &&
                             <div className="content">
                               <span className="d-block">Scheduler: </span>
