@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/ganache/Dockerfile
+    entrypoint: sh /startup.sh
     ports:
       - 9545:8545
 
