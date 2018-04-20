@@ -108,36 +108,18 @@ class Header extends Component {
                         </div>
                       <div className="notification-item clearfix">
                         <div className="heading row">
-                          <span className="d-block text-uppercase font-weight-bold text-dark">Libraries</span>
-                          {this.state.eacContracts.schedulerLib &&
-                            <div className="content">
-                              <span className="d-block">Scheduler: </span>
-                              <span className="d-block text-ellipsis">
-                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.schedulerLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                                  {this.state.eacContracts.schedulerLib}
-                                </a>
-                              </span>
-                            </div>
-                          }
-                          {this.state.eacContracts.executionLib &&
-                            <div className="content">
-                              <span className="d-block">Execution: </span>
-                              <span className="d-block text-ellipsis">
-                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.executionLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                                  {this.state.eacContracts.executionLib}
-                                </a>
-                              </span>
-                            </div>
-                          }
-                          {this.state.eacContracts.claimLib &&
-                            <div className="content">
-                              <span className="d-block">Claim: </span>
-                              <span className="d-block text-ellipsis">
-                                <a href={`${web3Service.explorer}/address/${this.state.eacContracts.claimLib}`} className="text-complete" target="_blank" rel="noopener noreferrer">
-                                  {this.state.eacContracts.claimLib}
-                                </a>
-                              </span>
-                            </div>
+                          <div className="d-block text-uppercase font-weight-bold text-dark">Libraries</div>
+                          {this.state.eacContracts &&
+                            Object.keys(this.state.eacContracts).filter( contract => new RegExp('lib','i').test(contract) ).map( found =>
+                              <div className="content" key={found}>
+                              <div className="d-block">{found} </div>
+                                <div className="d-block text-ellipsis">
+                                  <a href={`${web3Service.explorer}/address/${this.state.eacContracts[found]}`} className="text-complete" target="_blank" rel="noopener noreferrer">
+                                    {this.state.eacContracts[found]}
+                                  </a>
+                                </div>
+                              </div>
+                            )
                           }
                         </div>
                       </div>
