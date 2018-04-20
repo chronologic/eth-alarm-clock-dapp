@@ -28,6 +28,13 @@ const additionalMethods = {
     );
 
     return endowment;
+  },
+
+  async getActiveContracts() {
+    const { Util } = this;
+    const chainName = await Util.getChainName();
+    const contracts = require(`eac.js-lib/lib/assets/${chainName}.json`);
+    return contracts;
   }
 };
 

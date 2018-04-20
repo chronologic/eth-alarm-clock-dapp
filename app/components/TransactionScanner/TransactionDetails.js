@@ -261,11 +261,11 @@ class TransactionDetails extends ScrollbarComponent {
             type: 'warning',
             close: false,
             action: approve,
-            msg: `: This transaction schedules token transfer. Minimum allowance of ${this.state
+            msg: `: This transaction schedules a token transfer. A minimum allowance of ${this.state
               .token.info.value /
               10 ** this.state.token.decimals} ${
               this.state.token.symbol
-            } tokens are required to be approved to complete the scheduling.`
+            } tokens is required to be approved to complete the scheduling.`
           }}
         />
       );
