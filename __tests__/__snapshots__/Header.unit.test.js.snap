@@ -91,11 +91,11 @@ exports[`Header displays current block number 1`] = `
                 <div
                   className="heading row"
                 >
-                  <span
+                  <div
                     className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Ethereum Alarm Clock contracts 
-                  </span>
+                  </div>
                 </div>
               </div>
               <div
@@ -104,11 +104,11 @@ exports[`Header displays current block number 1`] = `
                 <div
                   className="heading row"
                 >
-                  <span
+                  <div
                     className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Schedulers
-                  </span>
+                  </div>
                 </div>
               </div>
               <div
@@ -117,11 +117,11 @@ exports[`Header displays current block number 1`] = `
                 <div
                   className="heading row"
                 >
-                  <span
+                  <div
                     className="d-block text-uppercase font-weight-bold text-dark"
                   >
                     Libraries
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
