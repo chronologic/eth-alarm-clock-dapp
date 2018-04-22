@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer,inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import ReactFlagsSelect from 'react-flags-select';
 
+@inject('languageStore')
 @inject('web3Service')
 @inject('eacService')
 @inject('keenStore')
@@ -38,6 +40,10 @@ class Header extends Component {
     web3.eth.getBlockNumber((err,res) =>{
       err == null && this.setState({ blocknumber: res });
     });
+  }
+
+  onSelectLanguage(targetLocale) {
+    this.props.languageStore.loadLocale(targetLocale);
   }
 
   componentWillUnmount() {
@@ -131,6 +137,14 @@ class Header extends Component {
           </div>
         </div>
         <div className="d-flex">
+          <ReactFlagsSelect
+            countries={["US", "ES"]}
+            defaultCountry={this.props.languageStore.selectorValue}
+            placeholder="Select Language"
+            showSelectedLabel={false}
+            onSelect={this.onSelectLanguage.bind(this)} />
+        </div>
+        <div className="d-flex">
           <div className="search-link d-lg-inline-block d-none" onClick={() => {this.props.updateSearchState(true);}}>
             <i className="pg-search"></i>
             {intl.get('SEARCH-BY-ADDRESS').d('Search by Address')}
@@ -145,7 +159,8 @@ Header.propTypes = {
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  languageStore: PropTypes.any
 };
 
 export default Header;

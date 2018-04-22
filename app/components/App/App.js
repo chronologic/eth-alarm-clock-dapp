@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
+import { observer,inject } from 'mobx-react';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
@@ -13,29 +13,15 @@ import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
 
-const SUPPORTED_LOCALES = [
-  {
-    name: 'English',
-    value: 'en-US'
-  },
-  {
-    name: 'Portuguese',
-    value: 'pt-BR'
-  },
-  {
-    name: 'Spanish',
-    value: 'es-ES'
-  }
-];
-
+@inject("languageStore")
+@observer
 @withRouter
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      showSearchOverlay: false,
-      initDone: false,
+      showSearchOverlay: false
     };
     this.updateSearchState = this.updateSearchState.bind(this);
     this.onEscKey = this.onEscKey.bind(this);
@@ -61,36 +47,9 @@ class App extends Component {
     }
   }
 
-  /*
-    Load locales and resume page initialisation after that is done.
-  */
-  async loadLocales() {
-    let currentLocale = intl.determineLocale({
-      urlLocaleKey: 'lang',
-    });
-
-    // Fall back to en-US if language can't be found or is undefined
-    if (!SUPPORTED_LOCALES.find(a => a.value === currentLocale)) {
-      currentLocale = 'en-US';
-    }
-
-    let response = await fetch(`/app/locales/${currentLocale}.json`);
-    let data = await response.json();
-
-    intl.init({
-      currentLocale,
-      locales: {
-        [currentLocale]: data
-      }
-    });
-
-    // After loading CLDR locale data, start to render
-    this.setState({ initDone: true });
-  }
-
   componentDidMount(){
     document.addEventListener('keydown', this.onEscKey, false);
-    this.loadLocales();
+    this.props.languageStore.loadLocales()
   }
 
   render() {
@@ -100,7 +59,6 @@ class App extends Component {
     }
 
     return (
-      this.state.initDone &&
       <div className="app-container">
         <SidePanel {...this.props} />
         <div className="page-container">

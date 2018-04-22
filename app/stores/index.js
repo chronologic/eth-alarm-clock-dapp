@@ -7,6 +7,7 @@ import ScheduleStore from './ScheduleStore';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 import TransactionsCache from './TransactionsCache';
 import { KeenStore } from './KeenStore';
+import LanguageStore from './LanguageStore';
 
 const { eacService, web3Service } = services;
 
@@ -21,6 +22,7 @@ const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 const scheduleStore = new ScheduleStore(false);
 const dateTimeValidatorStore = new DateTimeValidatorStore();
+const languageStore = new LanguageStore();
 
 export const transactionsCache = new TransactionsCache(eacService);
 export const transactionStore = new TransactionStore(eacService, web3Service, transactionsCache);
@@ -38,5 +40,6 @@ export const stores = {
   timeNodeStore,
   scheduleStore,
   dateTimeValidatorStore,
-  keenStore
+  keenStore,
+  languageStore
 };
