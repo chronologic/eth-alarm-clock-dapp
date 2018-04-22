@@ -40,7 +40,8 @@ export default class ScheduleStore {
    * Currently MobX doesn't have a more elegant
    * way to reset to defaults.
    */
-  @action reset = () => {
+  @action
+  reset = () => {
     this.timeZone = '';
     this.transactionDate = '';
     this.transactionTime = '';
@@ -69,7 +70,7 @@ export default class ScheduleStore {
 
     this.isUsingTime = true;
     this.isTokenTransfer = false;
-  }
+  };
 
   constructor(source) {
     Object.assign(this, source);
@@ -78,10 +79,16 @@ export default class ScheduleStore {
   }
 
   get transactionTimestamp() {
-    return this.dateTimeValidatorStore.ts(this.transactionDate, this.transactionTime, this.timeZone);
+    return this.dateTimeValidatorStore.ts(
+      this.transactionDate,
+      this.transactionTime,
+      this.timeZone
+    );
   }
 
   get transactionTzTime() {
-    return this.dateTimeValidatorStore.parse(this.transactionDate, this.transactionTime, this.timeZone).toString();
+    return this.dateTimeValidatorStore
+      .parse(this.transactionDate, this.transactionTime, this.timeZone)
+      .toString();
   }
 }

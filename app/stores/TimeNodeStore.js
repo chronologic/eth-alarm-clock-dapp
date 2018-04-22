@@ -5,7 +5,6 @@ import ethJsUtil from 'ethereumjs-util';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
 
-import dayTokenABI from '../abi/dayTokenABI';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
@@ -75,7 +74,7 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     const options = {
-      networkId: this._web3Service.netId,
+      network: this._web3Service.network,
       keystore: [this.decrypt(keystore)],
       keystorePassword: this.decrypt(password),
       logfile: 'console',
@@ -240,17 +239,20 @@ export default class TimeNodeStore {
     await this._web3Service.init();
     const web3 = this._web3Service.web3;
 
-    const dayTokenAddress = JSON.parse(process.env.DAY_TOKEN_ADDRESS)[this._web3Service.netId];
-    const contract = web3.eth.contract(dayTokenABI).at(dayTokenAddress);
+    const dayTokenAddress = this._web3Service.network.dayTokenAddress;
+    const dayTokenAbi = this._web3Service.network.dayTokenAbi;
 
-    const balanceNum = await Bb.fromCallback((callback) => {
-      contract.balanceOf.call(address, callback);
-    });
+    const contract = web3.eth.contract(dayTokenAbi).at(dayTokenAddress);
+
+    const balanceNum = await Bb.fromCallback(callback =>
+      contract.balanceOf(address, callback)
+    );
     const balance = balanceNum.div(10**18).toNumber().toFixed(2);
 
-    const mintingPower = await Bb.fromCallback((callback) => {
-      contract.getMintingPowerByAddress.call(address, callback);
-    });
+    const mintingPower = process.env.NODE_ENV === 'docker' ? 0
+      : await Bb.fromCallback((callback) => {
+        contract.getMintingPowerByAddress(address, callback);
+      });
 
     this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
     this.balanceDAY = balance;

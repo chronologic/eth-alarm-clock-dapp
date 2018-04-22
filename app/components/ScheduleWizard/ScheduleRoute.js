@@ -5,7 +5,6 @@ import intl from 'react-intl-universal';
 import MetamaskComponent from '../Common/MetamaskComponent';
 import ScheduleWizard from './ScheduleWizard';
 
-
 @inject('web3Service')
 @observer
 export class ScheduleRoute extends MetamaskComponent {
