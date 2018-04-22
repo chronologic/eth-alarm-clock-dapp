@@ -138,7 +138,7 @@ class Header extends Component {
         </div>
         <div className="d-flex">
           <ReactFlagsSelect
-            countries={["US", "ES"]}
+            countries={['US', 'ES']}
             defaultCountry={this.props.languageStore.selectorValue}
             placeholder="Select Language"
             showSelectedLabel={false}

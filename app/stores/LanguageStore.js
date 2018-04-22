@@ -53,7 +53,7 @@ export default class LanguageStore {
     Load a select locale by reloading the page
   */
   loadLocale(targetLocale) {
-    let locale = SUPPORTED_LOCALES.find(a => a.selectorValue === targetLocale)
+    let locale = SUPPORTED_LOCALES.find(a => a.selectorValue === targetLocale);
     if (locale) {
       location.search = `?lang=${locale.value}`;
     }

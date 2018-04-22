@@ -13,7 +13,7 @@ import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
 
-@inject("languageStore")
+@inject('languageStore')
 @observer
 @withRouter
 class App extends Component {
@@ -49,7 +49,7 @@ class App extends Component {
 
   componentDidMount(){
     document.addEventListener('keydown', this.onEscKey, false);
-    this.props.languageStore.loadLocales()
+    this.props.languageStore.loadLocales();
   }
 
   render() {
@@ -83,7 +83,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  languageStore: PropTypes.object.isRequired
 };
 
 export default App;
