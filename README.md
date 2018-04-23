@@ -2,6 +2,8 @@
 
 _Note: This DApp is operational on the Kovan and Ropsten testnets. Mainnet release coming soon._ 
 
+[![Build Status](https://travis-ci.org/chronologic/eth-alarm-clock-dapp.svg?branch=master)](https://travis-ci.org/chronologic/eth-alarm-clock-dapp)
+
 # Ethereum Alarm Clock DApp
 
 A DApp that interacts with the Ethereum Alarm Clock.
