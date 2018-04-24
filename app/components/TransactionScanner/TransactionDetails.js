@@ -161,7 +161,7 @@ class TransactionDetails extends ScrollbarComponent {
 
     let executedAt = '';
 
-    if (events[0]) {
+    if (events.length > 0) {
       executedAt = events[0].transactionHash;
     }
 
