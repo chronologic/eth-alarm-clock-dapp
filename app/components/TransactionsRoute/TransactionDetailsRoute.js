@@ -6,28 +6,50 @@ import TransactionNotFound from '../TransactionScanner/TransactionNotFound';
 import { PropagateLoader } from 'react-spinners';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
+@inject('eacService')
 @inject('transactionStore')
 @observer
 class TransactionDetailsRoute extends Component {
+  state = {
+    transaction: null,
+    transactionNotFound: false
+  };
+
   async componentDidMount() {
-    // This has to be changed after we implement a data layer (cache or db)
-    // For now it always fetches all the transactions from eac.js on each page load
-    await this.props.transactionStore.getAllTransactions();
+    const { txAddress } = this.props.match.params;
+
+    this.getTransactionData(txAddress);
+  }
+
+  transactionInvalid(transaction) {
+    return transaction.temporalUnit === 0;
+  }
+
+  async getTransactionData(address) {
+    const { transactionStore } = this.props;
+
+    const transaction = await transactionStore.getTransactionByAddress(address);
+
+    await transaction.fillData();
+
+    this.setState({
+      transaction,
+      transactionNotFound: this.transactionInvalid(transaction)
+    });
   }
 
   render() {
     const { txAddress } = this.props.match.params;
 
+    const { transaction, transactionNotFound } = this.state;
+
     let content = <div />;
 
-    // If the list of transactions has been fetched
-    if (this.props.transactionStore.allTransactionsAddresses.length > 0) {
-      // Check if the address exists in the transactions list
-      if (this.props.transactionStore.allTransactionsAddresses.includes(txAddress)) {
-        content = <TransactionDetails address={txAddress} />;
-      } else {
-        // Throw a 404 if the transaction with that address does not exist
+    if (transaction) {
+      if (transactionNotFound) {
         content = <TransactionNotFound address={txAddress} />;
+      } else {
+        content = <TransactionDetails transaction={transaction} />;
       }
     } else {
       content = (
@@ -52,6 +74,7 @@ class TransactionDetailsRoute extends Component {
 }
 
 TransactionDetailsRoute.propTypes = {
+  eacService: PropTypes.any,
   match: PropTypes.any,
   transactionStore: PropTypes.any
 };

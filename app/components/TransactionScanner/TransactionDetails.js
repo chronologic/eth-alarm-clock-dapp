@@ -12,7 +12,6 @@ const INITIAL_STATE = {
   callData: '',
   isTimestamp: false,
   status: '',
-  transaction: {},
   executedAt: '',
   token: {},
   isTokenTransfer: false
@@ -42,45 +41,11 @@ class TransactionDetails extends ScrollbarComponent {
     });
   }
 
-  async fetchData() {
-    const { address, transactionStore } = this.props;
-
-    const transaction = await transactionStore.getTransactionByAddress(address);
-
-    await transaction.fillData();
-
-    if (!this._isMounted) {
-      return;
-    }
-
-    const requestLib = this.props.eacService.getRequestLibInstance(address);
-
-    const events = await this.getExecutedEvents(requestLib);
-
-    let executedAt = '';
-
-    if (events[0]) {
-      executedAt = events[0].transactionHash;
-    }
-
-    this.setState({
-      callData: await transaction.callData(),
-      isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
-      status: await transactionStore.getTxStatus(transaction),
-      transaction,
-      executedAt,
-      isFrozen: ''
-    });
-
-    this.getFrozenStatus();
-    this.testToken();
-  }
-
   async testToken() {
-    const { web3Service } = this.props;
-    const { address, toAddress } = this.state.transaction;
+    const { transaction, web3Service } = this.props;
+    const { address, toAddress } = transaction;
 
-    let tokenTransferapproved;
+    let tokenTransferApproved;
     const isTokenTransfer = web3Service.isTokenTransferTransaction(this.state.callData);
 
     if (isTokenTransfer) {
@@ -89,13 +54,13 @@ class TransactionDetails extends ScrollbarComponent {
       const info = await web3Service.getTokenTransferInfoFromData(this.state.callData);
       this.setState({ token: Object.assign(this.state.token, { info }) });
 
-      tokenTransferapproved = await web3Service.isTokenTransferApproved(
+      tokenTransferApproved = await web3Service.isTokenTransferApproved(
         toAddress,
         address,
         this.state.token.info.value
       );
     }
-    this.setState({ isTokenTransfer, tokenTransferapproved });
+    this.setState({ isTokenTransfer, tokenTransferApproved });
   }
 
   async fetchTokenTransferInfo() {
@@ -106,18 +71,18 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   async getFrozenStatus() {
-    const { transactionStore } = this.props;
-    const { transaction } = this.state;
+    const { transaction, transactionStore } = this.props;
+
     if (!transaction || !transaction.inFreezePeriod) {
       return;
     }
+
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
     this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
   async cancelTransaction() {
-    const { transactionStore } = this.props;
-    const { transaction } = this.state;
+    const { transaction, transactionStore } = this.props;
 
     const originalBodyCss = document.body.className;
     document.body.className += ' fade-me';
@@ -154,17 +119,13 @@ class TransactionDetails extends ScrollbarComponent {
       );
       if (approved) {
         showNotification(`Token Transfer approved: ${approved}`, 'success');
-        this.setState({ tokenTransferapproved: true });
+        this.setState({ tokenTransferApproved: true });
       }
     } catch (error) {
       showNotification('Action cancelled by the user.', 'danger', 4000);
       target.innerHTML = 'Approve';
     }
     document.body.className = originalBodyCss;
-  }
-
-  async componentWillMount() {
-    await this.fetchData();
   }
 
   isOwner(transaction) {
@@ -178,9 +139,12 @@ class TransactionDetails extends ScrollbarComponent {
     return isOwner;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     super.componentDidMount();
+
     this._isMounted = true;
+
+    await this.setupDetails();
   }
 
   componentWillUnmount() {
@@ -188,8 +152,34 @@ class TransactionDetails extends ScrollbarComponent {
     this._isMounted = false;
   }
 
+  async setupDetails() {
+    const { transaction, transactionStore } = this.props;
+
+    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
+
+    const events = await this.getExecutedEvents(requestLib);
+
+    let executedAt = '';
+
+    if (events[0]) {
+      executedAt = events[0].transactionHash;
+    }
+
+    this.setState({
+      callData: await transaction.callData(),
+      isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
+      status: await transactionStore.getTxStatus(transaction),
+      executedAt,
+      isFrozen: ''
+    });
+
+    await this.getFrozenStatus();
+    await this.testToken();
+  }
+
   getCancelSection() {
-    const { transaction, isFrozen, status } = this.state;
+    const { isFrozen, status } = this.state;
+    const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
 
@@ -213,14 +203,15 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getApproveSection() {
-    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
+    const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
 
     if (
       isOwner &&
       isTokenTransfer &&
-      !tokenTransferapproved &&
+      !tokenTransferApproved &&
       (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
     ) {
       return (
@@ -240,7 +231,8 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getTokenNotificationSection() {
-    const { transaction, status, isFrozen, isTokenTransfer, tokenTransferapproved } = this.state;
+    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
+    const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
     const approve = (
@@ -252,7 +244,7 @@ class TransactionDetails extends ScrollbarComponent {
     if (
       isOwner &&
       isTokenTransfer &&
-      !tokenTransferapproved &&
+      !tokenTransferApproved &&
       (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
     ) {
       return (
@@ -274,7 +266,9 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   getInfoMessage() {
-    const { transaction, status, isFrozen } = this.state;
+    const { status, isFrozen } = this.state;
+    const { transaction } = this.props;
+
     const isOwner = this.isOwner(transaction);
 
     let messages = [];
@@ -285,7 +279,8 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   render() {
-    const { callData, executedAt, isTimestamp, status, transaction } = this.state;
+    const { transaction } = this.props;
+    const { callData, executedAt, isTimestamp, status } = this.state;
     const {
       bounty,
       callGas,
@@ -427,6 +422,7 @@ class TransactionDetails extends ScrollbarComponent {
 TransactionDetails.propTypes = {
   address: PropTypes.string,
   eacService: PropTypes.any,
+  transaction: PropTypes.any,
   transactionStore: PropTypes.any
 };
 

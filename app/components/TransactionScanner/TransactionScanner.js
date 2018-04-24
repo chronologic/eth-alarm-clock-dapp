@@ -14,7 +14,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 class TransactionScanner extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
   _isMounted = false;
 
