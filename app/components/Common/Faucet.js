@@ -154,8 +154,8 @@ class Faucet extends MetamaskComponent {
     return {
       target: '_blank',
       rel: 'noopener noreferrer'
-    }
-  };
+    };
+  }
 
   async componentDidMount() {
     super.componentDidMount();
