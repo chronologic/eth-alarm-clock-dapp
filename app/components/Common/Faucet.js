@@ -150,6 +150,13 @@ class Faucet extends MetamaskComponent {
     }
   };
 
+  hrefProps () {
+    return {
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    }
+  };
+
   async componentDidMount() {
     super.componentDidMount();
     await this.loadInfo();
@@ -165,13 +172,8 @@ class Faucet extends MetamaskComponent {
     const { web3Service } = this.props;
     const explorer = web3Service.explorer;
 
-    const hrefProps = {
-      target: '_blank',
-      rel: 'noopener noreferrer'
-    };
-
-    const faucetAddressProps = hrefProps;
-    const yourAddressProps = hrefProps;
+    const faucetAddressProps = this.hrefProps();
+    const yourAddressProps = this.hrefProps();
 
     if (explorer) {
       faucetAddressProps.href = explorer + 'address/' + this.state.faucetAddress;
