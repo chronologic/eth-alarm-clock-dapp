@@ -15,8 +15,10 @@
     "clean": "./tools/clean.sh",
     "validate": "npm ls",
     "docker-build": "docker-compose build && docker-compose up -d",
+    "docker-build:nocache": "docker-compose build --no-cache && docker-compose up -d",
     "docker-remove": "docker-compose down -v",
     "docker-rebuild": "npm run docker-remove && npm run docker-build",
+    "docker-rebuild:nocache": "npm run docker-remove && npm run docker-build:nocache",
     "precommit": "lint-staged",
     "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
   },
