@@ -242,6 +242,10 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
+  async refund(transaction, txParameters) {
+    return await transaction.sendOwnerEther(txParameters);
+  }
+
   async validateRequestParams(
     toAddress,
     callData = '',

@@ -29,6 +29,7 @@ class TransactionDetails extends ScrollbarComponent {
     super(...arguments);
 
     this.state = INITIAL_STATE;
+    this.refundBalance = this.refundBalance.bind(this);
     this.cancelTransaction = this.cancelTransaction.bind(this);
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
   }
@@ -64,8 +65,8 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   async fetchTokenTransferInfo() {
-    const { web3Service } = this.props;
-    const { toAddress } = this.state.transaction;
+    const { transaction, web3Service } = this.props;
+    const { toAddress } = transaction;
     const tokenDetails = await web3Service.fetchTokenDetails(toAddress);
     this.setState({ token: tokenDetails });
   }
@@ -81,6 +82,15 @@ class TransactionDetails extends ScrollbarComponent {
     this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
+  async checkContractBalance() {
+    const {
+      transaction: { address },
+      web3Service
+    } = this.props;
+    const balance = await web3Service.getAddressBalance(address);
+    this.setState({ balance });
+  }
+
   async cancelTransaction() {
     const { transaction, transactionStore } = this.props;
 
@@ -94,6 +104,7 @@ class TransactionDetails extends ScrollbarComponent {
         this.setState({
           status: TRANSACTION_STATUS.CANCELLED
         });
+        this.checkContractBalance();
       }
     } catch (error) {
       showNotification('Action cancelled by the user.', 'danger', 4000);
@@ -102,10 +113,33 @@ class TransactionDetails extends ScrollbarComponent {
     document.body.className = originalBodyCss;
   }
 
+  async refundBalance(event) {
+    const { target } = event;
+    const { transaction, transactionStore } = this.props;
+
+    const originalBodyCss = document.body.className;
+
+    document.body.className += ' fade-me';
+    target.innerHTML = 'Refunding...';
+
+    try {
+      const success = await transactionStore.refund(transaction);
+      if (success) {
+        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
+        this.setState({ balance: 0 });
+        this.checkContractBalance();
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+    }
+    target.innerHTML = 'Refund Balance';
+    document.body.className = originalBodyCss;
+  }
+
   async approveTokenTransfer(event) {
     const { target } = event;
-    const { web3Service } = this.props;
-    const { address, toAddress } = this.state.transaction;
+    const { transaction, web3Service } = this.props;
+    const { address, toAddress } = transaction;
 
     const originalBodyCss = document.body.className;
     document.body.className += ' fade-me';
@@ -222,6 +256,32 @@ class TransactionDetails extends ScrollbarComponent {
             type="button"
           >
             <span>Approve</span>
+          </button>
+        </div>
+      );
+    }
+
+    return <div className="col-6" />;
+  }
+
+  getRefundSection() {
+    const { status, balance } = this.state;
+    const { transaction } = this.props;
+
+    const isOwner = this.isOwner(transaction);
+
+    if (
+      isOwner &&
+      balance > 0 &&
+      (status === TRANSACTION_STATUS.CANCELLED ||
+        status === TRANSACTION_STATUS.EXECUTED ||
+        status === TRANSACTION_STATUS.FAILED ||
+        status === TRANSACTION_STATUS.MISSED)
+    ) {
+      return (
+        <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
+          <button className="btn btn-defaukt btn-cons" onClick={this.refundBalance} type="button">
+            <span>Refund Balance</span>
           </button>
         </div>
       );
@@ -410,6 +470,7 @@ class TransactionDetails extends ScrollbarComponent {
             <div className="row">
               {this.getApproveSection()}
               {this.getCancelSection()}
+              {this.getRefundSection()}
             </div>
           </div>
           <div className="col-12">{this.getInfoMessage()}</div>
