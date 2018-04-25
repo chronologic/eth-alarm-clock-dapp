@@ -20,11 +20,17 @@ class EacWorker {
 
     if (network) {
       provider = (() => {
-        if ( new RegExp('ws://').test(network.endpoint) || new RegExp('wss://').test(network.endpoint)) {
+        if (
+          new RegExp('ws://').test(network.endpoint) ||
+          new RegExp('wss://').test(network.endpoint)
+        ) {
           const ws = new Web3WsProvider(`${network.endpoint}`);
           ws.__proto__.sendAsync = ws.__proto__.send;
           return ws;
-        } else if ( new RegExp('http://').test(network.endpoint) || new RegExp('https://').test(network.endpoint)) {
+        } else if (
+          new RegExp('http://').test(network.endpoint) ||
+          new RegExp('https://').test(network.endpoint)
+        ) {
           return new Web3.providers.HttpProvider(`${network.endpoint}`);
         }
       })();
@@ -56,8 +62,7 @@ class EacWorker {
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
-      factory: await eac.requestFactory(),
-      tracker: await eac.requestTracker()
+      factory: await eac.requestFactory()
     };
 
     this.config = await Config.create(configOptions);
@@ -67,17 +72,18 @@ class EacWorker {
     const addresses = await this.config.wallet.getAddresses();
 
     this.config.statsdb.initialize(addresses);
-    this.alarmClient = new Scanner(
-      options.milliseconds,
-      this.config
-    );
+    this.alarmClient = new Scanner(options.milliseconds, this.config);
 
     this.updateStats();
   }
 
-  async awaitAlarmClientInitialized () {
-    if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
-      return new Promise((resolve) => {
+  async awaitAlarmClientInitialized() {
+    if (
+      !this.alarmClient ||
+      !this.alarmClient.start ||
+      typeof this.alarmClient.start !== 'function'
+    ) {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitAlarmClientInitialized());
         }, 500);
@@ -145,7 +151,7 @@ class EacWorker {
       });
     };
 
-    DBDeleteRequest.onblocked = function () {
+    DBDeleteRequest.onblocked = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
         result: false

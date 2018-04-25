@@ -130,8 +130,7 @@ export class TransactionStore {
       return this._cache.allTransactionsAddresses;
     }
 
-    const addresses = await this._cache.getTransactions({}, true, true);
-    return addresses;
+    return await this._cache.getTransactions({}, true, true);
   }
 
   async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
@@ -216,8 +215,7 @@ export class TransactionStore {
   }
 
   async getTransactionByAddress(address) {
-    const txRequest = await this._eac.transactionRequest(address, this._web3);
-    return txRequest;
+    return await this._eac.transactionRequest(address, this._web3);
   }
 
   async isTransactionResolved(transaction) {
@@ -257,7 +255,7 @@ export class TransactionStore {
     windowStart,
     gasPrice,
     fee,
-    payment,
+    timeBounty,
     requiredDeposit,
     isTimestamp,
     endowment
@@ -274,7 +272,7 @@ export class TransactionStore {
       [fromAddress, feeRecipient, toAddress],
       [
         fee,
-        payment,
+        timeBounty,
         claimWindowSize,
         freezePeriod,
         reservedWindowSize,

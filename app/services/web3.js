@@ -7,7 +7,6 @@ import standardTokenAbi from '../abi/standardToken';
 let instance = null;
 
 export default class Web3Service {
-
   web3 = null;
   tokenInstance = null;
   @observable initialized = false;
