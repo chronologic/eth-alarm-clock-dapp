@@ -251,7 +251,7 @@ class TransactionDetails extends ScrollbarComponent {
       return (
         <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
           <button
-            className="btn btn-defaukt btn-cons"
+            className="btn btn-default btn-cons"
             onClick={this.approveTokenTransfer}
             type="button"
           >
@@ -280,7 +280,7 @@ class TransactionDetails extends ScrollbarComponent {
     ) {
       return (
         <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
-          <button className="btn btn-defaukt btn-cons" onClick={this.refundBalance} type="button">
+          <button className="btn btn-default btn-cons" onClick={this.refundBalance} type="button">
             <span>Refund Balance</span>
           </button>
         </div>
