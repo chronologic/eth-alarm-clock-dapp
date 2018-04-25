@@ -48,16 +48,18 @@ exports[`Header displays current block number 1`] = `
         <i
           className="fa fa-th-large"
         />
-         Current Block Number: 
+         Network: 
       </span>
       <span
         className="timenode-count"
       >
-        5361200
+        
+         
+        at #5361200
       </span>
     </div>
     <div
-      className="pull-left p-l-10 fs-14 font-heading d-block"
+      className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none"
     >
       <span
         className="left-separator d-lg"
@@ -94,7 +96,8 @@ exports[`Header displays current block number 1`] = `
                   <div
                     className="d-block text-uppercase font-weight-bold text-dark"
                   >
-                    Ethereum Alarm Clock contracts 
+                    Ethereum Alarm Clock contracts
+                     
                   </div>
                 </div>
               </div>
