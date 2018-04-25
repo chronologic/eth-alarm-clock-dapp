@@ -219,6 +219,12 @@ export default class Web3Service {
     return approve;
   }
 
+  async getAddressBalance(address) {
+    const { web3 } = this;
+    const balance = await Bb.fromCallback(callback => web3.eth.getBalance(address, callback));
+    return balance.valueOf();
+  }
+
   @action
   async connect() {
     let { web3 } = this;
