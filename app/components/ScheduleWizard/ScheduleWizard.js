@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
+import intl from 'react-intl-universal';
 import TimeSettings from './TimeSettings';
 import InfoSettings from './InfoSettings';
 import BountySettings from './BountySettings';
@@ -372,7 +373,7 @@ class ScheduleWizard extends Component {
                     onClick={this.initiateScrollbar}
                     type="button"
                   >
-                    Next
+                    {intl.get('NEXT').d('Next')}
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
@@ -383,7 +384,7 @@ class ScheduleWizard extends Component {
                     onClick={this.scheduleTransaction}
                     disabled={this.scheduleDisabled}
                   >
-                    Schedule
+                    {intl.get('SCHEDULE-VERB-INFINITIVE').d('Schedule')}
                   </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
@@ -392,7 +393,7 @@ class ScheduleWizard extends Component {
                     onClick={this.initiateScrollbar}
                     type="button"
                   >
-                    First
+                    {intl.get('FIRST').d('First')}
                   </button>
                 </li>
                 <li className="previous">
@@ -401,7 +402,7 @@ class ScheduleWizard extends Component {
                     onClick={this.initiateScrollbar}
                     type="button"
                   >
-                    Previous
+                    {intl.get('PREVIOUS').d('Previous')}
                   </button>
                 </li>
               </ul>

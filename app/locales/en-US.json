@@ -1,0 +1,46 @@
+{
+    "SCHEDULE-TRANSACTION": "Schedule Transaction",
+    "SCHEDULE": "Schedule",
+    "TRANSACTIONS": "Transactions",
+    "TIMENODE": "TimeNode",
+    "FAUCET": "Faucet",
+    "DEBT-SMART-CONTRACT": "Debt Smart Contract",
+    "DAY-TOKEN-CONTRACT": "Day Token Contract",
+    "SCHEDULED-TRANSITIVE": "Scheduled",
+    "COMPLETED-TRANSITIVE": "Completed",
+    "ACTIVE-TIMENODES": "Active TimeNodes",
+    "HELP": "Help",
+    "NEXT": "Next",
+    "SCHEDULE-VERB-INFINITIVE": "Schedule",
+    "FIRST": "First",
+    "PREVIOUS": "Previous",
+    "CURRENT-BLOCK": "Current Block",
+    "CURRENT-BLOCK-NUMBER": "Current Block Number",
+    "SEARCH-BY-ADDRESS": "Search by Address",
+    "404": {
+        "SORRY-NOT-FOUND": "Sorry but we couldn't find this page",
+        "PAGE-DOES-NOT-EXIST": "This page you are looking for does not exist.",
+        "REPORT-THIS": "Report this?"
+    },
+    "ALERTS": {
+        "ERROR": "Error",
+        "INFO": "Info",
+        "WARNING": "Warning",
+        "SUCCESS": "Done"
+    },
+    "AWAITING-MINING": {
+        "DEPLOYING": "Deploying",
+        "AWAITING-MINING": "Awaiting Mining",
+        "TRANSACTION-HASH": "Transaction Hash",
+        "CONTRACT-ADDRESS": "Contract Address"
+    },
+    "FAUCET-COMP": {
+        "GET-TEST-DAY": "Get test DAY tokens on a testnet of your choice",
+        "TESTNET-NETWORK": "Testnet network",
+        "FAUCET-ADDRESS": "Faucet Address",
+        "FAUCET-BALANCE": "Faucet Balance",
+        "WALLET-ADDRESS": "Your Wallet Address",
+        "REMAINING-WAIT-TIME": "Remaining Wait Time",
+        "GET-TESTNET-DAY": "Get Testnet DAY"
+    }
+}

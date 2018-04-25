@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { observer,inject } from 'mobx-react';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
@@ -11,6 +12,9 @@ import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 
+
+@inject('languageStore')
+@observer
 @withRouter
 class App extends Component {
 
@@ -45,6 +49,7 @@ class App extends Component {
 
   componentDidMount(){
     document.addEventListener('keydown', this.onEscKey, false);
+    this.props.languageStore.loadLocales();
   }
 
   render() {
@@ -78,7 +83,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  languageStore: PropTypes.object.isRequired
 };
 
 export default App;

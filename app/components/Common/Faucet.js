@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import Bb from 'bluebird';
 import { BeatLoader } from 'react-spinners';
+import intl from 'react-intl-universal';
 import { showNotification } from '../../services/notification';
 import MetamaskComponent from '../Common/MetamaskComponent';
 
@@ -186,13 +187,13 @@ class Faucet extends MetamaskComponent {
         <div className="card card-body">
           <div id="faucet" className="tab-content">
             <div className="tab-pane active show">
-              <p>Get test DAY tokens on a testnet of your choice.</p>
+              <p>{intl.get('FAUCET-COMP.GET-TEST-DAY').d('Get test DAY tokens on a testnet of your choice.')}</p>
 
               <div className="row">
                 <div className="col-md-8 offset-md-2">
                   <div className="row my-3">
                     <div className="col-md-6 text-sm-right">
-                      <strong>Testnet Network</strong>
+                      <strong>{intl.get('FAUCET-COMP.TESTNET-NETWORK').d('Testnet Network')}</strong>
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || web3Service.network) ? web3Service.network.name : <BeatLoader />}
@@ -201,7 +202,7 @@ class Faucet extends MetamaskComponent {
 
                   <div className="row my-3">
                     <div className="col-md-6 text-sm-right">
-                      <strong>Faucet Address</strong>
+                      <strong>{intl.get('FAUCET-COMP.FAUCET-ADDRESS').d('Faucet Address')}</strong>
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || this.state.faucetAddress) ? (
@@ -216,7 +217,7 @@ class Faucet extends MetamaskComponent {
 
                   <div className="row my-3">
                     <div className="col-md-6 text-sm-right">
-                      <strong>Faucet Balance</strong>
+                      <strong>{intl.get('FAUCET-BALANCE').d('Faucet Balance')}</strong>
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || (this.state.faucetAddress && typeof this.state.faucetBalance !== 'undefined')) ? (
@@ -229,7 +230,7 @@ class Faucet extends MetamaskComponent {
 
                   <div className="row my-3">
                     <div className="col-md-6 text-sm-right">
-                      <strong>Your Wallet Address</strong>
+                      <strong>{intl.get('FAUCET-COMP.WALLET-ADDRESS').d('Your Wallet Address')}</strong>
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || this.state.defaultAccount) ? (
@@ -244,7 +245,7 @@ class Faucet extends MetamaskComponent {
 
                   <div className="row my-3">
                     <div className="col-md-6 text-sm-right">
-                      <strong>Remaining Wait Time</strong>
+                      <strong>{intl.get('FAUCET-COMP.REMAINING-WAIT-TIME').d('Remaining Wait Time')}</strong>
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || (this.state.defaultAccount && typeof this.state.lastUsed !== 'undefined')) ? this.printWaitTime : <BeatLoader />}
@@ -258,7 +259,7 @@ class Faucet extends MetamaskComponent {
               disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens}
               onClick={this.useFaucet}
             >
-              Get Testnet DAY
+              {intl.get('FAUCET-COMP.GET-TESTNET-DAY').d('Get Testnet DAY')}
             </button>
           </div>
         </div>

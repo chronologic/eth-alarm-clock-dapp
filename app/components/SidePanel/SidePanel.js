@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer,inject } from 'mobx-react';
+import intl from 'react-intl-universal';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -60,22 +61,22 @@ class SidePanel extends Component {
 
     const entryList = [
       {
-        title: 'Schedule',
+        title: intl.get('SCHEDULE'),
         titleClasses: titleClasses + this.isUrlActive('/', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/', 'thumbnail')
       },
       {
-        title: 'Transactions',
+        title: intl.get('TRANSACTIONS'),
         titleClasses: titleClasses + subtitleClasses + this.isUrlActive('/transactions', 'title', true),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true),
       },
       {
-        title: 'TimeNode',
+        title: intl.get('TIMENODE'),
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
       },
       {
-        title: 'Faucet',
+        title: intl.get('FAUCET'),
         titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
       },
@@ -107,13 +108,13 @@ class SidePanel extends Component {
               <ul className="sub-menu">
                 <li>
                   <NavLink to="/transactions/scheduled">
-                    <span className="title">Scheduled</span>
+                    <span className="title">{intl.get('SCHEDULED-TRANSITIVE')}</span>
                     <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/transactions/completed">
-                    <span className="title">Completed</span>
+                    <span className="title">{intl.get('COMPLETED-TRANSITIVE')}</span>
                     <span className="icon-thumbnail"><i className="fa fa-check"></i></span>
                   </NavLink>
                 </li>
@@ -127,13 +128,13 @@ class SidePanel extends Component {
             </li>
             <li>
               <a href="https://alpha.chronologic.network/debt/" target="_blank" rel="noopener noreferrer">
-                <span className="title">Debt Smart Contract</span>
+                <span className="title">{intl.get('DEBT-SMART-CONTRACT')}</span>
                 <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
               </a>
             </li>
             <li>
               <a href="https://alpha.chronologic.network/chronos/" target="_blank" rel="noopener noreferrer">
-                <span className="title">Day Token Contract</span>
+                <span className="title">{intl.get('DAY-TOKEN-CONTRACT')}</span>
                 <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
               </a>
             </li>
@@ -145,7 +146,7 @@ class SidePanel extends Component {
             </li>
             <li>
               <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">
-                <span className="title">Help</span>
+                <span className="title">{intl.get('HELP').d('Help')}</span>
                 <span className="icon-thumbnail"><i className="far fa-question-circle"></i></span>
               </a>
             </li>
@@ -156,7 +157,7 @@ class SidePanel extends Component {
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
-                    <span className="active-timenodes">Active TimeNodes</span>
+                    <span className="active-timenodes">{intl.get('ACTIVE-TIMENODES').d('Active TimeNodes')}</span>
                   </div>
                   <div className="col-4 px-0 text-right">
                     <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes}</span>
@@ -169,7 +170,7 @@ class SidePanel extends Component {
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
-                    <span className="active-timenodes">Current Block</span>
+                    <span className="active-timenodes">{intl.get('CURRENT-BLOCK').d('Current Block')}</span>
                   </div>
                   <div className="col-4 px-0 text-right">
                     <span className="timenode-count col-6">{this.state.blocknumber}</span>

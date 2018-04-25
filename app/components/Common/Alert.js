@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 
 const Titles = {
-  danger: 'Error',
-  info: 'Info',
-  warning: 'Warning',
-  success: 'Done'
+  danger: intl.get('ALERTS.ERROR').d('Error'),
+  info: intl.get('ALERTS.INFO').d('Info'),
+  warning: intl.get('ALERTS.WARNING').d('Warning'),
+  success: intl.get('ALERTS.SUCCESS').d('Done')
 };
 
 class Alert extends Component {
