@@ -162,8 +162,8 @@ class TransactionDetails extends ScrollbarComponent {
       const success = await transactionStore.refund(transaction);
       if (success) {
         showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
-        this.setState( {balance: 0} );
-        this.checkContractBalance();        
+        this.setState({ balance: 0 });
+        this.checkContractBalance();
       }
     } catch (error) {
       showNotification('Action cancelled by the user.', 'danger', 4000);
