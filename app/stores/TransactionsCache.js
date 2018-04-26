@@ -1,4 +1,9 @@
 import { observable } from 'mobx';
+import moment from 'moment';
+import { TEMPORAL_UNIT } from './TransactionStore';
+
+const BLOCK_BUCKET_SIZE = 240;
+const TIMESTAMP_BUCKET_SIZE = 3600;
 
 export default class TransactionsCache {
   fetchInterval = 60 * 1000;
@@ -102,8 +107,144 @@ export default class TransactionsCache {
     return this.contracts;
   }
 
+  async getRequestsByBuckets(buckets) {
+    const requestFactory = await this._eac.requestFactory();
+
+    const logs = await requestFactory.getRequestCreatedLogs(
+      {
+        bucket: buckets
+      },
+      '',
+      ''
+    );
+
+    const requests = [];
+    logs.forEach(log => {
+      requests.push({
+        address: log.args.request,
+        params: log.args.params
+      });
+    });
+
+    return requests;
+  }
+
+  async getTransactionsInBuckets(buckets) {
+    const requestFactory = await this._eac.requestFactory();
+
+    let transactions = await requestFactory.getRequestsByBucket(buckets);
+
+    transactions.reverse(); // Switch to most recent block first
+
+    const addresses = [];
+
+    transactions = transactions.map(
+      ({
+        address,
+        params: [
+          fee,
+          timeBounty,
+          claimWindowSize,
+          freezePeriod,
+          reservedWindowSize,
+          temporalUnit,
+          windowSize,
+          windowStart,
+          callGas,
+          callValue,
+          gasPrice,
+          requiredDeposit
+        ]
+      }) => {
+        const request = this._eac.transactionRequest(address);
+
+        request.data = {
+          claimData: {
+            requiredDeposit
+          },
+          paymentData: {
+            bounty: timeBounty,
+            fee
+          },
+          schedule: {
+            claimWindowSize,
+            freezePeriod,
+            reservedWindowSize,
+            temporalUnit,
+            windowSize,
+            windowStart
+          },
+          txData: {
+            callGas,
+            callValue,
+            gasPrice
+          }
+        };
+
+        addresses.push(address);
+
+        return request;
+      }
+    );
+
+    return {
+      addresses,
+      transactions
+    };
+  }
+
+  async getTransactionsInLastHours(hours) {
+    const requestFactory = await this._eac.requestFactory();
+
+    const currentTimestamp = moment().unix();
+
+    await this.updateLastBlock();
+
+    let timestampBucket = requestFactory.calcBucket(currentTimestamp, TEMPORAL_UNIT.TIMESTAMP);
+    let blockBucket = requestFactory.calcBucket(this.lastBlock, TEMPORAL_UNIT.BLOCK);
+
+    const buckets = [];
+
+    // Adding 0.5, because for each hour we fetch 2 buckets: timestamp, block.
+    for (let i = 0; i < hours; i += 0.5) {
+      // First, we fetch timestamp bucket, then block bucket.
+      const isTimestampBucket = i % 1 === 0;
+
+      buckets.push(isTimestampBucket ? timestampBucket : blockBucket);
+
+      if (isTimestampBucket) {
+        timestampBucket -= TIMESTAMP_BUCKET_SIZE;
+      } else {
+        /*
+         * Since blockBucket is negative number we should add it to block bucket size,
+         * if we want to go back in time.
+         */
+        blockBucket += BLOCK_BUCKET_SIZE;
+      }
+    }
+
+    return await this.getTransactionsInBuckets(buckets);
+  }
+
+  async getTransactionsByBlocks(startBlock, endBlock) {
+    const requestFactory = await this._eac.requestFactory();
+
+    let transactions = await requestFactory.getRequests(startBlock, endBlock);
+
+    transactions.reverse();
+
+    const addresses = transactions;
+
+    transactions = transactions.map(request => this._eac.transactionRequest(request));
+
+    return {
+      addresses,
+      transactions
+    };
+  }
+
   async getTransactions(
-    { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },
+    { startBlock = this.requestFactoryStartBlock, endBlock = 'latest', pastHours },
     cache = this.cacheDefault,
     onlyAddresses = false
   ) {
@@ -116,22 +257,22 @@ export default class TransactionsCache {
       }
     }
 
-    const requestFactory = await this._eac.requestFactory();
+    let transactionsGetResult = {};
 
-    let requestsCreated = await requestFactory.getRequests(startBlock, endBlock);
-
-    requestsCreated.reverse(); //Switch to most recent block first
-    const requestAddresses = requestsCreated;
-
-    requestsCreated = requestsCreated.map(request => this._eac.transactionRequest(request));
-
-    if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {
-      //cache new values if complete fetch
-      this.cacheContracts(requestAddresses);
-      this.cacheTransactions(requestsCreated);
+    if (pastHours) {
+      transactionsGetResult = await this.getTransactionsInLastHours(pastHours);
+    } else {
+      transactionsGetResult = await this.getTransactionsByBlocks(startBlock, endBlock);
     }
 
-    return onlyAddresses ? this.allTransactionsAddresses : requestsCreated;
+    let { addresses, transactions } = transactionsGetResult;
+
+    if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {
+      this.cacheContracts(addresses);
+      this.cacheTransactions(transactions);
+    }
+
+    return onlyAddresses ? this.allTransactionsAddresses : transactions;
   }
 
   async watchRequests() {

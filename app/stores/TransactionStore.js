@@ -108,11 +108,11 @@ export class TransactionStore {
     this.isSetup = true;
   }
 
-  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
     await this.setup();
 
     startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._cache.getTransactions({ startBlock, endBlock }, cached);
+    return await this._cache.getTransactions({ startBlock, endBlock, pastHours }, cached);
   }
 
   async getAllTransactions(cached) {
@@ -169,10 +169,11 @@ export class TransactionStore {
     endBlock,
     limit = DEFAULT_LIMIT,
     offset = 0,
+    pastHours,
     resolved,
     resolveAll = false
   }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock });
+    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
     if (typeof resolved !== 'undefined' && resolved !== null) {
       return this.queryTransactions({
