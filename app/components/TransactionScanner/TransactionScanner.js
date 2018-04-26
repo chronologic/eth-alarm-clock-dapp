@@ -14,7 +14,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 class TransactionScanner extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
   _isMounted = false;
 
@@ -29,7 +29,8 @@ class TransactionScanner extends Component {
   async fetchData({ limit, offset }) {
     const options = {
       limit,
-      offset
+      offset,
+      pastHours: this.props.pastHours
     };
 
     options.resolveAll = this.props.resolveAll || false;
@@ -117,6 +118,7 @@ TransactionScanner.propTypes = {
   showStatus: PropTypes.bool,
   includeResolved: PropTypes.bool,
   includeUnresolved: PropTypes.bool,
+  pastHours: PropTypes.number,
   resolveAll: PropTypes.bool
 };
 

@@ -7,7 +7,6 @@ import standardTokenAbi from '../abi/standardToken';
 let instance = null;
 
 export default class Web3Service {
-
   web3 = null;
   tokenInstance = null;
   @observable initialized = false;
@@ -217,6 +216,12 @@ export default class Web3Service {
       contract.approve(receiver, amount, { from: this.defaultAccount }, callback)
     );
     return approve;
+  }
+
+  async getAddressBalance(address) {
+    const { web3 } = this;
+    const balance = await Bb.fromCallback(callback => web3.eth.getBalance(address, callback));
+    return balance.valueOf();
   }
 
   @action

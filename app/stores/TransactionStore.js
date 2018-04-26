@@ -108,11 +108,11 @@ export class TransactionStore {
     this.isSetup = true;
   }
 
-  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
     await this.setup();
 
     startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._cache.getTransactions({ startBlock, endBlock }, cached);
+    return await this._cache.getTransactions({ startBlock, endBlock, pastHours }, cached);
   }
 
   async getAllTransactions(cached) {
@@ -130,8 +130,7 @@ export class TransactionStore {
       return this._cache.allTransactionsAddresses;
     }
 
-    const addresses = await this._cache.getTransactions({}, true, true);
-    return addresses;
+    return await this._cache.getTransactions({}, true, true);
   }
 
   async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
@@ -170,10 +169,11 @@ export class TransactionStore {
     endBlock,
     limit = DEFAULT_LIMIT,
     offset = 0,
+    pastHours,
     resolved,
     resolveAll = false
   }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock });
+    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
     if (typeof resolved !== 'undefined' && resolved !== null) {
       return this.queryTransactions({
@@ -216,8 +216,7 @@ export class TransactionStore {
   }
 
   async getTransactionByAddress(address) {
-    const txRequest = await this._eac.transactionRequest(address, this._web3);
-    return txRequest;
+    return await this._eac.transactionRequest(address, this._web3);
   }
 
   async isTransactionResolved(transaction) {
@@ -244,6 +243,10 @@ export class TransactionStore {
     return await transaction.cancel(txParameters);
   }
 
+  async refund(transaction, txParameters) {
+    return await transaction.sendOwnerEther(txParameters);
+  }
+
   async validateRequestParams(
     toAddress,
     callData = '',
@@ -253,7 +256,7 @@ export class TransactionStore {
     windowStart,
     gasPrice,
     fee,
-    payment,
+    timeBounty,
     requiredDeposit,
     isTimestamp,
     endowment
@@ -270,7 +273,7 @@ export class TransactionStore {
       [fromAddress, feeRecipient, toAddress],
       [
         fee,
-        payment,
+        timeBounty,
         claimWindowSize,
         freezePeriod,
         reservedWindowSize,

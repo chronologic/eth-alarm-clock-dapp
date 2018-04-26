@@ -61,8 +61,7 @@ class EacWorker {
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
-      factory: await eac.requestFactory(),
-      tracker: await eac.requestTracker()
+      factory: await eac.requestFactory()
     };
 
     this.config = await Config.create(configOptions);
