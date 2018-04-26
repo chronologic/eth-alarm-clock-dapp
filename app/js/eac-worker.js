@@ -4,7 +4,6 @@ import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-import BigNumber from 'bignumber.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 
@@ -20,11 +19,17 @@ class EacWorker {
 
     if (network) {
       provider = (() => {
-        if ( new RegExp('ws://').test(network.endpoint) || new RegExp('wss://').test(network.endpoint)) {
+        if (
+          new RegExp('ws://').test(network.endpoint) ||
+          new RegExp('wss://').test(network.endpoint)
+        ) {
           const ws = new Web3WsProvider(`${network.endpoint}`);
           ws.__proto__.sendAsync = ws.__proto__.send;
           return ws;
-        } else if ( new RegExp('http://').test(network.endpoint) || new RegExp('https://').test(network.endpoint)) {
+        } else if (
+          new RegExp('http://').test(network.endpoint) ||
+          new RegExp('https://').test(network.endpoint)
+        ) {
           return new Web3.providers.HttpProvider(`${network.endpoint}`);
         }
       })();
@@ -32,8 +37,8 @@ class EacWorker {
       provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
     }
 
-    const web3 = new Web3(provider);
-    const eac = EAC(web3);
+    this.web3 = new Web3(provider);
+    const eac = EAC(this.web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
@@ -46,7 +51,7 @@ class EacWorker {
     });
 
     const configOptions = {
-      web3,
+      web3: this.web3,
       eac,
       provider,
       scanSpread: options.scan,
@@ -63,21 +68,22 @@ class EacWorker {
     this.config = await Config.create(configOptions);
 
     this.config.logger = logger;
-    this.config.statsdb = new StatsDB(web3, browserDB);
+    this.config.statsdb = new StatsDB(this.web3, browserDB);
     const addresses = await this.config.wallet.getAddresses();
 
     this.config.statsdb.initialize(addresses);
-    this.alarmClient = new Scanner(
-      options.milliseconds,
-      this.config
-    );
+    this.alarmClient = new Scanner(options.milliseconds, this.config);
 
     this.updateStats();
   }
 
-  async awaitAlarmClientInitialized () {
-    if (!this.alarmClient || !this.alarmClient.start || typeof this.alarmClient.start !== 'function') {
-      return new Promise((resolve) => {
+  async awaitAlarmClientInitialized() {
+    if (
+      !this.alarmClient ||
+      !this.alarmClient.start ||
+      typeof this.alarmClient.start !== 'function'
+    ) {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitAlarmClientInitialized());
         }, 500);
@@ -102,25 +108,29 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   updateStats() {
-    let etherGain;
-    let executedTransactions;
+    const empty = {
+      bounties: null,
+      costs: null,
+      profit: null,
+      executedTransactions: []
+    };
+
+    let { bounties, costs, profit, executedTransactions } = this.config
+      ? this.config.statsdb.getStats()[0]
+      : empty;
 
     if (this.config) {
-      const stats = this.config.statsdb.getStats();
-
-      const accountStats = stats[0];
-      const startingEth = BigNumber(accountStats.startingEther);
-      const currentEth = BigNumber(accountStats.currentEther);
-      etherGain = currentEth.minus(startingEth).toString();
-      executedTransactions = accountStats.executedTransactions;
-    } else {
-      etherGain = null;
-      executedTransactions = [];
+      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toString();
+      bounties = weiToEth(bounties);
+      costs = weiToEth(costs);
+      profit = weiToEth(profit);
     }
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      etherGain: etherGain,
+      bounties: bounties,
+      costs: costs,
+      profit: profit,
       executedTransactions: executedTransactions
     });
   }
@@ -145,7 +155,7 @@ class EacWorker {
       });
     };
 
-    DBDeleteRequest.onblocked = function () {
+    DBDeleteRequest.onblocked = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
         result: false
