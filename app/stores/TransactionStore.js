@@ -60,8 +60,8 @@ export class TransactionStore {
   }
 
   get requestFactoryStartBlock() {
-    const { netId } = this._web3;
-    return requestFactoryStartBlocks[netId] || 0;
+    const { network } = this._web3;
+    return requestFactoryStartBlocks[network.id] || 0;
   }
 
   // Returns an array of transactions based on the current
