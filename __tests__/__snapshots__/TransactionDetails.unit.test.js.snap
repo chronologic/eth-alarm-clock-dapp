@@ -1,0 +1,213 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TransactionDetails correctly renders 1`] = `
+<div
+  className="tab-pane slide active show"
+>
+  <div />
+  <table
+    className="table d-block"
+  >
+    <tbody
+      className="d-block"
+    >
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Status
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+          
+          <span
+            className="d-none"
+          >
+             at
+             
+            <a
+              href="https://etherscan.io/tx/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              
+            </a>
+          </span>
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          To Address
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+          <a
+            href="https://etherscan.io/address/0x123306090abab3a6e1400e9345bc60c78a8bef57"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            0x123306090abab3a6e1400e9345bc60c78a8bef57
+          </a>
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Value/Amount
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        />
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Data
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+          title=""
+        >
+          
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Block
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+          
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Window Size
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+          
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Gas Amount
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+           
+           
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Gas Price
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        />
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Time Bounty
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        >
+          10000 WEI
+        </td>
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Fee
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        />
+      </tr>
+      <tr
+        className="row"
+      >
+        <td
+          className="d-inline-block col-5 col-md-3"
+        >
+          Deposit
+        </td>
+        <td
+          className="d-inline-block col-7 col-md-9"
+        />
+      </tr>
+    </tbody>
+  </table>
+  <div
+    className="row"
+  >
+    <div
+      className="col-2 col-sm-4 col-md-6 col-lg-8"
+    />
+    <div
+      className="col-10 col-sm-8 col-md-6 col-lg-4"
+    >
+      <div
+        className="row"
+      >
+        <div
+          className="col-6"
+        />
+        <div
+          className="col-6"
+        />
+        <div
+          className="col-6"
+        />
+      </div>
+    </div>
+    <div
+      className="col-12"
+    >
+      <div />
+    </div>
+  </div>
+</div>
+`;

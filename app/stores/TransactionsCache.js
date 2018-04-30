@@ -260,6 +260,10 @@ export default class TransactionsCache {
     let transactionsGetResult = {};
 
     if (pastHours) {
+      if (typeof pastHours !== 'number') {
+        throw new Error('pastHours parameter in getTransactions must be a number.');
+      }
+
       transactionsGetResult = await this.getTransactionsInLastHours(pastHours);
     } else {
       transactionsGetResult = await this.getTransactionsByBlocks(startBlock, endBlock);
@@ -267,7 +271,7 @@ export default class TransactionsCache {
 
     let { addresses, transactions } = transactionsGetResult;
 
-    if (startBlock == this.requestFactoryStartBlock && endBlock == 'latest') {
+    if (startBlock == this.requestFactoryStartBlock && endBlock === 'latest') {
       this.cacheContracts(addresses);
       this.cacheTransactions(transactions);
     }
