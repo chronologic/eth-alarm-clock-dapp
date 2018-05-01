@@ -80,7 +80,8 @@ class TimeNodeUnlock extends Component {
 }
 
 TimeNodeUnlock.propTypes = {
-  timeNodeStore: PropTypes.any
+  timeNodeStore: PropTypes.any,
+  updateWalletUnlocked: PropTypes.any
 };
 
 export default TimeNodeUnlock;
