@@ -13,14 +13,12 @@ const INITIAL_STATE = {
 @inject('eacService')
 @inject('transactionStore')
 class TransactionsRow extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
-  _isMounted = false
+  _isMounted = false;
 
   async getPreparedState() {
     const { eacService, transaction, transactionStore } = this.props;
-
-    await transaction.fillData();
 
     const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
 
@@ -86,19 +84,30 @@ class TransactionsRow extends Component {
   }
 
   render() {
-    this.getUpdatedState();
     const { showStatus, transaction } = this.props;
     const { bounty, deposit, status, time, timeWindow, value } = this.state;
 
     return (
       <tr>
-        <td className="v-align-middle semi-bold"><Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link></td>
+        <td className="v-align-middle semi-bold">
+          <Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link>
+        </td>
         <td className="v-align-middle">{time}</td>
-        <td className="v-align-middle semi-bold"><ValueDisplay priceInWei={bounty}/></td>
-        <td className="v-align-middle"><ValueDisplay priceInWei={value}/></td>
-        <td className="v-align-middle"><ValueDisplay priceInWei={deposit}/></td>
+        <td className="v-align-middle semi-bold">
+          <ValueDisplay priceInWei={bounty} />
+        </td>
+        <td className="v-align-middle">
+          <ValueDisplay priceInWei={value} />
+        </td>
+        <td className="v-align-middle">
+          <ValueDisplay priceInWei={deposit} />
+        </td>
         <td className="v-align-middle">{timeWindow}</td>
-        {showStatus && <td className="v-align-middle"><a href="#">{status}</a></td>}
+        {showStatus && (
+          <td className="v-align-middle">
+            <a href="#">{status}</a>
+          </td>
+        )}
       </tr>
     );
   }

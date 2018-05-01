@@ -14,14 +14,22 @@ describe('Stores / TransactionsCache', () => {
       },
       requestFactory: () =>
         Promise.resolve({
-          getRequests() {
-            return MOCKED_TRANSACTIONS;
+          getRequestCreatedLogs() {
+            return MOCKED_TRANSACTIONS.map(tx => ({
+              args: {
+                request: tx,
+                params: []
+              }
+            }));
           }
         }),
       transactionRequest(address) {
         return {
           address
         };
+      },
+      getTransactionsEventsForAddresses() {
+        return {};
       }
     };
 
