@@ -25,14 +25,14 @@ class TimeNodeRoute extends Component {
 
   render() {
     const {
-      hasWallet,
+      walletKeystore,
       attachedDAYAccount
     } = this.props.timeNodeStore;
 
     const { walletUnlocked } = this.state;
 
     let componentToShow = null;
-    if (hasWallet) {
+    if (walletKeystore) {
       if (attachedDAYAccount) {
         componentToShow = walletUnlocked
           ? <TimeNodeMain />

@@ -47,7 +47,7 @@ class Header extends Component {
 
   render() {
     const { web3Service } = this.props;
-    const networkNameString = web3Service.network ? web3Service.network.name : '';
+    const networkNameString = web3Service.network ? web3Service.network.name : 'Unknown';
     const blockNumberString = this.state.blockNumber ? 'at #' + this.state.blockNumber : '';
 
     return (

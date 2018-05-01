@@ -29,8 +29,12 @@ class TimeNodeUnlock extends Component {
   }
 
   async verifyPassword() {
-    this.props.timeNodeStore.unlockWallet(this.passwdRef.value);
-    this.props.updateWalletUnlocked(true);
+    const password = this.passwdRef.value;
+
+    if (this.props.timeNodeStore.passwordMatchesKeystore(this.props.timeNodeStore.encrypt(password))) {
+      this.props.timeNodeStore.unlockTimeNode(password);
+      this.props.updateWalletUnlocked(true);
+    }
   }
 
   render() {
