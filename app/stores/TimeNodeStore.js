@@ -67,7 +67,7 @@ export default class TimeNodeStore {
     if (Cookies.get('attachedDAYAccount')) this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
     if (Cookies.get('hasWallet')) this.hasWallet = true;
 
-    if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
+    // if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
   }
 
   startWorker(keystore, password) {
@@ -202,8 +202,11 @@ export default class TimeNodeStore {
 
     this.startWorker(keystore, password);
 
-    this.setCookie('tn', keystore);
     this.setCookie('tnp', password);
+  }
+
+  setKeyStore(keystore) {
+    this.setCookie('tn', keystore);
     this.setCookie('hasWallet', true);
     this.hasWallet = true;
   }

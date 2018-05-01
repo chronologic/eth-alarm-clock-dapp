@@ -4,20 +4,23 @@ import PropTypes from 'prop-types';
 import TimeNodeMain from './TimeNodeMain';
 import TimeNodeWallet from './TimeNodeWallet';
 import TimeNodeProve from './TimeNodeProve';
+import TimeNodeUnlock from './TimeNodeUnlock';
 
 @inject('timeNodeStore')
 @observer
 class TimeNodeRoute extends Component {
   render() {
+    const { hasWallet, attachedDAYAccount } = this.props.timeNodeStore;
+
     let componentToShow = null;
-    if (this.props.timeNodeStore.hasWallet) {
-      if (this.props.timeNodeStore.attachedDAYAccount) {
-        componentToShow = <TimeNodeMain/>;
+    if (hasWallet) {
+      if (attachedDAYAccount) {
+        componentToShow = <TimeNodeMain />;
       } else {
-        componentToShow = <TimeNodeProve/>;
+        componentToShow = <TimeNodeProve />;
       }
     } else {
-      componentToShow = <TimeNodeWallet/>;
+      componentToShow = <TimeNodeUnlock />;
     }
 
     return (
