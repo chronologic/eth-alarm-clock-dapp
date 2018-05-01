@@ -9,18 +9,39 @@ import TimeNodeUnlock from './TimeNodeUnlock';
 @inject('timeNodeStore')
 @observer
 class TimeNodeRoute extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      walletUnlocked: false
+    };
+    this.updateWalletUnlocked = this.updateWalletUnlocked.bind(this);
+  }
+
+  updateWalletUnlocked(unlocked) {
+    this.setState({
+      walletUnlocked: unlocked
+    });
+  }
+
   render() {
-    const { hasWallet, attachedDAYAccount } = this.props.timeNodeStore;
+    const {
+      hasWallet,
+      attachedDAYAccount
+    } = this.props.timeNodeStore;
+
+    const { walletUnlocked } = this.state;
 
     let componentToShow = null;
     if (hasWallet) {
       if (attachedDAYAccount) {
-        componentToShow = <TimeNodeMain />;
+        componentToShow = walletUnlocked
+          ? <TimeNodeMain />
+          : <TimeNodeUnlock updateWalletUnlocked={this.updateWalletUnlocked} />;
       } else {
         componentToShow = <TimeNodeProve />;
       }
     } else {
-      componentToShow = <TimeNodeUnlock />;
+      componentToShow = <TimeNodeWallet />;
     }
 
     return (

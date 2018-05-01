@@ -8,6 +8,9 @@ import PoweredByEAC from '../Common/PoweredByEAC';
 class TimeNodeUnlock extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      updateWalletUnlocked: this.props.updateWalletUnlocked
+    };
     this.verifyPassword = this.verifyPassword.bind(this);
   }
 
@@ -26,18 +29,15 @@ class TimeNodeUnlock extends Component {
   }
 
   async verifyPassword() {
-    const signature = this.signatureRef.value;
-
-    if (signature) {
-      await this.props.timeNodeStore.attachDayAccount(signature);
-    }
+    this.props.timeNodeStore.unlockWallet(this.passwdRef.value);
+    this.props.updateWalletUnlocked(true);
   }
 
   render() {
     return (
       <div id="timeNodeUnlock" className="tab-content">
         <div className="tab-pane active show">
-          <h2>Sign to prove DAY ownership</h2>
+          <h2>Please unlock your account</h2>
 
           <div>
             <p>Your wallet is <b>encrypted</b>. Please enter the password:</p>

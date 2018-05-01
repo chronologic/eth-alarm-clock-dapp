@@ -67,7 +67,16 @@ export default class TimeNodeStore {
     if (Cookies.get('attachedDAYAccount')) this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
     if (Cookies.get('hasWallet')) this.hasWallet = true;
 
-    // if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
+    if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
+  }
+
+  unlockWallet(password) {
+    if (Cookies.get('tn') && password) {
+      this.startClient(Cookies.get('tn'), password);
+    } else {
+      showNotification('Unable to unlock the wallet. Please try again');
+    }
+    return;
   }
 
   startWorker(keystore, password) {
@@ -113,10 +122,7 @@ export default class TimeNodeStore {
   }
 
   pushToLog(logs, log) {
-    if (logs.length === LOG_CAP) {
-      logs.shift();
-    }
-
+    if (logs.length === LOG_CAP) logs.shift();
     logs.push(log);
   }
 
@@ -145,7 +151,6 @@ export default class TimeNodeStore {
   }
 
   async startScanning() {
-
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
     }
