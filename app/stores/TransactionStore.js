@@ -283,7 +283,8 @@ export class TransactionStore {
         gasPrice,
         requiredDeposit
       ],
-      callData,
+      // callData - I've removed it, but getting result that every params is invalid
+      // is there any other change?
       endowment
     ];
 
@@ -292,6 +293,10 @@ export class TransactionStore {
 
     try {
       const paramsValidBooleans = await requestFactory.validateRequestParams(...serializedParams);
+
+      console.debug({
+        paramsValidBooleans
+      });
 
       errors = requestFactory.parseIsValid(paramsValidBooleans);
 
