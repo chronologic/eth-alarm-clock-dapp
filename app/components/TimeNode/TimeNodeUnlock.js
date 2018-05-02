@@ -8,9 +8,6 @@ import PoweredByEAC from '../Common/PoweredByEAC';
 class TimeNodeUnlock extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      updateWalletUnlocked: this.props.updateWalletUnlocked
-    };
     this.verifyPassword = this.verifyPassword.bind(this);
   }
 

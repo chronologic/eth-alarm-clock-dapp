@@ -61,24 +61,6 @@ class TimeNodeWallet extends Component {
 
 
   render() {
-    // let passwordField = null;
-    // if (this.state.userUploadedWallet) {
-    //   passwordField = <div>
-    //     <p>Your wallet is <b>encrypted</b>. Please enter the password:</p>
-    //     <div className="row">
-    //       <div className="col-md-4">
-    //         <div className="form-group form-group-default required">
-    //           <input id="walletPassword"
-    //             type="password"
-    //             placeholder="Password"
-    //             className="form-control"
-    //             ref={(el) => this.passwdRef = el}/>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>;
-    // }
-
     return (
       <div id="timeNodeWallet"
         className="tab-content"
