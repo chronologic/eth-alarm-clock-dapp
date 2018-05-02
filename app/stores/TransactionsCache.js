@@ -243,8 +243,6 @@ export default class TransactionsCache {
       return request;
     });
 
-    await this.fillUpTransactions(transactions);
-
     return {
       addresses,
       transactions
@@ -278,6 +276,8 @@ export default class TransactionsCache {
     }
 
     let { addresses, transactions } = transactionsGetResult;
+
+    await this.fillUpTransactions(transactions);
 
     if (startBlock == this.requestFactoryStartBlock && endBlock === 'latest') {
       this.cacheContracts(addresses);

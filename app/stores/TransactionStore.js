@@ -247,7 +247,6 @@ export class TransactionStore {
 
   async validateRequestParams(
     toAddress,
-    callData = '',
     callGas,
     callValue,
     windowSize,
@@ -283,7 +282,6 @@ export class TransactionStore {
         gasPrice,
         requiredDeposit
       ],
-      callData,
       endowment
     ];
 
@@ -324,7 +322,6 @@ export class TransactionStore {
 
     const { paramsValid, errors } = await this.validateRequestParams(
       toAddress,
-      callData,
       callGas,
       callValue,
       windowSize,
