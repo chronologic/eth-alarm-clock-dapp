@@ -230,6 +230,7 @@ export default class Web3Service {
     if (!web3) {
       if (typeof window.web3 !== 'undefined') {
         web3 = new Web3(window.web3.currentProvider);
+        this.web3HTTP = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
         this.connectedToMetaMask = true;
       } else {
         web3 = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
@@ -302,6 +303,19 @@ export default class Web3Service {
     }
 
     return `${display} ${unit}`;
+  }
+
+  /**
+   * Since there are problems with using filter for events
+   * with array as an address parameter in MetaMask,
+   * we're using custom HTTP provider for running filter query.
+   *
+   * @param {object} options
+   */
+  filter(options) {
+    const web3 = this.web3HTTP || this.web3;
+
+    return web3.eth.filter(options);
   }
 }
 
