@@ -247,7 +247,6 @@ export class TransactionStore {
 
   async validateRequestParams(
     toAddress,
-    callData = '',
     callGas,
     callValue,
     windowSize,
@@ -283,8 +282,6 @@ export class TransactionStore {
         gasPrice,
         requiredDeposit
       ],
-      // callData - I've removed it, but getting result that every params is invalid
-      // is there any other change?
       endowment
     ];
 
@@ -293,10 +290,6 @@ export class TransactionStore {
 
     try {
       const paramsValidBooleans = await requestFactory.validateRequestParams(...serializedParams);
-
-      console.debug({
-        paramsValidBooleans
-      });
 
       errors = requestFactory.parseIsValid(paramsValidBooleans);
 
@@ -329,7 +322,6 @@ export class TransactionStore {
 
     const { paramsValid, errors } = await this.validateRequestParams(
       toAddress,
-      callData,
       callGas,
       callValue,
       windowSize,
