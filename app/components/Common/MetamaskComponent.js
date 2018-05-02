@@ -21,6 +21,7 @@ class MetamaskComponent extends Component {
 
   get isWeb3Usable() {
     const { web3Service } = this.props;
+
     return (
       web3Service.web3.isConnected() &&
       typeof web3Service.accounts !== 'undefined' &&

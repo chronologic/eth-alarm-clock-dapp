@@ -1,6 +1,7 @@
 import { observable } from 'mobx';
 import moment from 'moment';
 import { TEMPORAL_UNIT } from './TransactionStore';
+import { TRANSACTION_EVENT } from '../services/eac';
 
 const BLOCK_BUCKET_SIZE = 240;
 const TIMESTAMP_BUCKET_SIZE = 3600;
@@ -34,7 +35,7 @@ export default class TransactionsCache {
     this.watchRequests();
   }
 
-  async runFetchTicker() {
+  runFetchTicker() {
     if (!this.running) {
       this.stopFetchTicker();
       return;
@@ -42,7 +43,7 @@ export default class TransactionsCache {
 
     this.syncing = true;
 
-    await this.getTransactions({}, false);
+    this.getTransactions({}, false);
 
     this.lastUpdate = new Date();
     this.updateLastBlock();
@@ -129,6 +130,44 @@ export default class TransactionsCache {
     return requests;
   }
 
+  getDataForRequestParams([
+    fee,
+    timeBounty,
+    claimWindowSize,
+    freezePeriod,
+    reservedWindowSize,
+    temporalUnit,
+    windowSize,
+    windowStart,
+    callGas,
+    callValue,
+    gasPrice,
+    requiredDeposit
+  ]) {
+    return {
+      claimData: {
+        requiredDeposit
+      },
+      paymentData: {
+        bounty: timeBounty,
+        fee
+      },
+      schedule: {
+        claimWindowSize,
+        freezePeriod,
+        reservedWindowSize,
+        temporalUnit,
+        windowSize,
+        windowStart
+      },
+      txData: {
+        callGas,
+        callValue,
+        gasPrice
+      }
+    };
+  }
+
   async getTransactionsInBuckets(buckets) {
     const requestFactory = await this._eac.requestFactory();
 
@@ -138,54 +177,15 @@ export default class TransactionsCache {
 
     const addresses = [];
 
-    transactions = transactions.map(
-      ({
-        address,
-        params: [
-          fee,
-          timeBounty,
-          claimWindowSize,
-          freezePeriod,
-          reservedWindowSize,
-          temporalUnit,
-          windowSize,
-          windowStart,
-          callGas,
-          callValue,
-          gasPrice,
-          requiredDeposit
-        ]
-      }) => {
-        const request = this._eac.transactionRequest(address);
+    transactions = transactions.map(({ address, params }) => {
+      const request = this._eac.transactionRequest(address);
 
-        request.data = {
-          claimData: {
-            requiredDeposit
-          },
-          paymentData: {
-            bounty: timeBounty,
-            fee
-          },
-          schedule: {
-            claimWindowSize,
-            freezePeriod,
-            reservedWindowSize,
-            temporalUnit,
-            windowSize,
-            windowStart
-          },
-          txData: {
-            callGas,
-            callValue,
-            gasPrice
-          }
-        };
+      request.data = this.getDataForRequestParams(params);
 
-        addresses.push(address);
+      addresses.push(address);
 
-        return request;
-      }
-    );
+      return request;
+    });
 
     return {
       addresses,
@@ -229,13 +229,21 @@ export default class TransactionsCache {
   async getTransactionsByBlocks(startBlock, endBlock) {
     const requestFactory = await this._eac.requestFactory();
 
-    let transactions = await requestFactory.getRequests(startBlock, endBlock);
+    const logs = await requestFactory.getRequestCreatedLogs({}, startBlock, endBlock);
 
-    transactions.reverse();
+    const addresses = [];
 
-    const addresses = transactions;
+    const transactions = logs.map(({ args: { request: address, params } }) => {
+      const request = this._eac.transactionRequest(address);
 
-    transactions = transactions.map(request => this._eac.transactionRequest(request));
+      request.data = this.getDataForRequestParams(params);
+
+      addresses.push(address);
+
+      return request;
+    });
+
+    await this.fillUpTransactions(transactions);
 
     return {
       addresses,
@@ -284,12 +292,16 @@ export default class TransactionsCache {
 
     this.requestWatcher = await requestFactory.watchRequests(
       this.requestFactoryStartBlock,
-      request => {
+      async request => {
         const exists = this.allTransactionsAddresses.find(
           cachedRequest => cachedRequest === request
         );
+
         if (!exists) {
           const txRequest = this._eac.transactionRequest(request);
+
+          await txRequest.fillData();
+
           this.cacheContracts([request], 'top');
           this.cacheTransactions([txRequest], 'top');
         }
@@ -304,30 +316,42 @@ export default class TransactionsCache {
       return await this.getTransactions({});
     }
 
-    await this.queryTransactions(this.allTransactions);
-
     return this.allTransactions;
   }
 
-  async queryTransactions(transactions) {
+  async fillUpTransactions(transactions) {
+    const addresses = transactions.map(t => t.address);
+
+    const transactionsEventsMap = await this._eac.getTransactionsEventsForAddresses(addresses);
+
     for (let transaction of transactions) {
-      let cached = this.fetchCachedTransaction(transaction);
-      if (cached) {
-        transaction = cached;
-        transaction.refreshData();
-      } else {
-        await transaction.fillData();
-      }
+      this.updateTransactionDataBasedOnEvents(
+        transaction,
+        transactionsEventsMap[transaction.address] === TRANSACTION_EVENT.CANCELLED,
+        transactionsEventsMap[transaction.address] === TRANSACTION_EVENT.EXECUTED
+      );
     }
-    return transactions;
   }
 
-  async fillUpTransactions(transactions) {
-    for (let transaction of transactions) {
-      if (transaction.fillData) {
-        await transaction.fillData();
-      }
+  updateTransactionDataBasedOnEvents(transaction, cancelled, executed) {
+    const meta = {
+      isCancelled: false,
+      wasCalled: false
+    };
+
+    if (cancelled) {
+      meta.isCancelled = true;
     }
+
+    if (executed) {
+      meta.wasCalled = true;
+    }
+
+    if (!transaction.data) {
+      transaction.data = {};
+    }
+
+    transaction.data.meta = meta;
   }
 
   fetchCachedTransaction(transaction) {
@@ -379,8 +403,6 @@ export default class TransactionsCache {
     const replace = updateType == 'replace';
     const append = updateType == 'append';
     const unshift = updateType == 'top';
-
-    this.fillUpTransactions(transactions);
 
     if (this.transactions.length < transactions.length || replace) {
       this.transactions = transactions;

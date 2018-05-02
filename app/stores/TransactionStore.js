@@ -142,9 +142,7 @@ export class TransactionStore {
       transactions = transactions.slice(offset, offset + limit);
     }
 
-    await this._cache.queryTransactions(transactions);
-
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
 
       if (isResolved === resolved) {
