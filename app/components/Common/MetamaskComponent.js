@@ -46,7 +46,7 @@ class MetamaskComponent extends Component {
     if (!hasPreviousMetamaskState || hasChangedMetamaskState) {
       if (metamaskInstalled) {
         showNotification(`<b>Metamask connected</b>`, 'success');
-        showNotification(`You are connected to ${web3Service.network}`, 'info');
+        showNotification(`You are connected to ${web3Service.network.name}`, 'info');
       } else {
         showNotification(
           `<b>Metamask is not installed</b>`,

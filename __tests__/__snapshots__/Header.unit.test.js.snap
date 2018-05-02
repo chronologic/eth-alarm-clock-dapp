@@ -53,7 +53,7 @@ exports[`Header displays current block number 1`] = `
       <span
         className="timenode-count"
       >
-        
+        Unknown
          
         at #5361200
       </span>

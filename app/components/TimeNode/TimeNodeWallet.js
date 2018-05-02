@@ -38,17 +38,12 @@ class TimeNodeWallet extends Component {
     try {
       const file = this.walletFileRef.files[0];
       const timeNodeStore = this.props.timeNodeStore;
-      const password = timeNodeStore.encrypt(this.passwdRef.value);
 
       if (file) {
         const reader = new FileReader();
         reader.onload = async function() {
           const keystore = timeNodeStore.encrypt(reader.result);
-          const matches = timeNodeStore.checkPasswordMatchesKeystore(keystore, password);
-
-          if (matches) {
-            await timeNodeStore.startClient(keystore, password);
-          }
+          timeNodeStore.setKeyStore(keystore);
         };
         reader.readAsText(file, 'utf-8');
       }
@@ -66,24 +61,6 @@ class TimeNodeWallet extends Component {
 
 
   render() {
-    let passwordField = null;
-    if (this.state.userUploadedWallet) {
-      passwordField = <div>
-        <p>Your wallet is <b>encrypted</b>. Please enter the password:</p>
-        <div className="row">
-          <div className="col-md-4">
-            <div className="form-group form-group-default required">
-              <input id="walletPassword"
-                type="password"
-                placeholder="Password"
-                className="form-control"
-                ref={(el) => this.passwdRef = el}/>
-            </div>
-          </div>
-        </div>
-      </div>;
-    }
-
     return (
       <div id="timeNodeWallet"
         className="tab-content"
@@ -104,7 +81,6 @@ class TimeNodeWallet extends Component {
             </div>
             <p>{this.state.selectedFile}</p>
           </div>
-          {passwordField}
         </div>
 
         <div className="row">
