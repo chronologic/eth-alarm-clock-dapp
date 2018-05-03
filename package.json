@@ -120,5 +120,10 @@
   "browserslist": [
     "defaults",
     "not ie < 11"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "worker-loader!../js/eac-worker.js":"<rootDir>/__mocks__/eacWorkerMock.js"
+    }
+  }
 }

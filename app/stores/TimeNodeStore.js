@@ -15,7 +15,7 @@ import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
  * of DAY tokens held by the owner.
  */
 export class TIMENODE_STATUS {
-  static MASTER_CHRONONODE  = 'Master ChronoNode';
+  static MASTER_CHRONONODE = 'Master ChronoNode';
   static CHRONONODE = 'ChronoNode';
   static TIMENODE = 'TimeNode';
   static DISABLED = 'Disabled';
@@ -41,7 +41,8 @@ export default class TimeNodeStore {
   @observable detailedLogs = [];
 
   @observable logType = LOG_TYPE.BASIC;
-  @computed get logs() {
+  @computed
+  get logs() {
     return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
   }
 
@@ -64,9 +65,8 @@ export default class TimeNodeStore {
     this._web3Service = web3Service;
     this._keenStore = keenStore;
 
-    Cookies.set('attachedDAYAccount', 'asdasd');
-
-    if (Cookies.get('attachedDAYAccount')) this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
+    if (Cookies.get('attachedDAYAccount'))
+      this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
     if (Cookies.get('tn')) this.walletKeystore = Cookies.get('tn');
   }
 
@@ -79,23 +79,25 @@ export default class TimeNodeStore {
     return;
   }
 
-  startWorker(keystore, password) {
-    this.eacWorker = new EacWorker();
-
-    const options = {
+  getWorkerOptions(keystore, keystorePassword) {
+    return {
       network: this._web3Service.network,
       keystore: [this.decrypt(keystore)],
-      keystorePassword: this.decrypt(password),
+      keystorePassword,
       logfile: 'console',
       logLevel: 1,
       milliseconds: 15000,
       autostart: false,
       scan: 950, // ~65min on kovan
       repl: false,
-      browserDB: true,
+      browserDB: true
     };
+  }
 
-    this.eacWorker.onmessage = (event) => {
+  startWorker(options) {
+    this.eacWorker = new EacWorker();
+
+    this.eacWorker.onmessage = event => {
       const { type } = event.data;
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
@@ -140,8 +142,13 @@ export default class TimeNodeStore {
   }
 
   async awaitScanReady() {
-    if (!this.eacWorker || this.eacWorker === null || !this._keenStore || this._keenStore === null ) {
-      return new Promise((resolve) => {
+    if (
+      !this.eacWorker ||
+      this.eacWorker === null ||
+      !this._keenStore ||
+      this._keenStore === null
+    ) {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitScanReady());
         }, 500);
@@ -161,7 +168,10 @@ export default class TimeNodeStore {
 
     this.sendActiveTimeNodeEvent();
 
-    this._timeNodeStatusCheckIntervalRef = setInterval(() => this.sendActiveTimeNodeEvent(), STATUS_UPDATE_INTERVAL);
+    this._timeNodeStatusCheckIntervalRef = setInterval(
+      () => this.sendActiveTimeNodeEvent(),
+      STATUS_UPDATE_INTERVAL
+    );
 
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
@@ -178,7 +188,7 @@ export default class TimeNodeStore {
       clearInterval(this._timeNodeStatusCheckIntervalRef);
     }
 
-    if (this.eacWorker){
+    if (this.eacWorker) {
       this.eacWorker.postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
       });
@@ -205,7 +215,7 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    this.startWorker(keystore, password);
+    this.startWorker(this.getWorkerOptions(keystore, password));
   }
 
   setKeyStore(keystore) {
@@ -234,7 +244,10 @@ export default class TimeNodeStore {
   async getBalance(address = this.getMyAddress()) {
     const balance = await this._eacService.Util.getBalance(address);
 
-    this.balanceETH = balance.div(10**18).toNumber().toFixed(2);
+    this.balanceETH = balance
+      .div(10 ** 18)
+      .toNumber()
+      .toFixed(2);
 
     return this.balanceETH;
   }
@@ -248,15 +261,18 @@ export default class TimeNodeStore {
 
     const contract = web3.eth.contract(dayTokenAbi).at(dayTokenAddress);
 
-    const balanceNum = await Bb.fromCallback(callback =>
-      contract.balanceOf(address, callback)
-    );
-    const balance = balanceNum.div(10**18).toNumber().toFixed(2);
+    const balanceNum = await Bb.fromCallback(callback => contract.balanceOf(address, callback));
+    const balance = balanceNum
+      .div(10 ** 18)
+      .toNumber()
+      .toFixed(2);
 
-    const mintingPower = process.env.NODE_ENV === 'docker' ? 0
-      : await Bb.fromCallback((callback) => {
-        contract.getMintingPowerByAddress(address, callback);
-      });
+    const mintingPower =
+      process.env.NODE_ENV === 'docker'
+        ? 0
+        : await Bb.fromCallback(callback => {
+            contract.getMintingPowerByAddress(address, callback);
+          });
 
     this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
     this.balanceDAY = balance;
@@ -331,7 +347,7 @@ export default class TimeNodeStore {
     const addrBuf = ethJsUtil.pubToAddress(pub);
     const addr = ethJsUtil.bufferToHex(addrBuf);
 
-    const isValid = (addr === signature.address) && this._eacService.Util.checkValidAddress(addr);
+    const isValid = addr === signature.address && this._eacService.Util.checkValidAddress(addr);
     return { isValid, addr };
   }
 
@@ -397,5 +413,4 @@ export default class TimeNodeStore {
       return false;
     }
   }
-
 }
