@@ -229,7 +229,7 @@ export default class TransactionFetcher {
   async getRequestCreatedLogs(startBlock, endBlock) {
     const cachedLogs = this._cache.requestCreatedLogs;
 
-    if (cachedLogs) {
+    if (cachedLogs && cachedLogs.length > 0) {
       return cachedLogs;
     }
 

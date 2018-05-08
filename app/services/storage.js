@@ -1,11 +1,13 @@
-const { localStorage } = window;
-
 export default class StorageService {
+  get localStorage() {
+    return window && window.localStorage;
+  }
+
   save(key, value) {
-    localStorage.setItem(key, value);
+    this.localStorage.setItem(key, value);
   }
 
   load(key) {
-    return localStorage.getItem(key);
+    return this.localStorage.getItem(key);
   }
 }

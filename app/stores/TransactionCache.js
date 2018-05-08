@@ -20,11 +20,17 @@ export default class TransactionCache {
   }
 
   loadRequestCreatedLogsFromStorage() {
-    const logs = JSON.parse(this._storage.load(REQUEST_LOGS_CACHE_KEY));
+    let storedLogs = this._storage.load(REQUEST_LOGS_CACHE_KEY);
+
+    if (!storedLogs) {
+      return;
+    }
+
+    storedLogs = JSON.parse(storedLogs);
 
     this.requestCreatedLogs =
-      logs &&
-      logs.map(log => {
+      storedLogs &&
+      storedLogs.map(log => {
         log.args.params = log.args.params.map(param => new BigNumber(param));
 
         return log;
@@ -38,6 +44,10 @@ export default class TransactionCache {
 
   @computed
   get allTransactionsAddresses() {
+    if (!this.transactions) {
+      return [];
+    }
+
     return this.transactions.map(transaction => transaction.address);
   }
 
