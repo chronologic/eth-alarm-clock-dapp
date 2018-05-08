@@ -68,13 +68,7 @@ describe('Stores / TransactionFetcher', () => {
       }
     };
 
-    const getInstance = () => {
-      const instance = new TransactionFetcher(eacService, transactionsCache, web3);
-
-      instance.fillUpTransactions = () => {};
-
-      return instance;
-    };
+    const getInstance = () => new TransactionFetcher(eacService, transactionsCache, web3);
 
     it('fills allTransactionsAddresses', async () => {
       const TransactionsFetcher = getInstance();
