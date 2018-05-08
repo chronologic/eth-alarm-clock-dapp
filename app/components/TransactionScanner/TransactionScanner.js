@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import { observe } from 'mobx';
 
 const INITIAL_STATE = {
   transactions: [],
@@ -13,6 +14,7 @@ const INITIAL_STATE = {
 };
 
 @inject('transactionStore')
+@observer
 class TransactionScanner extends Component {
   state = INITIAL_STATE;
 
@@ -51,10 +53,24 @@ class TransactionScanner extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    if (this.cacheObserverDisposer) {
+      this.cacheObserverDisposer();
+    }
   }
 
   componentDidMount() {
     this._isMounted = true;
+
+    if (!this.cacheObserverDisposer) {
+      this.cacheObserverDisposer = observe(
+        this.props.transactionStore._cache,
+        'requestCreatedLogs',
+        () => {
+          this.loadPage(this.state.currentPage);
+        }
+      );
+    }
   }
 
   async loadPage(page) {

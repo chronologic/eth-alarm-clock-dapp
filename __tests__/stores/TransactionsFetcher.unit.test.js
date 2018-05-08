@@ -1,7 +1,8 @@
-import TransactionsCache from '../../app/stores/TransactionsCache';
+import TransactionFetcher from '../../app/stores/TransactionFetcher';
 import { equal, ok } from 'assert';
+import TransactionCache from '../../app/stores/TransactionCache';
 
-describe('Stores / TransactionsCache', () => {
+describe('Stores / TransactionFetcher', () => {
   describe('getTransactions', () => {
     const MOCKED_TRANSACTIONS = [
       '0x123306090abab3a6e1400e9345bc60c78a8bef57',
@@ -30,33 +31,59 @@ describe('Stores / TransactionsCache', () => {
       },
       getTransactionsEventsForAddresses() {
         return {};
+      },
+      Util: {
+        getBlockNumber() {
+          return 1;
+        }
+      },
+      RequestData() {
+        return {};
       }
     };
 
-    it('fills allTransactions', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+    class StorageService {
+      map = {};
 
-      await transactionsCache.getTransactions({});
+      save(key, value) {
+        this.map[key] = value;
+      }
 
-      equal(transactionsCache.allTransactions.length, MOCKED_TRANSACTIONS.length);
-      equal(transactionsCache.allTransactions[0].address, MOCKED_TRANSACTIONS[0]);
-      equal(transactionsCache.allTransactions[1].address, MOCKED_TRANSACTIONS[1]);
-    });
+      load(key) {
+        return this.map[key];
+      }
+    }
+
+    const storageService = new StorageService();
+
+    const transactionsCache = new TransactionCache(storageService);
+
+    const web3 = {
+      filter() {
+        return {
+          get(callback) {
+            callback(null, []);
+          }
+        };
+      }
+    };
+
+    const getInstance = () => new TransactionFetcher(eacService, transactionsCache, web3);
 
     it('fills allTransactionsAddresses', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
-      await transactionsCache.getTransactions({});
+      await TransactionsFetcher.getTransactions({});
 
-      equal(transactionsCache.allTransactionsAddresses.length, MOCKED_TRANSACTIONS.length);
-      equal(transactionsCache.allTransactionsAddresses[0], MOCKED_TRANSACTIONS[0]);
-      equal(transactionsCache.allTransactionsAddresses[1], MOCKED_TRANSACTIONS[1]);
+      equal(TransactionsFetcher.allTransactionsAddresses.length, MOCKED_TRANSACTIONS.length);
+      equal(TransactionsFetcher.allTransactionsAddresses[0], MOCKED_TRANSACTIONS[0]);
+      equal(TransactionsFetcher.allTransactionsAddresses[1], MOCKED_TRANSACTIONS[1]);
     });
 
     it('returns transactions requests instances by default', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
-      const transactions = await transactionsCache.getTransactions({});
+      const transactions = await TransactionsFetcher.getTransactions({});
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
       equal(transactions[0].address, MOCKED_TRANSACTIONS[0]);
@@ -64,9 +91,9 @@ describe('Stores / TransactionsCache', () => {
     });
 
     it('returns transactions requests instances when passing false as onlyAddresses parameter', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
-      const transactions = await transactionsCache.getTransactions({}, false, false);
+      const transactions = await TransactionsFetcher.getTransactions({}, false, false);
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
       equal(transactions[0].address, MOCKED_TRANSACTIONS[0]);
@@ -74,9 +101,9 @@ describe('Stores / TransactionsCache', () => {
     });
 
     it('returns transactions addresses when passing true as onlyAddresses parameter', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
-      const transactions = await transactionsCache.getTransactions({}, false, true);
+      const transactions = await TransactionsFetcher.getTransactions({}, false, true);
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
       equal(transactions[0], MOCKED_TRANSACTIONS[0]);
@@ -84,31 +111,28 @@ describe('Stores / TransactionsCache', () => {
     });
 
     it('calls getTransactionsInLastHours() when pastHours parameter is a number', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
       let getTransactionsInLastHoursCalled = false;
 
-      transactionsCache.getTransactionsInLastHours = () => {
+      TransactionsFetcher.getTransactionsInLastHours = () => {
         getTransactionsInLastHoursCalled = true;
 
-        return {
-          addresses: [],
-          transactions: []
-        };
+        return [];
       };
 
-      await transactionsCache.getTransactions({ pastHours: 24 }, false, true);
+      await TransactionsFetcher.getTransactions({ pastHours: 24 }, false, true);
 
       ok(getTransactionsInLastHoursCalled);
     });
 
     it('throws when pastHours parameter is truthy, but not a number', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
       let errorThrown = false;
 
       try {
-        await transactionsCache.getTransactions({ pastHours: true }, false, true);
+        await TransactionsFetcher.getTransactions({ pastHours: true }, false, true);
       } catch (error) {
         errorThrown = true;
 
@@ -119,20 +143,17 @@ describe('Stores / TransactionsCache', () => {
     });
 
     it('calls getTransactionsByBlocks() when pastHours parameter is not defined', async () => {
-      const transactionsCache = new TransactionsCache(eacService);
+      const TransactionsFetcher = getInstance();
 
       let getTransactionsByBlocksCalled = false;
 
-      transactionsCache.getTransactionsByBlocks = () => {
+      TransactionsFetcher.getTransactionsByBlocks = () => {
         getTransactionsByBlocksCalled = true;
 
-        return {
-          addresses: [],
-          transactions: []
-        };
+        return [];
       };
 
-      await transactionsCache.getTransactions({}, false, true);
+      await TransactionsFetcher.getTransactions({}, false, true);
 
       ok(getTransactionsByBlocksCalled);
     });

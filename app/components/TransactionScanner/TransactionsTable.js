@@ -149,7 +149,7 @@ class TransactionsTable extends Component {
 }
 
 TransactionsTable.propTypes = {
-  transactions: PropTypes.array,
+  transactions: PropTypes.any,
   total: PropTypes.number,
   limit: PropTypes.number,
   offset: PropTypes.number,

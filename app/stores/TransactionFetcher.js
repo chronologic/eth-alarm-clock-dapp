@@ -6,7 +6,11 @@ import { TRANSACTION_EVENT } from '../services/eac';
 const BLOCK_BUCKET_SIZE = 240;
 const TIMESTAMP_BUCKET_SIZE = 3600;
 
-export default class TransactionsCache {
+export const ABORTED_TOPIC = '0xc008bc849b42227c61d5063a1313ce509a6e99211bfd59e827e417be6c65c81b';
+export const CANCELLED_TOPIC = '0xa761582a460180d55522f9f5fdc076390a1f48a7a62a8afbd45c1bb797948edb';
+export const EXECUTED_TOPIC = '0x3e504bb8b225ad41f613b0c3c4205cdd752d1615b4d77cd1773417282fcfb5d9';
+
+export default class TransactionFetcher {
   fetchInterval = 60 * 1000;
   fetcher = '';
 
@@ -16,39 +20,36 @@ export default class TransactionsCache {
   @observable cacheDefault = true;
   @observable lastBlock = '';
   @observable lastUpdate = '';
-  @observable contracts = [];
-  @observable transactions = [];
 
-  constructor(eac, startBlock) {
+  constructor(eac, cache, web3) {
     this._eac = eac;
-    this.requestFactoryStartBlock = startBlock;
+    this._cache = cache;
+    this._web3 = web3;
+
     this.startLazy();
   }
 
-  startLazy() {
+  async startLazy() {
     if (this.running || !this.requestFactoryStartBlock) {
       return;
     }
 
     this.running = true;
-    this.runFetchTicker();
+    await this.runFetchTicker();
     this.watchRequests();
   }
 
-  runFetchTicker() {
+  async runFetchTicker() {
     if (!this.running) {
       this.stopFetchTicker();
       return;
     }
 
-    this.syncing = true;
-
-    this.getTransactions({}, false);
-
+    await this.getTransactions({}, true);
     this.lastUpdate = new Date();
-    this.updateLastBlock();
+
+    await this.updateLastBlock();
     this.setNextTicker();
-    this.syncing = false;
   }
 
   setNextTicker() {
@@ -100,12 +101,8 @@ export default class TransactionsCache {
     return true;
   }
 
-  get allTransactions() {
-    return this.transactions;
-  }
-
   get allTransactionsAddresses() {
-    return this.contracts;
+    return this._cache.allTransactionsAddresses;
   }
 
   async getRequestsByBuckets(buckets) {
@@ -130,21 +127,29 @@ export default class TransactionsCache {
     return requests;
   }
 
-  getDataForRequestParams([
-    fee,
-    timeBounty,
-    claimWindowSize,
-    freezePeriod,
-    reservedWindowSize,
-    temporalUnit,
-    windowSize,
-    windowStart,
-    callGas,
-    callValue,
-    gasPrice,
-    requiredDeposit
-  ]) {
-    return {
+  getDataForRequestParams(
+    [
+      fee,
+      timeBounty,
+      claimWindowSize,
+      freezePeriod,
+      reservedWindowSize,
+      temporalUnit,
+      windowSize,
+      windowStart,
+      callGas,
+      callValue,
+      gasPrice,
+      requiredDeposit
+    ],
+    transaction
+  ) {
+    const data = new this._eac.RequestData(
+      [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
+      transaction.instance
+    );
+
+    Object.assign(data, {
       claimData: {
         requiredDeposit
       },
@@ -165,7 +170,9 @@ export default class TransactionsCache {
         callValue,
         gasPrice
       }
-    };
+    });
+
+    return data;
   }
 
   async getTransactionsInBuckets(buckets) {
@@ -175,22 +182,15 @@ export default class TransactionsCache {
 
     transactions.reverse(); // Switch to most recent block first
 
-    const addresses = [];
-
     transactions = transactions.map(({ address, params }) => {
       const request = this._eac.transactionRequest(address);
 
-      request.data = this.getDataForRequestParams(params);
-
-      addresses.push(address);
+      request.data = this.getDataForRequestParams(params, request);
 
       return request;
     });
 
-    return {
-      addresses,
-      transactions
-    };
+    return transactions;
   }
 
   async getTransactionsInLastHours(hours) {
@@ -226,27 +226,40 @@ export default class TransactionsCache {
     return await this.getTransactionsInBuckets(buckets);
   }
 
-  async getTransactionsByBlocks(startBlock, endBlock) {
+  async getRequestCreatedLogs(startBlock, endBlock) {
+    const cachedLogs = this._cache.requestCreatedLogs;
+
+    if (cachedLogs && cachedLogs.length > 0) {
+      return cachedLogs;
+    }
+
     const requestFactory = await this._eac.requestFactory();
 
     const logs = await requestFactory.getRequestCreatedLogs({}, startBlock, endBlock);
 
-    const addresses = [];
+    this._cache.cacheRequestCreatedLogs(logs, endBlock);
+
+    return logs;
+  }
+
+  async getTransactionsByBlocks(startBlock, endBlock) {
+    if (endBlock === 'latest') {
+      await this.updateLastBlock();
+
+      endBlock = this.lastBlock;
+    }
+
+    const logs = await this.getRequestCreatedLogs(startBlock, endBlock);
 
     const transactions = logs.map(({ args: { request: address, params } }) => {
       const request = this._eac.transactionRequest(address);
 
-      request.data = this.getDataForRequestParams(params);
-
-      addresses.push(address);
+      request.data = this.getDataForRequestParams(params, request);
 
       return request;
     });
 
-    return {
-      addresses,
-      transactions
-    };
+    return transactions;
   }
 
   async getTransactions(
@@ -256,54 +269,66 @@ export default class TransactionsCache {
   ) {
     if (this.running && (cache || endBlock == 'latest')) {
       if (this.allTransactionsAddresses.length > 0) {
-        return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
-      } else if (this.syncing) {
+        return onlyAddresses ? this.allTransactionsAddresses : this._cache.transactions;
+      }
+
+      if (this.syncing) {
         await this.awaitSync();
-        return onlyAddresses ? this.allTransactionsAddresses : this.allTransactions;
+        return onlyAddresses ? this.allTransactionsAddresses : this._cache.transactions;
       }
     }
 
-    let transactionsGetResult = {};
+    this.syncing = true;
+
+    let transactions;
 
     if (pastHours) {
       if (typeof pastHours !== 'number') {
         throw new Error('pastHours parameter in getTransactions must be a number.');
       }
 
-      transactionsGetResult = await this.getTransactionsInLastHours(pastHours);
+      transactions = await this.getTransactionsInLastHours(pastHours);
     } else {
-      transactionsGetResult = await this.getTransactionsByBlocks(startBlock, endBlock);
+      transactions = await this.getTransactionsByBlocks(startBlock, endBlock);
     }
-
-    let { addresses, transactions } = transactionsGetResult;
 
     await this.fillUpTransactions(transactions);
 
     if (startBlock == this.requestFactoryStartBlock && endBlock === 'latest') {
-      this.cacheContracts(addresses);
-      this.cacheTransactions(transactions);
+      this._cache.cacheTransactions(transactions, 'replace');
     }
+
+    this.syncing = false;
 
     return onlyAddresses ? this.allTransactionsAddresses : transactions;
   }
 
   async watchRequests() {
+    if (this.requestWatcher) {
+      return;
+    }
+
     const requestFactory = await this._eac.requestFactory();
 
-    this.requestWatcher = await requestFactory.watchRequests(
-      this.requestFactoryStartBlock,
-      async request => {
-        const exists = this.allTransactionsAddresses.find(
-          cachedRequest => cachedRequest === request
-        );
+    this.requestWatcher = await requestFactory.watchRequestCreatedLogs(
+      {},
+      this._cache.requestCreatedLogsLastBlockFetched,
+      async (error, log) => {
+        if (log) {
+          const address = log.args.request;
+          const exists = this.allTransactionsAddresses.find(
+            cachedRequest => cachedRequest === address
+          );
 
-        if (!exists) {
-          const txRequest = this._eac.transactionRequest(request);
+          if (!exists) {
+            const txRequest = this._eac.transactionRequest(address);
 
-          await txRequest.fillData();
+            await txRequest.fillData();
 
-          this.cacheContracts([request], 'top');
-          this.cacheTransactions([txRequest], 'top');
+            this._cache.addRequestCreatedLogToCache(log);
+
+            this._cache.cacheTransactions([txRequest], 'append');
+          }
         }
       }
     );
@@ -312,19 +337,19 @@ export default class TransactionsCache {
   async getAllTransactions(cached = this.cacheDefault) {
     if (this.syncing) {
       await this.awaitSync();
-    } else if (!cached || !this.running || this.allTransactions.length == 0) {
+    } else if (!cached || !this.running || this._cache.transactions.length === 0) {
       return await this.getTransactions({});
     }
 
-    return this.allTransactions;
+    return this._cache.transactions;
   }
 
   async fillUpTransactions(transactions) {
     const addresses = transactions.map(t => t.address);
 
-    const transactionsEventsMap = await this._eac.getTransactionsEventsForAddresses(addresses);
+    const transactionsEventsMap = await this.getEventsMapForAddresses(addresses);
 
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
       this.updateTransactionDataBasedOnEvents(
         transaction,
         transactionsEventsMap[transaction.address] === TRANSACTION_EVENT.CANCELLED,
@@ -333,10 +358,57 @@ export default class TransactionsCache {
     }
   }
 
+  async getTransactionsEventsForAddresses(addresses) {
+    return new Promise(resolve => {
+      this._web3
+        .filter({
+          address: addresses,
+          topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
+          fromBlock: 0,
+          toBlock: 'latest'
+        })
+        .get((error, events) => {
+          resolve(events);
+        });
+    });
+  }
+
+  async getEventsMapForAddresses(addresses) {
+    const events = await this.getTransactionsEventsForAddresses(addresses);
+
+    const TX_EVENTS_MAP = {};
+
+    for (const event of events) {
+      let eventType;
+
+      switch (event.topics[0]) {
+        case EXECUTED_TOPIC:
+          eventType = TRANSACTION_EVENT.EXECUTED;
+          break;
+        case CANCELLED_TOPIC:
+          eventType = TRANSACTION_EVENT.CANCELLED;
+          break;
+        case ABORTED_TOPIC:
+          eventType = TRANSACTION_EVENT.ABORTED;
+          break;
+      }
+
+      TX_EVENTS_MAP[event.address] = eventType;
+    }
+
+    return TX_EVENTS_MAP;
+  }
+
   updateTransactionDataBasedOnEvents(transaction, cancelled, executed) {
+    const data = new this._eac.RequestData(
+      [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
+      transaction.instance
+    );
+
     const meta = {
       isCancelled: false,
-      wasCalled: false
+      wasCalled: false,
+      wasSuccessful: false
     };
 
     if (cancelled) {
@@ -345,17 +417,18 @@ export default class TransactionsCache {
 
     if (executed) {
       meta.wasCalled = true;
+      meta.wasSuccessful = true;
     }
 
     if (!transaction.data) {
-      transaction.data = {};
+      transaction.data = data;
     }
 
     transaction.data.meta = meta;
   }
 
   fetchCachedTransaction(transaction) {
-    this.allTransactions.find(cachedTransaction => {
+    this._cache.transactions.find(cachedTransaction => {
       if (cachedTransaction.address == transaction.address && cachedTransaction.instance) {
         return cachedTransaction;
       }
@@ -365,7 +438,7 @@ export default class TransactionsCache {
   }
 
   async fetchCachedTransactionByAddress(address) {
-    const cached = this.allTransactions.find(
+    const cached = this._cache.transactions.find(
       cachedTransaction => cachedTransaction.address == address
     );
 
@@ -380,40 +453,5 @@ export default class TransactionsCache {
     }
 
     return cached;
-  }
-
-  cacheContracts(requestContracts = [], updateType) {
-    const replace = updateType == 'replace';
-    const append = updateType == 'append';
-    const unshift = updateType == 'top';
-    if (replace || this.contracts.length < requestContracts.length) {
-      this.contracts = requestContracts;
-    } else {
-      requestContracts.forEach(request => {
-        if (append) {
-          this.contracts.push(request);
-        } else if (unshift) {
-          this.contracts.unshift(request);
-        }
-      });
-    }
-  }
-
-  cacheTransactions(transactions = [], updateType) {
-    const replace = updateType == 'replace';
-    const append = updateType == 'append';
-    const unshift = updateType == 'top';
-
-    if (this.transactions.length < transactions.length || replace) {
-      this.transactions = transactions;
-    } else {
-      transactions.forEach(transaction => {
-        if (append) {
-          this.transactions.push(transaction);
-        } else if (unshift) {
-          this.transactions.unshift(transaction);
-        }
-      });
-    }
   }
 }
