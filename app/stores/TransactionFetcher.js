@@ -146,7 +146,7 @@ export default class TransactionFetcher {
   ) {
     const data = new this._eac.RequestData(
       [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
-      transaction
+      transaction.instance
     );
 
     Object.assign(data, {
@@ -402,7 +402,7 @@ export default class TransactionFetcher {
   updateTransactionDataBasedOnEvents(transaction, cancelled, executed) {
     const data = new this._eac.RequestData(
       [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
-      transaction
+      transaction.instance
     );
 
     const meta = {
