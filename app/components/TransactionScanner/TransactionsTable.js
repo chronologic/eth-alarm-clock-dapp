@@ -107,7 +107,7 @@ class TransactionsTable extends Component {
             {this.state.lastPage !== 1 && (
               <div className="col-md-6 text-right">
                 <span
-                  className={this.showPreviousPageButton ? '' : 'd-none'}
+                  className={['pagination-arrow', this.showPreviousPageButton ? '' : 'd-none'].join(' ')}
                   onClick={() => this.goToPage(currentPage - 1)}
                 >
                   {this.getPreviousPageButton()}&nbsp;
@@ -116,7 +116,7 @@ class TransactionsTable extends Component {
                 {this.state.pages.map(page => (
                   <span
                     key={page}
-                    className={page === currentPage ? 'bold' : ''}
+                    className={['pagination-entry', page === currentPage ? 'bold' : ''].join(' ')}
                     onClick={() => this.goToPage(page)}
                   >
                     {page}&nbsp;
@@ -124,7 +124,7 @@ class TransactionsTable extends Component {
                 ))}
 
                 <span
-                  className={this.showNextPageButton ? '' : 'd-none'}
+                  className={['pagination-arrow', this.showNextPageButton ? '' : 'd-none'].join(' ')}
                   onClick={() => this.goToPage(currentPage + 1)}
                 >
                   {this.getNextPageButton()}

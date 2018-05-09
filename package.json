@@ -115,7 +115,8 @@
     "select2": "^4.0.4",
     "smooth-scrollbar": "^8.2.6",
     "web3": "^0.20.6",
-    "web3-providers-ws": "^1.0.0-beta.33"
+    "web3-providers-ws": "^1.0.0-beta.33",
+    "websocket": "^1.0.26"
   },
   "browserslist": [
     "defaults",
