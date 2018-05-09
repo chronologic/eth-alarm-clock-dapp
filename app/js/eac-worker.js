@@ -110,11 +110,10 @@ class EacWorker {
     const empty = {
       bounties: null,
       costs: null,
-      profit: null,
       executedTransactions: []
     };
 
-    let { bounties, costs, profit, executedTransactions } = this.config
+    let { bounties, costs, executedTransactions } = this.config
       ? this.config.statsdb.getStats()[0]
       : empty;
 
@@ -122,14 +121,12 @@ class EacWorker {
       const weiToEth = amount => this.web3.fromWei(amount, 'ether').toString();
       bounties = weiToEth(bounties);
       costs = weiToEth(costs);
-      profit = weiToEth(profit);
     }
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
       bounties: bounties,
       costs: costs,
-      profit: profit,
       executedTransactions: executedTransactions
     });
   }

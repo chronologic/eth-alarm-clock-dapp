@@ -94,7 +94,8 @@ class TimeNodeStatistics extends Component {
 
   render() {
     let timeNodeStatus = null;
-    const { profit, bounties, costs, scanningStarted } = this.props.timeNodeStore;
+    const { bounties, costs, scanningStarted } = this.props.timeNodeStore;
+    const profit = bounties - costs;
 
     if (this.state.timeNodeDisabled) {
       timeNodeStatus = TIMENODE_STATUS.DISABLED;

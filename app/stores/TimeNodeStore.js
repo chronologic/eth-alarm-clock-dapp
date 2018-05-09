@@ -50,7 +50,6 @@ export default class TimeNodeStore {
   @observable balanceETH = null;
   @observable balanceDAY = null;
 
-  @observable profit = null;
   @observable bounties = null;
   @observable costs = null;
 
@@ -106,11 +105,8 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        if (event.data.profit !== null) {
-          this.profit = event.data.profit;
-          this.bounties = event.data.bounties;
-          this.costs = event.data.costs;
-        }
+        if (event.data.bounties !== null) this.bounties = event.data.bounties;
+        if (event.data.costs !== null) this.costs = event.data.costs;
         this.executedTransactions = event.data.executedTransactions;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
