@@ -78,7 +78,7 @@
   "dependencies": {
     "ajv": "^6.2.0",
     "babel-runtime": "^6.26.0",
-    "bignumber.js": "^6.0.0",
+    "bignumber.js": "^5.0.0",
     "bluebird": "^3.5.1",
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-datepicker": "^1.7.1",
@@ -86,8 +86,8 @@
     "chart.js": "^2.7.2",
     "crypto-js": "^3.1.9-1",
     "dotenv-webpack": "^1.5.5",
-    "eac.js-client": "git://github.com/ethereum-alarm-clock/eac.js-client#1.0.0-beta.2",
-    "eac.js-lib": "git://github.com/ethereum-alarm-clock/eac.js-lib#1.0.0-beta.2",
+    "eac.js-client": "git://github.com/ethereum-alarm-clock/eac.js-client#1.0.0-beta.3",
+    "eac.js-lib": "git://github.com/ethereum-alarm-clock/eac.js-lib#1.0.0-beta.3",
     "ethereumjs-util": "^5.1.5",
     "ethereumjs-wallet": "^0.6.0",
     "font-awesome": "^4.7.0",
@@ -115,10 +115,16 @@
     "select2": "^4.0.4",
     "smooth-scrollbar": "^8.2.6",
     "web3": "^0.20.6",
-    "web3-providers-ws": "^1.0.0-beta.33"
+    "web3-providers-ws": "^1.0.0-beta.33",
+    "websocket": "^1.0.26"
   },
   "browserslist": [
     "defaults",
     "not ie < 11"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
+    }
+  }
 }

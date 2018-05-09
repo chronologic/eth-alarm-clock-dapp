@@ -84,6 +84,10 @@ class TimeNodeStatistics extends Component {
     await this.props.timeNodeStore.getDAYBalance();
   }
 
+  getBalanceNotification() {
+    return Number(this.props.timeNodeStore.balanceETH) > 0 ? null : <Alert type="warning" close={false} msg="Your ETH balance is 0. You will be unable to claim or execute transactions." />;
+  }
+
   componentWillUnmount() {
     clearInterval(this.interval);
   }
@@ -109,6 +113,7 @@ class TimeNodeStatistics extends Component {
     return (
       <div id="timeNodeStatistics">
         {this.state.timeNodeDisabled ? dayTokenError : null}
+        {this.getBalanceNotification()}
 
         <h2 className="py-4">
           Your TimeNode is currently {timeNodeStatus}.

@@ -33,7 +33,7 @@ const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
-  @observable hasWallet = false;
+  @observable walletKeystore = '';
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
 
@@ -70,18 +70,23 @@ export default class TimeNodeStore {
 
     if (Cookies.get('attachedDAYAccount'))
       this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
-    if (Cookies.get('hasWallet')) this.hasWallet = true;
-
-    if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
+    if (Cookies.get('tn')) this.walletKeystore = Cookies.get('tn');
   }
 
-  startWorker(keystore, password) {
-    this.eacWorker = new EacWorker();
+  unlockTimeNode(password) {
+    if (this.walletKeystore && password) {
+      this.startClient(Cookies.get('tn'), password);
+    } else {
+      showNotification('Unable to unlock the TimeNode. Please try again');
+    }
+    return;
+  }
 
-    const options = {
+  getWorkerOptions(keystore, keystorePassword) {
+    return {
       network: this._web3Service.network,
       keystore: [this.decrypt(keystore)],
-      keystorePassword: this.decrypt(password),
+      keystorePassword,
       logfile: 'console',
       logLevel: 1,
       milliseconds: 15000,
@@ -90,6 +95,10 @@ export default class TimeNodeStore {
       repl: false,
       browserDB: true
     };
+  }
+
+  startWorker(options) {
+    this.eacWorker = new EacWorker();
 
     this.eacWorker.onmessage = event => {
       const { type } = event.data;
@@ -122,10 +131,7 @@ export default class TimeNodeStore {
   }
 
   pushToLog(logs, log) {
-    if (logs.length === LOG_CAP) {
-      logs.shift();
-    }
-
+    if (logs.length === LOG_CAP) logs.shift();
     logs.push(log);
   }
 
@@ -216,18 +222,17 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    this.startWorker(keystore, password);
+    this.startWorker(this.getWorkerOptions(keystore, password));
+  }
 
+  setKeyStore(keystore) {
+    this.walletKeystore = keystore;
     this.setCookie('tn', keystore);
-    this.setCookie('tnp', password);
-    this.setCookie('hasWallet', true);
-    this.hasWallet = true;
   }
 
   getMyAddress() {
-    const encryptedAddress = Cookies.get('tn');
-    if (encryptedAddress) {
-      const ks = this.decrypt(encryptedAddress);
+    if (this.walletKeystore) {
+      const ks = this.decrypt(this.walletKeystore);
       return '0x' + JSON.parse(ks).address;
     } else {
       return '';
@@ -395,21 +400,23 @@ export default class TimeNodeStore {
 
   resetWallet() {
     Cookies.remove('tn');
-    Cookies.remove('tnp');
-    Cookies.remove('hasWallet');
     Cookies.remove('attachedDAYAccount');
-    this.hasWallet = false;
     this.attachedDAYAccount = '';
+    this.walletKeystore = '';
     showNotification('Your wallet has been reset.', 'success');
   }
 
-  checkPasswordMatchesKeystore(keystore, password) {
+  passwordMatchesKeystore(password) {
     try {
-      ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
+      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), this.decrypt(password), true);
       showNotification('Success.', 'success');
       return true;
     } catch (e) {
-      showNotification(e);
+      if (e.message === 'Key derivation failed - possibly wrong passphrase') {
+        showNotification('Please enter a valid password.');
+      } else {
+        showNotification(e);
+      }
       return false;
     }
   }
