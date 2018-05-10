@@ -1,6 +1,7 @@
 {
   "name": "eth-alarm-clock-dapp",
   "version": "0.0.1",
+  "main": "tools/electron.js",
   "description": "",
   "scripts": {
     "test": "jest",
@@ -8,6 +9,7 @@
     "build": "webpack --config webpack/prod.config.js",
     "dev-docker": "node_modules/.bin/webpack-dev-server --config webpack/docker.dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check",
+    "dev:electron": "concurrently \"BROWSER=none yarn dev\" \"wait-on http://localhost:8080 && electron .\"",
     "prod": "node_modules/.bin/webpack-dev-server --config webpack/prod.config.js --host 0.0.0.0 --disable-host-check --hot",
     "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
@@ -43,9 +45,11 @@
     "babel-preset-react": "^6.24.1",
     "browserslist": "^3.2.4",
     "compression-webpack-plugin": "^1.1.11",
+    "concurrently": "^3.5.1",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
     "debug": "^3.1.0",
+    "electron-builder": "^20.13.3",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.11.0",
@@ -88,6 +92,8 @@
     "dotenv-webpack": "^1.5.5",
     "eac.js-client": "git://github.com/ethereum-alarm-clock/eac.js-client#1.0.0-beta.3",
     "eac.js-lib": "git://github.com/ethereum-alarm-clock/eac.js-lib#1.0.0-beta.3",
+    "electron": "^2.0.0",
+    "electron-is-dev": "^0.3.0",
     "ethereumjs-util": "^5.1.5",
     "ethereumjs-wallet": "^0.6.0",
     "font-awesome": "^4.7.0",
@@ -114,6 +120,7 @@
     "react-switch": "^2.3.1",
     "select2": "^4.0.4",
     "smooth-scrollbar": "^8.2.6",
+    "wait-on": "^2.1.0",
     "web3": "^0.20.6",
     "web3-providers-ws": "^1.0.0-beta.33",
     "websocket": "^1.0.26"
@@ -125,6 +132,20 @@
   "jest": {
     "moduleNameMapper": {
       "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
+    }
+  },
+  "build": {
+    "appId": "com.example.electron-cra",
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "publish": {
+      "provider": "github"
     }
   }
 }
