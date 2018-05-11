@@ -98,7 +98,7 @@ class TransactionScanner extends Component {
     });
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.loadPage(1);
   }
 

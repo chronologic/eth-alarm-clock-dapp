@@ -16,7 +16,7 @@ class Header extends Component {
     this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.getCurrentBlock();
   }
 
