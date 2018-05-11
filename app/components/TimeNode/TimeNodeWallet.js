@@ -59,7 +59,6 @@ class TimeNodeWallet extends Component {
     });
   }
 
-
   render() {
     return (
       <div id="timeNodeWallet"
@@ -91,7 +90,11 @@ class TimeNodeWallet extends Component {
             <button id="verifyWalletBtn"
               className="btn btn-primary pull-right mr-4 px-5"
               type="button"
-              onClick={this.verifyKeystore}>Unlock</button>
+              onClick={this.verifyKeystore}
+              disabled={!this.state.selectedFile}
+            >
+              Unlock
+            </button>
           </div>
           <div className="d-sm-inline d-md-none">
             <PoweredByEAC className="mt-5"/>

@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import Cookies from 'js-cookie';
 import CryptoJS from 'crypto-js';
-import ethJsUtil from 'ethereumjs-util';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
 
@@ -9,6 +8,12 @@ import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
+import {
+  isMyCryptoSigValid,
+  isSignatureValid,
+  parseSig,
+  SIGNATURE_ERRORS
+} from '../lib/signature';
 
 /*
  * TimeNode classification based on the number
@@ -19,13 +24,6 @@ export class TIMENODE_STATUS {
   static CHRONONODE = 'ChronoNode';
   static TIMENODE = 'TimeNode';
   static DISABLED = 'Disabled';
-}
-
-class SIGNATURE_ERRORS {
-  static JSON_FORMAT_ERROR = `There is a problem with JSON format of your signature. Make sure you've copied it correctly.`;
-  static MISSING_MSG = `Message is missing in provided string. Make sure property "msg" is present.`;
-  static MISSING_SIG = `Signature is missing in provided string. Make sure property "sig" is present.`;
-  static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
 }
 
 // 2 minute as milliseconds
@@ -62,7 +60,6 @@ export default class TimeNodeStore {
   _timeNodeStatusCheckIntervalRef = null;
 
   constructor(eacService, web3Service, keenStore) {
-    window.tnstore = this;
     this._eacService = eacService;
     this._web3Service = web3Service;
     this._keenStore = keenStore;
@@ -318,63 +315,28 @@ export default class TimeNodeStore {
   }
 
   /*
-   * Checks if the signature from the wallet
-   * (inputted by the user) is valid.
-   */
-  isSignatureValid(sigObject) {
-    let signature;
-
-    try {
-      signature = JSON.parse(sigObject);
-    } catch (error) {
-      throw SIGNATURE_ERRORS.JSON_FORMAT_ERROR;
-    }
-
-    if (!signature.msg) {
-      throw SIGNATURE_ERRORS.MISSING_MSG;
-    }
-
-    if (!signature.sig) {
-      throw SIGNATURE_ERRORS.MISSING_SIG;
-    }
-
-    if (!signature.address) {
-      throw SIGNATURE_ERRORS.MISSING_ADDRESS;
-    }
-
-    const message = Buffer.from(signature.msg);
-
-    const msgHash = ethJsUtil.hashPersonalMessage(message);
-    const res = ethJsUtil.fromRpcSig(signature.sig);
-    const pub = ethJsUtil.ecrecover(msgHash, res.v, res.r, res.s);
-    const addrBuf = ethJsUtil.pubToAddress(pub);
-    const addr = ethJsUtil.bufferToHex(addrBuf);
-
-    const isValid = addr === signature.address && this._eacService.Util.checkValidAddress(addr);
-    return { isValid, addr };
-  }
-
-  /*
    * Attaches a DAY-token-holding account to the session
    * as a proof-of-ownership of DAY tokens.
    * If it contains DAY tokens, it allows the usage of TimeNodes.
    */
   async attachDayAccount(sigObject) {
     try {
-      const { isValid, addr } = this.isSignatureValid(sigObject);
-      const numDAYTokens = await this.getDAYBalance(addr);
-      const encryptedAttachedAddress = this.encrypt(addr);
+      const signature = parseSig(sigObject);
 
-      if (isValid) {
-        if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-          this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-          this.attachedDAYAccount = encryptedAttachedAddress;
-          showNotification('Success.', 'success');
-        } else {
-          showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
-        }
+      // First check using default sig check - if doesn't work use MyCrypto's
+      const validSig = isSignatureValid(signature) ? true : isMyCryptoSigValid(signature);
+
+      if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
+
+      const numDAYTokens = await this.getDAYBalance(signature.address);
+      const encryptedAttachedAddress = this.encrypt(signature.address);
+
+      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+        this.attachedDAYAccount = encryptedAttachedAddress;
+        showNotification('Success.', 'success');
       } else {
-        showNotification('Invalid signature.');
+        showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
       }
     } catch (error) {
       showNotification(error);

@@ -20,7 +20,7 @@ class TimeNodeStatistics extends Component {
     this.refreshStats = this.refreshStats.bind(this);
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.refreshBalances();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
@@ -85,7 +85,13 @@ class TimeNodeStatistics extends Component {
   }
 
   getBalanceNotification() {
-    return Number(this.props.timeNodeStore.balanceETH) > 0 ? null : <Alert type="warning" close={false} msg="Your ETH balance is 0. You will be unable to claim or execute transactions." />;
+    return Number(this.props.timeNodeStore.balanceETH) > 0 ? null : (
+      <Alert
+        type="warning"
+        close={false}
+        msg="Your ETH balance is 0. You will be unable to claim or execute transactions."
+      />
+    );
   }
 
   componentWillUnmount() {

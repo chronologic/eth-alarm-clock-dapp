@@ -5,9 +5,17 @@ import moment from 'moment';
 import ValueDisplay from '../Common/ValueDisplay';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '../../lib/consts';
+import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 
 const INITIAL_STATE = {
-  time: ''
+  asyncPropsFetched: false,
+  bounty: 0,
+  deposit: 0,
+  isTimestamp: false,
+  time: '',
+  status: TRANSACTION_STATUS.FAILED,
+  timeWindow: 0,
+  value: 0
 };
 
 @inject('eacService')
@@ -17,20 +25,23 @@ class TransactionsRow extends Component {
 
   _isMounted = false;
 
-  async getPreparedState() {
+  async getAsyncStateProps() {
     const { eacService, transaction, transactionStore } = this.props;
 
-    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+    const { isTimestamp } = this.state;
 
     const status = await transactionStore.getTxStatus(transaction);
 
-    let time;
+    const asyncStateProps = {
+      asyncPropsFetched: true,
+      status
+    };
 
-    if (isTimestamp) {
-      time = transaction.windowStart;
-    } else {
+    if (!isTimestamp) {
       const currentBlock = await eacService.Util.getBlockNumber();
       const windowStart = transaction.windowStart.toNumber();
+
+      let time;
 
       if (currentBlock > windowStart) {
         time = await eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
@@ -41,9 +52,27 @@ class TransactionsRow extends Component {
 
         time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
       }
+
+      asyncStateProps.time = TransactionsRow.getFormattedTimestamp(time);
     }
 
-    time = moment.unix(time).format('YYYY-MM-DD HH:mm');
+    return asyncStateProps;
+  }
+
+  static getFormattedTimestamp(timestamp) {
+    return moment.unix(timestamp).format('YYYY-MM-DD HH:mm');
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const { transaction, transactionStore } = nextProps;
+
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+
+    let time;
+
+    if (isTimestamp) {
+      time = TransactionsRow.getFormattedTimestamp(transaction.windowStart);
+    }
 
     let timeWindow = transaction.windowSize.toNumber();
 
@@ -54,8 +83,10 @@ class TransactionsRow extends Component {
     timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');
 
     return {
+      asyncPropsFetched: false,
       bounty: transaction.bounty,
       deposit: transaction.requiredDeposit,
+      isTimestamp,
       time,
       status,
       timeWindow,
@@ -63,20 +94,26 @@ class TransactionsRow extends Component {
     };
   }
 
-  async getUpdatedState() {
-    const preparedState = await this.getPreparedState();
+  async updateAsyncStateProps() {
+    const asyncStateProps = await this.getAsyncStateProps();
 
     if (!this._isMounted) {
       return;
     }
 
-    this.setState(preparedState);
+    this.setState(asyncStateProps);
   }
 
   async componentDidMount() {
     this._isMounted = true;
 
-    await this.getUpdatedState();
+    await this.updateAsyncStateProps();
+  }
+
+  async componentDidUpdate() {
+    if (!this.state.asyncPropsFetched) {
+      await this.updateAsyncStateProps();
+    }
   }
 
   async componentWillUnmount() {
