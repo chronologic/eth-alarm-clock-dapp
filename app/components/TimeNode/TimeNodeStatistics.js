@@ -100,14 +100,18 @@ class TimeNodeStatistics extends Component {
 
   render() {
     let timeNodeStatus = null;
+    const { bounties, costs, scanningStarted } = this.props.timeNodeStore;
+    const profit = bounties - costs;
+
     if (this.state.timeNodeDisabled) {
       timeNodeStatus = TIMENODE_STATUS.DISABLED;
     } else {
-      timeNodeStatus = this.props.timeNodeStore.scanningStarted ? 'running' : 'stopped';
+      timeNodeStatus = scanningStarted ? 'running' : 'stopped';
     }
 
-    const claimedEth = this.props.timeNodeStore.claimedEth;
-    const claimedEthStatus = claimedEth !== null ? claimedEth + ' ETH' : 'Loading...';
+    const profitStatus = profit !== null ? profit + ' ETH' : 'Loading...';
+    const bountiesStatus =
+      bounties !== null /*&& profit > 0*/ ? `${bounties} (bounties) - ${costs} (costs)` : '';
 
     const dayTokenError = (
       <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens." />
@@ -147,7 +151,8 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div className="card-body">
-                <h2>{claimedEthStatus}</h2>
+                <h2>{profitStatus}</h2>
+                <small>{bountiesStatus}</small>
               </div>
             </div>
           </div>

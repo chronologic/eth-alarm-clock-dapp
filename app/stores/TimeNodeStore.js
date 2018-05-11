@@ -47,7 +47,9 @@ export default class TimeNodeStore {
   @observable executedTransactions = [];
   @observable balanceETH = null;
   @observable balanceDAY = null;
-  @observable claimedEth = null;
+
+  @observable bounties = null;
+  @observable costs = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
@@ -100,7 +102,8 @@ export default class TimeNodeStore {
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        if (event.data.etherGain) this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
+        if (event.data.bounties !== null) this.bounties = event.data.bounties;
+        if (event.data.costs !== null) this.costs = event.data.costs;
         this.executedTransactions = event.data.executedTransactions;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
