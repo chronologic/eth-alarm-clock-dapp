@@ -30,7 +30,8 @@ const Networks = {
   42: {
     id: 42,
     name: 'Kovan',
-    endpoint: 'https://kovan.infura.io/6M6ROam68gmdp9OeNmym',
+    endpoint:
+      'wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
     dayTokenAbi: dayTokenABI,
     dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
@@ -41,21 +42,22 @@ const Networks = {
     name: 'Docker',
     endpoint: 'http://localhost:9545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,
-    dayTokenAbi: process.env.DAY_TOKEN_ABI_DOCKER ? JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER) : '[]',
+    dayTokenAbi: process.env.DAY_TOKEN_ABI_DOCKER
+      ? JSON.parse(process.env.DAY_TOKEN_ABI_DOCKER)
+      : '[]',
     dayFaucetAddress: process.env.DAY_FAUCET_ADDRESS_DOCKER,
-    dayFaucetAbi: process.env.DAY_FAUCET_ABI_DOCKER ? JSON.parse(process.env.DAY_FAUCET_ABI_DOCKER) : '[]'
+    dayFaucetAbi: process.env.DAY_FAUCET_ABI_DOCKER
+      ? JSON.parse(process.env.DAY_FAUCET_ABI_DOCKER)
+      : '[]'
   }
 };
 
 const Explorers = {
-  0: '127.0.0.1:7545', //Ganache
+  0: '127.0.0.1:7545', // Ganache
   1: 'https://etherscan.io/',
   3: 'https://ropsten.etherscan.io/',
   4: 'https://rinkeby.etherscan.io/',
   42: 'https://kovan.etherscan.io/'
 };
 
-export {
-  Networks,
-  Explorers
-};
+export { Networks, Explorers };

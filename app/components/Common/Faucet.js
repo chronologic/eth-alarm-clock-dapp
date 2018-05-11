@@ -20,6 +20,7 @@ class Faucet extends MetamaskComponent {
     loaded: false,
     defaultAccount: '',
     faucetAddress: '',
+    dayTokenAddress:'',
     faucetBalance: 0,
     waitTime: 3600,
     waitTimeLeft: 0,
@@ -93,7 +94,8 @@ class Faucet extends MetamaskComponent {
     const { accounts } = web3Service;
     this.setState({
       defaultAccount: accounts[0],
-      faucetAddress: web3Service.network.dayFaucetAddress
+      faucetAddress: web3Service.network.dayFaucetAddress,
+      dayTokenAddress: web3Service.network.dayTokenAddress
     });
 
     if (!this.isWeb3Usable || !this.state.faucetAddress) {
@@ -150,6 +152,13 @@ class Faucet extends MetamaskComponent {
     }
   };
 
+  hrefProps () {
+    return {
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    };
+  }
+
   async componentDidMount() {
     super.componentDidMount();
     await this.loadInfo();
@@ -165,15 +174,12 @@ class Faucet extends MetamaskComponent {
     const { web3Service } = this.props;
     const explorer = web3Service.explorer;
 
-    const hrefProps = {
-      target: '_blank',
-      rel: 'noopener noreferrer'
-    };
-
-    const faucetAddressProps = hrefProps;
-    const yourAddressProps = hrefProps;
+    const dayTokenAddressProps = this.hrefProps();
+    const faucetAddressProps = this.hrefProps();
+    const yourAddressProps = this.hrefProps();
 
     if (explorer) {
+      dayTokenAddressProps.href = explorer + 'address/' + this.state.dayTokenAddress;
       faucetAddressProps.href = explorer + 'address/' + this.state.faucetAddress;
       yourAddressProps.href = explorer + 'address/' + this.state.defaultAccount;
     }
@@ -194,6 +200,21 @@ class Faucet extends MetamaskComponent {
                     </div>
                     <div className="col-md-6 text-left">
                       {(this.state.loaded || web3Service.network) ? web3Service.network.name : <BeatLoader />}
+                    </div>
+                  </div>
+
+                  <div className="row my-3">
+                    <div className="col-md-6 text-sm-right">
+                      <strong>Token Address</strong>
+                    </div>
+                    <div className="col-md-6 text-left">
+                      {(this.state.loaded || this.state.dayTokenAddress) ? (
+                        <a {...dayTokenAddressProps}>
+                          {this.state.dayTokenAddress}
+                        </a>
+                      ) : (
+                        <BeatLoader />
+                      )}
                     </div>
                   </div>
 
