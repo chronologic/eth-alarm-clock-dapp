@@ -20,7 +20,7 @@ class TimeNodeStatistics extends Component {
     this.refreshStats = this.refreshStats.bind(this);
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.refreshBalances();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
@@ -39,11 +39,27 @@ class TimeNodeStatistics extends Component {
   }
 
   getStopButton() {
-    return <button className="btn btn-danger px-4" onClick={this.stopTimeNode} disabled={this.state.timeNodeDisabled}>Stop</button>;
+    return (
+      <button
+        className="btn btn-danger px-4"
+        onClick={this.stopTimeNode}
+        disabled={this.state.timeNodeDisabled}
+      >
+        Stop
+      </button>
+    );
   }
 
   getStartButton() {
-    return <button className="btn btn-primary px-4" onClick={this.startTimeNode} disabled={this.state.timeNodeDisabled}>Start</button>;
+    return (
+      <button
+        className="btn btn-primary px-4"
+        onClick={this.startTimeNode}
+        disabled={this.state.timeNodeDisabled}
+      >
+        Start
+      </button>
+    );
   }
 
   startTimeNode() {
@@ -53,7 +69,8 @@ class TimeNodeStatistics extends Component {
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
-    this.props.keenStore.activeTimeNodes = this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
+    this.props.keenStore.activeTimeNodes =
+      this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
   }
 
   async refreshBalances() {
@@ -68,7 +85,13 @@ class TimeNodeStatistics extends Component {
   }
 
   getBalanceNotification() {
-    return Number(this.props.timeNodeStore.balanceETH) > 0 ? null : <Alert type="warning" close={false} msg="Your ETH balance is 0. You will be unable to claim or execute transactions." />;
+    return Number(this.props.timeNodeStore.balanceETH) > 0 ? null : (
+      <Alert
+        type="warning"
+        close={false}
+        msg="Your ETH balance is 0. You will be unable to claim or execute transactions."
+      />
+    );
   }
 
   componentWillUnmount() {
@@ -86,7 +109,9 @@ class TimeNodeStatistics extends Component {
     const claimedEth = this.props.timeNodeStore.claimedEth;
     const claimedEthStatus = claimedEth !== null ? claimedEth + ' ETH' : 'Loading...';
 
-    const dayTokenError = <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens."/>;
+    const dayTokenError = (
+      <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens." />
+    );
 
     return (
       <div id="timeNodeStatistics">
@@ -95,11 +120,14 @@ class TimeNodeStatistics extends Component {
 
         <h2 className="py-4">
           Your TimeNode is currently {timeNodeStatus}.
-          <span className="ml-2">{this.props.timeNodeStore.scanningStarted ? this.getStopButton() : this.getStartButton()}</span>
+          <span className="ml-2">
+            {this.props.timeNodeStore.scanningStarted
+              ? this.getStopButton()
+              : this.getStartButton()}
+          </span>
         </h2>
 
         <div className="row">
-
           <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
@@ -107,7 +135,13 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshStats()}><i className="card-icon card-icon-refresh"></i></a>
+                      <a
+                        data-toggle="refresh"
+                        className="card-refresh"
+                        onClick={() => this.refreshStats()}
+                      >
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -125,13 +159,23 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshStats()}><i className="card-icon card-icon-refresh"></i></a>
+                      <a
+                        data-toggle="refresh"
+                        className="card-refresh"
+                        onClick={() => this.refreshStats()}
+                      >
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div ref={(el) => this.chartContainer = el} className="card-body no-padding">
-                {this.props.timeNodeStore.executedTransactions.length > 0 ? <ExecutedGraph /> : <p className="my-5 text-center">No data yet.</p>}
+              <div ref={el => (this.chartContainer = el)} className="card-body no-padding">
+                {this.props.timeNodeStore.executedTransactions.length > 0 ? (
+                  <ExecutedGraph />
+                ) : (
+                  <p className="my-5 text-center">No data yet.</p>
+                )}
               </div>
             </div>
           </div>
@@ -143,7 +187,13 @@ class TimeNodeStatistics extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a data-toggle="refresh" className="card-refresh" onClick={() => this.refreshBalances()}><i className="card-icon card-icon-refresh"></i></a>
+                      <a
+                        data-toggle="refresh"
+                        className="card-refresh"
+                        onClick={() => this.refreshBalances()}
+                      >
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -153,7 +203,7 @@ class TimeNodeStatistics extends Component {
                   <div className="col-6 col-md-6">ETH</div>
                   <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceETH}</div>
                 </div>
-                <hr className="mt-2 mb-2"/>
+                <hr className="mt-2 mb-2" />
                 <div className="row px-4 pb-2">
                   <div className="col-6 col-md-6">DAY</div>
                   <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
@@ -161,9 +211,7 @@ class TimeNodeStatistics extends Component {
               </div>
             </div>
           </div>
-
         </div>
-
       </div>
     );
   }

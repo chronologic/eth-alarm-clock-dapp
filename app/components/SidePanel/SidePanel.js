@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { observer,inject } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 
 @inject('web3Service')
 @inject('keenStore')
 @observer
 class SidePanel extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -16,13 +15,15 @@ class SidePanel extends Component {
     this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.getCurrentBlock();
   }
 
   getCurrentBlock() {
-    const { web3Service: { web3 } } = this.props;
-    web3.eth.getBlockNumber((err,res) =>{
+    const {
+      web3Service: { web3 }
+    } = this.props;
+    web3.eth.getBlockNumber((err, res) => {
       err == null && this.setState({ blocknumber: res });
     });
   }
@@ -66,27 +67,39 @@ class SidePanel extends Component {
       },
       {
         title: 'Transactions',
-        titleClasses: titleClasses + subtitleClasses + this.isUrlActive('/transactions', 'title', true),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true),
+        titleClasses:
+          titleClasses + subtitleClasses + this.isUrlActive('/transactions', 'title', true),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/transactions', 'thumbnail', true)
       },
       {
         title: 'TimeNode',
         titleClasses: titleClasses + this.isUrlActive('/timenode', 'title'),
-        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail'),
+        thumbnailClasses: thumbnailClasses + this.isUrlActive('/timenode', 'thumbnail')
       },
       {
         title: 'Faucet',
         titleClasses: titleClasses + this.isUrlActive('/faucet', 'title'),
         thumbnailClasses: thumbnailClasses + this.isUrlActive('/faucet', 'thumbnail')
-      },
+      }
     ];
 
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
-          <img src="img/logo-white.png" alt="logo" className="brand" data-src="img/logo-white.png" height="36"/>
+          <img
+            src="img/logo-white.png"
+            alt="logo"
+            className="brand"
+            data-src="img/logo-white.png"
+            height="36"
+          />
           <div className="sidebar-header-controls">
-            <button type="button" className="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i className="fa fa-lock"></i>
+            <button
+              type="button"
+              className="btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none"
+              data-toggle-pin="sidebar"
+            >
+              <i className="fa fa-lock" />
             </button>
           </div>
         </div>
@@ -95,26 +108,34 @@ class SidePanel extends Component {
             <li className="m-t-30 ">
               <NavLink to="/">
                 <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
-                <span className={entryList[0].thumbnailClasses}><i className="pg-calender"></i></span>
+                <span className={entryList[0].thumbnailClasses}>
+                  <i className="pg-calender" />
+                </span>
               </NavLink>
             </li>
             <li>
-              <a href="#" onClick={(e) => e.preventDefault()}>
+              <a href="#" onClick={e => e.preventDefault()}>
                 <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
-                <span className={entryList[1].thumbnailClasses}><i className="pg-charts"></i></span>
+                <span className={entryList[1].thumbnailClasses}>
+                  <i className="pg-charts" />
+                </span>
               </a>
 
               <ul className="sub-menu">
                 <li>
                   <NavLink to="/transactions/scheduled">
                     <span className="title">Scheduled</span>
-                    <span className="icon-thumbnail"><i className="pg-plus_circle"></i></span>
+                    <span className="icon-thumbnail">
+                      <i className="pg-plus_circle" />
+                    </span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/transactions/completed">
                     <span className="title">Completed</span>
-                    <span className="icon-thumbnail"><i className="fa fa-check"></i></span>
+                    <span className="icon-thumbnail">
+                      <i className="fa fa-check" />
+                    </span>
                   </NavLink>
                 </li>
               </ul>
@@ -122,35 +143,57 @@ class SidePanel extends Component {
             <li>
               <NavLink to="/timenode">
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
-                <span className={entryList[2].thumbnailClasses}><i className="fa fa-sitemap"></i></span>
+                <span className={entryList[2].thumbnailClasses}>
+                  <i className="fa fa-sitemap" />
+                </span>
               </NavLink>
             </li>
             <li>
-              <a href="https://alpha.chronologic.network/debt/" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://alpha.chronologic.network/debt/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span className="title">Debt Smart Contract</span>
-                <span className="icon-thumbnail"><i className="fab fa-ethereum"></i></span>
+                <span className="icon-thumbnail">
+                  <i className="fab fa-ethereum" />
+                </span>
               </a>
             </li>
             <li>
-              <a href="https://alpha.chronologic.network/chronos/" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://alpha.chronologic.network/chronos/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span className="title">Day Token Contract</span>
-                <span className="icon-thumbnail"><i className="far fa-clock"></i></span>
+                <span className="icon-thumbnail">
+                  <i className="far fa-clock" />
+                </span>
               </a>
             </li>
             <li>
               <NavLink to="/faucet">
                 <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                <span className={entryList[3].thumbnailClasses}><i className="fas fa-tint"></i></span>
+                <span className={entryList[3].thumbnailClasses}>
+                  <i className="fas fa-tint" />
+                </span>
               </NavLink>
             </li>
             <li>
-              <a href="https://blog.chronologic.network/chronos-platform/home" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://blog.chronologic.network/chronos-platform/home"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span className="title">Help</span>
-                <span className="icon-thumbnail"><i className="far fa-question-circle"></i></span>
+                <span className="icon-thumbnail">
+                  <i className="far fa-question-circle" />
+                </span>
               </a>
             </li>
 
-            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4"/>
+            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
 
             <li className="d-md-block d-lg-none">
               <div className="container py-2">
@@ -159,7 +202,9 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Active TimeNodes</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.props.keenStore.activeTimeNodes}</span>
+                    <span className="timenode-count col-6">
+                      {this.props.keenStore.activeTimeNodes}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -177,9 +222,8 @@ class SidePanel extends Component {
                 </div>
               </div>
             </li>
-
           </ul>
-          <div className="clearfix"></div>
+          <div className="clearfix" />
         </div>
       </nav>
     );
