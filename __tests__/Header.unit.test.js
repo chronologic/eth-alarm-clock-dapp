@@ -24,8 +24,10 @@ describe('Header', () => {
         return {};
       }
     };
+    const featuresService = {};
 
     const injectables = {
+      featuresService,
       keenStore,
       web3Service,
       eacService
@@ -34,16 +36,18 @@ describe('Header', () => {
     let mockedRender = renderer.create(
       <Provider {...injectables}>
         <Header />
-      </Provider>,
+      </Provider>
     );
 
     let tree = mockedRender.toJSON();
     expect(tree).toMatchSnapshot();
 
     const blockNumberDisplay = tree.children
-      .find(el => el.props.className === 'd-flex align-items-center').children
-      .find(el => el.props.className === 'pull-left p-r-10 fs-14 font-heading d-lg-block d-none').children
-      .find(el => el.props.className === 'timenode-count');
+      .find(el => el.props.className === 'd-flex align-items-center')
+      .children.find(
+        el => el.props.className === 'pull-left p-r-10 fs-14 font-heading d-lg-block d-none'
+      )
+      .children.find(el => el.props.className === 'timenode-count');
 
     expect(blockNumberDisplay).toMatchSnapshot();
   });

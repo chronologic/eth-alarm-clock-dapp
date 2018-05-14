@@ -9,7 +9,7 @@ import { KeenStore } from './KeenStore';
 import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
 
-const { eacService, storageService, web3Service } = services;
+const { eacService, featuresService, storageService, web3Service } = services;
 
 const keenStore = new KeenStore(
   process.env.KEEN_PROJECT_ID,
@@ -24,12 +24,18 @@ const scheduleStore = new ScheduleStore(false);
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionCache = new TransactionCache(storageService);
-export const transactionFetcher = new TransactionFetcher(eacService, transactionCache, web3Service);
+export const transactionFetcher = new TransactionFetcher(
+  eacService,
+  transactionCache,
+  web3Service,
+  featuresService
+);
 export const transactionStore = new TransactionStore(
   eacService,
   web3Service,
   transactionFetcher,
-  transactionCache
+  transactionCache,
+  featuresService
 );
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore);
 

@@ -106,16 +106,19 @@ export default class Web3Service {
       { type: 'address', name: 'sender' },
       { type: 'uint256', name: 'value' }
     ];
+
     const details = this.decodeTransactionData(callData, functionName, params);
+
     details.map((val, index) => (details[params[index].name] = val));
+
     return details;
   }
 
   async getTokenTransferData(token, receiver, amount) {
     const contract = this.web3.eth.contract(standardTokenAbi).at(token);
     const sender = this.accounts[0];
-    const data = contract.transferFrom.getData(sender, receiver, amount);
-    return data;
+
+    return contract.transferFrom.getData(sender, receiver, amount);
   }
 
   async estimateTokenTransfer(token, receiver, amount) {
@@ -131,13 +134,13 @@ export default class Web3Service {
 
   async fetchTokenDetails(address) {
     const contract = this.web3.eth.contract(standardTokenAbi).at(address);
-    const details = {
-      address: address,
+
+    return {
+      address,
       name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
       symbol: (await Bb.fromCallback(callback => contract.symbol.call(callback))).valueOf(),
       decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf()
     };
-    return details;
   }
 
   async fetchTokenBalance(address) {
@@ -153,39 +156,42 @@ export default class Web3Service {
 
   async fetchReceipt(hash) {
     let { web3 } = this;
-    let receipt = await Bb.fromCallback(callback => web3.eth.getTransactionReceipt(hash, callback));
-    return receipt;
+
+    return await Bb.fromCallback(callback => web3.eth.getTransactionReceipt(hash, callback));
   }
 
   async fetchLog(hash, event) {
     const receipt = await this.trackTransaction(hash);
     let Log;
+
     receipt.logs.map(log => {
       if (log.topics[0] == event) {
         Log = log;
         return;
       }
     });
+
     return Log;
   }
 
   async trackTransaction(hash) {
-    let receipt;
-    if (!(receipt = await this.fetchReceipt(hash))) {
-      const txReceipt = new Promise(resolve => {
+    let receipt = await this.fetchReceipt(hash);
+
+    if (!receipt) {
+      receipt = new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.trackTransaction(hash));
         }, 2000);
       });
-      return txReceipt;
-    } else {
-      return receipt;
     }
+
+    return receipt;
   }
 
   async fetchConfirmations(transaction) {
     const mined = await this.trackTransaction(transaction);
     const block = await this.fetchBlockNumber();
+
     if (!mined || !mined.blockNumber) {
       const confirmations = new Promise(resolve => {
         setTimeout(async () => {
@@ -193,9 +199,9 @@ export default class Web3Service {
         }, 2000);
       });
       return confirmations;
-    } else {
-      return block - mined.blockNumber;
     }
+
+    return block - mined.blockNumber;
   }
 
   async fetchBlockNumber() {
@@ -250,19 +256,22 @@ export default class Web3Service {
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
 
     this.accounts = web3.eth.accounts;
-    web3.eth.defaultAccount = this.accounts[0];
+
+    if (this.accounts && this.accounts.length > 0) {
+      web3.eth.defaultAccount = this.accounts[0];
+    }
   }
 
   async awaitInitialized() {
-    const that = this;
     if (!this.initialized) {
-      let Promises = new Promise((resolve /*, reject*/) => {
-        setTimeout(async function() {
-          resolve(await that.awaitInitialized());
-        }, 2000);
+      return new Promise(resolve => {
+        setTimeout(async () => {
+          resolve(await this.awaitInitialized());
+        }, 500);
       });
-      return Promises;
-    } else return true;
+    }
+
+    return true;
   }
 
   @action

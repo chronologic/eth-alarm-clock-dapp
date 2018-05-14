@@ -1,6 +1,8 @@
 import TransactionFetcher from '../../app/stores/TransactionFetcher';
 import { equal, ok } from 'assert';
 import TransactionCache from '../../app/stores/TransactionCache';
+import FeaturesService from '../../app/services/features';
+import { KOVAN_NETWORK_ID } from '../../app/config/web3Config';
 
 describe('Stores / TransactionFetcher', () => {
   describe('getTransactions', () => {
@@ -59,16 +61,23 @@ describe('Stores / TransactionFetcher', () => {
     const transactionsCache = new TransactionCache(storageService);
 
     const web3 = {
+      network: {
+        id: KOVAN_NETWORK_ID
+      },
       filter() {
         return {
           get(callback) {
             callback(null, []);
           }
         };
-      }
+      },
+      awaitInitialized: () => Promise.resolve(true)
     };
 
-    const getInstance = () => new TransactionFetcher(eacService, transactionsCache, web3);
+    const featuresService = new FeaturesService(web3);
+
+    const getInstance = () =>
+      new TransactionFetcher(eacService, transactionsCache, web3, featuresService);
 
     it('fills allTransactionsAddresses', async () => {
       const TransactionsFetcher = getInstance();
