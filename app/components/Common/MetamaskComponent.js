@@ -5,6 +5,9 @@ import Alert from './Alert';
 import { showNotification } from '../../services/notification';
 import Cookies from 'js-cookie';
 
+const METAMASK_UNLOCKED_COOKIE_NAME = 'metamaskUnlocked';
+const METAMASK_LOCKED_MESSAGE = 'Please unlock or add new account to use this application.';
+
 @observer
 class MetamaskComponent extends Component {
   state = {
@@ -33,11 +36,11 @@ class MetamaskComponent extends Component {
   runNotifications() {
     const { web3Service } = this.props;
     /*
- * Detects if the Metamask state (installed/not installed)
- * has changed since the last page refresh/state change.
- * - Shows the notification only if the state has changed since previous load.
- * - Uses cookies to save the states
- */
+    * Detects if the Metamask state (installed/not installed)
+    * has changed since the last page refresh/state change.
+    * - Shows the notification only if the state has changed since previous load.
+    * - Uses cookies to save the states
+    */
     const metamaskInstalled = web3Service.web3.isConnected() && web3Service.connectedToMetaMask;
     const hasPreviousMetamaskState = Cookies.get('metamaskInstalled') !== undefined;
     const previousMetamaskState = Cookies.get('metamaskInstalled') === 'true';
@@ -69,18 +72,17 @@ class MetamaskComponent extends Component {
      * - Uses cookies to save the states
      */
     const metamaskUnlocked = web3Service.accounts && web3Service.accounts.length > 0;
-    const previousMetamaskUnlocked = Cookies.get('metamaskUnlocked') === 'true';
+
+    const previousMetamaskUnlocked = Cookies.get(METAMASK_UNLOCKED_COOKIE_NAME) === 'true';
     const hasChangedMetamaskUnlocked = metamaskUnlocked !== previousMetamaskUnlocked;
 
     if (metamaskInstalled && hasChangedMetamaskUnlocked) {
       if (!metamaskUnlocked) {
-        showNotification(
-          `Kindly unlock your account or add new accounts to use this Dapp`,
-          'warning'
-        );
+        showNotification(METAMASK_LOCKED_MESSAGE, 'warning');
       }
-      Cookies.set('metamaskUnlocked', metamaskUnlocked, { expires: 30 });
     }
+
+    Cookies.set(METAMASK_UNLOCKED_COOKIE_NAME, metamaskUnlocked, { expires: 30 });
   }
 
   async scoutUpdates() {
