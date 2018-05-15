@@ -38,11 +38,11 @@ class TransactionsTable extends Component {
     });
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.calculatePages();
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     this.calculatePages(newProps);
 
     this.setState(() => ({
@@ -107,7 +107,9 @@ class TransactionsTable extends Component {
             {this.state.lastPage !== 1 && (
               <div className="col-md-6 text-right">
                 <span
-                  className={this.showPreviousPageButton ? '' : 'd-none'}
+                  className={['pagination-arrow', this.showPreviousPageButton ? '' : 'd-none'].join(
+                    ' '
+                  )}
                   onClick={() => this.goToPage(currentPage - 1)}
                 >
                   {this.getPreviousPageButton()}&nbsp;
@@ -116,7 +118,7 @@ class TransactionsTable extends Component {
                 {this.state.pages.map(page => (
                   <span
                     key={page}
-                    className={page === currentPage ? 'bold' : ''}
+                    className={['pagination-entry', page === currentPage ? 'bold' : ''].join(' ')}
                     onClick={() => this.goToPage(page)}
                   >
                     {page}&nbsp;
@@ -124,7 +126,9 @@ class TransactionsTable extends Component {
                 ))}
 
                 <span
-                  className={this.showNextPageButton ? '' : 'd-none'}
+                  className={['pagination-arrow', this.showNextPageButton ? '' : 'd-none'].join(
+                    ' '
+                  )}
                   onClick={() => this.goToPage(currentPage + 1)}
                 >
                   {this.getNextPageButton()}
@@ -149,7 +153,7 @@ class TransactionsTable extends Component {
 }
 
 TransactionsTable.propTypes = {
-  transactions: PropTypes.array,
+  transactions: PropTypes.any,
   total: PropTypes.number,
   limit: PropTypes.number,
   offset: PropTypes.number,

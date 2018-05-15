@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import Cookies from 'js-cookie';
 import CryptoJS from 'crypto-js';
-import ethJsUtil from 'ethereumjs-util';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
 
@@ -9,23 +8,22 @@ import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
+import {
+  isMyCryptoSigValid,
+  isSignatureValid,
+  parseSig,
+  SIGNATURE_ERRORS
+} from '../lib/signature';
 
 /*
  * TimeNode classification based on the number
  * of DAY tokens held by the owner.
  */
 export class TIMENODE_STATUS {
-  static MASTER_CHRONONODE  = 'Master ChronoNode';
+  static MASTER_CHRONONODE = 'Master ChronoNode';
   static CHRONONODE = 'ChronoNode';
   static TIMENODE = 'TimeNode';
   static DISABLED = 'Disabled';
-}
-
-class SIGNATURE_ERRORS {
-  static JSON_FORMAT_ERROR = `There is a problem with JSON format of your signature. Make sure you've copied it correctly.`;
-  static MISSING_MSG = `Message is missing in provided string. Make sure property "msg" is present.`;
-  static MISSING_SIG = `Signature is missing in provided string. Make sure property "sig" is present.`;
-  static MISSING_ADDRESS = `Address is missing in provided string. Make sure property "address" is present.`;
 }
 
 // 2 minute as milliseconds
@@ -33,7 +31,7 @@ const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
-  @observable hasWallet = false;
+  @observable walletKeystore = '';
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
 
@@ -41,14 +39,17 @@ export default class TimeNodeStore {
   @observable detailedLogs = [];
 
   @observable logType = LOG_TYPE.BASIC;
-  @computed get logs() {
+  @computed
+  get logs() {
     return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
   }
 
   @observable executedTransactions = [];
   @observable balanceETH = null;
   @observable balanceDAY = null;
-  @observable claimedEth = null;
+
+  @observable bounties = null;
+  @observable costs = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
@@ -59,40 +60,50 @@ export default class TimeNodeStore {
   _timeNodeStatusCheckIntervalRef = null;
 
   constructor(eacService, web3Service, keenStore) {
-    window.tnstore = this;
     this._eacService = eacService;
     this._web3Service = web3Service;
     this._keenStore = keenStore;
 
-    if (Cookies.get('attachedDAYAccount')) this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
-    if (Cookies.get('hasWallet')) this.hasWallet = true;
-
-    if (this.hasCookies(['tn', 'tnp'])) this.startClient(Cookies.get('tn'), Cookies.get('tnp'));
+    if (Cookies.get('attachedDAYAccount'))
+      this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
+    if (Cookies.get('tn')) this.walletKeystore = Cookies.get('tn');
   }
 
-  startWorker(keystore, password) {
-    this.eacWorker = new EacWorker();
+  unlockTimeNode(password) {
+    if (this.walletKeystore && password) {
+      this.startClient(Cookies.get('tn'), password);
+    } else {
+      showNotification('Unable to unlock the TimeNode. Please try again');
+    }
+    return;
+  }
 
-    const options = {
+  getWorkerOptions(keystore, keystorePassword) {
+    return {
       network: this._web3Service.network,
       keystore: [this.decrypt(keystore)],
-      keystorePassword: this.decrypt(password),
+      keystorePassword,
       logfile: 'console',
       logLevel: 1,
       milliseconds: 15000,
       autostart: false,
       scan: 950, // ~65min on kovan
       repl: false,
-      browserDB: true,
+      browserDB: true
     };
+  }
 
-    this.eacWorker.onmessage = (event) => {
+  startWorker(options) {
+    this.eacWorker = new EacWorker();
+
+    this.eacWorker.onmessage = event => {
       const { type } = event.data;
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(event.data.value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        if (event.data.etherGain) this.claimedEth = this._web3Service.fromWei(event.data.etherGain);
+        if (event.data.bounties !== null) this.bounties = event.data.bounties;
+        if (event.data.costs !== null) this.costs = event.data.costs;
         this.executedTransactions = event.data.executedTransactions;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
@@ -113,10 +124,7 @@ export default class TimeNodeStore {
   }
 
   pushToLog(logs, log) {
-    if (logs.length === LOG_CAP) {
-      logs.shift();
-    }
-
+    if (logs.length === LOG_CAP) logs.shift();
     logs.push(log);
   }
 
@@ -134,8 +142,13 @@ export default class TimeNodeStore {
   }
 
   async awaitScanReady() {
-    if (!this.eacWorker || this.eacWorker === null || !this._keenStore || this._keenStore === null ) {
-      return new Promise((resolve) => {
+    if (
+      !this.eacWorker ||
+      this.eacWorker === null ||
+      !this._keenStore ||
+      this._keenStore === null
+    ) {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitScanReady());
         }, 500);
@@ -145,7 +158,6 @@ export default class TimeNodeStore {
   }
 
   async startScanning() {
-
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
     }
@@ -156,7 +168,10 @@ export default class TimeNodeStore {
 
     this.sendActiveTimeNodeEvent();
 
-    this._timeNodeStatusCheckIntervalRef = setInterval(() => this.sendActiveTimeNodeEvent(), STATUS_UPDATE_INTERVAL);
+    this._timeNodeStatusCheckIntervalRef = setInterval(
+      () => this.sendActiveTimeNodeEvent(),
+      STATUS_UPDATE_INTERVAL
+    );
 
     this.eacWorker.postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
@@ -173,7 +188,7 @@ export default class TimeNodeStore {
       clearInterval(this._timeNodeStatusCheckIntervalRef);
     }
 
-    if (this.eacWorker){
+    if (this.eacWorker) {
       this.eacWorker.postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
       });
@@ -200,18 +215,17 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    this.startWorker(keystore, password);
+    this.startWorker(this.getWorkerOptions(keystore, password));
+  }
 
+  setKeyStore(keystore) {
+    this.walletKeystore = keystore;
     this.setCookie('tn', keystore);
-    this.setCookie('tnp', password);
-    this.setCookie('hasWallet', true);
-    this.hasWallet = true;
   }
 
   getMyAddress() {
-    const encryptedAddress = Cookies.get('tn');
-    if (encryptedAddress) {
-      const ks = this.decrypt(encryptedAddress);
+    if (this.walletKeystore) {
+      const ks = this.decrypt(this.walletKeystore);
       return '0x' + JSON.parse(ks).address;
     } else {
       return '';
@@ -230,7 +244,10 @@ export default class TimeNodeStore {
   async getBalance(address = this.getMyAddress()) {
     const balance = await this._eacService.Util.getBalance(address);
 
-    this.balanceETH = balance.div(10**18).toNumber().toFixed(2);
+    this.balanceETH = balance
+      .div(10 ** 18)
+      .toNumber()
+      .toFixed(2);
 
     return this.balanceETH;
   }
@@ -244,15 +261,18 @@ export default class TimeNodeStore {
 
     const contract = web3.eth.contract(dayTokenAbi).at(dayTokenAddress);
 
-    const balanceNum = await Bb.fromCallback(callback =>
-      contract.balanceOf(address, callback)
-    );
-    const balance = balanceNum.div(10**18).toNumber().toFixed(2);
+    const balanceNum = await Bb.fromCallback(callback => contract.balanceOf(address, callback));
+    const balance = balanceNum
+      .div(10 ** 18)
+      .toNumber()
+      .toFixed(2);
 
-    const mintingPower = process.env.NODE_ENV === 'docker' ? 0
-      : await Bb.fromCallback((callback) => {
-        contract.getMintingPowerByAddress(address, callback);
-      });
+    const mintingPower =
+      process.env.NODE_ENV === 'docker'
+        ? 0
+        : await Bb.fromCallback(callback => {
+            contract.getMintingPowerByAddress(address, callback);
+          });
 
     this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
     this.balanceDAY = balance;
@@ -295,63 +315,28 @@ export default class TimeNodeStore {
   }
 
   /*
-   * Checks if the signature from the wallet
-   * (inputted by the user) is valid.
-   */
-  isSignatureValid(sigObject) {
-    let signature;
-
-    try {
-      signature = JSON.parse(sigObject);
-    } catch (error) {
-      throw SIGNATURE_ERRORS.JSON_FORMAT_ERROR;
-    }
-
-    if (!signature.msg) {
-      throw SIGNATURE_ERRORS.MISSING_MSG;
-    }
-
-    if (!signature.sig) {
-      throw SIGNATURE_ERRORS.MISSING_SIG;
-    }
-
-    if (!signature.address) {
-      throw SIGNATURE_ERRORS.MISSING_ADDRESS;
-    }
-
-    const message = Buffer.from(signature.msg);
-
-    const msgHash = ethJsUtil.hashPersonalMessage(message);
-    const res = ethJsUtil.fromRpcSig(signature.sig);
-    const pub = ethJsUtil.ecrecover(msgHash, res.v, res.r, res.s);
-    const addrBuf = ethJsUtil.pubToAddress(pub);
-    const addr = ethJsUtil.bufferToHex(addrBuf);
-
-    const isValid = (addr === signature.address) && this._eacService.Util.checkValidAddress(addr);
-    return { isValid, addr };
-  }
-
-  /*
    * Attaches a DAY-token-holding account to the session
    * as a proof-of-ownership of DAY tokens.
    * If it contains DAY tokens, it allows the usage of TimeNodes.
    */
   async attachDayAccount(sigObject) {
     try {
-      const { isValid, addr } = this.isSignatureValid(sigObject);
-      const numDAYTokens = await this.getDAYBalance(addr);
-      const encryptedAttachedAddress = this.encrypt(addr);
+      const signature = parseSig(sigObject);
 
-      if (isValid) {
-        if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-          this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
-          this.attachedDAYAccount = encryptedAttachedAddress;
-          showNotification('Success.', 'success');
-        } else {
-          showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
-        }
+      // First check using default sig check - if doesn't work use MyCrypto's
+      const validSig = isSignatureValid(signature) ? true : isMyCryptoSigValid(signature);
+
+      if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
+
+      const numDAYTokens = await this.getDAYBalance(signature.address);
+      const encryptedAttachedAddress = this.encrypt(signature.address);
+
+      if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
+        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+        this.attachedDAYAccount = encryptedAttachedAddress;
+        showNotification('Success.', 'success');
       } else {
-        showNotification('Invalid signature.');
+        showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
       }
     } catch (error) {
       showNotification(error);
@@ -373,23 +358,24 @@ export default class TimeNodeStore {
 
   resetWallet() {
     Cookies.remove('tn');
-    Cookies.remove('tnp');
-    Cookies.remove('hasWallet');
     Cookies.remove('attachedDAYAccount');
-    this.hasWallet = false;
     this.attachedDAYAccount = '';
+    this.walletKeystore = '';
     showNotification('Your wallet has been reset.', 'success');
   }
 
-  checkPasswordMatchesKeystore(keystore, password) {
+  passwordMatchesKeystore(password) {
     try {
-      ethereumJsWallet.fromV3(this.decrypt(keystore), this.decrypt(password), true);
+      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), this.decrypt(password), true);
       showNotification('Success.', 'success');
       return true;
     } catch (e) {
-      showNotification(e);
+      if (e.message === 'Key derivation failed - possibly wrong passphrase') {
+        showNotification('Please enter a valid password.');
+      } else {
+        showNotification(e);
+      }
       return false;
     }
   }
-
 }

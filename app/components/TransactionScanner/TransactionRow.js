@@ -5,34 +5,43 @@ import moment from 'moment';
 import ValueDisplay from '../Common/ValueDisplay';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '../../lib/consts';
+import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 
 const INITIAL_STATE = {
-  time: ''
+  asyncPropsFetched: false,
+  bounty: 0,
+  deposit: 0,
+  isTimestamp: false,
+  time: '',
+  status: TRANSACTION_STATUS.FAILED,
+  timeWindow: 0,
+  value: 0
 };
 
 @inject('eacService')
 @inject('transactionStore')
 class TransactionsRow extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
-  _isMounted = false
+  _isMounted = false;
 
-  async getPreparedState() {
+  async getAsyncStateProps() {
     const { eacService, transaction, transactionStore } = this.props;
 
-    await transaction.fillData();
-
-    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+    const { isTimestamp } = this.state;
 
     const status = await transactionStore.getTxStatus(transaction);
 
-    let time;
+    const asyncStateProps = {
+      asyncPropsFetched: true,
+      status
+    };
 
-    if (isTimestamp) {
-      time = transaction.windowStart;
-    } else {
+    if (!isTimestamp) {
       const currentBlock = await eacService.Util.getBlockNumber();
       const windowStart = transaction.windowStart.toNumber();
+
+      let time;
 
       if (currentBlock > windowStart) {
         time = await eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
@@ -43,9 +52,27 @@ class TransactionsRow extends Component {
 
         time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
       }
+
+      asyncStateProps.time = TransactionsRow.getFormattedTimestamp(time);
     }
 
-    time = moment.unix(time).format('YYYY-MM-DD HH:mm');
+    return asyncStateProps;
+  }
+
+  static getFormattedTimestamp(timestamp) {
+    return moment.unix(timestamp).format('YYYY-MM-DD HH:mm');
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    const { transaction, transactionStore } = nextProps;
+
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+
+    let time;
+
+    if (isTimestamp) {
+      time = TransactionsRow.getFormattedTimestamp(transaction.windowStart);
+    }
 
     let timeWindow = transaction.windowSize.toNumber();
 
@@ -56,8 +83,10 @@ class TransactionsRow extends Component {
     timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');
 
     return {
+      asyncPropsFetched: false,
       bounty: transaction.bounty,
       deposit: transaction.requiredDeposit,
+      isTimestamp,
       time,
       status,
       timeWindow,
@@ -65,20 +94,26 @@ class TransactionsRow extends Component {
     };
   }
 
-  async getUpdatedState() {
-    const preparedState = await this.getPreparedState();
+  async updateAsyncStateProps() {
+    const asyncStateProps = await this.getAsyncStateProps();
 
     if (!this._isMounted) {
       return;
     }
 
-    this.setState(preparedState);
+    this.setState(asyncStateProps);
   }
 
   async componentDidMount() {
     this._isMounted = true;
 
-    await this.getUpdatedState();
+    await this.updateAsyncStateProps();
+  }
+
+  async componentDidUpdate() {
+    if (!this.state.asyncPropsFetched) {
+      await this.updateAsyncStateProps();
+    }
   }
 
   async componentWillUnmount() {
@@ -86,19 +121,30 @@ class TransactionsRow extends Component {
   }
 
   render() {
-    this.getUpdatedState();
     const { showStatus, transaction } = this.props;
     const { bounty, deposit, status, time, timeWindow, value } = this.state;
 
     return (
       <tr>
-        <td className="v-align-middle semi-bold"><Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link></td>
+        <td className="v-align-middle semi-bold">
+          <Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link>
+        </td>
         <td className="v-align-middle">{time}</td>
-        <td className="v-align-middle semi-bold"><ValueDisplay priceInWei={bounty}/></td>
-        <td className="v-align-middle"><ValueDisplay priceInWei={value}/></td>
-        <td className="v-align-middle"><ValueDisplay priceInWei={deposit}/></td>
+        <td className="v-align-middle semi-bold">
+          <ValueDisplay priceInWei={bounty} />
+        </td>
+        <td className="v-align-middle">
+          <ValueDisplay priceInWei={value} />
+        </td>
+        <td className="v-align-middle">
+          <ValueDisplay priceInWei={deposit} />
+        </td>
         <td className="v-align-middle">{timeWindow}</td>
-        {showStatus && <td className="v-align-middle"><a href="#">{status}</a></td>}
+        {showStatus && (
+          <td className="v-align-middle">
+            <a href="#">{status}</a>
+          </td>
+        )}
       </tr>
     );
   }

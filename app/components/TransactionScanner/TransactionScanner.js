@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import { observe } from 'mobx';
 
 const INITIAL_STATE = {
   transactions: [],
@@ -13,8 +14,9 @@ const INITIAL_STATE = {
 };
 
 @inject('transactionStore')
+@observer
 class TransactionScanner extends Component {
-  state = INITIAL_STATE
+  state = INITIAL_STATE;
 
   _isMounted = false;
 
@@ -29,7 +31,8 @@ class TransactionScanner extends Component {
   async fetchData({ limit, offset }) {
     const options = {
       limit,
-      offset
+      offset,
+      pastHours: this.props.pastHours
     };
 
     options.resolveAll = this.props.resolveAll || false;
@@ -50,10 +53,24 @@ class TransactionScanner extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    if (this.cacheObserverDisposer) {
+      this.cacheObserverDisposer();
+    }
   }
 
   componentDidMount() {
     this._isMounted = true;
+
+    if (!this.cacheObserverDisposer) {
+      this.cacheObserverDisposer = observe(
+        this.props.transactionStore._cache,
+        'requestCreatedLogs',
+        () => {
+          this.loadPage(this.state.currentPage);
+        }
+      );
+    }
   }
 
   async loadPage(page) {
@@ -81,7 +98,7 @@ class TransactionScanner extends Component {
     });
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await this.loadPage(1);
   }
 
@@ -117,6 +134,7 @@ TransactionScanner.propTypes = {
   showStatus: PropTypes.bool,
   includeResolved: PropTypes.bool,
   includeUnresolved: PropTypes.bool,
+  pastHours: PropTypes.number,
   resolveAll: PropTypes.bool
 };
 

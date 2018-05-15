@@ -5,10 +5,11 @@ import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
 import ScheduleStore from './ScheduleStore';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
-import TransactionsCache from './TransactionsCache';
 import { KeenStore } from './KeenStore';
+import TransactionFetcher from './TransactionFetcher';
+import TransactionCache from './TransactionCache';
 
-const { eacService, web3Service } = services;
+const { eacService, storageService, web3Service } = services;
 
 const keenStore = new KeenStore(
   process.env.KEEN_PROJECT_ID,
@@ -22,19 +23,22 @@ const routingStore = new RouterStore();
 const scheduleStore = new ScheduleStore(false);
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
-export const transactionsCache = new TransactionsCache(eacService);
-export const transactionStore = new TransactionStore(eacService, web3Service, transactionsCache);
+export const transactionCache = new TransactionCache(storageService);
+export const transactionFetcher = new TransactionFetcher(eacService, transactionCache, web3Service);
+export const transactionStore = new TransactionStore(
+  eacService,
+  web3Service,
+  transactionFetcher,
+  transactionCache
+);
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore);
-
-//getCache running
-transactionsCache.requestFactoryStartBlock = transactionsCache.requestFactoryStartBlock;
-transactionsCache.startLazy();
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
 export const stores = {
   routing: routingStore,
   transactionStore,
+  transactionCache,
   timeNodeStore,
   scheduleStore,
   dateTimeValidatorStore,

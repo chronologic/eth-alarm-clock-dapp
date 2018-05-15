@@ -6,6 +6,8 @@ _Note: This DApp is operational on the Kovan and Ropsten testnets. Mainnet relea
 
 # Ethereum Alarm Clock DApp
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/chronologic/eth-alarm-clock-dapp.svg)](https://greenkeeper.io/)
+
 A DApp that interacts with the Ethereum Alarm Clock.
 
 # Development guide

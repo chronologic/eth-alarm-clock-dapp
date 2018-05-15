@@ -5,7 +5,13 @@ import RequestLib from '../abi/RequestLib';
 let instance = null;
 let web3 = null;
 
-const additionalMethods = {
+export const TRANSACTION_EVENT = {
+  ABORTED: 'aborted',
+  CANCELLED: 'cancelled',
+  EXECUTED: 'executed'
+};
+
+const getAdditionalMethods = () => ({
   getRequestLibInstance(address) {
     return web3.eth.contract(RequestLib).at(address);
   },
@@ -17,7 +23,9 @@ const additionalMethods = {
     fee = fee || 0;
     payment = payment || 0;
 
-    const { Util: { calcEndowment } } = this;
+    const {
+      Util: { calcEndowment }
+    } = this;
 
     const endowment = calcEndowment(
       new BigNumber(gasAmount),
@@ -36,12 +44,12 @@ const additionalMethods = {
     const contracts = require(`eac.js-lib/lib/assets/${chainName}.json`);
     return contracts;
   }
-};
+});
 
 export function initEacService(web3Service) {
   if (!instance) {
     web3 = web3Service;
-    instance = Object.assign(EAC(web3Service), additionalMethods);
+    instance = Object.assign(EAC(web3Service), getAdditionalMethods(web3Service));
   }
 
   return instance;

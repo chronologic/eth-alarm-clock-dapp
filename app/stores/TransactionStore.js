@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
+import moment from 'moment';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
@@ -34,29 +35,27 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
 const SCHEDULING_GAS_LIMIT = 1500000;
 
 export class TransactionStore {
-  _eac = null;
-  _web3 = null;
-  _cache = null;
-  _eacScheduler = null;
+  _eac;
+  _web3;
+  _fetcher;
+  _eacScheduler;
+  _cache;
   isSetup = false;
 
   @observable filter = '';
 
-  constructor(eac, web3, cache) {
+  constructor(eac, web3, fetcher, cache) {
     this._web3 = web3;
     this._eac = eac;
+    this._fetcher = fetcher;
     this._cache = cache;
 
     this.setup();
   }
 
-  get allTransactions() {
-    return this._cache.allTransactions;
-  }
-
   // Returns an array of only the addresses of all transactions
   get allTransactionsAddresses() {
-    return this._cache.allTransactionsAddresses;
+    return this._fetcher.allTransactionsAddresses;
   }
 
   get requestFactoryStartBlock() {
@@ -67,7 +66,7 @@ export class TransactionStore {
   // Returns an array of transactions based on the current
   // state of the filter variable
   @observable
-  async getfilteredTransactions() {
+  async getTransactionsForCurrentFilter() {
     const matchesFilter = new RegExp(this.filter, 'i');
     let addresses;
     let transactions = [];
@@ -76,12 +75,12 @@ export class TransactionStore {
       return [];
     }
 
-    if (this._cache.allTransactionsAddresses) {
-      addresses = this._cache.allTransactionsAddresses.filter(address =>
+    if (this._fetcher.allTransactionsAddresses) {
+      addresses = this._fetcher.allTransactionsAddresses.filter(address =>
         matchesFilter.test(address)
       );
       for (let address of addresses) {
-        const transaction = await this._cache.fetchCachedTransactionByAddress(address);
+        const transaction = await this._fetcher.fetchCachedTransactionByAddress(address);
         if (transaction) {
           transaction.status = await this.getTxStatus(transaction);
           transactions.push(transaction);
@@ -102,21 +101,21 @@ export class TransactionStore {
 
     await this._web3.awaitInitialized();
 
-    this._cache.requestFactoryStartBlock = this.requestFactoryStartBlock;
-    this._cache.startLazy();
+    this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this._fetcher.startLazy();
 
     this.isSetup = true;
   }
 
-  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
     await this.setup();
 
     startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._cache.getTransactions({ startBlock, endBlock }, cached);
+    return await this._fetcher.getTransactions({ startBlock, endBlock, pastHours }, cached);
   }
 
   async getAllTransactions(cached) {
-    const transactions = await this._cache.getAllTransactions(cached);
+    const transactions = await this._fetcher.getAllTransactions(cached);
 
     for (let transaction of transactions) {
       transaction.status = await this.getTxStatus(transaction);
@@ -126,12 +125,14 @@ export class TransactionStore {
   }
 
   async getAllTransactionAddresses() {
-    if (this._cache.allTransactionsAddresses && this._cache.allTransactionsAddresses.length > 0) {
-      return this._cache.allTransactionsAddresses;
+    if (
+      this._fetcher.allTransactionsAddresses &&
+      this._fetcher.allTransactionsAddresses.length > 0
+    ) {
+      return this._fetcher.allTransactionsAddresses;
     }
 
-    const addresses = await this._cache.getTransactions({}, true, true);
-    return addresses;
+    return await this._fetcher.getTransactions({}, true, true);
   }
 
   async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
@@ -143,15 +144,14 @@ export class TransactionStore {
       transactions = transactions.slice(offset, offset + limit);
     }
 
-    await this._cache.queryTransactions(transactions);
-
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
 
       if (isResolved === resolved) {
         processed.push(transaction);
       }
     }
+
     transactions = processed;
 
     if (resolveAll) {
@@ -170,10 +170,11 @@ export class TransactionStore {
     endBlock,
     limit = DEFAULT_LIMIT,
     offset = 0,
+    pastHours,
     resolved,
     resolveAll = false
   }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock });
+    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
     if (typeof resolved !== 'undefined' && resolved !== null) {
       return this.queryTransactions({
@@ -216,8 +217,7 @@ export class TransactionStore {
   }
 
   async getTransactionByAddress(address) {
-    const txRequest = await this._eac.transactionRequest(address, this._web3);
-    return txRequest;
+    return await this._eac.transactionRequest(address, this._web3);
   }
 
   async isTransactionResolved(transaction) {
@@ -227,9 +227,15 @@ export class TransactionStore {
   }
 
   async isTransactionMissed(transaction) {
-    const executionWindowClosed = await transaction.afterExecutionWindow();
+    let afterExecutionWindow;
 
-    return executionWindowClosed && !transaction.wasCalled;
+    if (this.isTxUnitTimestamp(transaction)) {
+      afterExecutionWindow = transaction.executionWindowEnd.lessThan(moment().unix());
+    } else {
+      afterExecutionWindow = transaction.executionWindowEnd.lessThan(this._fetcher.lastBlock);
+    }
+
+    return Boolean(afterExecutionWindow && !transaction.wasCalled);
   }
 
   async isTransactionFrozen(transaction) {
@@ -237,23 +243,36 @@ export class TransactionStore {
   }
 
   isTxUnitTimestamp(transaction) {
-    return transaction.temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+    if (!transaction || !transaction.temporalUnit) {
+      return false;
+    }
+
+    let temporalUnit = transaction.temporalUnit;
+
+    if (transaction.temporalUnit.toNumber) {
+      temporalUnit = transaction.temporalUnit.toNumber();
+    }
+
+    return temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
   }
 
   async cancel(transaction, txParameters) {
     return await transaction.cancel(txParameters);
   }
 
+  async refund(transaction, txParameters) {
+    return await transaction.sendOwnerEther(txParameters);
+  }
+
   async validateRequestParams(
     toAddress,
-    callData = '',
     callGas,
     callValue,
     windowSize,
     windowStart,
     gasPrice,
     fee,
-    payment,
+    timeBounty,
     requiredDeposit,
     isTimestamp,
     endowment
@@ -270,7 +289,7 @@ export class TransactionStore {
       [fromAddress, feeRecipient, toAddress],
       [
         fee,
-        payment,
+        timeBounty,
         claimWindowSize,
         freezePeriod,
         reservedWindowSize,
@@ -282,7 +301,6 @@ export class TransactionStore {
         gasPrice,
         requiredDeposit
       ],
-      callData,
       endowment
     ];
 
@@ -323,7 +341,6 @@ export class TransactionStore {
 
     const { paramsValid, errors } = await this.validateRequestParams(
       toAddress,
-      callData,
       callGas,
       callValue,
       windowSize,
