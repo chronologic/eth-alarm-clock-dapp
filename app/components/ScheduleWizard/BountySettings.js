@@ -36,7 +36,7 @@ class BountySettings extends AbstractSetting {
         </div>
         <div className="row">
           <div className="col-md-4">
-            <div className={'form-group form-group-default required '+(_validations.timeBounty?'':' has-error')}>
+            <div className={'form-group form-group-default required ' + (_validations.timeBounty ? '' : ' has-error')}>
               <label>Time Bounty</label>
               <input type="number" placeholder="Enter Time Bounty in ETH" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className="form-control"></input>
             </div>
@@ -45,14 +45,14 @@ class BountySettings extends AbstractSetting {
               }
           </div>
         </div>
-        <div className={'checkbox check-primary'+(_validations.requireDeposit?'':' has-error')}>
+        <div className={'checkbox check-primary' + (_validations.requireDeposit ? '' : ' has-error')}>
           <input type="checkbox" id="checkboxRequireDeposit" onChange={this.toggleRequiredDeposit} checked={scheduleStore.requireDeposit} />
           <label htmlFor="checkboxRequireDeposit">Require Deposit</label>
         </div>
         {scheduleStore.requireDeposit &&
           <div className="row">
             <div className="col-md-4">
-              <div className={'form-group form-group-default required '+(_validations.deposit?'':' has-error')}>
+              <div className={'form-group form-group-default required ' + (_validations.deposit ? '' : ' has-error')}>
                 <label>Deposit</label>
                 <input type="number" value={scheduleStore.deposit} onBlur={this.validate('deposit')} onChange={this.onChange('deposit')} placeholder="Enter Deposit in ETH" className="form-control"></input>
               </div>
