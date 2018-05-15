@@ -52,7 +52,7 @@ export default class ScheduleStore {
     this.blockNumber = '';
     this.blockSize = '';
 
-    this.requireDeposit = false;
+    this.requireDeposit = true;
     this.timeBounty = '';
     this.deposit = '';
 
