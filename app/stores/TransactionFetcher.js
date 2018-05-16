@@ -98,6 +98,18 @@ export default class TransactionFetcher {
     }
   }
 
+  async awaitRunning() {
+    if (!this.running) {
+      return await new Promise(resolve => {
+        setTimeout(async () => {
+          resolve(await this.awaitRunning());
+        }, 500);
+      });
+    }
+
+    return true;
+  }
+
   async awaitSync() {
     if (this.syncing) {
       return await new Promise(resolve => {
@@ -455,14 +467,16 @@ export default class TransactionFetcher {
   }
 
   // ------ UTILS ------
-  calcBucketForTimestamp(timestamp) {
+  async calcBucketForTimestamp(timestamp) {
+    await this.awaitRunning();
     return this._requestFactory.calcBucket(
       timestamp,
       TEMPORAL_UNIT.TIMESTAMP
     );
   }
 
-  calcBucketForBlock(blockNumber) {
+  async calcBucketForBlock(blockNumber) {
+    await this.awaitRunning();
     return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }
 }

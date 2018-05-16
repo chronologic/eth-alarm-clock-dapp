@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import AbstractSetting from './AbstractSetting';
-import BigNumber from 'bignumber.js';
 import BountyEstimator from './BountySettings/BountyEstimator';
 
 @inject('scheduleStore')
@@ -17,6 +16,7 @@ class BountySettings extends AbstractSetting {
     this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
 
     this.state = {
+      timestamp: null,
       bountiesNum: null,
       bountyAvg: 'Loading...',
       bountyMin: 'Loading...',
@@ -34,14 +34,28 @@ class BountySettings extends AbstractSetting {
     scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
   }
 
+  async fillBountiesEstimator(timestamp) {
+    const { transactionStore } = this.props;
+    const bounties = await transactionStore.getBountiesForBucket(timestamp);
+    this.setState(bounties);
+  }
+
   async componentDidMount() {
-    setTimeout(async () => {
-      const { transactionStore, scheduleStore } = this.props;
-      const bounties = await transactionStore.getBountiesForBucket(
-        scheduleStore.transactionTimestamp
-      );
-      this.setState(bounties);
-    }, 500);
+    // Since we can't use observables in functions other than render...
+    // Use an interval function to track the state of the transactionTimestamp
+    this.interval = setInterval(async() => {
+      const { transactionTimestamp } = this.props.scheduleStore;
+      if (this.state.timestamp !== transactionTimestamp){
+        await this.fillBountiesEstimator(transactionTimestamp);
+        this.setState({
+          timestamp: transactionTimestamp
+        });
+      }
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
@@ -51,7 +65,7 @@ class BountySettings extends AbstractSetting {
 
     const bountyEstimator = bountiesNum > 0
       ? <BountyEstimator bountyAvg={bountyAvg} bountyMin={bountyMin} bountyMax={bountyMax} />
-      : <div className="h-100 vertical-align">No bounties scheduled yet.</div>;
+      : <div className="h-100 vertical-align">No bounties scheduled for that time window yet.</div>;
 
     return (
       <div id="bountySettings" className="tab-pane slide">
