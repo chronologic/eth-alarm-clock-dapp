@@ -1,6 +1,7 @@
 import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 import moment from 'moment';
+import BigNumber from 'bignumber.js';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
@@ -271,6 +272,39 @@ export class TransactionStore {
 
   async refund(transaction, txParameters) {
     return await transaction.sendOwnerEther(txParameters);
+  }
+
+  async getBountiesForBucket(timestamp) {
+    const bucket = await this._fetcher.calcBucketForTimestamp(timestamp);
+    const transactions = await this._fetcher.getTransactionsInBuckets(bucket);
+
+    const { web3 } = this._web3;
+
+    const bounties = [];
+    let sum = new BigNumber(0);
+    let bounty, bountyInEth, bountyAvg, bountyMax, bountyMin;
+
+    transactions.forEach(tx => {
+      bounty = tx.data.paymentData.bounty;
+      bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
+      bounties.push(bountyInEth);
+      sum = sum.plus(bountyInEth);
+    });
+
+    if (bounties) {
+      bountyAvg = sum.dividedBy(bounties.length).toString();
+      bountyMax = Math.max(...bounties).toString();
+      bountyMin = Math.min(...bounties).toString();
+    } else {
+      bountyAvg = bountyMax = bountyMin = '0';
+    }
+
+    return {
+      bountiesNum: bounties.length,
+      bountyAvg,
+      bountyMin,
+      bountyMax
+    };
   }
 
   async validateRequestParams(

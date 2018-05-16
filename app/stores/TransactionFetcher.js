@@ -203,11 +203,8 @@ export default class TransactionFetcher {
 
     await this.updateLastBlock();
 
-    let timestampBucket = this._requestFactory.calcBucket(
-      currentTimestamp,
-      TEMPORAL_UNIT.TIMESTAMP
-    );
-    let blockBucket = this._requestFactory.calcBucket(this.lastBlock, TEMPORAL_UNIT.BLOCK);
+    let timestampBucket = this.calcBucketForTimestamp(currentTimestamp);
+    let blockBucket = this.calcBucketForBlock(this.lastBlock);
 
     const buckets = [];
 
@@ -455,5 +452,17 @@ export default class TransactionFetcher {
     }
 
     return cached;
+  }
+
+  // ------ UTILS ------
+  calcBucketForTimestamp(timestamp) {
+    return this._requestFactory.calcBucket(
+      timestamp,
+      TEMPORAL_UNIT.TIMESTAMP
+    );
+  }
+
+  calcBucketForBlock(blockNumber) {
+    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }
 }
