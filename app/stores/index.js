@@ -11,11 +11,18 @@ import TransactionCache from './TransactionCache';
 
 const { eacService, featuresService, storageService, web3Service } = services;
 
+const eacVersions = {
+  client: require('eac.js-client').version,
+  contracts: eacService.contracts,
+  lib: eacService.version
+}
+
 const keenStore = new KeenStore(
   process.env.KEEN_PROJECT_ID,
   process.env.KEEN_WRITE_KEY,
   process.env.KEEN_READ_KEY,
-  web3Service
+  web3Service,
+  eacVersions
 );
 
 const browserHistory = createBrowserHistory();
