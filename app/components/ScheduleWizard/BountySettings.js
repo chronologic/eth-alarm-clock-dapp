@@ -34,22 +34,30 @@ class BountySettings extends AbstractSetting {
     scheduleStore.requireDeposit = !scheduleStore.requireDeposit;
   }
 
-  async fillBountiesEstimator(timestamp) {
-    const { transactionStore } = this.props;
-    const bounties = await transactionStore.getBountiesForBucket(timestamp);
+  async fillBountiesEstimator(windowStart) {
+    const { transactionStore, scheduleStore } = this.props;
+    const bounties = await transactionStore.getBountiesForBucket(
+      windowStart,
+      scheduleStore.isUsingTime
+    );
     this.setState(bounties);
   }
 
   async componentDidMount() {
-    // Since we can't use observables in functions other than render...
-    // Use an interval function to track the state of the transactionTimestamp
+    // Since we can't use observables in functions other than render()...
+    // Use an interval function to track the state of the windowStart
     this.interval = setInterval(async() => {
-      const { transactionTimestamp } = this.props.scheduleStore;
+      const { transactionTimestamp, blockNumber } = this.props.scheduleStore;
+
+      // If the timestamp has changed - fill the bounties widget again
       if (this.state.timestamp !== transactionTimestamp){
         await this.fillBountiesEstimator(transactionTimestamp);
-        this.setState({
-          timestamp: transactionTimestamp
-        });
+        this.setState({ timestamp: transactionTimestamp });
+
+      // If the starting block number has changed - fill the bounties widget again
+      } else if (this.state.blockNumber !== blockNumber) {
+        await this.fillBountiesEstimator(blockNumber);
+        this.setState({ blockNumber: blockNumber });
       }
     }, 1000);
   }

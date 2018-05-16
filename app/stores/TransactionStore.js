@@ -274,8 +274,13 @@ export class TransactionStore {
     return await transaction.sendOwnerEther(txParameters);
   }
 
-  async getBountiesForBucket(timestamp) {
-    const bucket = await this._fetcher.calcBucketForTimestamp(timestamp);
+  async getBountiesForBucket(windowStart, isUsingTime) {
+    let bucket;
+    if (isUsingTime) {
+      bucket = await this._fetcher.calcBucketForTimestamp(windowStart);
+    } else {
+      bucket = await this._fetcher.calcBucketForBlock(windowStart);
+    }
     const transactions = await this._fetcher.getTransactionsInBuckets(bucket);
 
     const { web3 } = this._web3;
