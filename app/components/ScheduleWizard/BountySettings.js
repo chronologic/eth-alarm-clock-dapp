@@ -92,7 +92,7 @@ class BountySettings extends AbstractSetting {
               <label className="error">{_validationsErrors.timeBounty}</label>
               }
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 px-3">
             {bountyEstimator}
           </div>
         </div>

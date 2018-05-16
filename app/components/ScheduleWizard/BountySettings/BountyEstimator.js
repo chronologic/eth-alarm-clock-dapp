@@ -34,9 +34,9 @@ class BountyEstimator extends Component {
         <table className="progress-markers" style={{ width: `${totalWidthPercent}%` }}>
           <tbody>
             <tr>
-              <td className="p-0" style={{ width: `${redLinePercent}%` }}>{this.props.bountyMin}</td>
-                <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>{this.props.bountyAvg}</td>
-              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>{this.props.bountyMax}</td>
+              <td className="p-0" style={{ width: `${redLinePercent}%` }}>{this.props.bountyMin} {this.props.bountyMin ? ' ETH' : ''}</td>
+              <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>{this.props.bountyAvg} {this.props.bountyMin ? ' ETH' : ''}</td>
+              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>{this.props.bountyMax} {this.props.bountyMin ? ' ETH' : ''}</td>
             </tr>
           </tbody>
         </table>
