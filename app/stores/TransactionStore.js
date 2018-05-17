@@ -43,8 +43,6 @@ export class TransactionStore {
   _cache;
   isSetup = false;
 
-  @observable filter = '';
-
   _features;
 
   _requestFactory;

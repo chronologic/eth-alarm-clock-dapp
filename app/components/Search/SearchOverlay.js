@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import SearchResult from './SearchResult';
+import { isValidAddress } from 'ethereumjs-util';
 
 @inject('transactionStore')
 @observer
@@ -9,78 +9,44 @@ class SearchOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      transactions: [],
-      filter: '',
-      fetchedTransactions: false,
-      filteredTransactions: [],
-      updateSearchState: this.props.updateSearchState
+      updateSearchState: this.props.updateSearchState,
+      searchError: null
     };
+    this.searchTransaction = this.searchTransaction.bind(this);
+    this._handleChange = this._handleChange.bind(this);
   }
 
-  UNSAFE_componentWillMount() {
-    this._isMounted = true;
-  }
+  async searchTransaction() {
+    const address = this.searchQuery.value;
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  async componentDidMount() {
-    // This has to be changed after we implement a data layer (cache or db)
-    // For now it always fetches all the transactions from eac.js on each page load
-    await this.props.transactionStore.getAllTransactionAddresses();
-    this.updateFiltered();
-  }
-
-  async updateFiltered() {
-    this.setState({
-      fetchedTransactions: false
-    });
-    const transactions = await this.props.transactionStore.getTransactionsForCurrentFilter();
-    if (this._isMounted) {
-      this.setState({ filteredTransactions: transactions, fetchedTransactions: true });
+    try {
+      if (isValidAddress(address)) {
+        const transaction = await this.props.transactionStore.getTransactionByAddress(address);
+        await transaction.fillData();
+        if (isValidAddress(transaction.address) && transaction.owner !== '0x') {
+          window.location = `/transactions/${transaction.address}`;
+        } else {
+          throw Error('This transaction was never scheduled.');
+        }
+      } else {
+        throw Error('Invalid address or txHash.');
+      }
+    } catch (err) {
+      this.setState({
+        searchError: err.message
+      });
     }
   }
 
-  filter(e) {
-    this.props.transactionStore.filter = e.target.value;
-    this.updateFiltered();
-    this.forceUpdate();
+  _handleChange() {
+    if (this.state.searchError) {
+      this.setState({
+        searchError: null
+      });
+    }
   }
 
   render() {
-    let searchResultsString = '';
-    let filteredTransactions = [];
-    const maxTxShown = 5;
-    const { filter } = this.props.transactionStore;
-
-    if (filter) {
-      searchResultsString = 'Search Results - Fetching...';
-
-      if (this.state.fetchedTransactions) {
-        filteredTransactions = this.state.filteredTransactions;
-
-        const followUpText = 'Showing '.concat(
-          filteredTransactions.length > maxTxShown ? maxTxShown : filteredTransactions.length,
-          ' of ',
-          filteredTransactions.length
-        );
-
-        searchResultsString = 'Search Results - ' + followUpText;
-      }
-    }
-
-    const shortList = filteredTransactions.slice(0, maxTxShown);
-
-    const transactionsList = shortList.map(transaction => (
-      <SearchResult
-        key={transaction.instance.address}
-        txAddress={transaction.instance.address}
-        txStatus={transaction.status}
-        updateSearchState={this.updateSearchState}
-      />
-    ));
-
     return (
       <div id="searchOverlay" className="overlay" data-pages="search">
         <div className="overlay-content has-results m-t-20">
@@ -102,23 +68,32 @@ class SearchOverlay extends Component {
             </div>
           </div>
           <div className="container-fluid">
-            <input
-              id="overlay-search"
-              className="no-border overlay-search bg-transparent"
-              placeholder="Search by contract address..."
-              autoComplete="off"
-              spellCheck="false"
-              value={filter}
-              onChange={this.filter.bind(this)}
-              autoFocus
-            />
-          </div>
-          <div className="container-fluid">
-            <div className="search-results m-t-40">
-              <p className="bold">{searchResultsString}</p>
-              {transactionsList}
+            <div className="row">
+              <div className="col-9 col-md-9">
+                <input
+                  id="overlay-search"
+                  className="no-border overlay-search bg-transparent"
+                  placeholder="Search by Address / Tx hash..."
+                  autoComplete="off"
+                  spellCheck="false"
+                  ref={el => (this.searchQuery = el)}
+                  onChange={this._handleChange}
+                  autoFocus
+                />
+              </div>
+              <div className="col-3 col-md-3 vertical-align">
+                <button className="btn btn-secondary btn-lg btn-rounded" onClick={this.searchTransaction}>
+                  <i className="fa fa-search" />&nbsp;
+                  Search
+                </button>
+              </div>
+            </div>
+
+            <div className="searchError text-danger">
+              <strong>{this.state.searchError}</strong>
             </div>
           </div>
+
         </div>
       </div>
     );
