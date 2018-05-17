@@ -15,7 +15,7 @@ const eacVersions = {
   client: require('eac.js-client').version,
   contracts: eacService.contracts,
   lib: eacService.version
-}
+};
 
 const keenStore = new KeenStore(
   process.env.KEEN_PROJECT_ID,

@@ -28,12 +28,7 @@ export class KeenStore {
     this.readKey = readKey;
 
     this._web3Service = web3Service;
-
-    this.versions = {
-      'eac-client': versions.client,
-      'eac-contracts': versions.contracts,
-      'eac-lib': versions.lib
-    }
+    this.versions = versions;
 
     this.initialize();
   }
@@ -82,7 +77,7 @@ export class KeenStore {
       nodeAddress,
       dayAddress,
       networkId,
-      versions: this.versions,
+      eacVersions: this.versions,
       nodeType: 'dapp',
       status: 'active'
     };
