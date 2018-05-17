@@ -17,10 +17,7 @@ class BountySettings extends AbstractSetting {
 
     this.state = {
       timestamp: null,
-      bountiesNum: null,
-      bountyAvg: 'Loading...',
-      bountyMin: 'Loading...',
-      bountyMax: 'Loading...'
+      bounties: []
     };
   }
   validators = {
@@ -40,22 +37,24 @@ class BountySettings extends AbstractSetting {
       windowStart,
       scheduleStore.isUsingTime
     );
-    this.setState(bounties);
+    this.setState({
+      bounties
+    });
   }
 
   async componentDidMount() {
     // Since we can't use observables in functions other than render()...
     // Use an interval function to track the state of the windowStart
     this.interval = setInterval(async() => {
-      const { transactionTimestamp, blockNumber } = this.props.scheduleStore;
+      const { transactionTimestamp, blockNumber, isUsingTime } = this.props.scheduleStore;
 
       // If the timestamp has changed - fill the bounties widget again
-      if (this.state.timestamp !== transactionTimestamp){
+      if (this.state.timestamp !== transactionTimestamp && isUsingTime){
         await this.fillBountiesEstimator(transactionTimestamp);
         this.setState({ timestamp: transactionTimestamp });
 
       // If the starting block number has changed - fill the bounties widget again
-      } else if (this.state.blockNumber !== blockNumber) {
+      } else if (this.state.blockNumber !== blockNumber && !isUsingTime) {
         await this.fillBountiesEstimator(blockNumber);
         this.setState({ blockNumber: blockNumber });
       }
@@ -69,10 +68,11 @@ class BountySettings extends AbstractSetting {
   render() {
     const { scheduleStore } = this.props;
     const { _validations, _validationsErrors } = this;
-    const { bountiesNum, bountyAvg, bountyMax, bountyMin } = this.state;
+    const { bounties } = this.state;
 
-    const bountyEstimator = bountiesNum > 0
-      ? <BountyEstimator bountyAvg={bountyAvg} bountyMin={bountyMin} bountyMax={bountyMax} />
+    console.log(bounties);
+    const bountyEstimator = bounties.length > 0
+      ? <BountyEstimator bounties={bounties} />
       : <div className="h-100 vertical-align">No bounties scheduled for that time window yet.</div>;
 
     return (
