@@ -1,4 +1,3 @@
-import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
@@ -65,35 +64,6 @@ export class TransactionStore {
   get requestFactoryStartBlock() {
     const { network } = this._web3;
     return requestFactoryStartBlocks[network.id] || 0;
-  }
-
-  // Returns an array of transactions based on the current
-  // state of the filter variable
-  @observable
-  async getTransactionsForCurrentFilter() {
-    const matchesFilter = new RegExp(this.filter, 'i');
-    let addresses;
-    let transactions = [];
-
-    if (!this.filter || this.filter.length < 20) {
-      return [];
-    }
-
-    if (this._fetcher.allTransactionsAddresses) {
-      addresses = this._fetcher.allTransactionsAddresses.filter(address =>
-        matchesFilter.test(address)
-      );
-      for (let address of addresses) {
-        const transaction = await this._fetcher.fetchCachedTransactionByAddress(address);
-        if (transaction) {
-          transaction.status = await this.getTxStatus(transaction);
-          transactions.push(transaction);
-        }
-      }
-      return transactions;
-    }
-
-    return [];
   }
 
   async setup() {
