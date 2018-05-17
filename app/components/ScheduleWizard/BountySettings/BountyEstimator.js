@@ -65,10 +65,7 @@ class BountyEstimator extends Component {
 }
 
 BountyEstimator.propTypes = {
-  bounties: PropTypes.array,
-  bountyMin: PropTypes.string,
-  bountyAvg: PropTypes.string,
-  bountyMax: PropTypes.string,
+  bounties: PropTypes.array
 };
 
 export default BountyEstimator;

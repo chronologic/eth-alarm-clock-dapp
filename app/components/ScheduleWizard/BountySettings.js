@@ -70,7 +70,6 @@ class BountySettings extends AbstractSetting {
     const { _validations, _validationsErrors } = this;
     const { bounties } = this.state;
 
-    console.log(bounties);
     const bountyEstimator = bounties.length > 0
       ? <BountyEstimator bounties={bounties} />
       : <div className="h-100 vertical-align">No bounties scheduled for that time window yet.</div>;
