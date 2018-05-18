@@ -82,7 +82,7 @@ class BountySettings extends AbstractSetting {
         </div>
 
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-4">
             <div className={'form-group form-group-default required ' + (_validations.timeBounty ? '' : ' has-error')}>
               <label>Time Bounty</label>
               <input type="number" placeholder="Enter Time Bounty in ETH" value={scheduleStore.timeBounty} onBlur={this.validate('timeBounty')} onChange={this.onChange('timeBounty') } className="form-control"></input>
@@ -91,7 +91,7 @@ class BountySettings extends AbstractSetting {
               <label className="error">{_validationsErrors.timeBounty}</label>
               }
           </div>
-          <div className="col-md-6 px-3">
+          <div className="col-md-6 offset-md-1 px-3">
             {bountyEstimator}
           </div>
         </div>
