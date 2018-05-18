@@ -1,6 +1,7 @@
 import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 import moment from 'moment';
+import BigNumber from 'bignumber.js';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
@@ -44,11 +45,16 @@ export class TransactionStore {
 
   @observable filter = '';
 
-  constructor(eac, web3, fetcher, cache) {
+  _features;
+
+  _requestFactory;
+
+  constructor(eac, web3, fetcher, cache, featuresService) {
     this._web3 = web3;
     this._eac = eac;
     this._fetcher = fetcher;
     this._cache = cache;
+    this._features = featuresService;
 
     this.setup();
   }
@@ -97,9 +103,13 @@ export class TransactionStore {
       return;
     }
 
-    this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
-
     await this._web3.awaitInitialized();
+
+    if (!this._features.isCurrentNetworkSupported) {
+      return;
+    }
+
+    this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
     this._fetcher.startLazy();
@@ -264,6 +274,29 @@ export class TransactionStore {
     return await transaction.sendOwnerEther(txParameters);
   }
 
+  async getBountiesForBucket(windowStart, isUsingTime) {
+    let bucket;
+    if (isUsingTime) {
+      bucket = await this._fetcher.calcBucketForTimestamp(windowStart);
+    } else {
+      bucket = await this._fetcher.calcBucketForBlock(windowStart);
+    }
+    const transactions = await this._fetcher.getTransactionsInBuckets(bucket);
+
+    const { web3 } = this._web3;
+
+    const bounties = [];
+    let bounty, bountyInEth;
+
+    transactions.forEach(tx => {
+      bounty = tx.data.paymentData.bounty;
+      bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
+      bounties.push(bountyInEth);
+    });
+
+    return bounties;
+  }
+
   async validateRequestParams(
     toAddress,
     callGas,
@@ -277,7 +310,10 @@ export class TransactionStore {
     isTimestamp,
     endowment
   ) {
-    const requestFactory = await this._eac.requestFactory();
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
     const temporalUnit = isTimestamp ? 2 : 1;
     const freezePeriod = isTimestamp ? 3 * 60 : 10; // 3 minutes or 10 blocks
     const reservedWindowSize = isTimestamp ? 5 * 60 : 16; // 5 minutes or 16 blocks
@@ -308,9 +344,11 @@ export class TransactionStore {
     let errors = [];
 
     try {
-      const paramsValidBooleans = await requestFactory.validateRequestParams(...serializedParams);
+      const paramsValidBooleans = await this._requestFactory.validateRequestParams(
+        ...serializedParams
+      );
 
-      errors = requestFactory.parseIsValid(paramsValidBooleans);
+      errors = this._requestFactory.parseIsValid(paramsValidBooleans);
 
       paramsValid = errors.length === 0;
     } catch (error) {

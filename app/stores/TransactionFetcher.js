@@ -21,15 +21,25 @@ export default class TransactionFetcher {
   @observable lastBlock = '';
   @observable lastUpdate = '';
 
-  constructor(eac, cache, web3) {
+  _requestFactory;
+  _features;
+
+  constructor(eac, cache, web3, features) {
     this._eac = eac;
     this._cache = cache;
     this._web3 = web3;
+    this._features = features;
 
     this.startLazy();
   }
 
   async startLazy() {
+    await this._web3.awaitInitialized();
+
+    if (!this._requestFactory && this._features.isCurrentNetworkSupported) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
     if (this.running || !this.requestFactoryStartBlock) {
       return;
     }
@@ -68,8 +78,7 @@ export default class TransactionFetcher {
 
   async stopWatcher() {
     if (this.requestWatcher) {
-      const requestFactory = await this._eac.requestFactory();
-      await requestFactory.stopWatch(this.requestWatcher);
+      await this._requestFactory.stopWatch(this.requestWatcher);
     }
     this.requestWatcher = null;
   }
@@ -89,6 +98,18 @@ export default class TransactionFetcher {
     }
   }
 
+  async awaitRunning() {
+    if (!this.running) {
+      return await new Promise(resolve => {
+        setTimeout(async () => {
+          resolve(await this.awaitRunning());
+        }, 500);
+      });
+    }
+
+    return true;
+  }
+
   async awaitSync() {
     if (this.syncing) {
       return await new Promise(resolve => {
@@ -106,9 +127,7 @@ export default class TransactionFetcher {
   }
 
   async getRequestsByBuckets(buckets) {
-    const requestFactory = await this._eac.requestFactory();
-
-    const logs = await requestFactory.getRequestCreatedLogs(
+    const logs = await this._requestFactory.getRequestCreatedLogs(
       {
         bucket: buckets
       },
@@ -176,9 +195,7 @@ export default class TransactionFetcher {
   }
 
   async getTransactionsInBuckets(buckets) {
-    const requestFactory = await this._eac.requestFactory();
-
-    let transactions = await requestFactory.getRequestsByBucket(buckets);
+    let transactions = await this._requestFactory.getRequestsByBucket(buckets);
 
     transactions.reverse(); // Switch to most recent block first
 
@@ -194,14 +211,12 @@ export default class TransactionFetcher {
   }
 
   async getTransactionsInLastHours(hours) {
-    const requestFactory = await this._eac.requestFactory();
-
     const currentTimestamp = moment().unix();
 
     await this.updateLastBlock();
 
-    let timestampBucket = requestFactory.calcBucket(currentTimestamp, TEMPORAL_UNIT.TIMESTAMP);
-    let blockBucket = requestFactory.calcBucket(this.lastBlock, TEMPORAL_UNIT.BLOCK);
+    let timestampBucket = this.calcBucketForTimestamp(currentTimestamp);
+    let blockBucket = this.calcBucketForBlock(this.lastBlock);
 
     const buckets = [];
 
@@ -233,9 +248,7 @@ export default class TransactionFetcher {
       return cachedLogs;
     }
 
-    const requestFactory = await this._eac.requestFactory();
-
-    const logs = await requestFactory.getRequestCreatedLogs({}, startBlock, endBlock);
+    const logs = await this._requestFactory.getRequestCreatedLogs({}, startBlock, endBlock);
 
     this._cache.cacheRequestCreatedLogs(logs, endBlock);
 
@@ -308,9 +321,7 @@ export default class TransactionFetcher {
       return;
     }
 
-    const requestFactory = await this._eac.requestFactory();
-
-    this.requestWatcher = await requestFactory.watchRequestCreatedLogs(
+    this.requestWatcher = await this._requestFactory.watchRequestCreatedLogs(
       {},
       this._cache.requestCreatedLogsLastBlockFetched,
       async (error, log) => {
@@ -453,5 +464,19 @@ export default class TransactionFetcher {
     }
 
     return cached;
+  }
+
+  // ------ UTILS ------
+  async calcBucketForTimestamp(timestamp) {
+    await this.awaitRunning();
+    return this._requestFactory.calcBucket(
+      timestamp,
+      TEMPORAL_UNIT.TIMESTAMP
+    );
+  }
+
+  async calcBucketForBlock(blockNumber) {
+    await this.awaitRunning();
+    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }
 }

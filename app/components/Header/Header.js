@@ -5,6 +5,7 @@ import { observer, inject } from 'mobx-react';
 @inject('web3Service')
 @inject('eacService')
 @inject('keenStore')
+@inject('featuresService')
 @observer
 class Header extends Component {
   constructor(props) {
@@ -27,6 +28,13 @@ class Header extends Component {
   }
 
   async fetchEacContracts() {
+    const { web3Service } = this.props;
+    await web3Service.awaitInitialized();
+
+    if (!this.props.featuresService._isCurrentNetworkSupported()) {
+      return;
+    }
+
     const eacContracts = await this.props.eacService.getActiveContracts();
     this.setState({ eacContracts });
   }
@@ -200,6 +208,7 @@ class Header extends Component {
 }
 
 Header.propTypes = {
+  featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,

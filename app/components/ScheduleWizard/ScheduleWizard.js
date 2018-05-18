@@ -11,6 +11,7 @@ import { showNotification } from '../../services/notification';
 @inject('web3Service')
 @inject('scheduleStore')
 @inject('transactionStore')
+@inject('featuresService')
 @observer
 class ScheduleWizard extends Component {
   constructor(props) {
@@ -173,16 +174,18 @@ class ScheduleWizard extends Component {
   }
 
   get scheduleDisabled() {
-    const { scheduleStore } = this.props;
-    const validations =
+    const { featuresService, scheduleStore } = this.props;
+
+    return (
+      !featuresService.enabled.scheduling ||
       !this.bountySettingsValidation ||
       !this.props.isWeb3Usable ||
       !this.infoSettingsValidations ||
       !(
         (scheduleStore.isUsingTime && this.TimeComponentValidations) ||
         this.blockComponentValidations
-      );
-    return validations;
+      )
+    );
   }
 
   async scheduleTransaction() {
@@ -294,6 +297,8 @@ class ScheduleWizard extends Component {
       _validationsErrors: this._validationsErrors
     };
 
+    const { enabled } = this.props.featuresService;
+
     return (
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator p-b-10">
@@ -371,6 +376,7 @@ class ScheduleWizard extends Component {
                     className="btn btn-primary btn-cons pull-right"
                     onClick={this.initiateScrollbar}
                     type="button"
+                    disabled={!enabled.scheduling}
                   >
                     Next
                   </button>
@@ -418,6 +424,7 @@ class ScheduleWizard extends Component {
 }
 
 ScheduleWizard.propTypes = {
+  featuresService: PropTypes.any,
   web3Service: PropTypes.any,
   scheduleStore: PropTypes.any,
   transactionStore: PropTypes.any,
