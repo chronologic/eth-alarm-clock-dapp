@@ -16,6 +16,20 @@ class SearchOverlay extends Component {
     this._handleChange = this._handleChange.bind(this);
   }
 
+  componentDidMount() {
+    this.searchOverlayRef.addEventListener('keyup', this._handleEnterPress);
+  }
+
+  componentWillUnmount() {
+    this.searchOverlayRef.removeEventListener('keyup', this._handleEnterPress);
+  }
+
+  _handleEnterPress = event => {
+    if (event.key !== 'Enter') return;
+    document.querySelector('#searchOverlayButton').click();
+    event.preventDefault();
+  };
+
   async searchTransaction() {
     const address = this.searchQuery.value;
 
@@ -23,32 +37,30 @@ class SearchOverlay extends Component {
       if (isValidAddress(address)) {
         const transaction = await this.props.transactionStore.getTransactionByAddress(address);
         await transaction.fillData();
-        if (isValidAddress(transaction.address) && transaction.owner !== '0x') {
+        if (transaction.owner !== '0x') {
           window.location = `/transactions/${transaction.address}`;
         } else {
-          throw Error('This transaction was never scheduled.');
+          window.location = `/transactions/owner/${address}`;
+          // if
+          // throw Error('This transaction was never scheduled.');
         }
       } else {
         throw Error('Invalid address or txHash.');
       }
     } catch (err) {
-      this.setState({
-        searchError: err.message
-      });
+      this.setState({ searchError: err.message });
     }
   }
 
   _handleChange() {
     if (this.state.searchError) {
-      this.setState({
-        searchError: null
-      });
+      this.setState({ searchError: null });
     }
   }
 
   render() {
     return (
-      <div id="searchOverlay" className="overlay" data-pages="search">
+      <div id="searchOverlay" className="overlay" data-pages="search" ref={el => (this.searchOverlayRef = el)}>
         <div className="overlay-content has-results m-t-20">
           <div className="container-fluid">
             <img
@@ -82,7 +94,10 @@ class SearchOverlay extends Component {
                 />
               </div>
               <div className="col-3 col-md-3 vertical-align">
-                <button className="btn btn-secondary btn-lg btn-rounded" onClick={this.searchTransaction}>
+                <button
+                  id="searchOverlayButton"
+                  className="btn btn-secondary btn-lg btn-rounded"
+                  onClick={this.searchTransaction}>
                   <i className="fa fa-search" />&nbsp;
                   Search
                 </button>

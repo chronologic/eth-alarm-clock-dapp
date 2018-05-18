@@ -48,6 +48,10 @@ class TransactionScanner extends Component {
       options.resolved = null;
     }
 
+    if (this.props.owner) {
+      options.owner = this.props.owner;
+    }
+
     return await this.props.transactionStore.getTransactionsFiltered(options);
   }
 
@@ -107,6 +111,7 @@ class TransactionScanner extends Component {
   }
 
   render() {
+    console.log(this.state.transactions);
     return (
       <div className="tab-content p-4">
         <div className="tab-pane active">
@@ -135,7 +140,8 @@ TransactionScanner.propTypes = {
   includeResolved: PropTypes.bool,
   includeUnresolved: PropTypes.bool,
   pastHours: PropTypes.number,
-  resolveAll: PropTypes.bool
+  resolveAll: PropTypes.bool,
+  owner: PropTypes.string
 };
 
 export default TransactionScanner;
