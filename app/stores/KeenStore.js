@@ -139,7 +139,7 @@ export class KeenStore {
         if (err) {
           this.activeTimeNodes = '-';
         }
-        alphaNodes = response.result;        
+        alphaNodes = response.result;
       });
     }
 
@@ -147,7 +147,7 @@ export class KeenStore {
       if (err) {
         this.activeTimeNodes = '-';
       }
-      this.activeTimeNodes = isAlphaNode ? Number(alphaNodes) + Number(response.result) : response.result;        
+      this.activeTimeNodes = isAlphaNode ? Number(alphaNodes) + Number(response.result) : response.result;
     });
   }
 
