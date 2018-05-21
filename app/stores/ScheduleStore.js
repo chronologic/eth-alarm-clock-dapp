@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
 
 export default class ScheduleStore {
@@ -36,9 +36,17 @@ export default class ScheduleStore {
   @observable isUsingTime;
   @observable isTokenTransfer;
 
+  @computed get transactionTimestamp() {
+    return this.dateTimeValidatorStore.ts(
+      this.transactionDate,
+      this.transactionTime,
+      this.timeZone
+    );
+  }
+
   /*
-   * Currently MobX doesn't have a more elegant
-   * way to reset to defaults.
+  * Currently MobX doesn't have a more elegant
+  * way to reset to defaults.
    */
   @action
   reset = () => {
@@ -52,7 +60,7 @@ export default class ScheduleStore {
     this.blockNumber = '';
     this.blockSize = '';
 
-    this.requireDeposit = false;
+    this.requireDeposit = true;
     this.timeBounty = '';
     this.deposit = '';
 
@@ -78,13 +86,6 @@ export default class ScheduleStore {
     this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
 
-  get transactionTimestamp() {
-    return this.dateTimeValidatorStore.ts(
-      this.transactionDate,
-      this.transactionTime,
-      this.timeZone
-    );
-  }
 
   get transactionTzTime() {
     return this.dateTimeValidatorStore

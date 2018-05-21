@@ -1,4 +1,4 @@
-export default class StorageService {
+export default class LocalStorageService {
   get localStorage() {
     return window && window.localStorage;
   }

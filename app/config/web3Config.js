@@ -1,6 +1,9 @@
 import dayFaucetABI from '../abi/dayFaucetABI';
 import dayTokenABI from '../abi/dayTokenABI';
 
+export const KOVAN_NETWORK_ID = 42;
+export const DOCKER_NETWORK_ID = 1001;
+
 const Networks = {
   0: {
     id: 0,
@@ -27,8 +30,8 @@ const Networks = {
     name: 'Rinkeby',
     endpoint: 'https://rinkeby.infura.io/6M6ROam68gmdp9OeNmym'
   },
-  42: {
-    id: 42,
+  [KOVAN_NETWORK_ID]: {
+    id: KOVAN_NETWORK_ID,
     name: 'Kovan',
     endpoint:
       'wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
@@ -37,8 +40,8 @@ const Networks = {
     dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
     dayFaucetAbi: dayFaucetABI
   },
-  1001: {
-    id: 1001,
+  [DOCKER_NETWORK_ID]: {
+    id: DOCKER_NETWORK_ID,
     name: 'Docker',
     endpoint: 'http://localhost:9545',
     dayTokenAddress: process.env.DAY_TOKEN_ADDRESS_DOCKER,
@@ -57,7 +60,7 @@ const Explorers = {
   1: 'https://etherscan.io/',
   3: 'https://ropsten.etherscan.io/',
   4: 'https://rinkeby.etherscan.io/',
-  42: 'https://kovan.etherscan.io/'
+  [KOVAN_NETWORK_ID]: 'https://kovan.etherscan.io/'
 };
 
 export { Networks, Explorers };

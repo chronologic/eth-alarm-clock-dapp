@@ -129,7 +129,11 @@ class InfoSettings extends AbstractSetting {
       scheduleStore
     } = this.props;
     const isAddress = this.ethereumAddressValidator().validator;
-    if (!web3Service.accounts || web3Service.accounts[0] === this.state.account) {
+    if (
+      !web3Service.accounts ||
+      web3Service.accounts.length === 0 ||
+      web3Service.accounts[0] === this.state.account
+    ) {
       return;
     }
     this.setState({ account: web3Service.accounts[0] });

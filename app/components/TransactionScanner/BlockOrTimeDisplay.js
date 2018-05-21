@@ -82,7 +82,7 @@ export class BlockOrTimeDisplay extends Component {
     });
   }
 
-  async componentWillReceiveProps(nextProps) {
+  async UNSAFE_componentWillReceiveProps(nextProps) {
     await this.updateState(nextProps);
   }
 

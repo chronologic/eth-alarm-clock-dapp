@@ -4,7 +4,6 @@ import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-import BigNumber from 'bignumber.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 
@@ -38,8 +37,8 @@ class EacWorker {
       provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
     }
 
-    const web3 = new Web3(provider);
-    const eac = EAC(web3);
+    this.web3 = new Web3(provider);
+    const eac = EAC(this.web3);
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
@@ -52,7 +51,7 @@ class EacWorker {
     });
 
     const configOptions = {
-      web3,
+      web3: this.web3,
       eac,
       provider,
       scanSpread: options.scan,
@@ -68,7 +67,7 @@ class EacWorker {
     this.config = await Config.create(configOptions);
 
     this.config.logger = logger;
-    this.config.statsdb = new StatsDB(web3, browserDB);
+    this.config.statsdb = new StatsDB(this.web3, browserDB);
     const addresses = await this.config.wallet.getAddresses();
 
     this.config.statsdb.initialize(addresses);
@@ -108,25 +107,26 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   updateStats() {
-    let etherGain;
-    let executedTransactions;
+    const empty = {
+      bounties: null,
+      costs: null,
+      executedTransactions: []
+    };
+
+    let { bounties, costs, executedTransactions } = this.config
+      ? this.config.statsdb.getStats()[0]
+      : empty;
 
     if (this.config) {
-      const stats = this.config.statsdb.getStats();
-
-      const accountStats = stats[0];
-      const startingEth = BigNumber(accountStats.startingEther);
-      const currentEth = BigNumber(accountStats.currentEther);
-      etherGain = currentEth.minus(startingEth).toString();
-      executedTransactions = accountStats.executedTransactions;
-    } else {
-      etherGain = null;
-      executedTransactions = [];
+      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toString();
+      bounties = weiToEth(bounties);
+      costs = weiToEth(costs);
     }
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      etherGain: etherGain,
+      bounties: bounties,
+      costs: costs,
       executedTransactions: executedTransactions
     });
   }
