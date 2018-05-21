@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "0.0.1",
+  "version": "0.9.6",
   "main": "tools/electron.js",
   "description": "",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "webpack --config webpack/prod.config.js",
     "dev-docker": "node_modules/.bin/webpack-dev-server --config webpack/docker.dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check",
-    "dev:electron": "concurrently \"BROWSER=none yarn dev\" \"wait-on http://localhost:8080 && electron .\"",
+    "dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron .\"",
     "prod": "node_modules/.bin/webpack-dev-server --config webpack/prod.config.js --host 0.0.0.0 --disable-host-check --hot",
     "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
@@ -49,7 +49,9 @@
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
     "debug": "^3.1.0",
+    "electron": "^2.0.1",
     "electron-builder": "^20.13.3",
+    "electron-packager": "^12.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.11.0",
