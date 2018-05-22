@@ -38,11 +38,9 @@ class SearchOverlay extends Component {
         const transaction = await this.props.transactionStore.getTransactionByAddress(address);
         await transaction.fillData();
         if (transaction.owner !== '0x') {
-          window.location = `/transactions/${transaction.address}`;
+          this.redirectTo(`/transactions/${transaction.address}`);
         } else {
-          window.location = `/transactions/owner/${address}`;
-          // if
-          // throw Error('This transaction was never scheduled.');
+          this.redirectTo(`/transactions/owner/${address}`);
         }
       } else {
         throw Error('Invalid address or txHash.');
@@ -56,6 +54,14 @@ class SearchOverlay extends Component {
     if (this.state.searchError) {
       this.setState({ searchError: null });
     }
+  }
+
+  redirectTo(destination) {
+    const { history } = this.props;
+    this.props.updateSearchState(false);
+    history.push({
+      pathname: destination
+    });
   }
 
   render() {
@@ -117,7 +123,8 @@ class SearchOverlay extends Component {
 
 SearchOverlay.propTypes = {
   updateSearchState: PropTypes.any,
-  transactionStore: PropTypes.any
+  transactionStore: PropTypes.any,
+  history: PropTypes.object.isRequired
 };
 
 export default SearchOverlay;

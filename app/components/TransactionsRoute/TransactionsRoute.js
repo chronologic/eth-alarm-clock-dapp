@@ -14,7 +14,7 @@ class TransactionsRoute extends MetamaskComponent {
   render() {
     return (
       <div id="transactionScanner" className="padding-25 sm-padding-10 subsection">
-        <Switch>
+        <Switch location={location}>
           <Redirect exact path="/transactions" to="/transactions/completed"/>
           <Route path="/transactions/completed" component={TransactionsCompleted}/>
           <Route path="/transactions/scheduled" component={TransactionsScheduled} />

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -15,7 +15,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 @observer
-class TransactionScanner extends Component {
+class TransactionScanner extends PureComponent {
   state = INITIAL_STATE;
 
   _isMounted = false;
@@ -28,31 +28,40 @@ class TransactionScanner extends Component {
     this.goToPage = this.goToPage.bind(this);
   }
 
-  async fetchData({ limit, offset }) {
+  async fetchData({ owner, limit, offset }) {
     const options = {
       limit,
       offset,
       pastHours: this.props.pastHours
     };
 
-    options.resolveAll = this.props.resolveAll || false;
-    if (this.props.includeResolved) {
-      options.resolved = true;
+    options.limit = owner ? 5000 : limit;
+    options.resolved = this.props.includeResolved;
+    options.unresolved = this.props.includeUnresolved;
+
+    const matchingTxs = await this.props.transactionStore.getTransactionsFiltered(options);
+    console.log(matchingTxs);
+
+    if (owner) {
+      const ownedTxs = [];
+
+      for (let tx of matchingTxs.transactions) {
+        await tx.fillData();
+        if (tx.owner == owner.toLowerCase()) {
+          console.log(tx.owner)
+          console.log(owner.toLowerCase())
+          ownedTxs.push(tx);
+        }
+      }
+
+      console.log(ownedTxs);
+      return {
+        transactions: ownedTxs,
+        total: ownedTxs.length
+      };
     }
 
-    if (this.props.includeUnresolved) {
-      options.resolved = false;
-    }
-
-    if (!this.props.includeResolved && !this.props.includeUnresolved) {
-      options.resolved = null;
-    }
-
-    if (this.props.owner) {
-      options.owner = this.props.owner;
-    }
-
-    return await this.props.transactionStore.getTransactionsFiltered(options);
+    return matchingTxs;
   }
 
   componentWillUnmount() {
@@ -86,7 +95,8 @@ class TransactionScanner extends Component {
 
     const { total, transactions } = await this.fetchData({
       limit: this.state.limit,
-      offset
+      offset,
+      owner: this.props.owner
     });
 
     if (!this._isMounted) {
@@ -111,7 +121,7 @@ class TransactionScanner extends Component {
   }
 
   render() {
-    console.log(this.state.transactions);
+    console.log(this.state.transactions)
     return (
       <div className="tab-content p-4">
         <div className="tab-pane active">

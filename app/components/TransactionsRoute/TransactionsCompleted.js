@@ -15,9 +15,8 @@ export default class TransactionsCompleted extends Component {
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
             <TransactionScanner
-              showStatus={true}
-              includeResolved={true}
-              includeUnresolved={false}
+              showStatus
+              includeResolved
               pastHours={24}
             />
           ) : (

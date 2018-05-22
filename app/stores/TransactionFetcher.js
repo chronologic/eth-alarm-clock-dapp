@@ -100,6 +100,7 @@ export default class TransactionFetcher {
 
   async awaitRunning() {
     if (!this.running) {
+      console.log('waiting running')
       return await new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitRunning());
@@ -275,33 +276,8 @@ export default class TransactionFetcher {
     return transactions;
   }
 
-  async getTransactionsByOwner(owner = null, startBlock, endBlock) {
-    if (endBlock === 'latest') {
-      await this.updateLastBlock();
-
-      endBlock = this.lastBlock;
-    }
-    
-    console.log(this);
-
-    console.log('getting...')
-
-    const logs = await this._requestFactory.getRequestsByOwner(owner, startBlock, endBlock);
-    console.log(logs);
-
-    const transactions = logs.map(({ args: { request: address, params } }) => {
-      const request = this._eac.transactionRequest(address);
-
-      request.data = this.getDataForRequestParams(params, request);
-
-      return request;
-    });
-
-    return transactions;
-  }
-
   async getTransactions(
-    { owner = null, startBlock = this.requestFactoryStartBlock, endBlock = 'latest', pastHours },
+    { startBlock = this.requestFactoryStartBlock, endBlock = 'latest', pastHours },
     cache = this.cacheDefault,
     onlyAddresses = false
   ) {
@@ -320,21 +296,14 @@ export default class TransactionFetcher {
 
     let transactions;
 
-    console.log('Owner')
-    console.log(owner)
-    if (owner) {
-      console.log('fetching by owner.');
-      transactions = await this.getTransactionsByOwner(owner, startBlock, endBlock);
-    } else {
-        if (pastHours) {
-          if (typeof pastHours !== 'number') {
-            throw new Error('pastHours parameter in getTransactions must be a number.');
-          }
+    if (pastHours) {
+      if (typeof pastHours !== 'number') {
+        throw new Error('pastHours parameter in getTransactions must be a number.');
+      }
 
-          transactions = await this.getTransactionsInLastHours(pastHours);
-        } else {
-          transactions = await this.getTransactionsByBlocks(startBlock, endBlock);
-        }
+      transactions = await this.getTransactionsInLastHours(pastHours);
+    } else {
+      transactions = await this.getTransactionsByBlocks(startBlock, endBlock);
     }
 
     await this.fillUpTransactions(transactions);

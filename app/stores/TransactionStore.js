@@ -85,11 +85,11 @@ export class TransactionStore {
     this.isSetup = true;
   }
 
-  async getTransactions({ owner = null, startBlock, endBlock = 'latest', pastHours }, cached) {
+  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
     await this.setup();
 
     startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._fetcher.getTransactions({ owner, startBlock, endBlock, pastHours }, cached);
+    return await this._fetcher.getTransactions({ startBlock, endBlock, pastHours }, cached);
   }
 
   async getAllTransactions(cached) {
@@ -113,29 +113,22 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
+  async queryTransactions({ transactions, offset, limit, resolved, unresolved }) {
     const processed = [];
     let total = 0;
-
-    if (!resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
-    }
 
     for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
 
-      if (isResolved === resolved) {
+      if ((isResolved && resolved) || (!isResolved && unresolved)) {
         processed.push(transaction);
       }
     }
 
     transactions = processed;
 
-    if (resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
-    }
+    total = transactions.length;
+    transactions = transactions.slice(offset, offset + limit);
 
     return {
       transactions,
@@ -144,24 +137,23 @@ export class TransactionStore {
   }
 
   async getTransactionsFiltered({
-    owner = null,
     startBlock,
     endBlock,
     limit = DEFAULT_LIMIT,
     offset = 0,
     pastHours,
     resolved,
-    resolveAll = false
+    unresolved
   }) {
-    let transactions = await this.getTransactions({ owner, startBlock, endBlock, pastHours });
+    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
-    if (typeof resolved !== 'undefined' && resolved !== null) {
+    if (resolved || unresolved) {
       return this.queryTransactions({
         transactions,
         offset,
         limit,
         resolved,
-        resolveAll
+        unresolved
       });
     }
 

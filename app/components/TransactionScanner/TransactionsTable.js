@@ -76,6 +76,8 @@ class TransactionsTable extends Component {
     const { fetchingTransactions, offset, showStatus, transactions, total } = this.props;
     const { currentPage } = this.state;
 
+    console.log(transactions);
+
     return (
       <div>
         <div className="table-responsive">

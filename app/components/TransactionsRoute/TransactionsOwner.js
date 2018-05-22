@@ -1,25 +1,24 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import TransactionScanner from '../TransactionScanner/TransactionScanner';
 import { inject } from 'mobx-react';
 import PropTypes from 'prop-types';
 import NetworkUnsupported from '../Common/NetworkUnsupported';
 
 @inject('featuresService')
-export default class TransactionsOwner extends Component {
+export default class TransactionsOwner extends PureComponent {
+
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
-    const { ownerAddress } = this.props.match.params;
+    console.log(this.props.location);
 
     return (
       <div className="container-fluid container-fixed-lg">
-        <h1 className="view-title">Transactions by {ownerAddress}</h1>
+        <h1 className="view-title">Transactions by {this.props.match.params.ownerAddress}</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
             <TransactionScanner
-              showStatus={true}
-              includeResolved={true}
-              includeUnresolved={true}
-              owner={ownerAddress}
+              showStatus
+              owner={this.props.match.params.ownerAddress}
             />
           ) : (
               <div className="tab-content p-1 pl-4 pt-4">
@@ -36,5 +35,6 @@ export default class TransactionsOwner extends Component {
 
 TransactionsOwner.propTypes = {
   featuresService: PropTypes.any,
+  location: PropTypes.any,
   match: PropTypes.any
 };
