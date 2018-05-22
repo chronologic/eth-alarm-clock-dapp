@@ -247,30 +247,15 @@ export class TransactionStore {
     const { web3 } = this._web3;
 
     const bounties = [];
-    let sum = new BigNumber(0);
-    let bounty, bountyInEth, bountyAvg, bountyMax, bountyMin;
+    let bounty, bountyInEth;
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
       bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
-      sum = sum.plus(bountyInEth);
     });
 
-    if (bounties) {
-      bountyAvg = sum.dividedBy(bounties.length).toString();
-      bountyMax = Math.max(...bounties).toString();
-      bountyMin = Math.min(...bounties).toString();
-    } else {
-      bountyAvg = bountyMax = bountyMin = '0';
-    }
-
-    return {
-      bountiesNum: bounties.length,
-      bountyAvg,
-      bountyMin,
-      bountyMax
-    };
+    return bounties;
   }
 
   async validateRequestParams(
