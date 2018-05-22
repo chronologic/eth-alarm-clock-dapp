@@ -45,8 +45,6 @@ class TimeNodeProve extends Component {
   }
 
   render() {
-    const myAddress = this.props.timeNodeStore.getMyAddress();
-
     return (
       <div id="timeNodeProve" className="tab-content">
         <div className="tab-pane active show">
@@ -68,30 +66,25 @@ class TimeNodeProve extends Component {
                 <li>
                   Visit{' '}
                   <a
-                    href="https://www.mycrypto.com/signmsg.html"
+                    href="https://www.mycrypto.com/sign-and-verify-message/sign"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    https://www.mycrypto.com/signmsg.html
+                    https://www.mycrypto.com/sign-and-verify-message/sign
                   </a>
                 </li>
                 <li>
-                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the signed message. Use the following as the message content:
+                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the signed message. Use your nickname as the message content:
                   <div className="row">
-                    <div className="col-md-8">
+                    <div className="col-md-12">
                       <div className="form-group">
-                        <input id="copyAddress" className="form-control" defaultValue="your_nickname" />
+                        <input id="copyAddress" className="form-control" defaultValue="<your_nickname>" />
                       </div>
-                    </div>
-                    <div className="col-md-4">
-                      <button className="btn btn-white" onClick={this.toClipboard}>
-                        Copy
-                      </button>
                     </div>
                   </div>
                 </li>
-                <li>Copy generated signature</li>
-                <li>Paste the whole generated signature into the Signature field</li>
+                <li>Copy generated signature.</li>
+                <li>Paste the whole generated signature into the Signature field.</li>
               </ol>
               <a
                 href="https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef"
