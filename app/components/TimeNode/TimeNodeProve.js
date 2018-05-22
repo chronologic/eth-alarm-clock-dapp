@@ -76,11 +76,11 @@ class TimeNodeProve extends Component {
                   </a>
                 </li>
                 <li>
-                  Sign a message using your wallet. Use the following as the message content:
+                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the signed message. Use the following as the message content:
                   <div className="row">
                     <div className="col-md-8">
                       <div className="form-group">
-                        <input id="copyAddress" className="form-control" defaultValue={myAddress} />
+                        <input id="copyAddress" className="form-control" defaultValue="your_nickname" />
                       </div>
                     </div>
                     <div className="col-md-4">
