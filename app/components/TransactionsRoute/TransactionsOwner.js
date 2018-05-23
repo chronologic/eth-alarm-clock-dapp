@@ -6,7 +6,6 @@ import NetworkUnsupported from '../Common/NetworkUnsupported';
 
 @inject('featuresService')
 export default class TransactionsOwner extends PureComponent {
-
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
     console.log(this.props.location);

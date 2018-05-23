@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -15,7 +15,7 @@ const INITIAL_STATE = {
 
 @inject('transactionStore')
 @observer
-class TransactionScanner extends PureComponent {
+class TransactionScanner extends Component {
   state = INITIAL_STATE;
 
   _isMounted = false;
@@ -43,21 +43,23 @@ class TransactionScanner extends PureComponent {
     console.log(matchingTxs);
 
     if (owner) {
-      const ownedTxs = [];
+      let ownedTxs = [];
+      let total = 0;
 
       for (let tx of matchingTxs.transactions) {
         await tx.fillData();
         if (tx.owner == owner.toLowerCase()) {
-          console.log(tx.owner)
-          console.log(owner.toLowerCase())
           ownedTxs.push(tx);
         }
       }
 
+      total = ownedTxs.length;
+      ownedTxs = ownedTxs.slice(offset, offset + limit);
+
       console.log(ownedTxs);
       return {
         transactions: ownedTxs,
-        total: ownedTxs.length
+        total
       };
     }
 
