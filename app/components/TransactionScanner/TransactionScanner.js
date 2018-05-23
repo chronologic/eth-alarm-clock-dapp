@@ -35,32 +35,14 @@ class TransactionScanner extends Component {
       pastHours: this.props.pastHours
     };
 
-    options.limit = owner ? 5000 : limit;
     options.resolved = this.props.includeResolved;
     options.unresolved = this.props.includeUnresolved;
 
-    const matchingTxs = await this.props.transactionStore.getTransactionsFiltered(options);
-    console.log(matchingTxs);
-
+    let matchingTxs;
     if (owner) {
-      let ownedTxs = [];
-      let total = 0;
-
-      for (let tx of matchingTxs.transactions) {
-        await tx.fillData();
-        if (tx.owner == owner.toLowerCase()) {
-          ownedTxs.push(tx);
-        }
-      }
-
-      total = ownedTxs.length;
-      ownedTxs = ownedTxs.slice(offset, offset + limit);
-
-      console.log(ownedTxs);
-      return {
-        transactions: ownedTxs,
-        total
-      };
+      matchingTxs = await this.props.transactionStore.getRequestsByOwner(owner, options);
+    } else {
+      matchingTxs = await this.props.transactionStore.getTransactionsFiltered(options);
     }
 
     return matchingTxs;
@@ -123,7 +105,6 @@ class TransactionScanner extends Component {
   }
 
   render() {
-    console.log(this.state.transactions)
     return (
       <div className="tab-content p-4">
         <div className="tab-pane active">

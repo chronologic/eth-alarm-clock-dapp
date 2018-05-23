@@ -8,7 +8,6 @@ import NetworkUnsupported from '../Common/NetworkUnsupported';
 export default class TransactionsOwner extends PureComponent {
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
-    console.log(this.props.location);
 
     return (
       <div className="container-fluid container-fixed-lg">

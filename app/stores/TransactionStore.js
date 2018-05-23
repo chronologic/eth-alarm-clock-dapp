@@ -167,6 +167,29 @@ export class TransactionStore {
     };
   }
 
+  async getRequestsByOwner(ownerAddress, {
+    limit = DEFAULT_LIMIT,
+    offset = 0
+  }) {
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
+    const transactionsAddresses = await this._requestFactory.getRequestsByOwner(ownerAddress);
+    let transactions = [];
+
+    for (let address of transactionsAddresses) {
+      const tx = await this._eac.transactionRequest(address);
+      await tx.fillData();
+      transactions.push(tx);
+    }
+
+    return {
+      transactions: transactions.slice(offset, offset + limit),
+      total: transactions.length
+    };
+  }
+
   async getTxStatus(transaction) {
     let status = TRANSACTION_STATUS.SCHEDULED;
 
