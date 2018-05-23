@@ -114,8 +114,6 @@ class TransactionScanner extends Component {
   }
 
   render() {
-    console.log('rendering tx scanner...')
-    console.log(this.state.transactions)
     return (
       <div className="tab-content p-4">
         <div className="tab-pane active">

@@ -87,7 +87,7 @@ class SearchOverlay extends Component {
           </div>
           <div className="container-fluid">
             <div className="row">
-              <div className="col-9 col-md-9">
+              <div className="col-md-9 col-lg-10">
                 <input
                   id="overlay-search"
                   className="no-border overlay-search bg-transparent"
@@ -99,10 +99,10 @@ class SearchOverlay extends Component {
                   autoFocus
                 />
               </div>
-              <div className="col-3 col-md-3 vertical-align">
+              <div className="col-md-3 col-lg-2 vertical-align px-3">
                 <button
                   id="searchOverlayButton"
-                  className="btn btn-secondary btn-lg btn-rounded"
+                  className="btn btn-primary btn-lg btn-rounded btn-block"
                   onClick={this.searchTransaction}>
                   <i className="fa fa-search" />&nbsp;
                   Search
