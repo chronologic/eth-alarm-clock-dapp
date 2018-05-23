@@ -28,7 +28,7 @@ class TransactionScanner extends Component {
     this.goToPage = this.goToPage.bind(this);
   }
 
-  async fetchData({ owner, limit, offset }) {
+  async fetchData({ ownerAddress, limit, offset }) {
     const options = {
       limit,
       offset,
@@ -39,8 +39,8 @@ class TransactionScanner extends Component {
     options.unresolved = this.props.includeUnresolved;
 
     let matchingTxs;
-    if (owner) {
-      matchingTxs = await this.props.transactionStore.getRequestsByOwner(owner, options);
+    if (ownerAddress) {
+      matchingTxs = await this.props.transactionStore.getRequestsByOwner(ownerAddress, options);
     } else {
       matchingTxs = await this.props.transactionStore.getTransactionsFiltered(options);
     }
@@ -57,6 +57,7 @@ class TransactionScanner extends Component {
   }
 
   componentDidMount() {
+    console.log('mounting scanner...')
     this._isMounted = true;
 
     if (!this.cacheObserverDisposer) {
@@ -80,7 +81,7 @@ class TransactionScanner extends Component {
     const { total, transactions } = await this.fetchData({
       limit: this.state.limit,
       offset,
-      owner: this.props.owner
+      ownerAddress: this.props.ownerAddress
     });
 
     if (!this._isMounted) {
@@ -104,7 +105,17 @@ class TransactionScanner extends Component {
     await this.loadPage(page);
   }
 
+  componentDidUpdate(prevProps) {
+    // If somebody reloaded the owner page with a different owner address
+    // we need to manually reload the page since it will not trigger on it's own
+    if (this.props.ownerAddress !== prevProps.ownerAddress) {
+      this.loadPage(1);
+    }
+  }
+
   render() {
+    console.log('rendering tx scanner...')
+    console.log(this.state.transactions)
     return (
       <div className="tab-content p-4">
         <div className="tab-pane active">
@@ -117,6 +128,7 @@ class TransactionScanner extends Component {
             goToPage={this.goToPage}
             currentPage={this.state.currentPage}
             showStatus={this.props.showStatus}
+            ownerAddress={this.props.ownerAddress}
           />
         </div>
         <div className="row">
@@ -134,7 +146,7 @@ TransactionScanner.propTypes = {
   includeUnresolved: PropTypes.bool,
   pastHours: PropTypes.number,
   resolveAll: PropTypes.bool,
-  owner: PropTypes.string
+  ownerAddress: PropTypes.string
 };
 
 export default TransactionScanner;

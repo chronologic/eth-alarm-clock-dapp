@@ -8,15 +8,16 @@ import NetworkUnsupported from '../Common/NetworkUnsupported';
 export default class TransactionsOwner extends PureComponent {
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
+    const ownerAddress = this.props.match.params.ownerAddress;
 
     return (
       <div className="container-fluid container-fixed-lg">
-        <h1 className="view-title">Transactions by {this.props.match.params.ownerAddress}</h1>
+        <h1 className="view-title">Transactions by {ownerAddress}</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
             <TransactionScanner
               showStatus
-              owner={this.props.match.params.ownerAddress}
+              ownerAddress={ownerAddress}
             />
           ) : (
               <div className="tab-content p-1 pl-4 pt-4">

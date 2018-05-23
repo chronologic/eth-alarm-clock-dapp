@@ -100,7 +100,6 @@ export default class TransactionFetcher {
 
   async awaitRunning() {
     if (!this.running) {
-      console.log('waiting running')
       return await new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitRunning());

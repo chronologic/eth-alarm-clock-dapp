@@ -160,7 +160,8 @@ TransactionsTable.propTypes = {
   goToPage: PropTypes.any,
   currentPage: PropTypes.any,
   showStatus: PropTypes.bool,
-  fetchingTransactions: PropTypes.bool
+  fetchingTransactions: PropTypes.bool,
+  ownerAddress: PropTypes.string
 };
 
 export default TransactionsTable;
