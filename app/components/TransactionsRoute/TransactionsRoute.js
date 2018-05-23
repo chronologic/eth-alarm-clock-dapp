@@ -5,6 +5,7 @@ import { Route, Redirect, Switch } from 'react-router';
 import MetamaskComponent from '../Common/MetamaskComponent';
 import TransactionsCompleted from './TransactionsCompleted';
 import TransactionsScheduled from './TransactionsScheduled';
+import TransactionsOwner from './TransactionsOwner';
 import TransactionDetailsRoute from './TransactionDetailsRoute';
 
 @inject('web3Service')
@@ -13,10 +14,11 @@ class TransactionsRoute extends MetamaskComponent {
   render() {
     return (
       <div id="transactionScanner" className="padding-25 sm-padding-10 subsection">
-        <Switch>
+        <Switch location={location}>
           <Redirect exact path="/transactions" to="/transactions/completed"/>
           <Route path="/transactions/completed" component={TransactionsCompleted}/>
-          <Route path="/transactions/scheduled" component={TransactionsScheduled}/>
+          <Route path="/transactions/scheduled" component={TransactionsScheduled} />
+          <Route path="/transactions/owner/:ownerAddress" component={TransactionsOwner} />
           <Route path="/transactions/:txAddress" component={TransactionDetailsRoute}/>
         </Switch>
       </div>
