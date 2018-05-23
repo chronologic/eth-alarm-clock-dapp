@@ -57,7 +57,6 @@ class TransactionScanner extends Component {
   }
 
   componentDidMount() {
-    console.log('mounting scanner...')
     this._isMounted = true;
 
     if (!this.cacheObserverDisposer) {
