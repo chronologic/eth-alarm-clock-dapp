@@ -54,6 +54,5 @@ export function initEacService(web3Service) {
     web3 = web3Service;
     instance = Object.assign(EAC(web3Service), getAdditionalProperties());
   }
-
   return instance;
 }

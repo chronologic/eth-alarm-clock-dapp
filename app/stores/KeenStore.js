@@ -22,12 +22,13 @@ export class KeenStore {
 
   _web3Service = null;
 
-  constructor(projectId, writeKey, readKey, web3Service) {
+  constructor(projectId, writeKey, readKey, web3Service, versions) {
     this.projectId = projectId;
     this.writeKey = writeKey;
     this.readKey = readKey;
 
     this._web3Service = web3Service;
+    this.versions = versions;
 
     this.initialize();
   }
@@ -76,13 +77,37 @@ export class KeenStore {
       nodeAddress,
       dayAddress,
       networkId,
+      eacVersions: this.versions,
       nodeType: 'dapp',
       status: 'active'
     };
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
-  getActiveTimeNodesCount(networkId) {
+  async getActiveTimeNodesCount(networkId) {
+    const alphaCount = new KeenAnalysis.Query('count', {
+      event_collection: COLLECTIONS.TIMENODES,
+      target_property: 'nodeAddress',
+      timeframe: 'previous_2_minutes',
+      filters: [
+        {
+          property_name: 'networkId',
+          operator: 'eq',
+          property_value: networkId
+        },
+        {
+          property_name: 'eacVersions.contracts',
+          operator: 'exists',
+          property_value: false
+        },
+        {
+          property_name: 'status',
+          operator: 'eq',
+          property_value: 'active'
+        }
+      ]
+    });
+
     const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
@@ -94,6 +119,11 @@ export class KeenStore {
           property_value: networkId
         },
         {
+          property_name: 'eacVersions.contracts',
+          operator: 'eq',
+          property_value: this.versions.contracts
+        },
+        {
           property_name: 'status',
           operator: 'eq',
           property_value: 'active'
@@ -101,11 +131,23 @@ export class KeenStore {
       ]
     });
 
+    let alphaNodes;
+    const isAlphaNode = this.versions.contracts === '0.9.3';
+
+    if (isAlphaNode) {
+      await this.analysisClient.run(alphaCount, (err, response) => {
+        if (err) {
+          this.activeTimeNodes = '-';
+        }
+        alphaNodes = response.result;
+      });
+    }
+
     this.analysisClient.run(count, (err, response) => {
       if (err) {
         this.activeTimeNodes = '-';
       }
-      this.activeTimeNodes = response.result;
+      this.activeTimeNodes = isAlphaNode ? Number(alphaNodes) + Number(response.result) : response.result;
     });
   }
 

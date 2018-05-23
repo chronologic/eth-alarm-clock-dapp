@@ -1,4 +1,3 @@
-import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
@@ -43,8 +42,6 @@ export class TransactionStore {
   _cache;
   isSetup = false;
 
-  @observable filter = '';
-
   _features;
 
   _requestFactory;
@@ -67,35 +64,6 @@ export class TransactionStore {
   get requestFactoryStartBlock() {
     const { network } = this._web3;
     return requestFactoryStartBlocks[network.id] || 0;
-  }
-
-  // Returns an array of transactions based on the current
-  // state of the filter variable
-  @observable
-  async getTransactionsForCurrentFilter() {
-    const matchesFilter = new RegExp(this.filter, 'i');
-    let addresses;
-    let transactions = [];
-
-    if (!this.filter || this.filter.length < 20) {
-      return [];
-    }
-
-    if (this._fetcher.allTransactionsAddresses) {
-      addresses = this._fetcher.allTransactionsAddresses.filter(address =>
-        matchesFilter.test(address)
-      );
-      for (let address of addresses) {
-        const transaction = await this._fetcher.fetchCachedTransactionByAddress(address);
-        if (transaction) {
-          transaction.status = await this.getTxStatus(transaction);
-          transactions.push(transaction);
-        }
-      }
-      return transactions;
-    }
-
-    return [];
   }
 
   async setup() {
@@ -145,29 +113,22 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
+  async queryTransactions({ transactions, offset, limit, resolved, unresolved }) {
     const processed = [];
     let total = 0;
-
-    if (!resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
-    }
 
     for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
 
-      if (isResolved === resolved) {
+      if ((isResolved && resolved) || (!isResolved && unresolved)) {
         processed.push(transaction);
       }
     }
 
     transactions = processed;
 
-    if (resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
-    }
+    total = transactions.length;
+    transactions = transactions.slice(offset, offset + limit);
 
     return {
       transactions,
@@ -182,17 +143,17 @@ export class TransactionStore {
     offset = 0,
     pastHours,
     resolved,
-    resolveAll = false
+    unresolved
   }) {
     let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
-    if (typeof resolved !== 'undefined' && resolved !== null) {
+    if (resolved || unresolved) {
       return this.queryTransactions({
         transactions,
         offset,
         limit,
         resolved,
-        resolveAll
+        unresolved
       });
     }
 
@@ -203,6 +164,29 @@ export class TransactionStore {
     return {
       transactions,
       total
+    };
+  }
+
+  async getRequestsByOwner(ownerAddress, {
+    limit = DEFAULT_LIMIT,
+    offset = 0
+  }) {
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
+    const transactionsAddresses = await this._requestFactory.getRequestsByOwner(ownerAddress);
+    let transactions = [];
+
+    for (let address of transactionsAddresses) {
+      const tx = await this._eac.transactionRequest(address);
+      await tx.fillData();
+      transactions.push(tx);
+    }
+
+    return {
+      transactions: transactions.slice(offset, offset + limit),
+      total: transactions.length
     };
   }
 
@@ -286,30 +270,15 @@ export class TransactionStore {
     const { web3 } = this._web3;
 
     const bounties = [];
-    let sum = new BigNumber(0);
-    let bounty, bountyInEth, bountyAvg, bountyMax, bountyMin;
+    let bounty, bountyInEth;
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
       bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
-      sum = sum.plus(bountyInEth);
     });
 
-    if (bounties) {
-      bountyAvg = sum.dividedBy(bounties.length).toString();
-      bountyMax = Math.max(...bounties).toString();
-      bountyMin = Math.min(...bounties).toString();
-    } else {
-      bountyAvg = bountyMax = bountyMin = '0';
-    }
-
-    return {
-      bountiesNum: bounties.length,
-      bountyAvg,
-      bountyMin,
-      bountyMax
-    };
+    return bounties;
   }
 
   async validateRequestParams(

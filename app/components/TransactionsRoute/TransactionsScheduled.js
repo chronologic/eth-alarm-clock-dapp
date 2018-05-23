@@ -14,12 +14,7 @@ export default class TransactionsScheduled extends Component {
         <h1 className="view-title">Transaction Scanner - Scheduled</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
-            <TransactionScanner
-              showStatus={false}
-              includeResolved={false}
-              includeUnresolved={true}
-              resolveAll={true}
-            />
+            <TransactionScanner includeUnresolved />
           ) : (
             <div className="tab-content p-1 pl-4 pt-4">
               <div className="tab-pane active">

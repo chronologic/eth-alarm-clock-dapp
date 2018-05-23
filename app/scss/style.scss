@@ -82,7 +82,7 @@ $primary-color: #21FFFF;
 }
 
 #overlay-search {
-  font-size: 40px;
+  font-size: 36px !important;
 }
 
 .overlay-close {
@@ -296,4 +296,8 @@ hr {
 
 .pagination-entry, .pagination-arrow {
   cursor: pointer;
+}
+
+#bountyEstimator .progress {
+  height: 6px;
 }
