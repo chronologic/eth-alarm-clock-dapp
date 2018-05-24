@@ -50,7 +50,7 @@ class App extends Component {
   render() {
     let searchOverlayPlaceholder = null;
     if (this.state.showSearchOverlay) {
-      searchOverlayPlaceholder = <SearchOverlay updateSearchState={this.updateSearchState}/>;
+      searchOverlayPlaceholder = <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />;
     }
 
     return (
@@ -78,7 +78,7 @@ class App extends Component {
 }
 
 App.propTypes = {
-  location: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired
 };
 
 export default App;
