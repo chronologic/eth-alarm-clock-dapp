@@ -100,8 +100,7 @@ class TimeNodeStatistics extends Component {
 
   render() {
     let timeNodeStatus = null;
-    const { bounties, costs, scanningStarted } = this.props.timeNodeStore;
-    const profit = bounties - costs;
+    const { bounties, costs, profit, scanningStarted } = this.props.timeNodeStore;
 
     if (this.state.timeNodeDisabled) {
       timeNodeStatus = TIMENODE_STATUS.DISABLED;
@@ -111,7 +110,7 @@ class TimeNodeStatistics extends Component {
 
     const profitStatus = profit !== null ? profit + ' ETH' : 'Loading...';
     const bountiesStatus =
-      bounties !== null /*&& profit > 0*/ ? `${bounties} (bounties) - ${costs} (costs)` : '';
+      bounties !== null && costs !== null ? `${bounties} (bounties) - ${costs} (costs)` : '';
 
     const dayTokenError = (
       <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens." />
