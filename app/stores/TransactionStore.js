@@ -383,6 +383,10 @@ export class TransactionStore {
       return;
     }
 
+    if (typeof(this._eacScheduler) === 'undefined') {
+      this._eacScheduler = await this._eac.scheduler();
+    }
+
     await this._eacScheduler.initSender({
       from: this._web3.eth.defaultAccount,
       gas: SCHEDULING_GAS_LIMIT,
