@@ -109,17 +109,17 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            { !this.isElectron && 
+            { !this.isElectron &&
               <li className="m-t-30 ">
                   <NavLink to="/">
                     <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
                     <span className={entryList[0].thumbnailClasses}>
                       <i className="pg-calender" />
                     </span>
-                  </NavLink> 
+                  </NavLink>
               </li>
             }
-            { !this.isElectron && 
+            { !this.isElectron &&
               <li>
                 <a href="#" onClick={e => e.preventDefault()}>
                   <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
@@ -156,7 +156,7 @@ class SidePanel extends Component {
                 </span>
               </NavLink>
             </li>
-            { !this.isElectron && 
+            { !this.isElectron &&
               <li>
                 <a
                   href="https://alpha.chronologic.network/debt/"
@@ -170,7 +170,7 @@ class SidePanel extends Component {
                 </a>
               </li>
             }
-            { !this.isElectron && 
+            { !this.isElectron &&
               <li>
                 <a
                   href="https://alpha.chronologic.network/chronos/"
@@ -184,7 +184,7 @@ class SidePanel extends Component {
                 </a>
               </li>
             }
-            { !this.isElectron && 
+            { !this.isElectron &&
               <li>
                 <NavLink to="/faucet">
                   <span className={entryList[3].titleClasses}>{entryList[3].title}</span>

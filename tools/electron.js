@@ -9,7 +9,7 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 
 function createWindow() {
-  
+
   const WEB_FOLDER = '../out';
   const PROTOCOL = 'file';
 
@@ -24,8 +24,7 @@ function createWindow() {
     // url = url.replace(/\\/g, '/');
     url = path.normalize(url);
 
-    console.log(url);
-    callback({path: url});
+    callback({ path: url });
   });
 
   // Create the browser window.
@@ -48,10 +47,10 @@ function createWindow() {
 
   mainWindow.loadURL(mainPath);
 
-  mainWindow.once('ready-to-show', (a,b) => {
+  mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    mainWindow.webContents.executeJavaScript( 'setElectron();')
-  })
+    mainWindow.webContents.executeJavaScript( 'setElectron();');
+  });
 
   mainWindow.on('closed', () => (mainWindow = null));
 }
