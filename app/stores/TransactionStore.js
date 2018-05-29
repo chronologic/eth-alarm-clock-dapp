@@ -167,10 +167,7 @@ export class TransactionStore {
     };
   }
 
-  async getRequestsByOwner(ownerAddress, {
-    limit = DEFAULT_LIMIT,
-    offset = 0
-  }) {
+  async getRequestsByOwner(ownerAddress, { limit = DEFAULT_LIMIT, offset = 0 }) {
     if (!this._requestFactory) {
       this._requestFactory = await this._eac.requestFactory();
     }
@@ -265,7 +262,7 @@ export class TransactionStore {
     } else {
       bucket = await this._fetcher.calcBucketForBlock(windowStart);
     }
-    const transactions = await this._fetcher.getTransactionsInBuckets(bucket);
+    const transactions = await this._fetcher.getTransactionsInBuckets([bucket]);
 
     const { web3 } = this._web3;
 
@@ -381,6 +378,10 @@ export class TransactionStore {
       );
 
       return;
+    }
+
+    if (typeof this._eacScheduler === 'undefined') {
+      this._eacScheduler = await this._eac.scheduler();
     }
 
     await this._eacScheduler.initSender({
