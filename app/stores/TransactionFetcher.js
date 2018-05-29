@@ -35,7 +35,6 @@ export default class TransactionFetcher {
 
   async startLazy() {
     await this._web3.awaitInitialized();
-
     if (!this._requestFactory && this._features.isCurrentNetworkSupported) {
       this._requestFactory = await this._eac.requestFactory();
     }
@@ -99,15 +98,15 @@ export default class TransactionFetcher {
   }
 
   async awaitRunning() {
-    if (!this.running) {
-      return await new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitRunning());
-        }, 500);
-      });
+    if (this.running) {
+      return true;
     }
 
-    return true;
+    return await new Promise(resolve => {
+      setTimeout(async () => {
+        resolve(await this.awaitRunning());
+      }, 200);
+    });
   }
 
   async awaitSync() {
@@ -115,7 +114,7 @@ export default class TransactionFetcher {
       return await new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitSync());
-        }, 500);
+        }, 400);
       });
     }
 
@@ -194,7 +193,13 @@ export default class TransactionFetcher {
     return data;
   }
 
+  /**
+   *
+   * @param {Number[]} buckets - This is an array of buckets.
+   */
   async getTransactionsInBuckets(buckets) {
+    await this.awaitRunning();
+
     let transactions = await this._requestFactory.getRequestsByBucket(buckets);
 
     transactions.reverse(); // Switch to most recent block first
@@ -215,8 +220,8 @@ export default class TransactionFetcher {
 
     await this.updateLastBlock();
 
-    let timestampBucket = this.calcBucketForTimestamp(currentTimestamp);
-    let blockBucket = this.calcBucketForBlock(this.lastBlock);
+    let timestampBucket = await this.calcBucketForTimestamp(currentTimestamp);
+    let blockBucket = await this.calcBucketForBlock(this.lastBlock);
 
     const buckets = [];
 
@@ -280,7 +285,7 @@ export default class TransactionFetcher {
     cache = this.cacheDefault,
     onlyAddresses = false
   ) {
-    if (this.running && (cache || endBlock == 'latest')) {
+    if (this.running && (cache || endBlock == 'latest') && !pastHours) {
       if (this.allTransactionsAddresses.length > 0) {
         return onlyAddresses ? this.allTransactionsAddresses : this._cache.transactions;
       }
@@ -469,10 +474,7 @@ export default class TransactionFetcher {
   // ------ UTILS ------
   async calcBucketForTimestamp(timestamp) {
     await this.awaitRunning();
-    return this._requestFactory.calcBucket(
-      timestamp,
-      TEMPORAL_UNIT.TIMESTAMP
-    );
+    return this._requestFactory.calcBucket(timestamp, TEMPORAL_UNIT.TIMESTAMP);
   }
 
   async calcBucketForBlock(blockNumber) {
