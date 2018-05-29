@@ -117,16 +117,20 @@ class EacWorker {
       ? this.config.statsdb.getStats()[0]
       : empty;
 
-    if (this.config) {
-      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toString();
+    let profit = null;
+
+    if (bounties !== null && costs !== null) {
+      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toFixed(3);
+      profit = weiToEth(bounties.minus(costs));
       bounties = weiToEth(bounties);
       costs = weiToEth(costs);
     }
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      bounties: bounties,
-      costs: costs,
+      bounties,
+      costs,
+      profit,
       executedTransactions: executedTransactions
     });
   }
@@ -135,7 +139,7 @@ class EacWorker {
    * Resets the stats saved in the IndexedDB.
    */
   clearStats() {
-    var DBDeleteRequest = indexedDB.deleteDatabase('LokiAKV');
+    const DBDeleteRequest = indexedDB.deleteDatabase('LokiAKV');
 
     DBDeleteRequest.onerror = function() {
       postMessage({

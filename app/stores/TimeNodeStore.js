@@ -50,6 +50,7 @@ export default class TimeNodeStore {
 
   @observable bounties = null;
   @observable costs = null;
+  @observable profit = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
@@ -104,6 +105,7 @@ export default class TimeNodeStore {
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         if (event.data.bounties !== null) this.bounties = event.data.bounties;
         if (event.data.costs !== null) this.costs = event.data.costs;
+        if (event.data.profit !== null) this.profit = event.data.profit;
         this.executedTransactions = event.data.executedTransactions;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
