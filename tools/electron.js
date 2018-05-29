@@ -46,10 +46,10 @@ function createWindow() {
   });
 
   mainWindow.loadURL(mainPath);
+  mainWindow.webContents.executeJavaScript( 'setElectron();');
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    mainWindow.webContents.executeJavaScript( 'setElectron();');
   });
 
   mainWindow.on('closed', () => (mainWindow = null));

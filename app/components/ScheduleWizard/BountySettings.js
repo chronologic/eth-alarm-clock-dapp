@@ -37,12 +37,15 @@ class BountySettings extends AbstractSetting {
       windowStart,
       scheduleStore.isUsingTime
     );
-    this.setState({
-      bounties
-    });
+    if (this._mounted) {
+      this.setState({
+        bounties
+      });
+    }
   }
 
   async componentDidMount() {
+    this._mounted = true;    
     // Since we can't use observables in functions other than render()...
     // Use an interval function to track the state of the windowStart
     this.interval = setInterval(async() => {
@@ -51,17 +54,22 @@ class BountySettings extends AbstractSetting {
       // If the timestamp has changed - fill the bounties widget again
       if (this.state.timestamp !== transactionTimestamp && isUsingTime){
         await this.fillBountiesEstimator(transactionTimestamp);
-        this.setState({ timestamp: transactionTimestamp });
+        if (this._mounted) {
+          this.setState({ timestamp: transactionTimestamp });
+        }
 
       // If the starting block number has changed - fill the bounties widget again
       } else if (this.state.blockNumber !== blockNumber && !isUsingTime) {
         await this.fillBountiesEstimator(blockNumber);
-        this.setState({ blockNumber: blockNumber });
+        if (this._mounted) {
+          this.setState({ blockNumber: blockNumber });
+        }
       }
     }, 1000);
   }
 
   componentWillUnmount() {
+    this._mounted = false;
     clearInterval(this.interval);
   }
 
