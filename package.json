@@ -135,19 +135,5 @@
     "moduleNameMapper": {
       "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
     }
-  },
-  "build": {
-    "appId": "com.example.electron-cra",
-    "files": [
-      "dist/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    },
-    "publish": {
-      "provider": "github"
-    }
   }
 }
