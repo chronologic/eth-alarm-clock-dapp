@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
+import NetworkChooser from './NetworkChooser';
 
 @inject('web3Service')
 @inject('eacService')
@@ -55,7 +56,6 @@ class Header extends Component {
 
   render() {
     const { web3Service } = this.props;
-    const networkNameString = web3Service.network ? web3Service.network.name : 'Unknown';
     const blockNumberString = this.state.blockNumber ? 'at #' + this.state.blockNumber : '';
 
     return (
@@ -82,7 +82,7 @@ class Header extends Component {
               <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              {networkNameString} {blockNumberString}
+              <NetworkChooser /> {blockNumberString}
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
