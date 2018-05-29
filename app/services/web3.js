@@ -278,7 +278,7 @@ export default class Web3Service {
   async getAccountUpdates() {
     const accounts = await Bb.fromCallback(callback => this.web3.eth.getAccounts(callback));
     const accountChanged =
-      this.accounts.length !== accounts.length ||
+      (this.accounts !== null && this.accounts.length) !== accounts.length ||
       (this.accounts.length > 0 && this.accounts[0] !== accounts[0]);
 
     if (accountChanged) {
