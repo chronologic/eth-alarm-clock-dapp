@@ -194,7 +194,6 @@ export default class TransactionFetcher {
   }
 
   /**
-   *
    * @param {Number[]} buckets - This is an array of buckets.
    */
   async getTransactionsInBuckets(buckets) {
