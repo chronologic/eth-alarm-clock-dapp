@@ -149,7 +149,7 @@ class SidePanel extends Component {
               </li>
             }
             <li>
-              <NavLink to={this.isElectron?'/timenode?mode=electron':'/timenode'}>
+              <NavLink to={this.isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
                 <span className={entryList[2].thumbnailClasses}>
                   <i className="fa fa-sitemap" />
