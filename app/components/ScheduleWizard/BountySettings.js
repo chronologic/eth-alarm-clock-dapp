@@ -45,7 +45,7 @@ class BountySettings extends AbstractSetting {
   }
 
   async componentDidMount() {
-    this._mounted = true;    
+    this._mounted = true;
     // Since we can't use observables in functions other than render()...
     // Use an interval function to track the state of the windowStart
     this.interval = setInterval(async() => {
