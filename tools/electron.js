@@ -17,7 +17,7 @@ function createWindow() {
     // // Strip protocol
     let url = request.url.substr(PROTOCOL.length + 1);
 
-    // Build complete path for node require function
+    // Build complete path for node require function for file paths
     url = path.join(__dirname, WEB_FOLDER, url);
 
     // Replace backslashes by forward slashes (windows)
@@ -32,8 +32,10 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false,
     webPreferences: {
-      nodeIntegration: false
+      nodeIntegration: false,
+      devTools: true
     }
   });
 
@@ -44,8 +46,12 @@ function createWindow() {
     slashes: true
   });
 
-  // and load the index.html of the app.
   mainWindow.loadURL(mainPath);
+
+  mainWindow.once('ready-to-show', (a,b) => {
+    mainWindow.show();
+    mainWindow.webContents.executeJavaScript( 'setElectron();')
+  })
 
   mainWindow.on('closed', () => (mainWindow = null));
 }

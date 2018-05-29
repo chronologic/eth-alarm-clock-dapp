@@ -15,6 +15,12 @@ const injectables = Object.assign({}, stores, services);
 
 const rootEl = document.getElementById('root');
 
+const setElectron = () => {
+  history.push('/timenode?mode=electron');
+}
+
+window.setElectron = setElectron;
+
 render(
   <Provider {...injectables}>
     <Router history={history}>
