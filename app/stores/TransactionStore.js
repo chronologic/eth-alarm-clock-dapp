@@ -1,6 +1,7 @@
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
+import { CONFIG } from '../lib/consts';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
@@ -113,7 +114,18 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved, unresolved }) {
+  /**
+   * @private
+   * @returns Promise<{ transactions: Array }>
+   */
+  async _queryTransactions({
+    transactions,
+    offset,
+    limit,
+    resolved,
+    unresolved,
+    sortByTimestampAscending
+  }) {
     const processed = [];
     let total = 0;
 
@@ -126,6 +138,27 @@ export class TransactionStore {
     }
 
     transactions = processed;
+
+    if (sortByTimestampAscending) {
+      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(
+        this._fetcher.lastBlock
+      );
+
+      transactions = transactions.sort((a, b) => {
+        const aTimestamp = this.getTxTimestampEstimation(a, currentBlockTimestamp);
+        const bTimestamp = this.getTxTimestampEstimation(b, currentBlockTimestamp);
+
+        if (aTimestamp > bTimestamp) {
+          return 1;
+        }
+
+        if (aTimestamp < bTimestamp) {
+          return -1;
+        }
+
+        return 0;
+      });
+    }
 
     total = transactions.length;
     transactions = transactions.slice(offset, offset + limit);
@@ -143,17 +176,19 @@ export class TransactionStore {
     offset = 0,
     pastHours,
     resolved,
-    unresolved
+    unresolved,
+    sortByTimestampAscending = true
   }) {
     let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
 
     if (resolved || unresolved) {
-      return this.queryTransactions({
+      return this._queryTransactions({
         transactions,
         offset,
         limit,
         resolved,
-        unresolved
+        unresolved,
+        sortByTimestampAscending
       });
     }
 
@@ -185,6 +220,30 @@ export class TransactionStore {
       transactions: transactions.slice(offset, offset + limit),
       total: transactions.length
     };
+  }
+
+  getTxTimestampEstimation(transaction, currentBlockTimestamp) {
+    const isTimestamp = this.isTxUnitTimestamp(transaction);
+
+    const windowStart = transaction.windowStart.toNumber
+      ? transaction.windowStart.toNumber()
+      : transaction.windowStart;
+
+    if (isTimestamp) {
+      return windowStart;
+    }
+
+    let time;
+
+    if (this._fetcher.lastBlock > windowStart) {
+      time = windowStart;
+    } else {
+      const difference = windowStart - this._fetcher.lastBlock;
+
+      time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
+    }
+
+    return time;
   }
 
   async getTxStatus(transaction) {
