@@ -20,6 +20,7 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
+      currentBlockNumber: '',
       currentPath: props.history.location.pathname
     };
 
@@ -32,6 +33,7 @@ class NetworkChooser extends Component {
     });
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   async componentDidMount() {
@@ -45,6 +47,10 @@ class NetworkChooser extends Component {
       if (web3Service.network.id !== this.state.timeNodeNetworkId)
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
+
+    this.getCurrentBlock();
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(this.getCurrentBlock, 10000);
   }
 
   /*
@@ -90,25 +96,47 @@ class NetworkChooser extends Component {
     window.location.reload();
   }
 
+  getCurrentBlock() {
+    const {
+      web3Service: { web3 }
+    } = this.props;
+
+    web3.eth.getBlockNumber((err, res) => {
+      err == null && this.setState({ currentBlockNumber: res });
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   render() {
-    const { currentPath, timeNodeNetworkId, metaMaskNetworkId } = this.state;
+    const { currentPath, timeNodeNetworkId, metaMaskNetworkId, currentBlockNumber } = this.state;
+    const blockNumberString = currentBlockNumber ? 'at #' + currentBlockNumber : '';
 
     if (currentPath !== '/timenode') {
-      return <span>{Networks[metaMaskNetworkId].name}</span>;
+      return (
+        <span>
+          {Networks[metaMaskNetworkId].name}&nbsp;{blockNumberString}
+        </span>
+      );
     }
 
     // Return this only if the user enters the TimeNode screen.
     return (
-      <select value={timeNodeNetworkId} onChange={this._handleSelectedNetworkChange}>
-        {Object.keys(Networks).map(index => (
-          <option key={index} value={index}>
-            {Networks[index].name}
+      <span>
+        <select value={timeNodeNetworkId} onChange={this._handleSelectedNetworkChange}>
+          {Object.keys(Networks).map(index => (
+            <option key={index} value={index}>
+              {Networks[index].name}
+            </option>
+          ))}
+          <option key={CUSTOM_PROVIDER_NET_ID} value={CUSTOM_PROVIDER_NET_ID}>
+            Custom
           </option>
-        ))}
-        <option key={CUSTOM_PROVIDER_NET_ID} value={CUSTOM_PROVIDER_NET_ID}>
-          Custom
-        </option>
-      </select>
+        </select>
+        <span>&nbsp;{blockNumberString}</span>
+      </span>
     );
   }
 }

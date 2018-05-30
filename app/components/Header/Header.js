@@ -12,19 +12,11 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      blockNumber: '',
       eacContracts: {}
     };
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
-  }
-
-  UNSAFE_componentWillMount() {
-    this.getCurrentBlock();
   }
 
   componentDidMount() {
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
     this.fetchEacContracts();
   }
 
@@ -40,23 +32,8 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
-  getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
-
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ blockNumber: res });
-    });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
   render() {
     const { web3Service } = this.props;
-    const blockNumberString = this.state.blockNumber ? 'at #' + this.state.blockNumber : '';
 
     return (
       <div className="header">
@@ -82,7 +59,7 @@ class Header extends Component {
               <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser history={this.props.history} /> {blockNumberString}
+              <NetworkChooser history={this.props.history} />
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
