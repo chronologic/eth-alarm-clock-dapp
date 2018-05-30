@@ -43,6 +43,10 @@ class SidePanel extends Component {
     clearInterval(this.interval);
   }
 
+  get isElectron () {
+    return this.props.location.search.indexOf('mode=electron') > -1;
+  }
+
   isUrlActive(url, type = 'thumbnail', substring = false) {
     const currentUrl = this.props.location.pathname;
     const cls = type === 'thumbnail' ? 'active' : 'text-white';
@@ -105,81 +109,91 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            <li className="m-t-30 ">
-              <NavLink to="/">
-                <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
-                <span className={entryList[0].thumbnailClasses}>
-                  <i className="pg-calender" />
-                </span>
-              </NavLink>
-            </li>
-            <li>
-              <a href="#" onClick={e => e.preventDefault()}>
-                <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
-                <span className={entryList[1].thumbnailClasses}>
-                  <i className="pg-charts" />
-                </span>
-              </a>
+            { !this.isElectron &&
+              <li className="m-t-30 ">
+                  <NavLink to="/">
+                    <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
+                    <span className={entryList[0].thumbnailClasses}>
+                      <i className="pg-calender" />
+                    </span>
+                  </NavLink>
+              </li>
+            }
+            { !this.isElectron &&
+              <li>
+                <a href="#" onClick={e => e.preventDefault()}>
+                  <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
+                  <span className={entryList[1].thumbnailClasses}>
+                    <i className="pg-charts" />
+                  </span>
+                </a>
 
-              <ul className="sub-menu">
-                <li>
-                  <NavLink to="/transactions/scheduled">
-                    <span className="title">Scheduled</span>
-                    <span className="icon-thumbnail">
-                      <i className="pg-plus_circle" />
-                    </span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/transactions/completed">
-                    <span className="title">Completed</span>
-                    <span className="icon-thumbnail">
-                      <i className="fa fa-check" />
-                    </span>
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+                <ul className="sub-menu">
+                  <li>
+                    <NavLink to="/transactions/scheduled">
+                      <span className="title">Scheduled</span>
+                      <span className="icon-thumbnail">
+                        <i className="pg-plus_circle" />
+                      </span>
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/transactions/completed">
+                      <span className="title">Completed</span>
+                      <span className="icon-thumbnail">
+                        <i className="fa fa-check" />
+                      </span>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+            }
             <li>
-              <NavLink to="/timenode">
+              <NavLink to={this.isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
                 <span className={entryList[2].thumbnailClasses}>
                   <i className="fa fa-sitemap" />
                 </span>
               </NavLink>
             </li>
-            <li>
-              <a
-                href="https://alpha.chronologic.network/debt/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="title">Debt Smart Contract</span>
-                <span className="icon-thumbnail">
-                  <i className="fab fa-ethereum" />
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://alpha.chronologic.network/chronos/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="title">Day Token Contract</span>
-                <span className="icon-thumbnail">
-                  <i className="far fa-clock" />
-                </span>
-              </a>
-            </li>
-            <li>
-              <NavLink to="/faucet">
-                <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                <span className={entryList[3].thumbnailClasses}>
-                  <i className="fas fa-tint" />
-                </span>
-              </NavLink>
-            </li>
+            { !this.isElectron &&
+              <li>
+                <a
+                  href="https://alpha.chronologic.network/debt/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="title">Debt Smart Contract</span>
+                  <span className="icon-thumbnail">
+                    <i className="fab fa-ethereum" />
+                  </span>
+                </a>
+              </li>
+            }
+            { !this.isElectron &&
+              <li>
+                <a
+                  href="https://alpha.chronologic.network/chronos/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="title">Day Token Contract</span>
+                  <span className="icon-thumbnail">
+                    <i className="far fa-clock" />
+                  </span>
+                </a>
+              </li>
+            }
+            { !this.isElectron &&
+              <li>
+                <NavLink to="/faucet">
+                  <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                  <span className={entryList[3].thumbnailClasses}>
+                    <i className="fas fa-tint" />
+                  </span>
+                </NavLink>
+              </li>
+            }
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
