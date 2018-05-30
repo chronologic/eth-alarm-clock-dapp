@@ -75,6 +75,7 @@ class EacWorker {
     this.alarmClient = new Scanner(options.milliseconds, this.config);
 
     this.updateStats();
+    this.getNetworkInfo();
   }
 
   async awaitAlarmClientInitialized() {
@@ -101,6 +102,19 @@ class EacWorker {
     if (this.alarmClient) {
       this.alarmClient.stop();
     }
+  }
+
+  /*
+   * Fetches info about the network provider
+   * to which the worker is connected to.
+   */
+  async getNetworkInfo() {
+    const blockNumber = await Bb.fromCallback(callback => this.web3.eth.getBlockNumber(callback));
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
+      blockNumber
+    });
   }
 
   /*
@@ -182,6 +196,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
       eacWorker.stopScanning();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+      await eacWorker.getNetworkInfo();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:

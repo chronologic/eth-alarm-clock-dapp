@@ -52,6 +52,7 @@ export default class TimeNodeStore {
   // If a TimeNode has selected a custom provider URL
   // it will be stored in this variable
   @observable customProviderUrl = null;
+  @observable providerBlockNumber = null;
 
   eacWorker = null;
 
@@ -114,6 +115,8 @@ export default class TimeNodeStore {
         } else {
           showNotification('Unable to clear the stats.', 'danger', 3000);
         }
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO) {
+        this.providerBlockNumber = event.data.blockNumber;
       }
     };
 
@@ -286,20 +289,24 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  updateStats() {
+  sendMessageWorker(messageType) {
     if (this.eacWorker) {
       this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+        type: messageType
       });
     }
   }
 
+  getNetworkInfo() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO);
+  }
+
+  updateStats() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
+  }
+
   clearStats() {
-    if (this.eacWorker) {
-      this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
-      });
-    }
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
     this.basicLogs = [];
     this.detailedLogs = [];
   }

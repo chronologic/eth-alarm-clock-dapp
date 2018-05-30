@@ -20,7 +20,7 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      currentBlockNumber: '',
+      metaMaskBlockNumber: '',
       currentPath: props.history.location.pathname
     };
 
@@ -34,6 +34,10 @@ class NetworkChooser extends Component {
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
     this.getCurrentBlock = this.getCurrentBlock.bind(this);
+  }
+
+  isOnTimeNodeScreen() {
+    return this.state.currentPath === '/timenode';
   }
 
   async componentDidMount() {
@@ -53,6 +57,10 @@ class NetworkChooser extends Component {
     this.interval = setInterval(this.getCurrentBlock, 10000);
   }
 
+  componentDidUpdate() {
+    this.getCurrentBlock();
+  }
+
   /*
    * Checks if the TimeNode provider is different from the global
    * MetaMask provider.
@@ -64,9 +72,7 @@ class NetworkChooser extends Component {
     const { timeNodeStore } = this.props;
 
     if (selectedProviderId && selectedProviderUrl) {
-      if (selectedProviderId === CUSTOM_PROVIDER_NET_ID) {
-        timeNodeStore.customProviderUrl = selectedProviderUrl;
-      }
+      timeNodeStore.customProviderUrl = selectedProviderUrl;
       return selectedProviderId;
     }
 
@@ -80,14 +86,15 @@ class NetworkChooser extends Component {
 
   _handleSelectedNetworkChange(event) {
     const selectedNetId = parseInt(event.target.value);
-    const { timeNodeStore } = this.props;
     const customProviderUrl = 'http://localhost:8545';
 
     if (selectedNetId !== CUSTOM_PROVIDER_NET_ID) {
+      const selectedProviderUrl = Networks[selectedNetId].endpoint;
+      this.props.timeNodeStore.customProviderUrl = selectedProviderUrl;
       Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
-      Cookies.set('selectedProviderUrl', Networks[selectedNetId].endpoint, { expires: 30 });
+      Cookies.set('selectedProviderUrl', selectedProviderUrl, { expires: 30 });
     } else {
-      timeNodeStore.customProviderUrl = customProviderUrl;
+      this.props.timeNodeStore.customProviderUrl = customProviderUrl;
       Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
       Cookies.set('selectedProviderUrl', customProviderUrl, { expires: 30 });
     }
@@ -97,13 +104,20 @@ class NetworkChooser extends Component {
   }
 
   getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
+    // If the current screen is the TimeNode
+    if (this.isOnTimeNodeScreen()) {
+      // Get the block number from the eac-worker
+      this.props.timeNodeStore.getNetworkInfo();
+    } else {
+      // Otherwise get it from the MetaMask provider
+      const {
+        web3Service: { web3 }
+      } = this.props;
 
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ currentBlockNumber: res });
-    });
+      web3.eth.getBlockNumber((err, res) => {
+        err == null && this.setState({ metaMaskBlockNumber: res });
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -111,13 +125,14 @@ class NetworkChooser extends Component {
   }
 
   render() {
-    const { currentPath, timeNodeNetworkId, metaMaskNetworkId, currentBlockNumber } = this.state;
-    const blockNumberString = currentBlockNumber ? 'at #' + currentBlockNumber : '';
+    window.timeNodeStore = this.props.timeNodeStore;
+    const { timeNodeNetworkId, metaMaskNetworkId, metaMaskBlockNumber } = this.state;
+    const blockNumberString = blockNumber => (blockNumber ? 'at #' + blockNumber : '');
 
-    if (currentPath !== '/timenode') {
+    if (!this.isOnTimeNodeScreen()) {
       return (
         <span>
-          {Networks[metaMaskNetworkId].name}&nbsp;{blockNumberString}
+          {Networks[metaMaskNetworkId].name}&nbsp;{blockNumberString(metaMaskBlockNumber)}
         </span>
       );
     }
@@ -135,7 +150,7 @@ class NetworkChooser extends Component {
             Custom
           </option>
         </select>
-        <span>&nbsp;{blockNumberString}</span>
+        &nbsp;{blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
       </span>
     );
   }
