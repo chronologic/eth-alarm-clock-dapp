@@ -54,7 +54,7 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
-          <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
+          <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
               <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
             </span>
@@ -63,7 +63,6 @@ class Header extends Component {
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
-            <span className="left-separator d-lg" />
             <span className="active-timenodes" data-toggle="dropdown">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />&nbsp;
             </span>

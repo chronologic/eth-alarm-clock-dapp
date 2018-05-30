@@ -99,9 +99,6 @@ class NetworkChooser extends Component {
       jQuery('#customProviderModal').modal({
         show: true
       });
-      // this.props.timeNodeStore.customProviderUrl = customProviderUrl;
-      // Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
-      // Cookies.set('selectedProviderUrl', customProviderUrl, { expires: 30 });
     }
   }
 
@@ -142,15 +139,23 @@ class NetworkChooser extends Component {
 
     // Return this only if the user enters the TimeNode screen.
     return (
-      <span>
-        <select value={timeNodeNetworkId} onChange={this._handleSelectedNetworkChange}>
-          {Object.keys(Networks).map(index => (
-            <option key={index} value={index}>
-              {Networks[index].name}
-            </option>
-          ))}
+      <span id="networkChooser">
+        <select
+          className="form-control d-inline"
+          value={timeNodeNetworkId}
+          onChange={this._handleSelectedNetworkChange}
+        >
+          {Object.keys(Networks).map(index => {
+            if (Networks[index].showInChooser) {
+              return (
+                <option key={index} value={index}>
+                  {Networks[index].name}
+                </option>
+              );
+            }
+          })}
           <option key={CUSTOM_PROVIDER_NET_ID} value={CUSTOM_PROVIDER_NET_ID}>
-            Custom
+            Custom...
           </option>
         </select>
         {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}

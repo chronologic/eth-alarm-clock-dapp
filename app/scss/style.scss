@@ -46,10 +46,10 @@ $primary-color: #21FFFF;
 	color: inherit;
 }
 
-.datepicker thead tr .prev:before {
+.datepicker thead tr .prev::before {
   content: "<";
 }
-.datepicker thead tr .next:before {
+.datepicker thead tr .next::before {
   content: ">";
 }
 
@@ -95,7 +95,7 @@ $primary-color: #21FFFF;
   cursor: pointer;
 }
 
-.nav-tabs-simple > li > a:after {
+.nav-tabs-simple > li > a::after {
   background-color: $primary-color;
 }
 
@@ -125,6 +125,10 @@ hr {
 
 .left-separator {
   border-left: 1px solid grey;
+}
+
+.right-separator {
+  border-right: 1px solid grey;
 }
 
 .view-title {
@@ -241,7 +245,7 @@ hr {
   width: inherit;
   content: "";
   display: block;
-  position:absolute;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
@@ -300,4 +304,34 @@ hr {
 
 #bountyEstimator .progress {
   height: 6px;
+}
+
+#networkChooser select {
+  color: #fff;
+  width: auto !important;
+  min-height: 0px;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  padding-right: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+
+  // Hide arrow on Firefox
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+
+#networkChooser::after {
+  position: relative;
+  content: '';
+  width: 0;
+  height: 0;
+  top: 12px;
+  right: 20px;
+  border-style: solid;
+  border-width: 5px 5px 0 5px;
+  border-color: #616161 transparent transparent transparent;
+  pointer-events: none;
 }

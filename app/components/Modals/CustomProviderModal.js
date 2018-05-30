@@ -3,22 +3,54 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import Cookies from 'js-cookie';
 import { CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
+import isUrl from 'is-url';
 
 @inject('timeNodeStore')
 @observer
 class CustomProviderModal extends Component {
   constructor() {
     super();
+    this.state = {
+      disabled: true,
+      error: null
+    };
     this.setCustomProvider = this.setCustomProvider.bind(this);
+    this._validateProviderUrl = this._validateProviderUrl.bind(this);
   }
 
   setCustomProvider() {
-    this.props.timeNodeStore.customProviderUrl = this.providerInputField.value;
-    Cookies.set('selectedProviderId', CUSTOM_PROVIDER_NET_ID, { expires: 30 });
-    Cookies.set('selectedProviderUrl', this.providerInputField.value, { expires: 30 });
+    const url = this.providerInputField.value;
 
-    // Reload the page so that the changes are refreshed
-    window.location.reload();
+    if (this._validateProviderUrl) {
+      this.props.timeNodeStore.customProviderUrl = url;
+      Cookies.set('selectedProviderId', CUSTOM_PROVIDER_NET_ID, { expires: 30 });
+      Cookies.set('selectedProviderUrl', url, { expires: 30 });
+
+      // Reload the page so that the changes are refreshed
+      window.location.reload();
+    }
+  }
+
+  _validateProviderUrl() {
+    const url = this.providerInputField.value;
+    if (isUrl(url)) {
+      if (this.state.error) {
+        this.setState({
+          error: null,
+          disabled: false
+        });
+      }
+      return true;
+    }
+
+    if (!this.state.error) {
+      this.setState({
+        error: 'Please enter a valid provider URL.',
+        disabled: true
+      });
+    }
+
+    return false;
   }
 
   render() {
@@ -38,7 +70,7 @@ class CustomProviderModal extends Component {
                 <i className="pg-close fs-14" />
               </button>
               <h3 className="timenode-modal-title m-0">
-                Select a <span className="semi-bold">custom RPC provider</span>
+                Enter a <span className="semi-bold">custom RPC provider URL</span>
               </h3>
             </div>
             <div className="modal-body">
@@ -50,9 +82,11 @@ class CustomProviderModal extends Component {
                   placeholder="http://localhost:8545"
                   className="form-control"
                   ref={el => (this.providerInputField = el)}
+                  onChange={this._validateProviderUrl}
                   autoFocus
                 />
               </div>
+              <span className="text-danger semi-bold">{this.state.error}</span>
             </div>
             <div className="modal-footer">
               <div className="row">
@@ -65,8 +99,8 @@ class CustomProviderModal extends Component {
                   <button
                     className="btn btn-primary btn-block"
                     type="button"
-                    data-dismiss="modal"
                     onClick={this.setCustomProvider}
+                    disabled={this.state.disabled}
                   >
                     Apply
                   </button>
