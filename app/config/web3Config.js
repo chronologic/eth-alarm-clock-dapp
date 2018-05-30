@@ -15,14 +15,14 @@ const Networks = {
     id: 1,
     name: 'Mainnet',
     endpoint: 'https://mainnet.infura.io/6M6ROam68gmdp9OeNmym',
-    showInChooser: true,
+    showInChooser: false,
     dayTokenAddress: '0xe814aee960a85208c3db542c53e7d4a6c8d5f60f'
   },
   3: {
     id: 3,
     name: 'Ropsten',
     endpoint: 'https://ropsten.infura.io/6M6ROam68gmdp9OeNmym',
-    showInChooser: true,
+    showInChooser: false,
     dayTokenAddress: '0x7941bc77E1d6BD4628467b6cD3650F20F745dB06',
     dayTokenAbi: dayTokenABI,
     dayFaucetAddress: '0xfc5c1dc438411dce1cee4971fa333ecd3c3fa7d3',
@@ -32,7 +32,7 @@ const Networks = {
     id: 4,
     name: 'Rinkeby',
     endpoint: 'https://rinkeby.infura.io/6M6ROam68gmdp9OeNmym',
-    showInChooser: true
+    showInChooser: false
   },
   [KOVAN_NETWORK_ID]: {
     id: KOVAN_NETWORK_ID,
