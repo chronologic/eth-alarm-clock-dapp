@@ -13,7 +13,6 @@ import URLNotFound from '../Common/URLNotFound';
 
 @withRouter
 class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -35,7 +34,7 @@ class App extends Component {
     Esc keypress listener. Used for:
     - Detecting when to close the search overlay
   */
-  onEscKey(event){
+  onEscKey(event) {
     if (event.keyCode === 27) {
       if (this.state.showSearchOverlay) {
         this.updateSearchState(false);
@@ -43,30 +42,32 @@ class App extends Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     document.addEventListener('keydown', this.onEscKey, false);
   }
 
   render() {
     let searchOverlayPlaceholder = null;
     if (this.state.showSearchOverlay) {
-      searchOverlayPlaceholder = <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />;
+      searchOverlayPlaceholder = (
+        <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />
+      );
     }
 
     return (
       <div className="app-container">
         <SidePanel {...this.props} />
         <div className="page-container">
-          <Header updateSearchState={this.updateSearchState}/>
+          <Header updateSearchState={this.updateSearchState} history={this.props.history} />
           <div className="page-content-wrapper">
             <div className="content sm-gutter">
               <Switch>
-                <Route exact path="/" component={ScheduleRoute}/>
-                <Route path="/awaiting/:type/:hash" component={AwaitingMining}/>
-                <Route path="/transactions" component={TransactionsRoute}/>
+                <Route exact path="/" component={ScheduleRoute} />
+                <Route path="/awaiting/:type/:hash" component={AwaitingMining} />
+                <Route path="/transactions" component={TransactionsRoute} />
                 <Route path="/timenode" component={TimeNodeRoute} />
-                <Route path="/faucet" component={Faucet}/>
-                <Route component={URLNotFound}/>
+                <Route path="/faucet" component={Faucet} />
+                <Route component={URLNotFound} />
               </Switch>
             </div>
           </div>

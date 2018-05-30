@@ -82,7 +82,7 @@ class Header extends Component {
               <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser /> {blockNumberString}
+              <NetworkChooser history={this.props.history} /> {blockNumberString}
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
@@ -212,7 +212,8 @@ Header.propTypes = {
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  history: PropTypes.object.isRequired
 };
 
 export default Header;

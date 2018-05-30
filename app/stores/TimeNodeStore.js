@@ -8,12 +8,7 @@ import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
-import {
-  isMyCryptoSigValid,
-  isSignatureValid,
-  parseSig,
-  SIGNATURE_ERRORS
-} from '../lib/signature';
+import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 
 /*
  * TimeNode classification based on the number
@@ -54,6 +49,10 @@ export default class TimeNodeStore {
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
+  // If a TimeNode has selected a custom provider URL
+  // it will be stored in this variable
+  @observable customProviderUrl = null;
+
   eacWorker = null;
 
   _keenStore = null;
@@ -82,6 +81,7 @@ export default class TimeNodeStore {
   getWorkerOptions(keystore, keystorePassword) {
     return {
       network: this._web3Service.network,
+      customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
       logfile: 'console',
