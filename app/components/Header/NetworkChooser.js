@@ -140,24 +140,26 @@ class NetworkChooser extends Component {
     // Return this only if the user enters the TimeNode screen.
     return (
       <span id="networkChooser">
-        <select
-          className="form-control d-inline"
-          value={timeNodeNetworkId}
-          onChange={this._handleSelectedNetworkChange}
-        >
-          {Object.keys(Networks).map(index => {
-            if (Networks[index].showInChooser) {
-              return (
-                <option key={index} value={index}>
-                  {Networks[index].name}
-                </option>
-              );
-            }
-          })}
-          <option key={CUSTOM_PROVIDER_NET_ID} value={CUSTOM_PROVIDER_NET_ID}>
-            Custom...
-          </option>
-        </select>
+        <span id="networkChooserSelect">
+          <select
+            className="form-control d-inline"
+            value={timeNodeNetworkId}
+            onChange={this._handleSelectedNetworkChange}
+          >
+            {Object.keys(Networks).map(index => {
+              if (Networks[index].showInChooser) {
+                return (
+                  <option key={index} value={index}>
+                    {Networks[index].name}
+                  </option>
+                );
+              }
+            })}
+            <option key={CUSTOM_PROVIDER_NET_ID} value={CUSTOM_PROVIDER_NET_ID}>
+              Custom...
+            </option>
+          </select>
+        </span>
         {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
       </span>
     );
