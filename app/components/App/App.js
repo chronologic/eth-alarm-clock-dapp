@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
+import CustomProviderModal from '../Modals/CustomProviderModal';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
 import Faucet from '../Common/Faucet';
@@ -47,13 +48,6 @@ class App extends Component {
   }
 
   render() {
-    let searchOverlayPlaceholder = null;
-    if (this.state.showSearchOverlay) {
-      searchOverlayPlaceholder = (
-        <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />
-      );
-    }
-
     return (
       <div className="app-container">
         <SidePanel {...this.props} />
@@ -72,7 +66,11 @@ class App extends Component {
             </div>
           </div>
         </div>
-        {searchOverlayPlaceholder}
+
+        {this.state.showSearchOverlay && (
+          <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />
+        )}
+        <CustomProviderModal />
       </div>
     );
   }

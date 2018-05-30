@@ -63,4 +63,6 @@ const Explorers = {
   [KOVAN_NETWORK_ID]: 'https://kovan.etherscan.io/'
 };
 
-export { Networks, Explorers };
+const CUSTOM_PROVIDER_NET_ID = 9999;
+
+export { Networks, Explorers, CUSTOM_PROVIDER_NET_ID };

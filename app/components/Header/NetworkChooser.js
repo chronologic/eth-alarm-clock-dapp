@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import { Networks } from '../../config/web3Config';
+import { Networks, CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
 import Cookies from 'js-cookie';
 
-const CUSTOM_PROVIDER_NET_ID = 9999;
 const DEFAULT_NETWORK_ID = Networks[0].id;
 
 @inject('web3Service')
@@ -86,21 +85,24 @@ class NetworkChooser extends Component {
 
   _handleSelectedNetworkChange(event) {
     const selectedNetId = parseInt(event.target.value);
-    const customProviderUrl = 'http://localhost:8545';
 
     if (selectedNetId !== CUSTOM_PROVIDER_NET_ID) {
       const selectedProviderUrl = Networks[selectedNetId].endpoint;
       this.props.timeNodeStore.customProviderUrl = selectedProviderUrl;
       Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
       Cookies.set('selectedProviderUrl', selectedProviderUrl, { expires: 30 });
-    } else {
-      this.props.timeNodeStore.customProviderUrl = customProviderUrl;
-      Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
-      Cookies.set('selectedProviderUrl', customProviderUrl, { expires: 30 });
-    }
 
-    // Reload the page so that the changes are refreshed
-    window.location.reload();
+      // Reload the page so that the changes are refreshed
+      window.location.reload();
+    } else {
+      const { jQuery } = window;
+      jQuery('#customProviderModal').modal({
+        show: true
+      });
+      // this.props.timeNodeStore.customProviderUrl = customProviderUrl;
+      // Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
+      // Cookies.set('selectedProviderUrl', customProviderUrl, { expires: 30 });
+    }
   }
 
   getCurrentBlock() {
@@ -127,12 +129,13 @@ class NetworkChooser extends Component {
   render() {
     window.timeNodeStore = this.props.timeNodeStore;
     const { timeNodeNetworkId, metaMaskNetworkId, metaMaskBlockNumber } = this.state;
-    const blockNumberString = blockNumber => (blockNumber ? 'at #' + blockNumber : '');
+    const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
     if (!this.isOnTimeNodeScreen()) {
       return (
         <span>
-          {Networks[metaMaskNetworkId].name}&nbsp;{blockNumberString(metaMaskBlockNumber)}
+          {Networks[metaMaskNetworkId].name}
+          {blockNumberString(metaMaskBlockNumber)}
         </span>
       );
     }
@@ -150,7 +153,7 @@ class NetworkChooser extends Component {
             Custom
           </option>
         </select>
-        &nbsp;{blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
+        {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
       </span>
     );
   }
