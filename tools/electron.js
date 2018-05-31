@@ -2,6 +2,7 @@ const url = require('url');
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const Menu = electron.Menu;
 
 const path = require('path');
 const isDev = require('electron-is-dev');
@@ -27,18 +28,23 @@ function createWindow() {
     callback({ path: url });
   });
 
+  const webPreferences = {
+    nodeIntegration: false,
+    devTools: isDev ? true : false
+  };
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     show: false,
-    webPreferences: {
-      nodeIntegration: false,
-      devTools: true
-    }
+    webPreferences: webPreferences
   });
 
-  mainWindow.toggleDevTools();
+  if ( isDev ) {
+    mainWindow.toggleDevTools();
+  }
+
   const mainPath =  isDev ? 'http://localhost:8080' : url.format({
     pathname: 'index.html',
     protocol: PROTOCOL + ':',
@@ -46,13 +52,35 @@ function createWindow() {
   });
 
   mainWindow.loadURL(mainPath);
-  mainWindow.webContents.executeJavaScript( 'setElectron();');
 
-  mainWindow.once('ready-to-show', () => {
+  mainWindow.once('ready-to-show', async () => {
+    await mainWindow.webContents.executeJavaScript( 'setElectron();');
     mainWindow.show();
   });
 
   mainWindow.on('closed', () => (mainWindow = null));
+
+
+  const template = [{
+      label: 'Application',
+      submenu: [
+          { label: 'Quit', accelerator: 'Command+Q', click: function() { app.quit(); } }
+      ] }, {
+      label: 'Edit',
+      submenu: [
+          { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+          { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+          { type: 'separator' },
+          { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+          { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+          { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+          { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+      ] }
+  ];
+
+  if (!isDev) {
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  }
 }
 
 app.on('ready', createWindow);
