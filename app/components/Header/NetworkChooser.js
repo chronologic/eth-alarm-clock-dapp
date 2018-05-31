@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { Networks, CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
-import Cookies from 'js-cookie';
 import { isRunningInElectron } from '../../lib/electron-util';
 
 const DEFAULT_NETWORK_ID = Networks[0].id;
@@ -46,7 +45,7 @@ class NetworkChooser extends Component {
     if (web3Service.network.id !== this.state.metaMaskNetworkId)
       this.setState({ metaMaskNetworkId: web3Service.network.id });
 
-    if (!Cookies.get('selectedProviderId')) {
+    if (!localStorage.getItem('selectedProviderId')) {
       if (web3Service.network.id !== this.state.timeNodeNetworkId)
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
@@ -65,8 +64,8 @@ class NetworkChooser extends Component {
    * MetaMask provider.
    */
   checkSelectedProvider() {
-    const selectedProviderId = parseInt(Cookies.get('selectedProviderId'));
-    const selectedProviderUrl = Cookies.get('selectedProviderUrl');
+    const selectedProviderId = parseInt(localStorage.getItem('selectedProviderId'));
+    const selectedProviderUrl = localStorage.getItem('selectedProviderUrl');
 
     const { timeNodeStore } = this.props;
 
@@ -79,7 +78,7 @@ class NetworkChooser extends Component {
   }
 
   hasCustomProvider() {
-    const selectedProviderId = parseInt(Cookies.get('selectedProviderId'));
+    const selectedProviderId = parseInt(localStorage.getItem('selectedProviderId'));
     return selectedProviderId === CUSTOM_PROVIDER_NET_ID;
   }
 
@@ -89,14 +88,16 @@ class NetworkChooser extends Component {
     if (selectedNetId !== CUSTOM_PROVIDER_NET_ID) {
       const selectedProviderUrl = Networks[selectedNetId].endpoint;
       this.props.timeNodeStore.customProviderUrl = selectedProviderUrl;
-      Cookies.set('selectedProviderId', selectedNetId, { expires: 30 });
-      Cookies.set('selectedProviderUrl', selectedProviderUrl, { expires: 30 });
+      localStorage.setItem('selectedProviderId', selectedNetId);
+      localStorage.setItem('selectedProviderUrl', selectedProviderUrl);
 
       // Reload the page so that the changes are refreshed
       if (!isRunningInElectron()) {
         window.location.reload();
       } else {
-        window.location.href = 'http://localhost:8080/timenode?mode=electron';
+        // Workaround for getting the Electron app to reload
+        // since the regular reload results in a blank screen
+        window.location.href = '/index.html';
       }
     } else {
       const { jQuery } = window;

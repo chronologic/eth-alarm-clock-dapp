@@ -25,7 +25,15 @@ function createWindow() {
     url = path.normalize(url);
 
     callback({ path: url });
+
+    if (url.indexOf('index.html') > -1) prepareElectron();
   });
+
+  const prepareElectron = () => {
+    mainWindow.webContents.once('dom-ready', async () => {
+      await mainWindow.webContents.executeJavaScript('setElectron();');
+    });
+  };
 
   const webPreferences = {
     nodeIntegration: false,

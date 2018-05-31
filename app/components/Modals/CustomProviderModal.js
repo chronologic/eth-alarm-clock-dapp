@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import Cookies from 'js-cookie';
 import { CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
 import isUrl from 'is-url';
 import { isRunningInElectron } from '../../lib/electron-util';
@@ -24,14 +23,16 @@ class CustomProviderModal extends Component {
 
     if (this._validateProviderUrl) {
       this.props.timeNodeStore.customProviderUrl = url;
-      Cookies.set('selectedProviderId', CUSTOM_PROVIDER_NET_ID, { expires: 30 });
-      Cookies.set('selectedProviderUrl', url, { expires: 30 });
+      localStorage.setItem('selectedProviderId', CUSTOM_PROVIDER_NET_ID);
+      localStorage.setItem('selectedProviderUrl', url);
 
       // Reload the page so that the changes are refreshed
       if (!isRunningInElectron()) {
         window.location.reload();
       } else {
-        window.location.href = 'http://localhost:8080/timenode?mode=electron';
+        // Workaround for getting the Electron app to reload
+        // since the regular reload results in a blank screen
+        window.location.href = '/index.html';
       }
     }
   }
