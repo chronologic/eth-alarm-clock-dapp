@@ -12,8 +12,31 @@ const routingStore = new RouterStore();
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
+class LocalStorageMock {
+  constructor() {
+    this.store = {};
+  }
+
+  clear() {
+    this.store = {};
+  }
+
+  getItem(key) {
+    return this.store[key] || null;
+  }
+
+  setItem(key, value) {
+    this.store[key] = value.toString();
+  }
+
+  removeItem(key) {
+    delete this.store[key];
+  }
+}
+
 describe('Header', () => {
   it('displays current block number', () => {
+    global.localStorage = new LocalStorageMock();
     const CURRENT_BLOCK = 5361200;
 
     const web3Service = new Web3Service({
