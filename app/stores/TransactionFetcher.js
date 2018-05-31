@@ -311,7 +311,7 @@ export default class TransactionFetcher {
 
     await this.fillUpTransactions(transactions);
 
-    if (startBlock == this.requestFactoryStartBlock && endBlock === 'latest') {
+    if (startBlock === this.requestFactoryStartBlock && endBlock === 'latest' && !pastHours) {
       this._cache.cacheTransactions(transactions, 'replace');
     }
 
