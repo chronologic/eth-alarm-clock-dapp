@@ -19,7 +19,6 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      metaMaskBlockNumber: '',
       currentPath: props.history.location.pathname
     };
 
@@ -32,7 +31,7 @@ class NetworkChooser extends Component {
     });
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
+    this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
   }
 
   isOnTimeNodeScreen() {
@@ -51,13 +50,13 @@ class NetworkChooser extends Component {
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
 
-    this.getCurrentBlock();
+    this.getCurrentTimeNodeBlock();
     // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
+    this.interval = setInterval(this.getCurrentTimeNodeBlock, 10000);
   }
 
   componentDidUpdate() {
-    this.getCurrentBlock();
+    this.getCurrentTimeNodeBlock();
   }
 
   /*
@@ -102,20 +101,11 @@ class NetworkChooser extends Component {
     }
   }
 
-  getCurrentBlock() {
+  getCurrentTimeNodeBlock() {
     // If the current screen is the TimeNode
     if (this.isOnTimeNodeScreen()) {
       // Get the block number from the eac-worker
       this.props.timeNodeStore.getNetworkInfo();
-    } else {
-      // Otherwise get it from the MetaMask provider
-      const {
-        web3Service: { web3 }
-      } = this.props;
-
-      web3.eth.getBlockNumber((err, res) => {
-        err == null && this.setState({ metaMaskBlockNumber: res });
-      });
     }
   }
 
@@ -124,15 +114,14 @@ class NetworkChooser extends Component {
   }
 
   render() {
-    window.timeNodeStore = this.props.timeNodeStore;
-    const { timeNodeNetworkId, metaMaskNetworkId, metaMaskBlockNumber } = this.state;
+    const { timeNodeNetworkId, metaMaskNetworkId } = this.state;
     const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
     if (!this.isOnTimeNodeScreen()) {
       return (
         <span>
           {Networks[metaMaskNetworkId].name}
-          {blockNumberString(metaMaskBlockNumber)}
+          {blockNumberString(this.props.web3Service.latestBlockNumber)}
         </span>
       );
     }

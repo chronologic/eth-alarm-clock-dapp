@@ -7,43 +7,15 @@ import { observer, inject } from 'mobx-react';
 @inject('keenStore')
 @observer
 class SidePanel extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      blocknumber: ''
-    };
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
-  }
-
-  UNSAFE_componentWillMount() {
-    this.getCurrentBlock();
-  }
-
-  getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ blocknumber: res });
-    });
-  }
-
   componentDidMount() {
     const { jQuery } = window;
 
     if (jQuery && jQuery.Pages) {
       jQuery.Pages.init();
     }
-
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
   }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  get isElectron () {
+  get isElectron() {
     return this.props.location.search.indexOf('mode=electron') > -1;
   }
 
@@ -109,17 +81,17 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            { !this.isElectron &&
+            {!this.isElectron && (
               <li className="m-t-30 ">
-                  <NavLink to="/">
-                    <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
-                    <span className={entryList[0].thumbnailClasses}>
-                      <i className="pg-calender" />
-                    </span>
-                  </NavLink>
+                <NavLink to="/">
+                  <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
+                  <span className={entryList[0].thumbnailClasses}>
+                    <i className="pg-calender" />
+                  </span>
+                </NavLink>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!this.isElectron && (
               <li>
                 <a href="#" onClick={e => e.preventDefault()}>
                   <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
@@ -147,7 +119,7 @@ class SidePanel extends Component {
                   </li>
                 </ul>
               </li>
-            }
+            )}
             <li>
               <NavLink to={this.isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
@@ -156,7 +128,7 @@ class SidePanel extends Component {
                 </span>
               </NavLink>
             </li>
-            { !this.isElectron &&
+            {!this.isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/debt/"
@@ -169,8 +141,8 @@ class SidePanel extends Component {
                   </span>
                 </a>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!this.isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/chronos/"
@@ -183,8 +155,8 @@ class SidePanel extends Component {
                   </span>
                 </a>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!this.isElectron && (
               <li>
                 <NavLink to="/faucet">
                   <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
@@ -193,7 +165,7 @@ class SidePanel extends Component {
                   </span>
                 </NavLink>
               </li>
-            }
+            )}
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
@@ -231,7 +203,9 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Current Block</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.state.blocknumber}</span>
+                    <span className="timenode-count col-6">
+                      {this.props.web3Service.latestBlockNumber}
+                    </span>
                   </div>
                 </div>
               </div>

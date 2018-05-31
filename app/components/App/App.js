@@ -11,8 +11,10 @@ import TransactionsRoute from '../TransactionsRoute/TransactionsRoute';
 import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
+import { inject } from 'mobx-react';
 
 @withRouter
+@inject('web3Service')
 class App extends Component {
   constructor(props) {
     super(props);
@@ -21,6 +23,7 @@ class App extends Component {
     };
     this.updateSearchState = this.updateSearchState.bind(this);
     this.onEscKey = this.onEscKey.bind(this);
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   /*
@@ -43,8 +46,21 @@ class App extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     document.addEventListener('keydown', this.onEscKey, false);
+
+    await this.getCurrentBlock();
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(await this.getCurrentBlock, 10000);
+  }
+
+  async getCurrentBlock() {
+    const { web3Service } = this.props;
+    await web3Service.fetchBlockNumber();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
@@ -77,6 +93,7 @@ class App extends Component {
 }
 
 App.propTypes = {
+  web3Service: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 
