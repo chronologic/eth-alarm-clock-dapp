@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import NetworkChooser from './NetworkChooser';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('web3Service')
 @inject('eacService')
@@ -167,16 +168,19 @@ class Header extends Component {
             </div>
           </div>
         </div>
+
         <div className="d-flex">
-          <div
-            className="search-link d-lg-inline-block d-none"
-            onClick={() => {
-              this.props.updateSearchState(true);
-            }}
-          >
-            <i className="pg-search" />
-            Search by Address
-          </div>
+          {!isRunningInElectron() && (
+            <div
+              className="search-link d-lg-inline-block d-none"
+              onClick={() => {
+                this.props.updateSearchState(true);
+              }}
+            >
+              <i className="pg-search" />
+              Search by Address
+            </div>
+          )}
         </div>
       </div>
     );

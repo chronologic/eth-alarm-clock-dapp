@@ -2,21 +2,25 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('web3Service')
 @inject('keenStore')
 @observer
 class SidePanel extends Component {
+  constructor() {
+    super();
+    this.state = {
+      isElectron: isRunningInElectron()
+    };
+  }
+
   componentDidMount() {
     const { jQuery } = window;
 
     if (jQuery && jQuery.Pages) {
       jQuery.Pages.init();
     }
-  }
-
-  get isElectron() {
-    return this.props.location.search.indexOf('mode=electron') > -1;
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
@@ -59,6 +63,8 @@ class SidePanel extends Component {
       }
     ];
 
+    const { isElectron } = this.state;
+
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
@@ -81,7 +87,7 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            {!this.isElectron && (
+            {!isElectron && (
               <li className="m-t-30 ">
                 <NavLink to="/">
                   <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
@@ -91,7 +97,7 @@ class SidePanel extends Component {
                 </NavLink>
               </li>
             )}
-            {!this.isElectron && (
+            {!isElectron && (
               <li>
                 <a href="#" onClick={e => e.preventDefault()}>
                   <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
@@ -121,14 +127,14 @@ class SidePanel extends Component {
               </li>
             )}
             <li>
-              <NavLink to={this.isElectron ? '/timenode?mode=electron' : '/timenode'}>
+              <NavLink to={isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
                 <span className={entryList[2].thumbnailClasses}>
                   <i className="fa fa-sitemap" />
                 </span>
               </NavLink>
             </li>
-            {!this.isElectron && (
+            {!isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/debt/"
@@ -142,7 +148,7 @@ class SidePanel extends Component {
                 </a>
               </li>
             )}
-            {!this.isElectron && (
+            {!isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/chronos/"
@@ -156,7 +162,7 @@ class SidePanel extends Component {
                 </a>
               </li>
             )}
-            {!this.isElectron && (
+            {!isElectron && (
               <li>
                 <NavLink to="/faucet">
                   <span className={entryList[3].titleClasses}>{entryList[3].title}</span>

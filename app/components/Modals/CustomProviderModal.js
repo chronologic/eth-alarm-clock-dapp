@@ -4,6 +4,7 @@ import { observer, inject } from 'mobx-react';
 import Cookies from 'js-cookie';
 import { CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
 import isUrl from 'is-url';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('timeNodeStore')
 @observer
@@ -27,7 +28,11 @@ class CustomProviderModal extends Component {
       Cookies.set('selectedProviderUrl', url, { expires: 30 });
 
       // Reload the page so that the changes are refreshed
-      window.location.reload();
+      if (!isRunningInElectron()) {
+        window.location.reload();
+      } else {
+        window.location.href = 'http://localhost:8080/timenode?mode=electron';
+      }
     }
   }
 

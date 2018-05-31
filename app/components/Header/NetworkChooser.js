@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { Networks, CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
 import Cookies from 'js-cookie';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 const DEFAULT_NETWORK_ID = Networks[0].id;
 
@@ -92,7 +93,11 @@ class NetworkChooser extends Component {
       Cookies.set('selectedProviderUrl', selectedProviderUrl, { expires: 30 });
 
       // Reload the page so that the changes are refreshed
-      window.location.reload();
+      if (!isRunningInElectron()) {
+        window.location.reload();
+      } else {
+        window.location.href = 'http://localhost:8080/timenode?mode=electron';
+      }
     } else {
       const { jQuery } = window;
       jQuery('#customProviderModal').modal({
