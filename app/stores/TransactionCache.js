@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 const REQUEST_LOGS_CACHE_KEY = 'TransactionCache-request-logs';
 const REQUEST_LOGS_END_BLOCK_CACHE_KEY = 'TransactionCache-request-logs-end-block';
 
-const STATE_EVENTS_CACHE_KEY = 'TransactionCache-state-events';
-
 const ADDRESSES_EVENTS_CACHE_KEY = 'TransactionCache-addresses-events';
 
 export default class TransactionCache {
@@ -50,7 +48,7 @@ export default class TransactionCache {
   }
 
   loadAddressesEventsFromStorage() {
-    let storedData = this._storage.load(STATE_EVENTS_CACHE_KEY);
+    let storedData = this._storage.load(ADDRESSES_EVENTS_CACHE_KEY);
 
     if (!storedData) {
       return;
