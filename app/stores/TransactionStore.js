@@ -8,6 +8,9 @@ const requestFactoryStartBlocks = {
   42: 5555500
 };
 
+const BLOCK_BUCKET_SIZE = 240;
+const TIMESTAMP_BUCKET_SIZE = 3600;
+
 export const DEFAULT_LIMIT = 10;
 
 export class TRANSACTION_STATUS {
@@ -78,6 +81,10 @@ export class TransactionStore {
       return;
     }
 
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
     this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
@@ -86,11 +93,23 @@ export class TransactionStore {
     this.isSetup = true;
   }
 
-  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
+  async awaitSetup() {
+    if (this.setup) {
+      return true;
+    }
+
+    return await new Promise(resolve => {
+      setTimeout(async () => {
+        resolve(await this.awaitSetup());
+      }, 100);
+    });
+  }
+
+  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
     await this.setup();
 
-    startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._fetcher.getTransactions({ startBlock, endBlock, pastHours }, cached);
+    startBlock = startBlock || this.requestFactoryStartBlock; // allow all components preload
+    return await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
   }
 
   async getAllTransactions(cached) {
@@ -114,6 +133,35 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
+  async getBucketsForLastHours(hours) {
+    const currentTimestamp = moment().unix();
+
+    const buckets = [];
+
+    let timestampBucket = await this.calcBucketForTimestamp(currentTimestamp);
+    let blockBucket = await this.calcBucketForBlock(this.lastBlock);
+
+    // Adding 0.5, because for each hour we fetch 2 buckets: timestamp, block.
+    for (let i = 0; i < hours; i += 0.5) {
+      // First, we fetch timestamp bucket, then block bucket.
+      const isTimestampBucket = i % 1 === 0;
+
+      buckets.push(isTimestampBucket ? timestampBucket : blockBucket);
+
+      if (isTimestampBucket) {
+        timestampBucket -= TIMESTAMP_BUCKET_SIZE;
+      } else {
+        /*
+         * Since blockBucket is negative number we should add it to block bucket size,
+         * if we want to go back in time.
+         */
+        blockBucket += BLOCK_BUCKET_SIZE;
+      }
+    }
+
+    return buckets;
+  }
+
   /**
    * @private
    * @returns Promise<{ transactions: Array }>
@@ -122,17 +170,32 @@ export class TransactionStore {
     transactions,
     offset,
     limit,
+    pastHours,
     resolved,
     unresolved,
     sortByTimestampAscending
   }) {
     const processed = [];
     let total = 0;
+    let buckets;
+
+    if (pastHours) {
+      buckets = await this.getBucketsForLastHours(pastHours);
+    }
 
     for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
+      let includeTransaction = false;
 
       if ((isResolved && resolved) || (!isResolved && unresolved)) {
+        includeTransaction = true;
+      }
+
+      if (pastHours && includeTransaction) {
+        includeTransaction = buckets.includes(transaction.getBucket());
+      }
+
+      if (includeTransaction) {
         processed.push(transaction);
       }
     }
@@ -169,6 +232,19 @@ export class TransactionStore {
     };
   }
 
+  // ------ UTILS ------
+  async calcBucketForTimestamp(timestamp) {
+    await this.awaitSetup();
+
+    return this._requestFactory.calcBucket(timestamp, TEMPORAL_UNIT.TIMESTAMP);
+  }
+
+  async calcBucketForBlock(blockNumber) {
+    await this.awaitSetup();
+
+    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
+  }
+
   async getTransactionsFiltered({
     startBlock,
     endBlock,
@@ -179,13 +255,14 @@ export class TransactionStore {
     unresolved,
     sortByTimestampAscending = true
   }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
+    let transactions = await this.getTransactions({ startBlock, endBlock });
 
     if (resolved || unresolved) {
       return this._queryTransactions({
         transactions,
         offset,
         limit,
+        pastHours,
         resolved,
         unresolved,
         sortByTimestampAscending
@@ -317,9 +394,9 @@ export class TransactionStore {
   async getBountiesForBucket(windowStart, isUsingTime) {
     let bucket;
     if (isUsingTime) {
-      bucket = await this._fetcher.calcBucketForTimestamp(windowStart);
+      bucket = await this.calcBucketForTimestamp(windowStart);
     } else {
-      bucket = await this._fetcher.calcBucketForBlock(windowStart);
+      bucket = await this.calcBucketForBlock(windowStart);
     }
     const transactions = await this._fetcher.getTransactionsInBuckets([bucket]);
 
