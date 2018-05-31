@@ -27,18 +27,23 @@ function createWindow() {
     callback({ path: url });
   });
 
+  const webPreferences = {
+    nodeIntegration: false,
+    devTools: isDev ? true : false
+  };
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     show: false,
-    webPreferences: {
-      nodeIntegration: false,
-      devTools: true
-    }
+    webPreferences: webPreferences
   });
 
-  mainWindow.toggleDevTools();
+  if ( isDev ) {
+    mainWindow.toggleDevTools();
+  }
+
   const mainPath =  isDev ? 'http://localhost:8080' : url.format({
     pathname: 'index.html',
     protocol: PROTOCOL + ':',
