@@ -134,7 +134,9 @@
     "not ie < 11"
   ],
   "jest": {
-    "modulePathIgnorePatterns":  ["<rootDir>/eth-alarm-clock-dapp-.*"],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/eth-alarm-clock-dapp-.*"
+    ],
     "moduleNameMapper": {
       "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
     }
