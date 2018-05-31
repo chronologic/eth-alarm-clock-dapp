@@ -94,7 +94,7 @@ export class TransactionStore {
   }
 
   async awaitSetup() {
-    if (this.setup) {
+    if (this.isSetup) {
       return true;
     }
 
