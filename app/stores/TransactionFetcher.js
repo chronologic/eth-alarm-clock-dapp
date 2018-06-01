@@ -29,7 +29,8 @@ export default class TransactionFetcher {
   }
 
   async startLazy() {
-    await this._web3.awaitInitialized();
+    await this._web3.init();
+
     if (!this._requestFactory && this._features.isCurrentNetworkSupported) {
       this._requestFactory = await this._eac.requestFactory();
     }

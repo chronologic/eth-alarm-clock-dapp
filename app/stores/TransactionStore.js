@@ -44,7 +44,7 @@ export class TransactionStore {
   _fetcher;
   _eacScheduler;
   _cache;
-  isSetup = false;
+  initialized = false;
 
   _features;
 
@@ -57,7 +57,7 @@ export class TransactionStore {
     this._cache = cache;
     this._features = featuresService;
 
-    this.setup();
+    this.init();
   }
 
   // Returns an array of only the addresses of all transactions
@@ -70,12 +70,23 @@ export class TransactionStore {
     return requestFactoryStartBlocks[network.id] || 0;
   }
 
-  async setup() {
-    if (this.isSetup) {
+  _initializationPromise;
+
+  init() {
+    if (!this._initializationPromise) {
+      this._initializationPromise = this._init();
+    }
+
+    return this._initializationPromise;
+  }
+
+  async _init() {
+    if (this.initialized) {
       return;
     }
 
-    await this._web3.awaitInitialized();
+    await this._web3.init();
+    await this._features.awaitInitialized();
 
     if (!this._features.isCurrentNetworkSupported) {
       return;
@@ -90,23 +101,11 @@ export class TransactionStore {
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
     this._fetcher.startLazy();
 
-    this.isSetup = true;
-  }
-
-  async awaitSetup() {
-    if (this.isSetup) {
-      return true;
-    }
-
-    return await new Promise(resolve => {
-      setTimeout(async () => {
-        resolve(await this.awaitSetup());
-      }, 100);
-    });
+    this.initialized = true;
   }
 
   async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
-    await this.setup();
+    await this.init();
 
     startBlock = startBlock || this.requestFactoryStartBlock; // allow all components preload
     return await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
@@ -234,13 +233,13 @@ export class TransactionStore {
 
   // ------ UTILS ------
   async calcBucketForTimestamp(timestamp) {
-    await this.awaitSetup();
+    await this.init();
 
     return this._requestFactory.calcBucket(timestamp, TEMPORAL_UNIT.TIMESTAMP);
   }
 
   async calcBucketForBlock(blockNumber) {
-    await this.awaitSetup();
+    await this.init();
 
     return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }

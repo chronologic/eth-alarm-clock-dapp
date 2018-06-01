@@ -45,7 +45,7 @@ class AwaitingMining extends Component {
     let unmined = true;
     let unconfirmed = true;
 
-    await web3Service.awaitInitialized();
+    await web3Service.init();
 
     if (web3.isAddress(hash)) {
       this.setState({ newContract: hash });

@@ -71,7 +71,7 @@ describe('Stores / TransactionFetcher', () => {
           }
         };
       },
-      awaitInitialized: () => Promise.resolve(true)
+      init: () => Promise.resolve(true)
     };
 
     const featuresService = new FeaturesService(web3);
@@ -102,6 +102,8 @@ describe('Stores / TransactionFetcher', () => {
     it('returns transactions requests instances when passing false as onlyAddresses parameter', async () => {
       const TransactionsFetcher = getInstance();
 
+      TransactionFetcher._requestFactory = {};
+
       const transactions = await TransactionsFetcher.getTransactions({}, false, false);
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
@@ -111,6 +113,8 @@ describe('Stores / TransactionFetcher', () => {
 
     it('returns transactions addresses when passing true as onlyAddresses parameter', async () => {
       const TransactionsFetcher = getInstance();
+
+      TransactionFetcher._requestFactory = {};
 
       const transactions = await TransactionsFetcher.getTransactions({}, false, true);
 

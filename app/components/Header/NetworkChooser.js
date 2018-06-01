@@ -40,7 +40,7 @@ class NetworkChooser extends Component {
 
   async componentDidMount() {
     const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
+    await web3Service.init();
 
     if (web3Service.network.id !== this.state.metaMaskNetworkId)
       this.setState({ metaMaskNetworkId: web3Service.network.id });

@@ -34,7 +34,7 @@ export class KeenStore {
   }
 
   async initialize() {
-    await this._web3Service.awaitInitialized();
+    await this._web3Service.init();
 
     this.networkId = this._web3Service.network.id;
 
@@ -147,7 +147,9 @@ export class KeenStore {
       if (err) {
         this.activeTimeNodes = '-';
       }
-      this.activeTimeNodes = isAlphaNode ? Number(alphaNodes) + Number(response.result) : response.result;
+      this.activeTimeNodes = isAlphaNode
+        ? Number(alphaNodes) + Number(response.result)
+        : response.result;
     });
   }
 
