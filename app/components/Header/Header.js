@@ -23,7 +23,7 @@ class Header extends Component {
 
   async fetchEacContracts() {
     const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
+    await web3Service.init();
 
     if (!this.props.featuresService._isCurrentNetworkSupported()) {
       return;

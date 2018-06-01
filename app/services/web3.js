@@ -20,15 +20,25 @@ export default class Web3Service {
     Object.assign(this, props);
   }
 
-  @action
-  async init() {
-    if (!this.initialized) {
-      await this.connect();
-      this.initialized = true;
-      return true;
-    } else {
-      return false;
+  _initializationPromise;
+
+  async _init() {
+    if (this.initialized) {
+      return;
     }
+
+    await this.connect();
+
+    this.initialized = true;
+  }
+
+  @action
+  init() {
+    if (!this._initializationPromise) {
+      this._initializationPromise = this._init();
+    }
+
+    return this._initializationPromise;
   }
 
   toEth(_wei) {
@@ -262,18 +272,6 @@ export default class Web3Service {
     if (this.accounts && this.accounts.length > 0) {
       web3.eth.defaultAccount = this.accounts[0];
     }
-  }
-
-  async awaitInitialized() {
-    if (!this.initialized) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitInitialized());
-        }, 500);
-      });
-    }
-
-    return true;
   }
 
   @action

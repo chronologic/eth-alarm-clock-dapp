@@ -54,7 +54,7 @@ describe('Stores / TransactionStore', () => {
           }
         };
       },
-      awaitInitialized: () => Promise.resolve(true)
+      init: () => Promise.resolve(true)
     };
 
     const featuresService = new FeaturesService(web3);
@@ -135,7 +135,7 @@ describe('Stores / TransactionStore', () => {
           }
         };
       },
-      awaitInitialized: () => Promise.resolve(true)
+      init: () => Promise.resolve(true)
     };
 
     const featuresService = new FeaturesService(web3);
