@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 import ExecutedGraph from './ExecutedGraph';
-import Cookies from 'js-cookie';
 
 @inject('timeNodeStore')
 @inject('keenStore')
@@ -29,7 +28,7 @@ class TimeNodeStatistics extends Component {
 
   componentDidMount() {
     // Restarts the timenode in case the user refreshed the page with the timenode running
-    if (Cookies.get('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
+    if (localStorage.getItem('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
       this.startTimeNode();
     }
 
