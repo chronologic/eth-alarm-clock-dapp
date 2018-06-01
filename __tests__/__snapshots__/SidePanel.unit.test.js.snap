@@ -40,10 +40,8 @@ exports[`SidePanel is correctly rendered 1`] = `
       >
         <a
           aria-current={false}
-          className={undefined}
           href="/"
           onClick={[Function]}
-          style={undefined}
         >
           <span
             className="title "
@@ -83,10 +81,8 @@ exports[`SidePanel is correctly rendered 1`] = `
           <li>
             <a
               aria-current={false}
-              className={undefined}
               href="/transactions/scheduled"
               onClick={[Function]}
-              style={undefined}
             >
               <span
                 className="title"
@@ -105,10 +101,8 @@ exports[`SidePanel is correctly rendered 1`] = `
           <li>
             <a
               aria-current={false}
-              className={undefined}
               href="/transactions/completed"
               onClick={[Function]}
-              style={undefined}
             >
               <span
                 className="title"
@@ -129,10 +123,8 @@ exports[`SidePanel is correctly rendered 1`] = `
       <li>
         <a
           aria-current={false}
-          className={undefined}
           href="/timenode"
           onClick={[Function]}
-          style={undefined}
         >
           <span
             className="title "
@@ -191,10 +183,8 @@ exports[`SidePanel is correctly rendered 1`] = `
       <li>
         <a
           aria-current={false}
-          className={undefined}
           href="/faucet"
           onClick={[Function]}
-          style={undefined}
         >
           <span
             className="title "
