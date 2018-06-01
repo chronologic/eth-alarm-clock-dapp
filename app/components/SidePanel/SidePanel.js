@@ -2,30 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('web3Service')
 @inject('keenStore')
 @observer
 class SidePanel extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
-      blocknumber: ''
+      isElectron: isRunningInElectron()
     };
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
-  }
-
-  UNSAFE_componentWillMount() {
-    this.getCurrentBlock();
-  }
-
-  getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ blocknumber: res });
-    });
   }
 
   componentDidMount() {
@@ -34,17 +21,6 @@ class SidePanel extends Component {
     if (jQuery && jQuery.Pages) {
       jQuery.Pages.init();
     }
-
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  get isElectron () {
-    return this.props.location.search.indexOf('mode=electron') > -1;
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
@@ -87,6 +63,8 @@ class SidePanel extends Component {
       }
     ];
 
+    const { isElectron } = this.state;
+
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
@@ -109,17 +87,17 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            { !this.isElectron &&
+            {!isElectron && (
               <li className="m-t-30 ">
-                  <NavLink to="/">
-                    <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
-                    <span className={entryList[0].thumbnailClasses}>
-                      <i className="pg-calender" />
-                    </span>
-                  </NavLink>
+                <NavLink to="/">
+                  <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
+                  <span className={entryList[0].thumbnailClasses}>
+                    <i className="pg-calender" />
+                  </span>
+                </NavLink>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!isElectron && (
               <li>
                 <a href="#" onClick={e => e.preventDefault()}>
                   <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
@@ -147,16 +125,16 @@ class SidePanel extends Component {
                   </li>
                 </ul>
               </li>
-            }
+            )}
             <li>
-              <NavLink to={this.isElectron ? '/timenode?mode=electron' : '/timenode'}>
+              <NavLink to={isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
                 <span className={entryList[2].thumbnailClasses}>
                   <i className="fa fa-sitemap" />
                 </span>
               </NavLink>
             </li>
-            { !this.isElectron &&
+            {!isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/debt/"
@@ -169,8 +147,8 @@ class SidePanel extends Component {
                   </span>
                 </a>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!isElectron && (
               <li>
                 <a
                   href="https://alpha.chronologic.network/chronos/"
@@ -183,8 +161,8 @@ class SidePanel extends Component {
                   </span>
                 </a>
               </li>
-            }
-            { !this.isElectron &&
+            )}
+            {!isElectron && (
               <li>
                 <NavLink to="/faucet">
                   <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
@@ -193,7 +171,7 @@ class SidePanel extends Component {
                   </span>
                 </NavLink>
               </li>
-            }
+            )}
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
@@ -231,7 +209,9 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Current Block</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.state.blocknumber}</span>
+                    <span className="timenode-count col-6">
+                      {this.props.web3Service.latestBlockNumber}
+                    </span>
                   </div>
                 </div>
               </div>

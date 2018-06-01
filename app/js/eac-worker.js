@@ -2,6 +2,7 @@ import Web3 from 'web3/index';
 import Web3WsProvider from 'web3-providers-ws';
 import EAC from 'eac.js-lib';
 import EACJSClient from 'eac.js-client';
+import Bb from 'bluebird';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
@@ -14,23 +15,22 @@ class EacWorker {
   statsDB = null;
 
   async start(options) {
-    const network = options.network;
+    const { customProviderUrl, network } = options;
+
+    const providerUrl = customProviderUrl !== null ? customProviderUrl : network.endpoint;
     let provider = null;
 
     if (network) {
       provider = (() => {
-        if (
-          new RegExp('ws://').test(network.endpoint) ||
-          new RegExp('wss://').test(network.endpoint)
-        ) {
-          const ws = new Web3WsProvider(`${network.endpoint}`);
+        if (new RegExp('ws://').test(providerUrl) || new RegExp('wss://').test(providerUrl)) {
+          const ws = new Web3WsProvider(`${providerUrl}`);
           ws.__proto__.sendAsync = ws.__proto__.send;
           return ws;
         } else if (
-          new RegExp('http://').test(network.endpoint) ||
-          new RegExp('https://').test(network.endpoint)
+          new RegExp('http://').test(providerUrl) ||
+          new RegExp('https://').test(providerUrl)
         ) {
-          return new Web3.providers.HttpProvider(`${network.endpoint}`);
+          return new Web3.providers.HttpProvider(`${providerUrl}`);
         }
       })();
     } else {
@@ -42,7 +42,8 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
+    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
+    const persistenceAdapter = new LokiIndexedAdapter(netId);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
@@ -74,6 +75,7 @@ class EacWorker {
     this.alarmClient = new Scanner(options.milliseconds, this.config);
 
     this.updateStats();
+    this.getNetworkInfo();
   }
 
   async awaitAlarmClientInitialized() {
@@ -100,6 +102,19 @@ class EacWorker {
     if (this.alarmClient) {
       this.alarmClient.stop();
     }
+  }
+
+  /*
+   * Fetches info about the network provider
+   * to which the worker is connected to.
+   */
+  async getNetworkInfo() {
+    const blockNumber = await Bb.fromCallback(callback => this.web3.eth.getBlockNumber(callback));
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
+      blockNumber
+    });
   }
 
   /*
@@ -181,6 +196,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
       eacWorker.stopScanning();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+      await eacWorker.getNetworkInfo();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:

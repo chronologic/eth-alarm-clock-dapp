@@ -8,12 +8,7 @@ import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
-import {
-  isMyCryptoSigValid,
-  isSignatureValid,
-  parseSig,
-  SIGNATURE_ERRORS
-} from '../lib/signature';
+import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 
 /*
  * TimeNode classification based on the number
@@ -54,6 +49,11 @@ export default class TimeNodeStore {
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
+  // If a TimeNode has selected a custom provider URL
+  // it will be stored in this variable
+  @observable customProviderUrl = null;
+  @observable providerBlockNumber = null;
+
   eacWorker = null;
 
   _keenStore = null;
@@ -82,6 +82,7 @@ export default class TimeNodeStore {
   getWorkerOptions(keystore, keystorePassword) {
     return {
       network: this._web3Service.network,
+      customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
       logfile: 'console',
@@ -114,6 +115,8 @@ export default class TimeNodeStore {
         } else {
           showNotification('Unable to clear the stats.', 'danger', 3000);
         }
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO) {
+        this.providerBlockNumber = event.data.blockNumber;
       }
     };
 
@@ -286,20 +289,24 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  updateStats() {
+  sendMessageWorker(messageType) {
     if (this.eacWorker) {
       this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+        type: messageType
       });
     }
   }
 
+  getNetworkInfo() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO);
+  }
+
+  updateStats() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
+  }
+
   clearStats() {
-    if (this.eacWorker) {
-      this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
-      });
-    }
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
     this.basicLogs = [];
     this.detailedLogs = [];
   }

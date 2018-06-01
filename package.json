@@ -101,6 +101,7 @@
     "ethereumjs-util": "^5.1.5",
     "ethereumjs-wallet": "^0.6.0",
     "font-awesome": "^4.7.0",
+    "is-url": "^1.2.4",
     "jquery": "^3.3.1",
     "jquery.scrollbar": "^0.2.11",
     "js-cookie": "^2.2.0",

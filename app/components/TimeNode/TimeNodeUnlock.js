@@ -28,7 +28,9 @@ class TimeNodeUnlock extends Component {
   async verifyPassword() {
     const password = this.passwdRef.value;
 
-    if (this.props.timeNodeStore.passwordMatchesKeystore(this.props.timeNodeStore.encrypt(password))) {
+    if (
+      this.props.timeNodeStore.passwordMatchesKeystore(this.props.timeNodeStore.encrypt(password))
+    ) {
       this.props.timeNodeStore.unlockTimeNode(password);
       this.props.updateWalletUnlocked(true);
     }
@@ -41,20 +43,24 @@ class TimeNodeUnlock extends Component {
           <h2>Please unlock your account</h2>
 
           <div>
-            <p>Your wallet is <b>encrypted</b>. Please enter the password:</p>
+            <p>
+              Your wallet is <b>encrypted</b>. Please enter the password:
+            </p>
             <div className="row">
               <div className="col-md-4">
                 <div className="form-group form-group-default required">
-                  <input id="walletPassword"
+                  <input
+                    id="walletPassword"
                     type="password"
                     placeholder="Password"
                     className="form-control"
-                    ref={(el) => this.passwdRef = el}/>
+                    ref={el => (this.passwdRef = el)}
+                    autoFocus
+                  />
                 </div>
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="row">

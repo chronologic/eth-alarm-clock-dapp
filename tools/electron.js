@@ -10,7 +10,6 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 
 function createWindow() {
-
   const WEB_FOLDER = '../out';
   const PROTOCOL = 'file';
 
@@ -26,7 +25,15 @@ function createWindow() {
     url = path.normalize(url);
 
     callback({ path: url });
+
+    if (url.indexOf('index.html') > -1) prepareElectron();
   });
+
+  const prepareElectron = () => {
+    mainWindow.webContents.once('dom-ready', async () => {
+      await mainWindow.webContents.executeJavaScript('setElectron();');
+    });
+  };
 
   const webPreferences = {
     nodeIntegration: false,
@@ -35,47 +42,58 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     show: false,
     webPreferences: webPreferences
   });
 
-  if ( isDev ) {
+  if (isDev) {
     mainWindow.toggleDevTools();
   }
 
-  const mainPath =  isDev ? 'http://localhost:8080' : url.format({
-    pathname: 'index.html',
-    protocol: PROTOCOL + ':',
-    slashes: true
-  });
+  const mainPath = isDev
+    ? 'http://localhost:8080'
+    : url.format({
+        pathname: 'index.html',
+        protocol: PROTOCOL + ':',
+        slashes: true
+      });
 
   mainWindow.loadURL(mainPath);
 
   mainWindow.once('ready-to-show', async () => {
-    await mainWindow.webContents.executeJavaScript( 'setElectron();');
+    await mainWindow.webContents.executeJavaScript('setElectron();');
     mainWindow.show();
   });
 
   mainWindow.on('closed', () => (mainWindow = null));
 
-
-  const template = [{
+  const template = [
+    {
       label: 'Application',
       submenu: [
-          { label: 'Quit', accelerator: 'Command+Q', click: function() { app.quit(); } }
-      ] }, {
+        {
+          label: 'Quit',
+          accelerator: 'Command+Q',
+          click: function() {
+            app.quit();
+          }
+        }
+      ]
+    },
+    {
       label: 'Edit',
       submenu: [
-          { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-          { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
-          { type: 'separator' },
-          { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-          { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-          { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-          { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
-      ] }
+        { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+        { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+        { type: 'separator' },
+        { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+        { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+        { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+        { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+      ]
+    }
   ];
 
   if (!isDev) {
