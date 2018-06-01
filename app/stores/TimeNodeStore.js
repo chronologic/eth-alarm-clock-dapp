@@ -1,5 +1,4 @@
 import { observable, computed } from 'mobx';
-import Cookies from 'js-cookie';
 import CryptoJS from 'crypto-js';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
@@ -8,12 +7,7 @@ import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
-import {
-  isMyCryptoSigValid,
-  isSignatureValid,
-  parseSig,
-  SIGNATURE_ERRORS
-} from '../lib/signature';
+import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 
 /*
  * TimeNode classification based on the number
@@ -50,8 +44,14 @@ export default class TimeNodeStore {
 
   @observable bounties = null;
   @observable costs = null;
+  @observable profit = null;
 
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
+
+  // If a TimeNode has selected a custom provider URL
+  // it will be stored in this variable
+  @observable customProviderUrl = null;
+  @observable providerBlockNumber = null;
 
   eacWorker = null;
 
@@ -64,14 +64,14 @@ export default class TimeNodeStore {
     this._web3Service = web3Service;
     this._keenStore = keenStore;
 
-    if (Cookies.get('attachedDAYAccount'))
-      this.attachedDAYAccount = Cookies.get('attachedDAYAccount');
-    if (Cookies.get('tn')) this.walletKeystore = Cookies.get('tn');
+    if (localStorage.getItem('attachedDAYAccount') !== null)
+      this.attachedDAYAccount = localStorage.getItem('attachedDAYAccount');
+    if (localStorage.getItem('tn') !== null) this.walletKeystore = localStorage.getItem('tn');
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(Cookies.get('tn'), password);
+      this.startClient(localStorage.getItem('tn'), password);
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
@@ -81,6 +81,7 @@ export default class TimeNodeStore {
   getWorkerOptions(keystore, keystorePassword) {
     return {
       network: this._web3Service.network,
+      customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
       logfile: 'console',
@@ -104,6 +105,7 @@ export default class TimeNodeStore {
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         if (event.data.bounties !== null) this.bounties = event.data.bounties;
         if (event.data.costs !== null) this.costs = event.data.costs;
+        if (event.data.profit !== null) this.profit = event.data.profit;
         this.executedTransactions = event.data.executedTransactions;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
@@ -112,6 +114,8 @@ export default class TimeNodeStore {
         } else {
           showNotification('Unable to clear the stats.', 'danger', 3000);
         }
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO) {
+        this.providerBlockNumber = event.data.blockNumber;
       }
     };
 
@@ -178,7 +182,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
-    Cookies.set('isTimenodeScanning', true, { expires: 30 });
+    localStorage.setItem('isTimenodeScanning', true);
   }
 
   stopScanning() {
@@ -193,7 +197,7 @@ export default class TimeNodeStore {
         type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
       });
     }
-    Cookies.remove('isTimenodeScanning');
+    localStorage.removeItem('isTimenodeScanning');
   }
 
   encrypt(message) {
@@ -220,7 +224,7 @@ export default class TimeNodeStore {
 
   setKeyStore(keystore) {
     this.walletKeystore = keystore;
-    this.setCookie('tn', keystore);
+    this.setStorageItem('tn', keystore);
   }
 
   getMyAddress() {
@@ -233,7 +237,7 @@ export default class TimeNodeStore {
   }
 
   getMyAttachedAddress() {
-    const encryptedAddress = Cookies.get('attachedDAYAccount');
+    const encryptedAddress = localStorage.getItem('attachedDAYAccount');
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
@@ -284,20 +288,24 @@ export default class TimeNodeStore {
     return balance;
   }
 
-  updateStats() {
+  sendMessageWorker(messageType) {
     if (this.eacWorker) {
       this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS
+        type: messageType
       });
     }
   }
 
+  getNetworkInfo() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO);
+  }
+
+  updateStats() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
+  }
+
   clearStats() {
-    if (this.eacWorker) {
-      this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
-      });
-    }
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
     this.basicLogs = [];
     this.detailedLogs = [];
   }
@@ -332,7 +340,7 @@ export default class TimeNodeStore {
       const encryptedAttachedAddress = this.encrypt(signature.address);
 
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-        this.setCookie('attachedDAYAccount', encryptedAttachedAddress);
+        this.setStorageItem('attachedDAYAccount', encryptedAttachedAddress);
         this.attachedDAYAccount = encryptedAttachedAddress;
         showNotification('Success.', 'success');
       } else {
@@ -343,22 +351,22 @@ export default class TimeNodeStore {
     }
   }
 
-  hasCookies(cookiesList) {
-    for (let cookie of cookiesList) {
-      if (!Cookies.get(cookie)) {
+  hasStorageItems(itemList) {
+    for (let item of itemList) {
+      if (!localStorage.getItem(item)) {
         return false;
       }
     }
     return true;
   }
 
-  setCookie(key, value) {
-    Cookies.set(key, value, { expires: 30 });
+  setStorageItem(key, value) {
+    localStorage.setItem(key, value);
   }
 
   resetWallet() {
-    Cookies.remove('tn');
-    Cookies.remove('attachedDAYAccount');
+    localStorage.removeItem('tn');
+    localStorage.removeItem('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     showNotification('Your wallet has been reset.', 'success');

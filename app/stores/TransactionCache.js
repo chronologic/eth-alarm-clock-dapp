@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js';
 const REQUEST_LOGS_CACHE_KEY = 'TransactionCache-request-logs';
 const REQUEST_LOGS_END_BLOCK_CACHE_KEY = 'TransactionCache-request-logs-end-block';
 
+const ADDRESSES_EVENTS_CACHE_KEY = 'TransactionCache-addresses-events';
+
 export default class TransactionCache {
   @observable transactions = [];
 
@@ -11,12 +13,15 @@ export default class TransactionCache {
 
   @observable requestCreatedLogsLastBlockFetched;
 
+  @observable addressesEvents = {};
+
   _storage;
 
   constructor(storageService) {
     this._storage = storageService;
 
     this.loadRequestCreatedLogsFromStorage();
+    this.loadAddressesEventsFromStorage();
   }
 
   loadRequestCreatedLogsFromStorage() {
@@ -40,6 +45,16 @@ export default class TransactionCache {
       this._storage.load(REQUEST_LOGS_END_BLOCK_CACHE_KEY),
       10
     );
+  }
+
+  loadAddressesEventsFromStorage() {
+    let storedData = this._storage.load(ADDRESSES_EVENTS_CACHE_KEY);
+
+    if (!storedData) {
+      return;
+    }
+
+    this.addressesEvents = JSON.parse(storedData);
   }
 
   @computed
@@ -94,5 +109,19 @@ export default class TransactionCache {
   cacheRequestCreatedLogs(logs, endBlock) {
     this._storage.save(REQUEST_LOGS_CACHE_KEY, JSON.stringify(logs));
     this._storage.save(REQUEST_LOGS_END_BLOCK_CACHE_KEY, endBlock);
+  }
+
+  cacheAddressesEvents(events) {
+    let newCachedEvents = events;
+
+    let rawCachedEventsData = this._storage.load(ADDRESSES_EVENTS_CACHE_KEY);
+
+    if (rawCachedEventsData) {
+      const cachedEvents = JSON.parse(rawCachedEventsData);
+
+      newCachedEvents = Object.assign(cachedEvents, events);
+    }
+
+    this._storage.save(ADDRESSES_EVENTS_CACHE_KEY, JSON.stringify(newCachedEvents));
   }
 }

@@ -1,12 +1,15 @@
-import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
+import { CONFIG } from '../lib/consts';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
   42: 5555500
 };
+
+const BLOCK_BUCKET_SIZE = 240;
+const TIMESTAMP_BUCKET_SIZE = 3600;
 
 export const DEFAULT_LIMIT = 10;
 
@@ -41,9 +44,7 @@ export class TransactionStore {
   _fetcher;
   _eacScheduler;
   _cache;
-  isSetup = false;
-
-  @observable filter = '';
+  initialized = false;
 
   _features;
 
@@ -56,7 +57,7 @@ export class TransactionStore {
     this._cache = cache;
     this._features = featuresService;
 
-    this.setup();
+    this.init();
   }
 
   // Returns an array of only the addresses of all transactions
@@ -69,44 +70,30 @@ export class TransactionStore {
     return requestFactoryStartBlocks[network.id] || 0;
   }
 
-  // Returns an array of transactions based on the current
-  // state of the filter variable
-  @observable
-  async getTransactionsForCurrentFilter() {
-    const matchesFilter = new RegExp(this.filter, 'i');
-    let addresses;
-    let transactions = [];
+  _initializationPromise;
 
-    if (!this.filter || this.filter.length < 20) {
-      return [];
+  init() {
+    if (!this._initializationPromise) {
+      this._initializationPromise = this._init();
     }
 
-    if (this._fetcher.allTransactionsAddresses) {
-      addresses = this._fetcher.allTransactionsAddresses.filter(address =>
-        matchesFilter.test(address)
-      );
-      for (let address of addresses) {
-        const transaction = await this._fetcher.fetchCachedTransactionByAddress(address);
-        if (transaction) {
-          transaction.status = await this.getTxStatus(transaction);
-          transactions.push(transaction);
-        }
-      }
-      return transactions;
-    }
-
-    return [];
+    return this._initializationPromise;
   }
 
-  async setup() {
-    if (this.isSetup) {
+  async _init() {
+    if (this.initialized) {
       return;
     }
 
-    await this._web3.awaitInitialized();
+    await this._web3.init();
+    await this._features.awaitInitialized();
 
     if (!this._features.isCurrentNetworkSupported) {
       return;
+    }
+
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
     }
 
     this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
@@ -114,14 +101,14 @@ export class TransactionStore {
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
     this._fetcher.startLazy();
 
-    this.isSetup = true;
+    this.initialized = true;
   }
 
-  async getTransactions({ startBlock, endBlock = 'latest', pastHours }, cached) {
-    await this.setup();
+  async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+    await this.init();
 
-    startBlock = startBlock || this.requestFactoryStartBlock; //allow all components preload
-    return await this._fetcher.getTransactions({ startBlock, endBlock, pastHours }, cached);
+    startBlock = startBlock || this.requestFactoryStartBlock; // allow all components preload
+    return await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
   }
 
   async getAllTransactions(cached) {
@@ -145,34 +132,116 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async queryTransactions({ transactions, offset, limit, resolved, resolveAll }) {
+  async getBucketsForLastHours(hours) {
+    const currentTimestamp = moment().unix();
+
+    const buckets = [];
+
+    let timestampBucket = await this.calcBucketForTimestamp(currentTimestamp);
+    let blockBucket = await this.calcBucketForBlock(this.lastBlock);
+
+    // Adding 0.5, because for each hour we fetch 2 buckets: timestamp, block.
+    for (let i = 0; i < hours; i += 0.5) {
+      // First, we fetch timestamp bucket, then block bucket.
+      const isTimestampBucket = i % 1 === 0;
+
+      buckets.push(isTimestampBucket ? timestampBucket : blockBucket);
+
+      if (isTimestampBucket) {
+        timestampBucket -= TIMESTAMP_BUCKET_SIZE;
+      } else {
+        /*
+         * Since blockBucket is negative number we should add it to block bucket size,
+         * if we want to go back in time.
+         */
+        blockBucket += BLOCK_BUCKET_SIZE;
+      }
+    }
+
+    return buckets;
+  }
+
+  /**
+   * @private
+   * @returns Promise<{ transactions: Array }>
+   */
+  async _queryTransactions({
+    transactions,
+    offset,
+    limit,
+    pastHours,
+    resolved,
+    unresolved,
+    sortByTimestampAscending
+  }) {
     const processed = [];
     let total = 0;
+    let buckets;
 
-    if (!resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
+    if (pastHours) {
+      buckets = await this.getBucketsForLastHours(pastHours);
     }
 
     for (const transaction of transactions) {
       const isResolved = await this.isTransactionResolved(transaction);
+      let includeTransaction = false;
 
-      if (isResolved === resolved) {
+      if ((isResolved && resolved) || (!isResolved && unresolved)) {
+        includeTransaction = true;
+      }
+
+      if (pastHours && includeTransaction) {
+        includeTransaction = buckets.includes(transaction.getBucket());
+      }
+
+      if (includeTransaction) {
         processed.push(transaction);
       }
     }
 
     transactions = processed;
 
-    if (resolveAll) {
-      total = transactions.length;
-      transactions = transactions.slice(offset, offset + limit);
+    if (sortByTimestampAscending) {
+      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(
+        this._fetcher.lastBlock
+      );
+
+      transactions = transactions.sort((a, b) => {
+        const aTimestamp = this.getTxTimestampEstimation(a, currentBlockTimestamp);
+        const bTimestamp = this.getTxTimestampEstimation(b, currentBlockTimestamp);
+
+        if (aTimestamp > bTimestamp) {
+          return 1;
+        }
+
+        if (aTimestamp < bTimestamp) {
+          return -1;
+        }
+
+        return 0;
+      });
     }
+
+    total = transactions.length;
+    transactions = transactions.slice(offset, offset + limit);
 
     return {
       transactions,
       total
     };
+  }
+
+  // ------ UTILS ------
+  async calcBucketForTimestamp(timestamp) {
+    await this.init();
+
+    return this._requestFactory.calcBucket(timestamp, TEMPORAL_UNIT.TIMESTAMP);
+  }
+
+  async calcBucketForBlock(blockNumber) {
+    await this.init();
+
+    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }
 
   async getTransactionsFiltered({
@@ -182,17 +251,20 @@ export class TransactionStore {
     offset = 0,
     pastHours,
     resolved,
-    resolveAll = false
+    unresolved,
+    sortByTimestampAscending = true
   }) {
-    let transactions = await this.getTransactions({ startBlock, endBlock, pastHours });
+    let transactions = await this.getTransactions({ startBlock, endBlock });
 
-    if (typeof resolved !== 'undefined' && resolved !== null) {
-      return this.queryTransactions({
+    if (resolved || unresolved) {
+      return this._queryTransactions({
         transactions,
         offset,
         limit,
+        pastHours,
         resolved,
-        resolveAll
+        unresolved,
+        sortByTimestampAscending
       });
     }
 
@@ -204,6 +276,50 @@ export class TransactionStore {
       transactions,
       total
     };
+  }
+
+  async getRequestsByOwner(ownerAddress, { limit = DEFAULT_LIMIT, offset = 0 }) {
+    if (!this._requestFactory) {
+      this._requestFactory = await this._eac.requestFactory();
+    }
+
+    const transactionsAddresses = await this._requestFactory.getRequestsByOwner(ownerAddress);
+    let transactions = [];
+
+    for (let address of transactionsAddresses) {
+      const tx = await this._eac.transactionRequest(address);
+      await tx.fillData();
+      transactions.push(tx);
+    }
+
+    return {
+      transactions: transactions.slice(offset, offset + limit),
+      total: transactions.length
+    };
+  }
+
+  getTxTimestampEstimation(transaction, currentBlockTimestamp) {
+    const isTimestamp = this.isTxUnitTimestamp(transaction);
+
+    const windowStart = transaction.windowStart.toNumber
+      ? transaction.windowStart.toNumber()
+      : transaction.windowStart;
+
+    if (isTimestamp) {
+      return windowStart;
+    }
+
+    let time;
+
+    if (this._fetcher.lastBlock > windowStart) {
+      time = windowStart;
+    } else {
+      const difference = windowStart - this._fetcher.lastBlock;
+
+      time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
+    }
+
+    return time;
   }
 
   async getTxStatus(transaction) {
@@ -277,11 +393,11 @@ export class TransactionStore {
   async getBountiesForBucket(windowStart, isUsingTime) {
     let bucket;
     if (isUsingTime) {
-      bucket = await this._fetcher.calcBucketForTimestamp(windowStart);
+      bucket = await this.calcBucketForTimestamp(windowStart);
     } else {
-      bucket = await this._fetcher.calcBucketForBlock(windowStart);
+      bucket = await this.calcBucketForBlock(windowStart);
     }
-    const transactions = await this._fetcher.getTransactionsInBuckets(bucket);
+    const transactions = await this._fetcher.getTransactionsInBuckets([bucket]);
 
     const { web3 } = this._web3;
 
@@ -397,6 +513,10 @@ export class TransactionStore {
       );
 
       return;
+    }
+
+    if (typeof this._eacScheduler === 'undefined') {
+      this._eacScheduler = await this._eac.scheduler();
     }
 
     await this._eacScheduler.initSender({

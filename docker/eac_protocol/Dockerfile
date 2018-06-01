@@ -10,7 +10,7 @@ RUN npm install -g truffle@4.1.7
 RUN git clone https://github.com/ethereum-alarm-clock/ethereum-alarm-clock.git
 
 WORKDIR ./ethereum-alarm-clock
-RUN git checkout tags/1.0.0-beta.2
+RUN git checkout release/1.0.0-beta.3
 
 COPY ./docker/ganache/truffle.js ./truffle.js
 COPY ./docker/eac_protocol/extractContractsInfo.js ./extractContractsInfo.js

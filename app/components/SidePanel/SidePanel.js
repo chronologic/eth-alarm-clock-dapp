@@ -2,30 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('web3Service')
 @inject('keenStore')
 @observer
 class SidePanel extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
-      blocknumber: ''
+      isElectron: isRunningInElectron()
     };
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
-  }
-
-  UNSAFE_componentWillMount() {
-    this.getCurrentBlock();
-  }
-
-  getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ blocknumber: res });
-    });
   }
 
   componentDidMount() {
@@ -34,13 +21,6 @@ class SidePanel extends Component {
     if (jQuery && jQuery.Pages) {
       jQuery.Pages.init();
     }
-
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
@@ -83,6 +63,8 @@ class SidePanel extends Component {
       }
     ];
 
+    const { isElectron } = this.state;
+
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
@@ -105,81 +87,91 @@ class SidePanel extends Component {
         </div>
         <div className="sidebar-menu">
           <ul className="menu-items">
-            <li className="m-t-30 ">
-              <NavLink to="/">
-                <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
-                <span className={entryList[0].thumbnailClasses}>
-                  <i className="pg-calender" />
-                </span>
-              </NavLink>
-            </li>
-            <li>
-              <a href="#" onClick={e => e.preventDefault()}>
-                <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
-                <span className={entryList[1].thumbnailClasses}>
-                  <i className="pg-charts" />
-                </span>
-              </a>
+            {!isElectron && (
+              <li className="m-t-30 ">
+                <NavLink to="/">
+                  <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
+                  <span className={entryList[0].thumbnailClasses}>
+                    <i className="pg-calender" />
+                  </span>
+                </NavLink>
+              </li>
+            )}
+            {!isElectron && (
+              <li>
+                <a href="#" onClick={e => e.preventDefault()}>
+                  <span className={entryList[1].titleClasses}>{entryList[1].title}</span>
+                  <span className={entryList[1].thumbnailClasses}>
+                    <i className="pg-charts" />
+                  </span>
+                </a>
 
-              <ul className="sub-menu">
-                <li>
-                  <NavLink to="/transactions/scheduled">
-                    <span className="title">Scheduled</span>
-                    <span className="icon-thumbnail">
-                      <i className="pg-plus_circle" />
-                    </span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/transactions/completed">
-                    <span className="title">Completed</span>
-                    <span className="icon-thumbnail">
-                      <i className="fa fa-check" />
-                    </span>
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+                <ul className="sub-menu">
+                  <li>
+                    <NavLink to="/transactions/scheduled">
+                      <span className="title">Scheduled</span>
+                      <span className="icon-thumbnail">
+                        <i className="pg-plus_circle" />
+                      </span>
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/transactions/completed">
+                      <span className="title">Completed</span>
+                      <span className="icon-thumbnail">
+                        <i className="fa fa-check" />
+                      </span>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+            )}
             <li>
-              <NavLink to="/timenode">
+              <NavLink to={isElectron ? '/timenode?mode=electron' : '/timenode'}>
                 <span className={entryList[2].titleClasses}>{entryList[2].title}</span>
                 <span className={entryList[2].thumbnailClasses}>
                   <i className="fa fa-sitemap" />
                 </span>
               </NavLink>
             </li>
-            <li>
-              <a
-                href="https://alpha.chronologic.network/debt/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="title">Debt Smart Contract</span>
-                <span className="icon-thumbnail">
-                  <i className="fab fa-ethereum" />
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://alpha.chronologic.network/chronos/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="title">Day Token Contract</span>
-                <span className="icon-thumbnail">
-                  <i className="far fa-clock" />
-                </span>
-              </a>
-            </li>
-            <li>
-              <NavLink to="/faucet">
-                <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                <span className={entryList[3].thumbnailClasses}>
-                  <i className="fas fa-tint" />
-                </span>
-              </NavLink>
-            </li>
+            {!isElectron && (
+              <li>
+                <a
+                  href="https://alpha.chronologic.network/debt/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="title">Debt Smart Contract</span>
+                  <span className="icon-thumbnail">
+                    <i className="fab fa-ethereum" />
+                  </span>
+                </a>
+              </li>
+            )}
+            {!isElectron && (
+              <li>
+                <a
+                  href="https://alpha.chronologic.network/chronos/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="title">Day Token Contract</span>
+                  <span className="icon-thumbnail">
+                    <i className="far fa-clock" />
+                  </span>
+                </a>
+              </li>
+            )}
+            {!isElectron && (
+              <li>
+                <NavLink to="/faucet">
+                  <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                  <span className={entryList[3].thumbnailClasses}>
+                    <i className="fas fa-tint" />
+                  </span>
+                </NavLink>
+              </li>
+            )}
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
@@ -217,7 +209,9 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Current Block</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{this.state.blocknumber}</span>
+                    <span className="timenode-count col-6">
+                      {this.props.web3Service.latestBlockNumber}
+                    </span>
                   </div>
                 </div>
               </div>

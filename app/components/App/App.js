@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
+import CustomProviderModal from '../Modals/CustomProviderModal';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
 import Faucet from '../Common/Faucet';
@@ -10,10 +11,11 @@ import TransactionsRoute from '../TransactionsRoute/TransactionsRoute';
 import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
+import { inject } from 'mobx-react';
 
 @withRouter
+@inject('web3Service')
 class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +23,7 @@ class App extends Component {
     };
     this.updateSearchState = this.updateSearchState.bind(this);
     this.onEscKey = this.onEscKey.bind(this);
+    this.getCurrentBlock = this.getCurrentBlock.bind(this);
   }
 
   /*
@@ -35,7 +38,7 @@ class App extends Component {
     Esc keypress listener. Used for:
     - Detecting when to close the search overlay
   */
-  onEscKey(event){
+  onEscKey(event) {
     if (event.keyCode === 27) {
       if (this.state.showSearchOverlay) {
         this.updateSearchState(false);
@@ -43,42 +46,55 @@ class App extends Component {
     }
   }
 
-  componentDidMount(){
+  async componentDidMount() {
     document.addEventListener('keydown', this.onEscKey, false);
+
+    await this.getCurrentBlock();
+    // Check every 10 seconds if the block number changed
+    this.interval = setInterval(await this.getCurrentBlock, 10000);
+  }
+
+  async getCurrentBlock() {
+    const { web3Service } = this.props;
+    await web3Service.fetchBlockNumber();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
-    let searchOverlayPlaceholder = null;
-    if (this.state.showSearchOverlay) {
-      searchOverlayPlaceholder = <SearchOverlay updateSearchState={this.updateSearchState}/>;
-    }
-
     return (
       <div className="app-container">
         <SidePanel {...this.props} />
         <div className="page-container">
-          <Header updateSearchState={this.updateSearchState}/>
+          <Header updateSearchState={this.updateSearchState} history={this.props.history} />
           <div className="page-content-wrapper">
             <div className="content sm-gutter">
               <Switch>
-                <Route exact path="/" component={ScheduleRoute}/>
-                <Route path="/awaiting/:type/:hash" component={AwaitingMining}/>
-                <Route path="/transactions" component={TransactionsRoute}/>
+                <Route exact path="/" component={ScheduleRoute} />
+                <Route path="/awaiting/:type/:hash" component={AwaitingMining} />
+                <Route path="/transactions" component={TransactionsRoute} />
                 <Route path="/timenode" component={TimeNodeRoute} />
-                <Route path="/faucet" component={Faucet}/>
-                <Route component={URLNotFound}/>
+                <Route path="/faucet" component={Faucet} />
+                <Route component={URLNotFound} />
               </Switch>
             </div>
           </div>
         </div>
-        {searchOverlayPlaceholder}
+
+        {this.state.showSearchOverlay && (
+          <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />
+        )}
+        <CustomProviderModal />
       </div>
     );
   }
 }
 
 App.propTypes = {
-  location: PropTypes.object.isRequired
+  web3Service: PropTypes.any,
+  history: PropTypes.object.isRequired
 };
 
 export default App;

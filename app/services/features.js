@@ -12,17 +12,25 @@ export default class FeaturesService {
   constructor(web3Service) {
     this._web3 = web3Service;
 
-    this._initialize();
+    this._initializationPromise = this._initialize();
   }
 
   async _initialize() {
-    await this._web3.awaitInitialized();
+    await this._web3.init();
 
     this.isCurrentNetworkSupported = this._isCurrentNetworkSupported();
 
     if (!this.isCurrentNetworkSupported) {
       showNotification(UNSUPPORTED_NETWORK_MESSAGE, 'danger');
     }
+
+    this.initialized = true;
+  }
+
+  _initializationPromise;
+
+  async awaitInitialized() {
+    return await this._initializationPromise;
   }
 
   @computed

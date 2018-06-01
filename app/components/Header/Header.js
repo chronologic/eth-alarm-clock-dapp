@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
+import NetworkChooser from './NetworkChooser';
+import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('web3Service')
 @inject('eacService')
@@ -11,25 +13,17 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      blockNumber: '',
       eacContracts: {}
     };
-    this.getCurrentBlock = this.getCurrentBlock.bind(this);
-  }
-
-  UNSAFE_componentWillMount() {
-    this.getCurrentBlock();
   }
 
   componentDidMount() {
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentBlock, 10000);
     this.fetchEacContracts();
   }
 
   async fetchEacContracts() {
     const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
+    await web3Service.init();
 
     if (!this.props.featuresService._isCurrentNetworkSupported()) {
       return;
@@ -39,24 +33,8 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
-  getCurrentBlock() {
-    const {
-      web3Service: { web3 }
-    } = this.props;
-
-    web3.eth.getBlockNumber((err, res) => {
-      err == null && this.setState({ blockNumber: res });
-    });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
   render() {
     const { web3Service } = this.props;
-    const networkNameString = web3Service.network ? web3Service.network.name : 'Unknown';
-    const blockNumberString = this.state.blockNumber ? 'at #' + this.state.blockNumber : '';
 
     return (
       <div className="header">
@@ -77,16 +55,15 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
           </div>
-          <div className="left-separator pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
+          <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
               <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              {networkNameString} {blockNumberString}
+              <NetworkChooser history={this.props.history} />
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
-            <span className="left-separator d-lg" />
             <span className="active-timenodes" data-toggle="dropdown">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />&nbsp;
             </span>
@@ -191,16 +168,19 @@ class Header extends Component {
             </div>
           </div>
         </div>
+
         <div className="d-flex">
-          <div
-            className="search-link d-lg-inline-block d-none"
-            onClick={() => {
-              this.props.updateSearchState(true);
-            }}
-          >
-            <i className="pg-search" />
-            Search by Address
-          </div>
+          {!isRunningInElectron() && (
+            <div
+              className="search-link d-lg-inline-block d-none"
+              onClick={() => {
+                this.props.updateSearchState(true);
+              }}
+            >
+              <i className="pg-search" />
+              Search by Address
+            </div>
+          )}
         </div>
       </div>
     );
@@ -212,7 +192,8 @@ Header.propTypes = {
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  history: PropTypes.object.isRequired
 };
 
 export default Header;
