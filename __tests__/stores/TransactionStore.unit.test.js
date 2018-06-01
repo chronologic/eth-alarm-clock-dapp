@@ -82,6 +82,10 @@ describe('Stores / TransactionStore', () => {
         return [];
       };
 
+      store._requestFactory = {
+        calcBucket() {}
+      };
+
       await store.getBountiesForBucket(EXAMPLE_WINDOW_START, true);
     });
   });
