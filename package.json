@@ -109,7 +109,7 @@
     "keen-tracking": "1.4.0",
     "lokijs": "1.5.3",
     "mobx": "4.2.1",
-    "mobx-react": "5.1.2",
+    "mobx-react": "5.2.0",
     "mobx-react-router": "4.0.1",
     "moment": "2.22.1",
     "moment-duration-format": "2.2.2",
