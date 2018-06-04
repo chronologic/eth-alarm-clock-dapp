@@ -81,7 +81,12 @@ $primary-color: #21FFFF;
 }
 
 #overlay-search {
-  font-size: 36px !important;
+  font-size: 36px;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    letter-spacing: normal;
+  }
 }
 
 .overlay-close {
@@ -333,4 +338,9 @@ hr {
   border-width: 5px 5px 0 5px;
   border-color: #616161 transparent transparent transparent;
   pointer-events: none;
+}
+
+#searchOverlayButton {
+  max-width: 80%;
+  min-width: 140px;
 }
