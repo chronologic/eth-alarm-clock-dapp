@@ -135,13 +135,17 @@ exports[`Header displays current block number 1`] = `
     className="d-flex"
   >
     <div
-      className="search-link d-lg-inline-block d-none"
+      className="search-link"
       onClick={[Function]}
     >
       <i
         className="pg-search"
       />
-      Search by Address
+      <span
+        className="d-md-inline-block d-none"
+      >
+        Search by address
+      </span>
     </div>
   </div>
 </div>
