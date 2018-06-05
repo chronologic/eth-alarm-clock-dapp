@@ -53,14 +53,15 @@ class TimeNodeProve extends Component {
           <div className="row">
             <div className="col-md-6">
               <p>
-                The TimeNode functionality requires DAY tokens as a proof of ownership. By signing
-                the TimeNode address using your DAY token account, you provide us with the necessary
-                information to determine your DAY token balance.
+                The TimeNode functionality requires the proof of ownership of DAY tokens. By
+                providing the signature from your DAY token account, you help us determine your DAY
+                token balance.
               </p>
               <p>
-                Please note that the signing process will not give us any control over your DAY
-                tokens.
+                <i>Note:</i> Please note that the signing process <strong>will not</strong> give us
+                any control over your DAY tokens.
               </p>
+              <hr />
               <p>Follow these steps to complete the setup:</p>
               <ol>
                 <li>
@@ -74,16 +75,10 @@ class TimeNodeProve extends Component {
                   </a>
                 </li>
                 <li>
-                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the signed message. Use your nickname as the message content:
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="form-group">
-                        <input id="copyAddress" className="form-control" defaultValue="<your_nickname>" />
-                      </div>
-                    </div>
-                  </div>
+                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the
+                  signed message.
                 </li>
-                <li>Copy generated signature.</li>
+                <li>Copy the generated signature.</li>
                 <li>Paste the whole generated signature into the Signature field.</li>
               </ol>
               <a
