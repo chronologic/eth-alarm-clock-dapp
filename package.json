@@ -121,7 +121,7 @@
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
     "react-spinners": "0.3.2",
-    "react-switch": "3.0.1",
+    "react-switch": "3.0.3",
     "select2": "4.0.4",
     "smooth-scrollbar": "8.2.6",
     "wait-on": "2.1.0",
