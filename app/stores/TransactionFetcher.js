@@ -1,10 +1,5 @@
 import { observable } from 'mobx';
-import moment from 'moment';
-import { TEMPORAL_UNIT } from './TransactionStore';
 import { TRANSACTION_EVENT } from '../services/eac';
-
-const BLOCK_BUCKET_SIZE = 240;
-const TIMESTAMP_BUCKET_SIZE = 3600;
 
 export const ABORTED_TOPIC = '0xc008bc849b42227c61d5063a1313ce509a6e99211bfd59e827e417be6c65c81b';
 export const CANCELLED_TOPIC = '0xa761582a460180d55522f9f5fdc076390a1f48a7a62a8afbd45c1bb797948edb';
@@ -34,7 +29,7 @@ export default class TransactionFetcher {
   }
 
   async startLazy() {
-    await this._web3.awaitInitialized();
+    await this._web3.init();
 
     if (!this._requestFactory && this._features.isCurrentNetworkSupported) {
       this._requestFactory = await this._eac.requestFactory();
@@ -99,15 +94,15 @@ export default class TransactionFetcher {
   }
 
   async awaitRunning() {
-    if (!this.running) {
-      return await new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitRunning());
-        }, 500);
-      });
+    if (this.running) {
+      return true;
     }
 
-    return true;
+    return await new Promise(resolve => {
+      setTimeout(async () => {
+        resolve(await this.awaitRunning());
+      }, 200);
+    });
   }
 
   async awaitSync() {
@@ -115,7 +110,7 @@ export default class TransactionFetcher {
       return await new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.awaitSync());
-        }, 500);
+        }, 400);
       });
     }
 
@@ -194,7 +189,12 @@ export default class TransactionFetcher {
     return data;
   }
 
+  /**
+   * @param {Number[]} buckets - This is an array of buckets.
+   */
   async getTransactionsInBuckets(buckets) {
+    await this.awaitRunning();
+
     let transactions = await this._requestFactory.getRequestsByBucket(buckets);
 
     transactions.reverse(); // Switch to most recent block first
@@ -208,37 +208,6 @@ export default class TransactionFetcher {
     });
 
     return transactions;
-  }
-
-  async getTransactionsInLastHours(hours) {
-    const currentTimestamp = moment().unix();
-
-    await this.updateLastBlock();
-
-    let timestampBucket = this.calcBucketForTimestamp(currentTimestamp);
-    let blockBucket = this.calcBucketForBlock(this.lastBlock);
-
-    const buckets = [];
-
-    // Adding 0.5, because for each hour we fetch 2 buckets: timestamp, block.
-    for (let i = 0; i < hours; i += 0.5) {
-      // First, we fetch timestamp bucket, then block bucket.
-      const isTimestampBucket = i % 1 === 0;
-
-      buckets.push(isTimestampBucket ? timestampBucket : blockBucket);
-
-      if (isTimestampBucket) {
-        timestampBucket -= TIMESTAMP_BUCKET_SIZE;
-      } else {
-        /*
-         * Since blockBucket is negative number we should add it to block bucket size,
-         * if we want to go back in time.
-         */
-        blockBucket += BLOCK_BUCKET_SIZE;
-      }
-    }
-
-    return await this.getTransactionsInBuckets(buckets);
   }
 
   async getRequestCreatedLogs(startBlock, endBlock) {
@@ -276,7 +245,7 @@ export default class TransactionFetcher {
   }
 
   async getTransactions(
-    { startBlock = this.requestFactoryStartBlock, endBlock = 'latest', pastHours },
+    { startBlock = this.requestFactoryStartBlock, endBlock = 'latest' },
     cache = this.cacheDefault,
     onlyAddresses = false
   ) {
@@ -293,21 +262,11 @@ export default class TransactionFetcher {
 
     this.syncing = true;
 
-    let transactions;
-
-    if (pastHours) {
-      if (typeof pastHours !== 'number') {
-        throw new Error('pastHours parameter in getTransactions must be a number.');
-      }
-
-      transactions = await this.getTransactionsInLastHours(pastHours);
-    } else {
-      transactions = await this.getTransactionsByBlocks(startBlock, endBlock);
-    }
+    const transactions = await this.getTransactionsByBlocks(startBlock, endBlock);
 
     await this.fillUpTransactions(transactions);
 
-    if (startBlock == this.requestFactoryStartBlock && endBlock === 'latest') {
+    if (startBlock === this.requestFactoryStartBlock && endBlock === 'latest') {
       this._cache.cacheTransactions(transactions, 'replace');
     }
 
@@ -385,9 +344,16 @@ export default class TransactionFetcher {
   }
 
   async getEventsMapForAddresses(addresses) {
-    const events = await this.getTransactionsEventsForAddresses(addresses);
+    let addressesToCheck = [];
 
-    const TX_EVENTS_MAP = {};
+    if (this._cache.addressesEvents) {
+      addressesToCheck = addresses.filter(
+        address => typeof this._cache.addressesEvents[address] === 'undefined'
+      );
+    }
+
+    const events = await this.getTransactionsEventsForAddresses(addressesToCheck);
+    const TX_EVENTS_MAP = this._cache.addressesEvents ? this._cache.addressesEvents : {};
 
     for (const event of events) {
       let eventType;
@@ -406,6 +372,8 @@ export default class TransactionFetcher {
 
       TX_EVENTS_MAP[event.address] = eventType;
     }
+
+    this._cache.cacheAddressesEvents(TX_EVENTS_MAP);
 
     return TX_EVENTS_MAP;
   }
@@ -464,19 +432,5 @@ export default class TransactionFetcher {
     }
 
     return cached;
-  }
-
-  // ------ UTILS ------
-  async calcBucketForTimestamp(timestamp) {
-    await this.awaitRunning();
-    return this._requestFactory.calcBucket(
-      timestamp,
-      TEMPORAL_UNIT.TIMESTAMP
-    );
-  }
-
-  async calcBucketForBlock(blockNumber) {
-    await this.awaitRunning();
-    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
   }
 }

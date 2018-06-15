@@ -24,28 +24,36 @@ class ExecutedGraph extends Component {
   refreshChart() {
     const data = this.props.timeNodeStore.executedTransactions;
 
+    // We will not be taking any transactions before this date into consideration
+    // Equals: NOW - 24h
+    const lastValidTime = new Date().getTime() - (24 * 60 * 60 * 1000);
+
     let timeIntervals = [];
 
-    // This section sorts the executed transactions by hour into an array
+    // This section sorts the executed transactions by hour into an array.
+    // Note: It discards transactions older than 24h.
     for (let transaction of data) {
-      const transactionDate = new Date(transaction.timestamp);
-      transactionDate.setHours(transactionDate.getHours(), 0, 0, 0);
+      // If the transaction was made in the last 24h
+      if (transaction.timestamp > lastValidTime) {
+        const transactionDate = new Date(transaction.timestamp);
+        transactionDate.setHours(transactionDate.getHours(), 0, 0, 0);
 
-      let timeIntervalExists = false;
+        let timeIntervalExists = false;
 
-      // Check if that time interval already exists in the array
-      for (let i = 0; i < timeIntervals.length; i++) {
-        // If so, add the transaction to that array
-        if (timeIntervals[i].datetime.getTime() === transactionDate.getTime()) {
-          timeIntervals[i].executed += 1;
-          timeIntervalExists = true;
+        // Check if that time interval already exists in the array
+        for (let i = 0; i < timeIntervals.length; i++) {
+          // If so, add the transaction to that array
+          if (timeIntervals[i].datetime.getTime() === transactionDate.getTime()) {
+            timeIntervals[i].executed += 1;
+            timeIntervalExists = true;
+          }
         }
-      }
 
-      // If the time interval doesn't exist already
-      if (!timeIntervalExists) {
-        // Create the time interval and bump the executed flag
-        timeIntervals.push({ 'datetime': transactionDate, 'executed': 1 });
+        // If the time interval doesn't exist already
+        if (!timeIntervalExists) {
+          // Create the time interval and bump the executed flag
+          timeIntervals.push({ 'datetime': transactionDate, 'executed': 1 });
+        }
       }
     }
 

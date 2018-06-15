@@ -35,7 +35,8 @@ describe('SidePanel', () => {
 
     const props = {
       location: {
-        pathname: 'test'
+        pathname: 'test',
+        search: ''
       }
     };
 
