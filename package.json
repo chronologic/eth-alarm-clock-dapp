@@ -94,7 +94,7 @@
     "chart.js": "2.7.2",
     "crypto-js": "3.1.9-1",
     "dotenv-webpack": "1.5.7",
-    "eac.js-client": "3.0.2",
+    "eac.js-client": "file:../eac.js-client",
     "eac.js-lib": "2.0.2",
     "electron-is-dev": "0.3.0",
     "ethereumjs-util": "5.1.5",

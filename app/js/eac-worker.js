@@ -2,12 +2,12 @@ import Web3 from 'web3/index';
 import Web3WsProvider from 'web3-providers-ws';
 import EAC from 'eac.js-lib';
 import Bb from 'bluebird';
-// import Loki from 'lokijs';
-// import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
+import Loki from 'lokijs';
+import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 
-import { TimeNode, Config } from 'eac.js-client';
+import { TimeNode, Config, StatsDB } from 'eac.js-client';
 
 class EacWorker {
   alarmClient = null;
@@ -41,14 +41,14 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    // const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
-    // const persistenceAdapter = new LokiIndexedAdapter(netId);
-    // const browserDB = new Loki('stats.db', {
-    //   adapter: persistenceAdapter,
-    //   autoload: true,
-    //   autosave: true,
-    //   autosaveInterval: 4000
-    // });
+    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
+    const persistenceAdapter = new LokiIndexedAdapter(netId);
+    const browserDB = new Loki('stats.db', {
+      adapter: persistenceAdapter,
+      autoload: true,
+      autosave: true,
+      autosaveInterval: 4000
+    });
 
     const configOptions = {
       web3: this.web3,
@@ -67,10 +67,10 @@ class EacWorker {
     this.config = new Config(configOptions);
 
     this.config.logger = logger;
-    // this.config.statsdb = new StatsDB(this.web3, browserDB);
-    // const addresses = await this.config.wallet.getAddresses();
+    this.config.statsdb = new StatsDB(this.web3, browserDB);
+    const addresses = await this.config.wallet.getAddresses();
 
-    // this.config.statsdb.initialize(addresses);
+    this.config.statsdb.initialize(addresses);
     this.timenode = new TimeNode(this.config);
 
     this.updateStats();
@@ -134,7 +134,11 @@ class EacWorker {
     let profit = null;
 
     if (bounties !== null && costs !== null) {
-      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toFixed(3);
+      const weiToEth = amount => {
+        const amountEth = this.web3.fromWei(amount, 'ether');
+        return Math.round(amountEth * 1000) / 1000;
+      };
+
       profit = weiToEth(bounties.minus(costs));
       bounties = weiToEth(bounties);
       costs = weiToEth(costs);
