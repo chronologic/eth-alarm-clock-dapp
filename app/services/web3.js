@@ -9,10 +9,11 @@ let instance = null;
 export default class Web3Service {
   web3 = null;
   tokenInstance = null;
+  network = null;
+
   @observable initialized = false;
   @observable connectedToMetaMask = null;
   @observable accounts = null;
-  @observable network = null;
   @observable explorer = null;
   @observable latestBlockNumber = null;
 
