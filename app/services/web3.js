@@ -14,20 +14,31 @@ export default class Web3Service {
   @observable accounts = null;
   @observable network = null;
   @observable explorer = null;
+  @observable latestBlockNumber = null;
 
   constructor(props) {
     Object.assign(this, props);
   }
 
-  @action
-  async init() {
-    if (!this.initialized) {
-      await this.connect();
-      this.initialized = true;
-      return true;
-    } else {
-      return false;
+  _initializationPromise;
+
+  async _init() {
+    if (this.initialized) {
+      return;
     }
+
+    await this.connect();
+
+    this.initialized = true;
+  }
+
+  @action
+  init() {
+    if (!this._initializationPromise) {
+      this._initializationPromise = this._init();
+    }
+
+    return this._initializationPromise;
   }
 
   toEth(_wei) {
@@ -207,6 +218,7 @@ export default class Web3Service {
   async fetchBlockNumber() {
     const { web3 } = this;
     const block = await Bb.fromCallback(callback => web3.eth.getBlockNumber(callback));
+    this.latestBlockNumber = block;
     return block;
   }
 
@@ -262,23 +274,11 @@ export default class Web3Service {
     }
   }
 
-  async awaitInitialized() {
-    if (!this.initialized) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitInitialized());
-        }, 500);
-      });
-    }
-
-    return true;
-  }
-
   @action
   async getAccountUpdates() {
     const accounts = await Bb.fromCallback(callback => this.web3.eth.getAccounts(callback));
     const accountChanged =
-      this.accounts.length !== accounts.length ||
+      (this.accounts !== null && this.accounts.length) !== accounts.length ||
       (this.accounts.length > 0 && this.accounts[0] !== accounts[0]);
 
     if (accountChanged) {

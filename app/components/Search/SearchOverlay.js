@@ -66,7 +66,12 @@ class SearchOverlay extends Component {
 
   render() {
     return (
-      <div id="searchOverlay" className="overlay" data-pages="search" ref={el => (this.searchOverlayRef = el)}>
+      <div
+        id="searchOverlay"
+        className="overlay"
+        data-pages="search"
+        ref={el => (this.searchOverlayRef = el)}
+      >
         <div className="overlay-content has-results m-t-20">
           <div className="container-fluid">
             <img
@@ -99,13 +104,13 @@ class SearchOverlay extends Component {
                   autoFocus
                 />
               </div>
-              <div className="col-md-3 col-lg-2 vertical-align px-3">
+              <div className="col-md-3 col-lg-2 vertical-align px-3 justify-content-center">
                 <button
                   id="searchOverlayButton"
                   className="btn btn-primary btn-lg btn-rounded btn-block"
-                  onClick={this.searchTransaction}>
-                  <i className="fa fa-search" />&nbsp;
-                  Search
+                  onClick={this.searchTransaction}
+                >
+                  <i className="fa fa-search" />&nbsp; Search
                 </button>
               </div>
             </div>
@@ -114,7 +119,6 @@ class SearchOverlay extends Component {
               <strong>{this.state.searchError}</strong>
             </div>
           </div>
-
         </div>
       </div>
     );

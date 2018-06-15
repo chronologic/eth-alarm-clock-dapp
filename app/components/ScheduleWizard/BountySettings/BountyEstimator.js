@@ -13,14 +13,17 @@ class BountyEstimator extends Component {
       sum = sum.plus(bounty);
     });
 
-    bountyAvg = sum.dividedBy(bounties.length).toNumber().toFixed(3);
+    bountyAvg = sum
+      .dividedBy(bounties.length)
+      .toNumber()
+      .toFixed(3);
     bountyMax = Math.max(...bounties).toFixed(3);
     bountyMin = Math.min(...bounties).toFixed(3);
 
     // Calculate the percentages of line to show
     const minMeanDiff = bountyAvg - bountyMin;
     const maxMeanDiff = bountyMax - bountyAvg;
-    const minMaxRatio = maxMeanDiff / minMeanDiff;
+    const minMaxRatio = minMeanDiff !== maxMeanDiff ? maxMeanDiff / minMeanDiff : 1;
 
     // Percentages of the total line in color
     const totalWidthPercent = 100;
@@ -29,19 +32,49 @@ class BountyEstimator extends Component {
     const greenLinePercent = 39 * minMaxRatio;
     const tickPercent = 1;
 
-    const redLine = <div className="progress-bar bg-danger" role="progressbar" style={{ width: `${redLinePercent}%` }} />;
-    const halfYellowLine = <div className="progress-bar bg-warning" role="progressbar" style={{ width: `${yellowLinePercent / 2}%` }} />;
-    const greenLine = <div className="progress-bar bg-success" role="progressbar" style={{ width: `${greenLinePercent}%` }} />;
-    const tick = <div className="progress-bar bg-black" role="progressbar" style={{ width: `${tickPercent}%` }} />;
+    const redLine = (
+      <div
+        className="progress-bar bg-danger"
+        role="progressbar"
+        style={{ width: `${redLinePercent}%` }}
+      />
+    );
+    const halfYellowLine = (
+      <div
+        className="progress-bar bg-warning"
+        role="progressbar"
+        style={{ width: `${yellowLinePercent / 2}%` }}
+      />
+    );
+    const greenLine = (
+      <div
+        className="progress-bar bg-success"
+        role="progressbar"
+        style={{ width: `${greenLinePercent}%` }}
+      />
+    );
+    const tick = (
+      <div
+        className="progress-bar bg-black"
+        role="progressbar"
+        style={{ width: `${tickPercent}%` }}
+      />
+    );
 
     return (
       <div id="bountyEstimator">
         <table className="progress-markers" style={{ width: `${totalWidthPercent}%` }}>
           <tbody>
             <tr>
-              <td className="p-0" style={{ width: `${redLinePercent}%` }}>Min</td>
-              <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>Mean</td>
-              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>Max</td>
+              <td className="p-0" style={{ width: `${redLinePercent}%` }}>
+                Min
+              </td>
+              <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>
+                Mean
+              </td>
+              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>
+                Max
+              </td>
             </tr>
           </tbody>
         </table>
@@ -53,9 +86,15 @@ class BountyEstimator extends Component {
         <table className="progress-markers" style={{ width: `${totalWidthPercent}%` }}>
           <tbody>
             <tr>
-              <td className="p-0" style={{ width: `${redLinePercent}%` }}>{bountyMin} {bountyMin ? ' ETH' : ''}</td>
-              <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>{bountyAvg} {bountyMin ? ' ETH' : ''}</td>
-              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>{bountyMax} {bountyMin ? ' ETH' : ''}</td>
+              <td className="p-0" style={{ width: `${redLinePercent}%` }}>
+                {bountyMin} {bountyMin ? ' ETH' : ''}
+              </td>
+              <td className="text-center p-0" style={{ width: `${yellowLinePercent}%` }}>
+                {bountyAvg} {bountyMin ? ' ETH' : ''}
+              </td>
+              <td className="text-right p-0" style={{ width: `${greenLinePercent}%` }}>
+                {bountyMax} {bountyMin ? ' ETH' : ''}
+              </td>
             </tr>
           </tbody>
         </table>
