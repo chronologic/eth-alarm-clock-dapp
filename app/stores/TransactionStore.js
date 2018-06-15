@@ -343,6 +343,8 @@ export class TransactionStore {
   }
 
   async getTransactionByAddress(address) {
+    await this._web3.init();
+
     return await this._eac.transactionRequest(address, this._web3);
   }
 
