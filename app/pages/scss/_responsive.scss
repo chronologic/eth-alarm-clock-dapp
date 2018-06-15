@@ -232,7 +232,7 @@
 }
 /*** Medium Size Screen ***/
 @media only screen and (max-width: 1400px) {
-    
+
     .page-sidebar .page-sidebar-inner .sidebar-slide {
         .sidebar-menu{
             bottom:50px;
@@ -263,7 +263,7 @@
             .page-sidebar{
                  transform: none !important;
                 -webkit-transform: none !important;
-                -ms-transform: none !important;          
+                -ms-transform: none !important;
             }
         }
         &.menu-pin{
@@ -275,7 +275,7 @@
                 .page-content-wrapper {
                     .content{
                         padding-left:$layout-sidepanel-pin-width;
-                    } 
+                    }
                     .footer{
                         left: $layout-sidepanel-pin-width;
                     }
@@ -297,7 +297,7 @@
                 }
                 .menu-items .icon-thumbnail {
                     transform: translate3d(-14px, 0, 0);
-                    -webkit-transform: -webkit-translate3d(-14px, 0, 0);   
+                    -webkit-transform: -webkit-translate3d(-14px, 0, 0);
                 }
             }
         }
@@ -380,7 +380,7 @@
 
 
     .page-container{
-        padding-left: 0; 
+        padding-left: 0;
     }
 
 
@@ -457,7 +457,7 @@
         }
          & > .pull-right{
             .sm-action-bar{
-                right: 0;   
+                right: 0;
             }
          }
     }
@@ -498,7 +498,7 @@
     }
 
     .icon-thumbnail{
-        margin-right: 24px;   
+        margin-right: 24px;
     }
      .page-sidebar {
         display: none;
@@ -543,12 +543,12 @@
         margin: 0;
     }
      .breadcrumb{
-        padding-left:15px; 
-        padding-right:15px; 
+        padding-left:15px;
+        padding-right:15px;
      }
      .copyright{
-        padding-left:15px; 
-        padding-right:15px;  
+        padding-left:15px;
+        padding-right:15px;
      }
 
     // Pages Notification customizations
@@ -578,49 +578,49 @@
     .container{
         width: 100%;
     }
-    
+
     //Table Block
     .table-responsive-block{
-         table,thead,tbody,th,td, tr { 
-            display: block; 
+         table,thead,tbody,th,td, tr {
+            display: block;
         }
-        thead tr { 
+        thead tr {
             position: absolute;
             top: -9999px;
             left: -9999px;
-            
+
         }
         tr{
             border: 1px solid rgba(230, 230, 230, 0.7);
             margin-bottom: 15px;
         }
-        td { 
+        td {
             /* Behave  like a "row" */
             border: none;
-            border-bottom: 1px solid #eee; 
+            border-bottom: 1px solid #eee;
             position: relative;
-            padding-left: 50%; 
+            padding-left: 50%;
             white-space: normal;
             text-align:left;
             &:last-child{
                 border-bottom: 0;
             }
-            &:before { 
+            &:before {
                 /* Now like a table header */
                 position: absolute;
                 /* Top/left values mimic padding */
                 top: 6px;
                 left: 6px;
-                width: 45%; 
-                padding-right: 10px; 
+                width: 45%;
+                padding-right: 10px;
                 white-space: nowrap;
                 text-align:left;
                 font-weight: bold;
             }
-            &:before { content: attr(data-title); 
+            &:before { content: attr(data-title);
             }
         }
- 
+
     }
     .kill-pull-md-down{
         position: relative;
@@ -631,7 +631,7 @@
             font-size: 18px;
         }
     }
-    
+
     //set a min hieght for dropdown tabs
     .nav-tabs-header.nav-tabs-linetriangle{
         height: 61px;
@@ -742,7 +742,7 @@
 // because they stack up)
 @media (min-width:1200px){
     .row-same-height{
-      overflow: hidden; 
+      overflow: hidden;
       & > [class*="col-lg"]{
         margin-bottom: -99999px;
         padding-bottom: 99999px;
@@ -751,7 +751,7 @@
 }
 
 @media (max-width: 1199px) and (min-width: 992px){
-    //@TODO : Old Media Query current BS4 doesnt not allow this. 
+    //@TODO : Old Media Query current BS4 doesnt not allow this.
     .visible-md {
         display: block!important;
     }
@@ -759,7 +759,7 @@
 
 @media (min-width:992px){
     .row-same-height{
-      overflow: hidden; 
+      overflow: hidden;
       & > [class*="col-md"]{
         margin-bottom: -99999px;
         padding-bottom: 99999px;
@@ -769,7 +769,7 @@
 
 @media (min-width:768px){
     .row-same-height{
-      overflow: hidden; 
+      overflow: hidden;
       & > [class*="col-sm"]{
         margin-bottom: -99999px;
         padding-bottom: 99999px;
@@ -813,7 +813,7 @@
 
     /* Portrait view of all tablet devices */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
-    
+
     .page-sidebar .sidebar-menu .menu-items > li{
         & > a{
             padding-left: 27px;
@@ -852,7 +852,7 @@
 
 @media (max-width:979px){
     .toggle-secondary-sidebar{
-          
+
             font-size: 18px;
             position: static;
             display: block;
@@ -896,7 +896,7 @@
                 }
             }
         }
-        
+
         .split-details{
             margin-left: 0;
             width: 100%;
@@ -912,7 +912,7 @@
         }
 
     }
-    
+
     .compose-wrapper {
         display: block !important;
         .btn-compose{
@@ -922,7 +922,7 @@
 }
 
 @media (max-width: 767px) {
-    
+
     .header{
         height: $layout-mobile-header-height;
         .header-inner{
@@ -943,7 +943,7 @@
         padding-right: 0;
 
     }
-   
+
     .page-container .page-content-wrapper .content {
         padding-top: $layout-mobile-header-height;
         padding-bottom: 100px;
@@ -1003,7 +1003,7 @@
   }
   .sm-pull-left{
   float: left !important;
-  } 
+  }
   .sm-pull-reset{
     float: none !important;
   }
@@ -1123,12 +1123,6 @@
                 top:12px;
             }
         }
-
-        #overlay-search{
-            font-size: 48px;
-            height: 118px;
-            line-height: 46px;
-        }
     }
     .page-sidebar .sidebar-header{
         height: $layout-mobile-header-height;
@@ -1173,7 +1167,7 @@
        only screen and (min-device-pixel-ratio: 2.0) {
         .editor-icon {
             background-image: url("#{$base-img-url}/editor_tray_2x.png");
-            background-size: 480px 40px; 
+            background-size: 480px 40px;
         }
       .alert .close {
         background: url("#{$base-img-url}/icons/noti-cross-2x.png") no-repeat scroll 0 0 transparent;

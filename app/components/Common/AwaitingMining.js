@@ -130,7 +130,11 @@ class AwaitingMining extends Component {
             {this.state.transactionHash && (
               <p className="horizontal-center">
                 Transaction Hash: <br />
-                <a target="_blank" href={explorer + '/tx/' + transactionHash}>
+                <a
+                  target="_blank"
+                  href={explorer + '/tx/' + transactionHash}
+                  rel="noopener noreferrer"
+                >
                   {' '}
                   {this.state.transactionHash}{' '}
                 </a>
@@ -139,7 +143,11 @@ class AwaitingMining extends Component {
             {this.state.newContract && (
               <p className="horizontal-center">
                 Contract Address: <br />
-                <a target="_blank" href={explorer + '/address/' + newContract}>
+                <a
+                  target="_blank"
+                  href={explorer + '/address/' + newContract}
+                  rel="noopener noreferrer"
+                >
                   {' '}
                   {this.state.newContract}{' '}
                 </a>

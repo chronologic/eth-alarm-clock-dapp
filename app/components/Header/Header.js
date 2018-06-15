@@ -172,13 +172,13 @@ class Header extends Component {
         <div className="d-flex">
           {!isRunningInElectron() && (
             <div
-              className="search-link d-lg-inline-block d-none"
+              className="search-link"
               onClick={() => {
                 this.props.updateSearchState(true);
               }}
             >
               <i className="pg-search" />
-              Search by Address
+              <span className="d-md-inline-block d-none">Search by address</span>
             </div>
           )}
         </div>
