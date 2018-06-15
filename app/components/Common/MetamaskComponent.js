@@ -90,7 +90,8 @@ class MetamaskComponent extends Component {
     const { web3Service } = this.props;
     await web3Service.getAccountUpdates();
     const accountsChanged =
-      this.state.accounts.length !== web3Service.accounts.length ||
+      (this.state.accounts && this.state.accounts.length) !==
+        (web3Service.accounts !== null && web3Service.accounts.length) ||
       (this.state.accounts.length > 0 && this.state.accounts[0] !== web3Service.accounts[0]);
     if (accountsChanged) {
       this.setState({ accounts: web3Service.accounts });
@@ -102,7 +103,7 @@ class MetamaskComponent extends Component {
 
   async resolveWeb3() {
     const { web3Service } = this.props;
-    await web3Service.awaitInitialized();
+    await web3Service.init();
     this.setState({ accounts: web3Service.accounts });
     this.scoutUpdates();
     this.runNotifications();

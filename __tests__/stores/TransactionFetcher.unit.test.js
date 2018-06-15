@@ -1,5 +1,5 @@
 import TransactionFetcher from '../../app/stores/TransactionFetcher';
-import { equal, ok } from 'assert';
+import { equal } from 'assert';
 import TransactionCache from '../../app/stores/TransactionCache';
 import FeaturesService from '../../app/services/features';
 import { KOVAN_NETWORK_ID } from '../../app/config/web3Config';
@@ -71,7 +71,7 @@ describe('Stores / TransactionFetcher', () => {
           }
         };
       },
-      awaitInitialized: () => Promise.resolve(true)
+      init: () => Promise.resolve(true)
     };
 
     const featuresService = new FeaturesService(web3);
@@ -102,6 +102,8 @@ describe('Stores / TransactionFetcher', () => {
     it('returns transactions requests instances when passing false as onlyAddresses parameter', async () => {
       const TransactionsFetcher = getInstance();
 
+      TransactionFetcher._requestFactory = {};
+
       const transactions = await TransactionsFetcher.getTransactions({}, false, false);
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
@@ -112,59 +114,13 @@ describe('Stores / TransactionFetcher', () => {
     it('returns transactions addresses when passing true as onlyAddresses parameter', async () => {
       const TransactionsFetcher = getInstance();
 
+      TransactionFetcher._requestFactory = {};
+
       const transactions = await TransactionsFetcher.getTransactions({}, false, true);
 
       equal(transactions.length, MOCKED_TRANSACTIONS.length);
       equal(transactions[0], MOCKED_TRANSACTIONS[0]);
       equal(transactions[1], MOCKED_TRANSACTIONS[1]);
-    });
-
-    it('calls getTransactionsInLastHours() when pastHours parameter is a number', async () => {
-      const TransactionsFetcher = getInstance();
-
-      let getTransactionsInLastHoursCalled = false;
-
-      TransactionsFetcher.getTransactionsInLastHours = () => {
-        getTransactionsInLastHoursCalled = true;
-
-        return [];
-      };
-
-      await TransactionsFetcher.getTransactions({ pastHours: 24 }, false, true);
-
-      ok(getTransactionsInLastHoursCalled);
-    });
-
-    it('throws when pastHours parameter is truthy, but not a number', async () => {
-      const TransactionsFetcher = getInstance();
-
-      let errorThrown = false;
-
-      try {
-        await TransactionsFetcher.getTransactions({ pastHours: true }, false, true);
-      } catch (error) {
-        errorThrown = true;
-
-        equal(error.message, 'pastHours parameter in getTransactions must be a number.');
-      }
-
-      ok(errorThrown);
-    });
-
-    it('calls getTransactionsByBlocks() when pastHours parameter is not defined', async () => {
-      const TransactionsFetcher = getInstance();
-
-      let getTransactionsByBlocksCalled = false;
-
-      TransactionsFetcher.getTransactionsByBlocks = () => {
-        getTransactionsByBlocksCalled = true;
-
-        return [];
-      };
-
-      await TransactionsFetcher.getTransactions({}, false, true);
-
-      ok(getTransactionsByBlocksCalled);
     });
   });
 });
