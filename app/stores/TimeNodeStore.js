@@ -2,6 +2,7 @@ import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
+import moment from 'moment';
 
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
@@ -98,10 +99,10 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     this.eacWorker.onmessage = event => {
-      const { type } = event.data;
+      const { type, value } = event.data;
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
-        this.handleLogMessage(event.data.value);
+        this.handleLogMessage(value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         if (event.data.bounties !== null) this.bounties = event.data.bounties;
         if (event.data.costs !== null) this.costs = event.data.costs;
@@ -133,6 +134,14 @@ export default class TimeNodeStore {
   }
 
   handleLogMessage(log) {
+    if (typeof log.message !== 'string') {
+      log = {
+        timestamp: moment().unix(),
+        type: LOGGER_MSG_TYPES.DEBUG,
+        message: `Invalid log message format: ${JSON.stringify(log.message)}`
+      };
+    }
+
     if (log.type === LOGGER_MSG_TYPES.CACHE) return;
     if (log.type !== LOGGER_MSG_TYPES.DEBUG) {
       this.pushToLog(this.basicLogs, log);
