@@ -99,7 +99,7 @@ class EacWorker {
 
   stopScanning() {
     if (this.timenode) {
-      this.timenode.stop();
+      this.timenode.stopScanning();
     }
   }
 
