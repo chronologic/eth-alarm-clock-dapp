@@ -10,8 +10,7 @@ import WorkerLogger from '../lib/worker-logger';
 import { TimeNode, Config, StatsDB } from 'eac.js-client';
 
 class EacWorker {
-  alarmClient = null;
-  statsDB = null;
+  timenode = null;
 
   async start(options) {
     const { customProviderUrl, network } = options;
@@ -67,10 +66,10 @@ class EacWorker {
     this.config = new Config(configOptions);
 
     this.config.logger = logger;
-    this.config.statsdb = new StatsDB(this.web3, browserDB);
+    this.config.statsDb = new StatsDB(this.web3, browserDB);
     const addresses = await this.config.wallet.getAddresses();
 
-    this.config.statsdb.initialize(addresses);
+    this.config.statsDb.initialize(addresses);
     this.timenode = new TimeNode(this.config);
 
     this.updateStats();
@@ -128,7 +127,7 @@ class EacWorker {
     };
 
     let { bounties, costs, executedTransactions } = this.config
-      ? this.config.statsdb.getStats()[0]
+      ? this.config.statsDb.getStats()[0]
       : empty;
 
     let profit = null;
