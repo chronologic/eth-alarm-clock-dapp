@@ -18,6 +18,10 @@ export default class TransactionCache {
   _storage;
 
   constructor(storageService) {
+    if (!storageService) {
+      throw 'You need to pass storage service to TransactionCache.';
+    }
+
     this._storage = storageService;
 
     this.loadRequestCreatedLogsFromStorage();
