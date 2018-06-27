@@ -18,6 +18,11 @@ const INITIAL_STATE = {
   value: 0
 };
 
+export const TRANSACTION_ROW_TEST_ATTRS = {
+  BOUNTY_COLUMN: 'transaction-column-bounty',
+  WINDOW_SIZE_COLUMN: 'transaction-column-window-size'
+};
+
 @inject('eacService')
 @inject('transactionStore')
 class TransactionsRow extends Component {
@@ -88,7 +93,6 @@ class TransactionsRow extends Component {
       deposit: transaction.requiredDeposit,
       isTimestamp,
       time,
-      status,
       timeWindow,
       value: transaction.callValue
     };
@@ -130,7 +134,10 @@ class TransactionsRow extends Component {
           <Link to={`/transactions/${transaction.address}`}>{transaction.address}</Link>
         </td>
         <td className="v-align-middle">{time}</td>
-        <td className="v-align-middle semi-bold">
+        <td
+          className="v-align-middle semi-bold"
+          data-test={TRANSACTION_ROW_TEST_ATTRS.BOUNTY_COLUMN}
+        >
           <ValueDisplay priceInWei={bounty} />
         </td>
         <td className="v-align-middle">
@@ -139,7 +146,9 @@ class TransactionsRow extends Component {
         <td className="v-align-middle">
           <ValueDisplay priceInWei={deposit} />
         </td>
-        <td className="v-align-middle">{timeWindow}</td>
+        <td className="v-align-middle" data-test={TRANSACTION_ROW_TEST_ATTRS.WINDOW_SIZE_COLUMN}>
+          {timeWindow}
+        </td>
         {showStatus && (
           <td className="v-align-middle">
             <a href="#">{status}</a>
