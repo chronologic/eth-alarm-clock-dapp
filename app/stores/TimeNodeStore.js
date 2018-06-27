@@ -98,10 +98,10 @@ export default class TimeNodeStore {
     this.eacWorker = new EacWorker();
 
     this.eacWorker.onmessage = event => {
-      const { type } = event.data;
+      const { type, value } = event.data;
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
-        this.handleLogMessage(event.data.value);
+        this.handleLogMessage(value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
         if (event.data.bounties !== null) this.bounties = event.data.bounties;
         if (event.data.costs !== null) this.costs = event.data.costs;
