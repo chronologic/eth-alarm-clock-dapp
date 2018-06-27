@@ -9,6 +9,11 @@ const INITIAL_STATE = {
   lastPage: 1
 };
 
+export const TRANSACTIONS_TABLE_TEST_ATTRS = {
+  INFO_NO_TRANSACTIONS: 'info-no-transactions',
+  INFO_TOTAL_ENTRIES: 'info-total-entries'
+};
+
 class TransactionsTable extends Component {
   state = INITIAL_STATE;
 
@@ -101,7 +106,10 @@ class TransactionsTable extends Component {
 
         <div className={fetchingTransactions ? 'd-none' : 'mt-4'}>
           <div className="row">
-            <div className={transactions.length ? 'col-md-6' : 'd-none'}>
+            <div
+              className={transactions.length ? 'col-md-6' : 'd-none'}
+              data-test={TRANSACTIONS_TABLE_TEST_ATTRS.INFO_TOTAL_ENTRIES}
+            >
               Showing {offset + 1} to {offset + transactions.length} of {total} entries
             </div>
             {this.state.lastPage !== 1 && (
@@ -144,7 +152,10 @@ class TransactionsTable extends Component {
           </div>
         )}
 
-        <div className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}>
+        <div
+          className={transactions.length || fetchingTransactions ? 'd-none' : 'mt-4'}
+          data-test={TRANSACTIONS_TABLE_TEST_ATTRS.INFO_NO_TRANSACTIONS}
+        >
           No transactions.
         </div>
       </div>

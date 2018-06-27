@@ -67,7 +67,8 @@ export class TransactionStore {
 
   get requestFactoryStartBlock() {
     const { network } = this._web3;
-    return requestFactoryStartBlocks[network.id] || 0;
+
+    return (network && requestFactoryStartBlocks[network.id]) || 0;
   }
 
   _initializationPromise;
@@ -108,6 +109,7 @@ export class TransactionStore {
     await this.init();
 
     startBlock = startBlock || this.requestFactoryStartBlock; // allow all components preload
+
     return await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
   }
 
@@ -257,7 +259,7 @@ export class TransactionStore {
     let transactions = await this.getTransactions({ startBlock, endBlock });
 
     if (resolved || unresolved) {
-      return this._queryTransactions({
+      return await this._queryTransactions({
         transactions,
         offset,
         limit,

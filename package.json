@@ -55,6 +55,8 @@
     "electron": "2.0.3",
     "electron-builder": "20.16.0",
     "electron-packager": "12.1.0",
+    "enzyme": "3.3.0",
+    "enzyme-adapter-react-16": "1.1.1",
     "eslint": "5.0.0",
     "eslint-config-standard": "11.0.0",
     "eslint-plugin-import": "2.13.0",
