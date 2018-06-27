@@ -359,10 +359,6 @@ export class TransactionStore {
   async isTransactionMissed(transaction) {
     let afterExecutionWindow;
 
-    if (!transaction.executionWindowEnd) {
-      throw 'Transaction.executionWindowEnd is falsy.';
-    }
-
     if (this.isTxUnitTimestamp(transaction)) {
       afterExecutionWindow = transaction.executionWindowEnd.lessThan(moment().unix());
     } else {
