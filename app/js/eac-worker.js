@@ -1,18 +1,16 @@
 import Web3 from 'web3/index';
 import Web3WsProvider from 'web3-providers-ws';
 import EAC from 'eac.js-lib';
-import EACJSClient from 'eac.js-client';
 import Bb from 'bluebird';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 
-const { Config, Scanner, StatsDB } = EACJSClient;
+import { TimeNode, Config, StatsDB } from 'eac.js-client';
 
 class EacWorker {
-  alarmClient = null;
-  statsDB = null;
+  timenode = null;
 
   async start(options) {
     const { customProviderUrl, network } = options;
@@ -65,28 +63,28 @@ class EacWorker {
       factory: await eac.requestFactory()
     };
 
-    this.config = await Config.create(configOptions);
+    this.config = new Config(configOptions);
 
     this.config.logger = logger;
-    this.config.statsdb = new StatsDB(this.web3, browserDB);
+    this.config.statsDb = new StatsDB(this.web3, browserDB);
     const addresses = await this.config.wallet.getAddresses();
 
-    this.config.statsdb.initialize(addresses);
-    this.alarmClient = new Scanner(options.milliseconds, this.config);
+    this.config.statsDb.initialize(addresses);
+    this.timenode = new TimeNode(this.config);
 
     this.updateStats();
     this.getNetworkInfo();
   }
 
-  async awaitAlarmClientInitialized() {
+  async awaitTimeNodeInitialized() {
     if (
-      !this.alarmClient ||
-      !this.alarmClient.start ||
-      typeof this.alarmClient.start !== 'function'
+      !this.timenode ||
+      !this.timenode.startScanning ||
+      typeof this.timenode.startScanning !== 'function'
     ) {
       return new Promise(resolve => {
         setTimeout(async () => {
-          resolve(await this.awaitAlarmClientInitialized());
+          resolve(await this.awaitTimeNodeInitialized());
         }, 500);
       });
     }
@@ -94,13 +92,13 @@ class EacWorker {
   }
 
   async startScanning() {
-    await this.awaitAlarmClientInitialized();
-    this.alarmClient.start();
+    await this.awaitTimeNodeInitialized();
+    this.timenode.startScanning();
   }
 
   stopScanning() {
-    if (this.alarmClient) {
-      this.alarmClient.stop();
+    if (this.timenode) {
+      this.timenode.stopScanning();
     }
   }
 
@@ -129,13 +127,17 @@ class EacWorker {
     };
 
     let { bounties, costs, executedTransactions } = this.config
-      ? this.config.statsdb.getStats()[0]
+      ? this.config.statsDb.getStats()[0]
       : empty;
 
     let profit = null;
 
     if (bounties !== null && costs !== null) {
-      const weiToEth = amount => this.web3.fromWei(amount, 'ether').toFixed(3);
+      const weiToEth = amount => {
+        const amountEth = this.web3.fromWei(amount, 'ether');
+        return Math.round(amountEth * 1000) / 1000;
+      };
+
       profit = weiToEth(bounties.minus(costs));
       bounties = weiToEth(bounties);
       costs = weiToEth(costs);
