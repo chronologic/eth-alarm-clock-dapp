@@ -72,7 +72,7 @@
     "mini-css-extract-plugin": "0.4.0",
     "node-sass": "4.9.0",
     "postcss-loader": "2.1.5",
-    "prettier": "1.13.6",
+    "prettier": "1.13.7",
     "react-hot-loader": "4.3.3",
     "react-test-renderer": "16.3.2",
     "resolve-url-loader": "2.3.0",
