@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
+import { showNotification } from '../../services/notification';
 
 @inject('timeNodeStore')
 class TimeNodeSettings extends Component {
@@ -19,9 +20,10 @@ class TimeNodeSettings extends Component {
   _handleEconomicStrategyChange() {
     this.props.timeNodeStore.setEconomicStrategy(
       this.maxDeposit.value,
-      this.minProfitability.value,
-      this.minBalance.value
+      this.minBalance.value,
+      this.minProfitability.value
     );
+    showNotification('Changes saved.', 'success');
   }
 
   render() {
