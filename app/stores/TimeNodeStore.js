@@ -114,27 +114,29 @@ export default class TimeNodeStore {
 
     this.eacWorker.onmessage = event => {
       const { type, value } = event.data;
+      const getValuesIfInMessage = values => {
+        values.forEach(value => {
+          if (event.data[value] !== null) {
+            this[value] = event.data[value];
+          }
+        });
+      };
 
       if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
         this.handleLogMessage(value);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        if (event.data.bounties !== null) this.bounties = event.data.bounties;
-        if (event.data.costs !== null) this.costs = event.data.costs;
-        if (event.data.profit !== null) this.profit = event.data.profit;
-        this.executedTransactions = event.data.executedTransactions;
+        getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES) {
-        if (event.data.balanceETH !== null) this.balanceETH = event.data.balanceETH;
-        if (event.data.balanceDAY !== null) this.balanceDAY = event.data.balanceDAY;
-        if (event.data.isTimeMint !== null) this.isTimeMint = event.data.isTimeMint;
+        getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
-        if (event.data.result) {
+        if (event.data.clearedStats) {
           showNotification('Cleared the stats.', 'success');
           this.updateStats();
         } else {
           showNotification('Unable to clear the stats.', 'danger', 3000);
         }
       } else if (type === EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO) {
-        this.providerBlockNumber = event.data.blockNumber;
+        getValuesIfInMessage(['providerBlockNumber']);
       }
     };
 

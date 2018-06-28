@@ -116,11 +116,13 @@ class EacWorker {
    * to which the worker is connected to.
    */
   async getNetworkInfo() {
-    const blockNumber = await Bb.fromCallback(callback => this.web3.eth.getBlockNumber(callback));
+    const providerBlockNumber = await Bb.fromCallback(callback =>
+      this.web3.eth.getBlockNumber(callback)
+    );
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
-      blockNumber
+      providerBlockNumber
     });
   }
 
@@ -189,21 +191,21 @@ class EacWorker {
     DBDeleteRequest.onerror = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: false
+        clearedStats: false
       });
     };
 
     DBDeleteRequest.onsuccess = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: true
+        clearedStats: true
       });
     };
 
     DBDeleteRequest.onblocked = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: false
+        clearedStats: false
       });
     };
   }
