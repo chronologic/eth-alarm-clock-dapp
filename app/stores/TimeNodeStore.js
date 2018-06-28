@@ -308,7 +308,7 @@ export default class TimeNodeStore {
         signature.address
       );
 
-      this.balanceDAY = balanceDAY;
+      this.balanceDAY = balanceDAY.toNumber();
       this.isTimeMint = mintingPower > 0;
 
       const encryptedAttachedAddress = this.encrypt(signature.address);
@@ -343,6 +343,8 @@ export default class TimeNodeStore {
     localStorage.removeItem('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
+    this.stopScanning();
+    this.eacWorker = null;
     showNotification('Your wallet has been reset.', 'success');
   }
 

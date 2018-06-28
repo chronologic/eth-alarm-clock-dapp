@@ -12,6 +12,7 @@ class TimeNodeSettings extends Component {
   resetWallet() {
     this.props.timeNodeStore.resetWallet();
     this.props.timeNodeStore.clearStats();
+    this.props.updateWalletUnlocked(false);
   }
 
   render() {
@@ -93,7 +94,8 @@ class TimeNodeSettings extends Component {
 }
 
 TimeNodeSettings.propTypes = {
-  timeNodeStore: PropTypes.any
+  timeNodeStore: PropTypes.any,
+  updateWalletUnlocked: PropTypes.any
 };
 
 export default TimeNodeSettings;

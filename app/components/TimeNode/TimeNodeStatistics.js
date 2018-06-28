@@ -98,7 +98,8 @@ class TimeNodeStatistics extends Component {
       profit,
       scanningStarted,
       balanceETH,
-      balanceDAY
+      balanceDAY,
+      executedTransactions
     } = this.props.timeNodeStore;
 
     if (this.state.timeNodeDisabled) {
@@ -158,7 +159,7 @@ class TimeNodeStatistics extends Component {
           <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Executed: {this.props.timeNodeStore.totalExecuted}</div>
+                <div className="card-title">Executed: {executedTransactions.length}</div>
                 <div className="card-controls">
                   <ul>
                     <li>
@@ -174,7 +175,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div ref={el => (this.chartContainer = el)} className="card-body no-padding">
-                {this.props.timeNodeStore.executedTransactions.length > 0 ? (
+                {executedTransactions.length > 0 ? (
                   <ExecutedGraph />
                 ) : (
                   <p className="my-5 text-center">No data yet.</p>
@@ -205,14 +206,14 @@ class TimeNodeStatistics extends Component {
                 <div className="row px-4">
                   <div className="col-6 col-md-6">ETH</div>
                   <div className="col-6 col-md-6">
-                    {balanceETH ? balanceETH : <BeatLoader size={6} />}
+                    {balanceETH !== null ? balanceETH : <BeatLoader size={6} />}
                   </div>
                 </div>
                 <hr className="mt-2 mb-2" />
                 <div className="row px-4 pb-2">
                   <div className="col-6 col-md-6">DAY</div>
                   <div className="col-6 col-md-6">
-                    {balanceDAY ? balanceDAY : <BeatLoader size={6} />}
+                    {balanceDAY !== null ? balanceDAY : <BeatLoader size={6} />}
                   </div>
                 </div>
               </div>

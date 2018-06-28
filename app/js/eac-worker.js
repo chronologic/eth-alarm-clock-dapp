@@ -76,9 +76,10 @@ class EacWorker {
 
     this.config.logger = logger;
     this.config.statsDb = new StatsDB(this.web3, browserDB);
-    const addresses = await this.config.wallet.getAddresses();
 
-    this.config.statsDb.initialize(addresses);
+    this.myAddress = await this.config.wallet.getAddresses()[0];
+
+    this.config.statsDb.initialize([this.myAddress]);
     this.timenode = new TimeNode(this.config);
 
     this.updateStats();
@@ -127,8 +128,9 @@ class EacWorker {
   }
 
   async getBalances() {
-    const myAddress = '0x' + JSON.parse(this.keystore).address;
-    const balance = await this.eac.Util.getBalance(myAddress);
+    await this.awaitTimeNodeInitialized();
+
+    const balance = await this.eac.Util.getBalance(this.myAddress);
     const balanceETH = this.web3.fromWei(balance);
 
     const { balanceDAY, mintingPower } = await getDAYBalance(
@@ -149,16 +151,16 @@ class EacWorker {
    * Fetches the current stats of the Alarm Client
    * and updates the TimeNodeStore.
    */
-  updateStats() {
+  async updateStats() {
+    await this.awaitTimeNodeInitialized();
+
     const empty = {
       bounties: null,
       costs: null,
       executedTransactions: []
     };
 
-    let { bounties, costs, executedTransactions } = this.config
-      ? this.config.statsDb.getStats()[0]
-      : empty;
+    let { bounties, costs, executedTransactions } = this.config ? this.getMyStats() : empty;
 
     let profit = null;
 
@@ -180,6 +182,15 @@ class EacWorker {
       profit,
       executedTransactions: executedTransactions
     });
+  }
+
+  getMyStats() {
+    const stats = this.config.statsDb.getStats();
+    for (let stat of stats) {
+      if (stat.account === this.myAddress) {
+        return stat;
+      }
+    }
   }
 
   /*
@@ -235,8 +246,8 @@ onmessage = async function(event) {
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-      eacWorker.updateStats();
-      eacWorker.getBalances();
+      await eacWorker.updateStats();
+      await eacWorker.getBalances();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
