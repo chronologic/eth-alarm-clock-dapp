@@ -11,7 +11,9 @@ const INITIAL_STATE = {
 
 export const TRANSACTIONS_TABLE_TEST_ATTRS = {
   INFO_NO_TRANSACTIONS: 'info-no-transactions',
-  INFO_TOTAL_ENTRIES: 'info-total-entries'
+  INFO_TOTAL_ENTRIES: 'info-total-entries',
+  CURRENT_PAGE: 'btn-current-page',
+  NEXT_PAGE: 'btn-next-page'
 };
 
 class TransactionsTable extends Component {
@@ -128,6 +130,7 @@ class TransactionsTable extends Component {
                     key={page}
                     className={['pagination-entry', page === currentPage ? 'bold' : ''].join(' ')}
                     onClick={() => this.goToPage(page)}
+                    data-test={TRANSACTIONS_TABLE_TEST_ATTRS.CURRENT_PAGE}
                   >
                     {page}&nbsp;
                   </span>
@@ -138,6 +141,7 @@ class TransactionsTable extends Component {
                     ' '
                   )}
                   onClick={() => this.goToPage(currentPage + 1)}
+                  data-test={TRANSACTIONS_TABLE_TEST_ATTRS.NEXT_PAGE}
                 >
                   {this.getNextPageButton()}
                 </span>
