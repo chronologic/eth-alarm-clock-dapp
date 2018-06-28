@@ -18,12 +18,18 @@ class TimeNodeSettings extends Component {
   }
 
   _handleEconomicStrategyChange() {
-    this.props.timeNodeStore.setEconomicStrategy(
-      this.maxDeposit.value,
-      this.minBalance.value,
-      this.minProfitability.value
-    );
-    showNotification('Changes saved.', 'success');
+    const password = this.passwdRef.value;
+
+    if (this.props.timeNodeStore.passwordMatchesKeystore(password)) {
+      this.props.timeNodeStore.setEconomicStrategy(
+        this.maxDeposit.value,
+        this.minBalance.value,
+        this.minProfitability.value
+      );
+      this.props.timeNodeStore.restart(password);
+      showNotification('Changes saved.', 'success');
+      this.passwdRef.value = '';
+    }
   }
 
   render() {
@@ -87,7 +93,8 @@ class TimeNodeSettings extends Component {
               <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
                 <button
                   className="btn btn-primary btn-block mt-3"
-                  onClick={this._handleEconomicStrategyChange}
+                  data-toggle="modal"
+                  data-target="#confirmEconomicStrategyModal"
                 >
                   Save
                 </button>
@@ -159,6 +166,59 @@ class TimeNodeSettings extends Component {
                       onClick={this.resetWallet}
                     >
                       <strong>Detach</strong>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="modal fade stick-up"
+          id="confirmEconomicStrategyModal"
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="confirmEconomicStrategyModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header clearfix text-left separator">
+                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
+                  <i className="pg-close fs-14" />
+                </button>
+                <h3 className="timenode-modal-title m-0">
+                  Confirm <span className="semi-bold">TimeNode</span> changes
+                </h3>
+              </div>
+              <div className="modal-body">
+                <hr />
+                <p>Please enter your password:</p>
+                <input
+                  id="walletPassword"
+                  type="password"
+                  placeholder="Password"
+                  className="form-control"
+                  ref={el => (this.passwdRef = el)}
+                  autoFocus
+                />
+              </div>
+              <div className="modal-footer">
+                <div className="row">
+                  <div className="col-md-6">
+                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="col-md-6">
+                    <button
+                      className="btn btn-primary btn-block"
+                      type="button"
+                      data-dismiss="modal"
+                      onClick={this._handleEconomicStrategyChange}
+                    >
+                      <strong>Confirm</strong>
                     </button>
                   </div>
                 </div>

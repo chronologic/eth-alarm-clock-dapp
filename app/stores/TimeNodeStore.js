@@ -62,14 +62,10 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const maxDeposit = this.getStorageItem('maxDeposit');
-    const minBalance = this.getStorageItem('minBalance');
-    const minProfitability = this.getStorageItem('minProfitability');
-
     return {
-      maxDeposit,
-      minBalance,
-      minProfitability
+      maxDeposit: this.getStorageItem('maxDeposit'),
+      minBalance: this.getStorageItem('minBalance'),
+      minProfitability: this.getStorageItem('minProfitability')
     };
   }
 
@@ -369,6 +365,12 @@ export default class TimeNodeStore {
     return localStorage.getItem(key);
   }
 
+  restart(password) {
+    this.stopScanning();
+    this.eacWorker = null;
+    this.startClient(this.walletKeystore, password);
+  }
+
   resetWallet() {
     localStorage.removeItem('tn');
     localStorage.removeItem('attachedDAYAccount');
@@ -381,7 +383,7 @@ export default class TimeNodeStore {
 
   passwordMatchesKeystore(password) {
     try {
-      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), this.decrypt(password), true);
+      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), password, true);
       showNotification('Success.', 'success');
       return true;
     } catch (e) {
