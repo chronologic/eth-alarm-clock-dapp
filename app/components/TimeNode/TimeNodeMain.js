@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import TimeNodeStatistics from './TimeNodeStatistics';
 import TimeNodeLogs from './TimeNodeLogs';
 import TimeNodeSettings from './TimeNodeSettings';
@@ -45,7 +46,7 @@ class TimeNodeMain extends Component {
             <TimeNodeLogs />
           </div>
           <div className="tab-pane " id="tabSettings">
-            <TimeNodeSettings />
+            <TimeNodeSettings updateWalletUnlocked={this.props.updateWalletUnlocked} />
           </div>
           <PoweredByEAC />
         </div>
@@ -53,5 +54,9 @@ class TimeNodeMain extends Component {
     );
   }
 }
+
+TimeNodeMain.propTypes = {
+  updateWalletUnlocked: PropTypes.any
+};
 
 export default TimeNodeMain;
