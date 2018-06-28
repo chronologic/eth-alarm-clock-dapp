@@ -6,19 +6,27 @@ import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
+import { getDAYBalance } from '../lib/timenode-util';
 
 import { TimeNode, Config, StatsDB } from 'eac.js-client';
 
 class EacWorker {
   timenode = null;
+  network = null;
+  web3 = null;
+  eac = null;
+  dayAccountAddress = null;
+  keystore = null;
 
   async start(options) {
-    const { customProviderUrl, network } = options;
+    const { customProviderUrl, network, dayAccountAddress } = options;
+    this.network = network;
+    this.dayAccountAddress = dayAccountAddress;
 
-    const providerUrl = customProviderUrl !== null ? customProviderUrl : network.endpoint;
+    const providerUrl = customProviderUrl !== null ? customProviderUrl : this.network.endpoint;
     let provider = null;
 
-    if (network) {
+    if (this.network) {
       provider = (() => {
         if (new RegExp('ws://').test(providerUrl) || new RegExp('wss://').test(providerUrl)) {
           const ws = new Web3WsProvider(`${providerUrl}`);
@@ -36,7 +44,8 @@ class EacWorker {
     }
 
     this.web3 = new Web3(provider);
-    const eac = EAC(this.web3);
+    this.eac = EAC(this.web3);
+    this.keystore = options.keystore;
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
@@ -51,25 +60,26 @@ class EacWorker {
 
     const configOptions = {
       web3: this.web3,
-      eac,
+      eac: this.eac,
       provider,
       scanSpread: options.scan,
       logfile: options.logfile,
       logLevel: options.logLevel,
-      walletStores: options.keystore,
+      walletStores: this.keystore,
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
-      factory: await eac.requestFactory()
+      factory: await this.eac.requestFactory()
     };
 
     this.config = new Config(configOptions);
 
     this.config.logger = logger;
     this.config.statsDb = new StatsDB(this.web3, browserDB);
-    const addresses = await this.config.wallet.getAddresses();
 
-    this.config.statsDb.initialize(addresses);
+    this.myAddress = await this.config.wallet.getAddresses()[0];
+
+    this.config.statsDb.initialize([this.myAddress]);
     this.timenode = new TimeNode(this.config);
 
     this.updateStats();
@@ -107,11 +117,33 @@ class EacWorker {
    * to which the worker is connected to.
    */
   async getNetworkInfo() {
-    const blockNumber = await Bb.fromCallback(callback => this.web3.eth.getBlockNumber(callback));
+    const providerBlockNumber = await Bb.fromCallback(callback =>
+      this.web3.eth.getBlockNumber(callback)
+    );
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
-      blockNumber
+      providerBlockNumber
+    });
+  }
+
+  async getBalances() {
+    await this.awaitTimeNodeInitialized();
+
+    const balance = await this.eac.Util.getBalance(this.myAddress);
+    const balanceETH = this.web3.fromWei(balance);
+
+    const { balanceDAY, mintingPower } = await getDAYBalance(
+      this.network,
+      this.web3,
+      this.dayAccountAddress
+    );
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES,
+      balanceETH: balanceETH.toNumber().toFixed(2),
+      balanceDAY: balanceDAY.toNumber(),
+      isTimeMint: mintingPower > 0
     });
   }
 
@@ -119,16 +151,16 @@ class EacWorker {
    * Fetches the current stats of the Alarm Client
    * and updates the TimeNodeStore.
    */
-  updateStats() {
+  async updateStats() {
+    await this.awaitTimeNodeInitialized();
+
     const empty = {
       bounties: null,
       costs: null,
       executedTransactions: []
     };
 
-    let { bounties, costs, executedTransactions } = this.config
-      ? this.config.statsDb.getStats()[0]
-      : empty;
+    let { bounties, costs, executedTransactions } = this.config ? this.getMyStats() : empty;
 
     let profit = null;
 
@@ -152,6 +184,15 @@ class EacWorker {
     });
   }
 
+  getMyStats() {
+    const stats = this.config.statsDb.getStats();
+    for (let stat of stats) {
+      if (stat.account === this.myAddress) {
+        return stat;
+      }
+    }
+  }
+
   /*
    * Resets the stats saved in the IndexedDB.
    */
@@ -161,21 +202,21 @@ class EacWorker {
     DBDeleteRequest.onerror = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: false
+        clearedStats: false
       });
     };
 
     DBDeleteRequest.onsuccess = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: true
+        clearedStats: true
       });
     };
 
     DBDeleteRequest.onblocked = function() {
       postMessage({
         type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        result: false
+        clearedStats: false
       });
     };
   }
@@ -205,7 +246,8 @@ onmessage = async function(event) {
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-      eacWorker.updateStats();
+      await eacWorker.updateStats();
+      await eacWorker.getBalances();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:

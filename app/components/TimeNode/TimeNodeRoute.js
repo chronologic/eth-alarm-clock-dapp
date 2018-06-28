@@ -24,19 +24,18 @@ class TimeNodeRoute extends Component {
   }
 
   render() {
-    const {
-      walletKeystore,
-      attachedDAYAccount
-    } = this.props.timeNodeStore;
+    const { walletKeystore, attachedDAYAccount } = this.props.timeNodeStore;
 
     const { walletUnlocked } = this.state;
 
     let componentToShow = null;
     if (walletKeystore) {
       if (attachedDAYAccount) {
-        componentToShow = walletUnlocked
-          ? <TimeNodeMain />
-          : <TimeNodeUnlock updateWalletUnlocked={this.updateWalletUnlocked} />;
+        componentToShow = walletUnlocked ? (
+          <TimeNodeMain updateWalletUnlocked={this.updateWalletUnlocked} />
+        ) : (
+          <TimeNodeUnlock updateWalletUnlocked={this.updateWalletUnlocked} />
+        );
       } else {
         componentToShow = <TimeNodeProve />;
       }
@@ -48,7 +47,9 @@ class TimeNodeRoute extends Component {
       <div id="timenodeRoute" className="container padding-25 sm-padding-10 subsection">
         <h1 className="view-title">
           {this.props.timeNodeStore.nodeStatus}&nbsp;
-          <span className="view-subtitle d-none d-md-inline">{this.props.timeNodeStore.getMyAddress()}</span>
+          <span className="view-subtitle d-none d-md-inline">
+            {this.props.timeNodeStore.getMyAddress()}
+          </span>
         </h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {componentToShow}
