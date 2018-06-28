@@ -5,10 +5,12 @@ import PropTypes from 'prop-types';
 import PoweredByEAC from '../Common/PoweredByEAC';
 import { observe } from 'mobx';
 
+export const TRANSACTION_SCANNER_LIMIT = 10;
+
 const INITIAL_STATE = {
   transactions: [],
   fetchingTransactions: false,
-  limit: 10,
+  limit: TRANSACTION_SCANNER_LIMIT,
   offset: 0,
   currentPage: 1
 };

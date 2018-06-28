@@ -14,6 +14,7 @@ import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { TRANSACTION_ROW_TEST_ATTRS } from '../app/components/TransactionScanner/TransactionRow';
 import { TRANSACTIONS_TABLE_TEST_ATTRS } from '../app/components/TransactionScanner/TransactionsTable';
+import { TRANSACTION_SCANNER_LIMIT } from '../app/components/TransactionScanner/TransactionScanner';
 
 momentDurationFormatSetup(moment);
 
@@ -108,24 +109,28 @@ describe('TransactionScanner', () => {
       load() {}
     };
 
-    const transaction = {
-      address: '0x123306090abab3b7e1400e9345bc60c78a8bef88',
-      bounty: new BigNumber('10000'),
-      callData() {
-        return 'xyz';
-      },
-      toAddress: '0x123306090abab3a6e1400e9345bc60c78a8bef57',
-      data: {
-        wasSuccessful: true
-      },
-      temporalUnit: TEMPORAL_UNIT.TIMESTAMP,
-      afterExecutionWindow: () => false,
-      executionWindowEnd: new BigNumber(1),
-      windowStart: new BigNumber(1),
-      windowSize: new BigNumber(180)
-    };
+    const TRANSACTIONS_LENGTH = 20;
 
-    const TRANSACTIONS = [transaction];
+    const TRANSACTIONS = [];
+
+    for (let i = 0; i < TRANSACTIONS_LENGTH; i++) {
+      TRANSACTIONS.push({
+        address: `0x123306090abab3b7e1400e9345bc60c78a8bef${i < 10 ? '0' + i : i}`,
+        bounty: new BigNumber('10000'),
+        callData() {
+          return 'xyz';
+        },
+        toAddress: '0x123306090abab3a6e1400e9345bc60c78a8bef57',
+        data: {
+          wasSuccessful: true
+        },
+        temporalUnit: TEMPORAL_UNIT.TIMESTAMP,
+        afterExecutionWindow: () => false,
+        executionWindowEnd: new BigNumber(1),
+        windowStart: new BigNumber(1 + i),
+        windowSize: new BigNumber(180 * (i + 1))
+      });
+    }
 
     const fetcher = {
       startLazy() {},
@@ -178,29 +183,78 @@ describe('TransactionScanner', () => {
 
     await waitForNextTick();
 
-    const domNode = mockedRender.getDOMNode();
+    mockedRender.update();
 
-    const firstRow = domNode.querySelectorAll('tbody > tr')[0];
+    expect(
+      mockedRender
+        .find('.pagination-entry.bold')
+        .text()
+        .trim()
+    ).toBe('1');
 
-    const bountyColumn = firstRow.querySelector(dataTest(TRANSACTION_ROW_TEST_ATTRS.BOUNTY_COLUMN));
-    const windowSizeColumn = firstRow.querySelector(
-      dataTest(TRANSACTION_ROW_TEST_ATTRS.WINDOW_SIZE_COLUMN)
+    let rows = mockedRender.find('table tbody tr');
+
+    let firstRow = rows.at(0);
+
+    const FIRST_TRANSACTION_ON_FIRST_PAGE = TRANSACTIONS[0];
+
+    expect(firstRow.find(dataTest(TRANSACTION_ROW_TEST_ATTRS.BOUNTY_COLUMN)).text()).toBe(
+      '10000 WEI'
     );
-
-    expect(bountyColumn.innerHTML).toBe('10000 WEI');
-    expect(windowSizeColumn.innerHTML).toBe('3 minutes');
-
-    const transactionLink = firstRow.querySelector('a');
-
-    expect(transactionLink.href).toBe(`/transactions/${transaction.address}`);
-    expect(transactionLink.text).toBe(transaction.address);
+    expect(firstRow.find(dataTest(TRANSACTION_ROW_TEST_ATTRS.WINDOW_SIZE_COLUMN)).text()).toBe(
+      '3 minutes'
+    );
+    expect(firstRow.find('a').props().href).toBe(
+      `/transactions/${FIRST_TRANSACTION_ON_FIRST_PAGE.address}`
+    );
+    expect(firstRow.find('a').text()).toBe(FIRST_TRANSACTION_ON_FIRST_PAGE.address);
 
     expect(mockedRender.find('thead tr').html()).toEqual(
       '<tr><th>Contract Address</th><th>Time</th><th>Bounty</th><th>TxValue</th><th>Deposit Amount</th><th>Time Window</th></tr>'
     );
     expect(
       mockedRender.find(dataTest(TRANSACTIONS_TABLE_TEST_ATTRS.INFO_TOTAL_ENTRIES)).text()
-    ).toBe(`Showing 1 to ${TRANSACTIONS.length} of ${TRANSACTIONS.length} entries`);
+    ).toBe(`Showing 1 to ${TRANSACTION_SCANNER_LIMIT} of ${TRANSACTIONS.length} entries`);
+
+    mockedRender.update();
+
+    mockedRender.find(dataTest(TRANSACTIONS_TABLE_TEST_ATTRS.NEXT_PAGE)).simulate('click');
+
+    await waitForNextTick();
+
+    mockedRender.update();
+
+    expect(
+      mockedRender
+        .find('.pagination-entry.bold')
+        .text()
+        .trim()
+    ).toBe('2');
+
+    firstRow = mockedRender.find('table tbody tr').at(0);
+
+    const FIRST_TRANSACTION_ON_SECOND_PAGE = TRANSACTIONS[TRANSACTION_SCANNER_LIMIT];
+
+    expect(firstRow.find(dataTest(TRANSACTION_ROW_TEST_ATTRS.BOUNTY_COLUMN)).text()).toBe(
+      '10000 WEI'
+    );
+    expect(firstRow.find(dataTest(TRANSACTION_ROW_TEST_ATTRS.WINDOW_SIZE_COLUMN)).text()).toBe(
+      '33 minutes'
+    );
+    expect(firstRow.find('a').props().href).toBe(
+      `/transactions/${FIRST_TRANSACTION_ON_SECOND_PAGE.address}`
+    );
+    expect(firstRow.find('a').text()).toBe(FIRST_TRANSACTION_ON_SECOND_PAGE.address);
+
+    expect(
+      mockedRender.find(dataTest(TRANSACTIONS_TABLE_TEST_ATTRS.INFO_TOTAL_ENTRIES)).text()
+    ).toBe(
+      `Showing ${TRANSACTION_SCANNER_LIMIT + 1} to ${TRANSACTION_SCANNER_LIMIT * 2} of ${
+        TRANSACTIONS.length
+      } entries`
+    );
+
+    expect(rows.length).toBe(TRANSACTION_SCANNER_LIMIT);
 
     expect(mockedRender.find(dataTest(TRANSACTIONS_TABLE_TEST_ATTRS.INFO_NO_TRANSACTIONS)).html());
   });
