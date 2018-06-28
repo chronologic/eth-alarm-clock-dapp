@@ -1,6 +1,5 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
-import Bb from 'bluebird';
 import ethereumJsWallet from 'ethereumjs-wallet';
 
 import EacWorker from 'worker-loader!../js/eac-worker.js';
@@ -8,6 +7,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
+import { getDAYBalance } from '../lib/timenode-util';
 
 /*
  * TimeNode classification based on the number
@@ -41,6 +41,20 @@ export default class TimeNodeStore {
   @observable executedTransactions = [];
   @observable balanceETH = null;
   @observable balanceDAY = null;
+  isTimeMint = null;
+
+  @computed
+  get nodeStatus() {
+    if (this.balance >= 3333) {
+      return TIMENODE_STATUS.MASTER_CHRONONODE;
+    } else if (this.balance >= 888) {
+      return TIMENODE_STATUS.CHRONONODE;
+    } else if (this.balance >= 333 || this.isTimeMint) {
+      return TIMENODE_STATUS.TIMENODE;
+    } else {
+      return TIMENODE_STATUS.DISABLED;
+    }
+  }
 
   @observable bounties = null;
   @observable costs = null;
@@ -84,6 +98,7 @@ export default class TimeNodeStore {
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
+      dayAccountAddress: this.getAttachedDAYAddress(),
       logfile: 'console',
       logLevel: 1,
       milliseconds: 15000,
@@ -107,6 +122,10 @@ export default class TimeNodeStore {
         if (event.data.costs !== null) this.costs = event.data.costs;
         if (event.data.profit !== null) this.profit = event.data.profit;
         this.executedTransactions = event.data.executedTransactions;
+      } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES) {
+        if (event.data.balanceETH !== null) this.balanceETH = event.data.balanceETH;
+        if (event.data.balanceDAY !== null) this.balanceDAY = event.data.balanceDAY;
+        if (event.data.isTimeMint !== null) this.isTimeMint = event.data.isTimeMint;
       } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
         if (event.data.result) {
           showNotification('Cleared the stats.', 'success');
@@ -142,7 +161,7 @@ export default class TimeNodeStore {
   }
 
   sendActiveTimeNodeEvent() {
-    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getMyAttachedAddress());
+    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
   }
 
   async awaitScanReady() {
@@ -236,56 +255,13 @@ export default class TimeNodeStore {
     }
   }
 
-  getMyAttachedAddress() {
+  getAttachedDAYAddress() {
     const encryptedAddress = localStorage.getItem('attachedDAYAccount');
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
       return '';
     }
-  }
-
-  async getBalance(address = this.getMyAddress()) {
-    const balance = await this._eacService.Util.getBalance(address);
-
-    this.balanceETH = balance
-      .div(10 ** 18)
-      .toNumber()
-      .toFixed(2);
-
-    return this.balanceETH;
-  }
-
-  async getDAYBalance(address = this.getMyAttachedAddress()) {
-    await this._web3Service.init();
-    const web3 = this._web3Service.web3;
-
-    const dayTokenAddress = this._web3Service.network.dayTokenAddress;
-    const dayTokenAbi = this._web3Service.network.dayTokenAbi;
-
-    const contract = web3.eth.contract(dayTokenAbi).at(dayTokenAddress);
-
-    const balanceNum = await Bb.fromCallback(callback => contract.balanceOf(address, callback));
-    const balance = balanceNum
-      .div(10 ** 18)
-      .toNumber()
-      .toFixed(2);
-
-    const mintingPower =
-      process.env.NODE_ENV === 'docker'
-        ? 0
-        : await Bb.fromCallback(callback => {
-            contract.getMintingPowerByAddress(address, callback);
-          });
-
-    this.nodeStatus = this.getNodeStatus(balance, mintingPower > 0);
-    this.balanceDAY = balance;
-
-    if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
-      this.stopScanning();
-    }
-
-    return balance;
   }
 
   sendMessageWorker(messageType) {
@@ -310,18 +286,6 @@ export default class TimeNodeStore {
     this.detailedLogs = [];
   }
 
-  getNodeStatus(balance, isTimeMint) {
-    if (balance >= 3333) {
-      return TIMENODE_STATUS.MASTER_CHRONONODE;
-    } else if (balance >= 888) {
-      return TIMENODE_STATUS.CHRONONODE;
-    } else if (balance >= 333 || isTimeMint) {
-      return TIMENODE_STATUS.TIMENODE;
-    } else {
-      return TIMENODE_STATUS.DISABLED;
-    }
-  }
-
   /*
    * Attaches a DAY-token-holding account to the session
    * as a proof-of-ownership of DAY tokens.
@@ -336,7 +300,15 @@ export default class TimeNodeStore {
 
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
-      const numDAYTokens = await this.getDAYBalance(signature.address);
+      const { balanceDAY, mintingPower } = await getDAYBalance(
+        this._web3Service.network,
+        this._web3Service.web3,
+        signature.address
+      );
+
+      this.balanceDAY = balanceDAY;
+      this.isTimeMint = mintingPower > 0;
+
       const encryptedAttachedAddress = this.encrypt(signature.address);
 
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
@@ -344,7 +316,7 @@ export default class TimeNodeStore {
         this.attachedDAYAccount = encryptedAttachedAddress;
         showNotification('Success.', 'success');
       } else {
-        showNotification('Not enough DAY tokens. Current balance: ' + numDAYTokens.toString());
+        showNotification('Not enough DAY tokens. Current balance: ' + balanceDAY.toString());
       }
     } catch (error) {
       showNotification(error);
