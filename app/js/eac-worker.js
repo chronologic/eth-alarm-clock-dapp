@@ -60,7 +60,8 @@ class EacWorker {
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
-      factory: await eac.requestFactory()
+      factory: await eac.requestFactory(),
+      economicStrategy: options.economicStrategy
     };
 
     this.config = new Config(configOptions);
