@@ -36,6 +36,11 @@ export default class WorkerLogger {
   log(message, type) {
     const timestamp = moment().unix();
 
+    if (typeof message !== 'string') {
+      message = `Invalid log message format: ${JSON.stringify(message)} is not a string.`;
+      type = LOGGER_MSG_TYPES.DEBUG;
+    }
+
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.LOG,
       value: {
