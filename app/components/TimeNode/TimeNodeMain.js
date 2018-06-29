@@ -12,7 +12,7 @@ class TimeNodeMain extends Component {
         <ul className="nav nav-tabs nav-tabs-simple" role="tablist">
           <li className="nav-item">
             <a
-              className="active px-5 py-3"
+              className="active px-4 py-3"
               data-toggle="tab"
               role="tab"
               data-target="#tabStatistics"
@@ -22,13 +22,13 @@ class TimeNodeMain extends Component {
             </a>
           </li>
           <li className="nav-item">
-            <a className="px-5 py-3" href="#" data-toggle="tab" role="tab" data-target="#tabLogs">
+            <a className="px-4 py-3" href="#" data-toggle="tab" role="tab" data-target="#tabLogs">
               Logs
             </a>
           </li>
           <li className="nav-item">
             <a
-              className="px-5 py-3"
+              className="px-4 py-3"
               href="#"
               data-toggle="tab"
               role="tab"

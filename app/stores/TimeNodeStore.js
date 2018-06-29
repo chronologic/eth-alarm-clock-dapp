@@ -60,6 +60,15 @@ export default class TimeNodeStore {
   @observable costs = null;
   @observable profit = null;
 
+  @computed
+  get economicStrategy() {
+    return {
+      maxDeposit: this.getStorageItem('maxDeposit'),
+      minBalance: this.getStorageItem('minBalance'),
+      minProfitability: this.getStorageItem('minProfitability')
+    };
+  }
+
   @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   // If a TimeNode has selected a custom provider URL
@@ -78,14 +87,14 @@ export default class TimeNodeStore {
     this._web3Service = web3Service;
     this._keenStore = keenStore;
 
-    if (localStorage.getItem('attachedDAYAccount') !== null)
-      this.attachedDAYAccount = localStorage.getItem('attachedDAYAccount');
-    if (localStorage.getItem('tn') !== null) this.walletKeystore = localStorage.getItem('tn');
+    if (this.getStorageItem('attachedDAYAccount') !== null)
+      this.attachedDAYAccount = this.getStorageItem('attachedDAYAccount');
+    if (this.getStorageItem('tn') !== null) this.walletKeystore = this.getStorageItem('tn');
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(localStorage.getItem('tn'), password);
+      this.startClient(this.getStorageItem('tn'), password);
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
@@ -105,7 +114,8 @@ export default class TimeNodeStore {
       autostart: false,
       scan: 950, // ~65min on kovan
       repl: false,
-      browserDB: true
+      browserDB: true,
+      economicStrategy: this.economicStrategy
     };
   }
 
@@ -258,7 +268,7 @@ export default class TimeNodeStore {
   }
 
   getAttachedDAYAddress() {
-    const encryptedAddress = localStorage.getItem('attachedDAYAccount');
+    const encryptedAddress = this.getStorageItem('attachedDAYAccount');
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
@@ -325,9 +335,22 @@ export default class TimeNodeStore {
     }
   }
 
+  setEconomicStrategy(maxDeposit, minBalance, minProfitability) {
+    const numberFromString = string => {
+      if (string === '') {
+        return null;
+      }
+      return parseFloat(string);
+    };
+
+    this.setStorageItem('maxDeposit', numberFromString(maxDeposit));
+    this.setStorageItem('minBalance', numberFromString(minBalance));
+    this.setStorageItem('minProfitability', numberFromString(minProfitability));
+  }
+
   hasStorageItems(itemList) {
     for (let item of itemList) {
-      if (!localStorage.getItem(item)) {
+      if (!this.getStorageItem(item)) {
         return false;
       }
     }
@@ -336,6 +359,16 @@ export default class TimeNodeStore {
 
   setStorageItem(key, value) {
     localStorage.setItem(key, value);
+  }
+
+  getStorageItem(key) {
+    return localStorage.getItem(key);
+  }
+
+  restart(password) {
+    this.stopScanning();
+    this.eacWorker = null;
+    this.startClient(this.walletKeystore, password);
   }
 
   resetWallet() {
@@ -350,7 +383,7 @@ export default class TimeNodeStore {
 
   passwordMatchesKeystore(password) {
     try {
-      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), this.decrypt(password), true);
+      ethereumJsWallet.fromV3(this.decrypt(this.walletKeystore), password, true);
       showNotification('Success.', 'success');
       return true;
     } catch (e) {
