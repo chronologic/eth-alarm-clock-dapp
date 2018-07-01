@@ -35,7 +35,7 @@
     ]
   },
   "devDependencies": {
-    "acorn5-object-spread": "^5.1.2",
+    "acorn5-object-spread": "5.1.2",
     "autoprefixer": "8.6.4",
     "babel-core": "6.26.3",
     "babel-eslint": "8.2.5",
