@@ -10,4 +10,8 @@ export default class LocalStorageService {
   load(key) {
     return this.localStorage.getItem(key);
   }
+
+  remove(key) {
+    return this.localStorage.removeItem(key);
+  }
 }
