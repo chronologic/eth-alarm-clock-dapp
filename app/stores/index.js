@@ -44,7 +44,7 @@ export const transactionStore = new TransactionStore(
   transactionCache,
   featuresService
 );
-export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore);
+export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
