@@ -52,7 +52,11 @@ describe('TransactionScanner', () => {
                 };
               }
             };
-          }
+          },
+          getBlockNumber(callback) {
+            callback(null, 9999999);
+          },
+          getAccounts: () => []
         },
         sha3() {
           return '';
