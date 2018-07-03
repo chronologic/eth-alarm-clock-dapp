@@ -8,7 +8,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 
-import { TimeNode, Config, StatsDB } from 'timenode-core';
+import { TimeNode, Config, StatsDB } from '@ethereum-alarm-clock/timenode-core';
 
 class EacWorker {
   timenode = null;
