@@ -327,5 +327,7 @@ describe('App', () => {
 
     expect(mockedRender.find('#overlay-search').getDOMNode().value).toBe(VALID_ADDRESS);
     expect(mockedRender.find('.searchError').text()).toBe('');
+
+    mockedRender.unmount();
   });
 });
