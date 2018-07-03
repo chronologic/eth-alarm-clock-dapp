@@ -20,7 +20,7 @@ momentDurationFormatSetup(moment);
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe.only('App', () => {
+describe.skip('App', () => {
   it('correctly navigates when clicking links', async () => {
     const TEST_EXPLORER = 'https://etherscan.io/';
 
