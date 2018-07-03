@@ -10,6 +10,11 @@ const METAMASK_LOCKED_MESSAGE = 'Please unlock or add new account to use this ap
 
 @observer
 class MetamaskComponent extends Component {
+  /**
+   * @private
+   */
+  _mounted = false;
+
   state = {
     accounts: ''
   };
@@ -104,16 +109,25 @@ class MetamaskComponent extends Component {
   async resolveWeb3() {
     const { web3Service } = this.props;
     await web3Service.init();
+
+    if (!this._mounted) {
+      return;
+    }
+
     this.setState({ accounts: web3Service.accounts });
     this.scoutUpdates();
     this.runNotifications();
   }
 
   componentDidMount() {
+    this._mounted = true;
+
     this.resolveWeb3();
   }
 
   componentWillUnmount() {
+    this._mounted = false;
+
     clearTimeout(this.timeout);
   }
 }

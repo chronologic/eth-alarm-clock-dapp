@@ -27,7 +27,7 @@ const keenStore = new KeenStore(
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
-const scheduleStore = new ScheduleStore(false);
+const scheduleStore = new ScheduleStore();
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionCache = new TransactionCache(storageService);
