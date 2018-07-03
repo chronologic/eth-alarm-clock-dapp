@@ -6,37 +6,16 @@ import Header from '../app/components/Header/Header';
 import { Router } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import LocalStorageService from '../app/services/storage';
+import LocalStorageMock from '../__mocks__/LocalStorageMock';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
-class LocalStorageMock {
-  constructor() {
-    this.store = {};
-  }
-
-  clear() {
-    this.store = {};
-  }
-
-  getItem(key) {
-    return this.store[key] || null;
-  }
-
-  setItem(key, value) {
-    this.store[key] = value.toString();
-  }
-
-  removeItem(key) {
-    delete this.store[key];
-  }
-}
-
 describe('Header', () => {
   it('displays current block number', () => {
-    global.localStorage = new LocalStorageMock();
     const CURRENT_BLOCK = 5361200;
 
     const web3Service = new Web3Service({
@@ -58,9 +37,12 @@ describe('Header', () => {
     };
     const featuresService = {};
 
+    const storageService = new LocalStorageService(new LocalStorageMock());
+
     const injectables = {
       featuresService,
       keenStore,
+      storageService,
       web3Service,
       eacService,
       timeNodeStore

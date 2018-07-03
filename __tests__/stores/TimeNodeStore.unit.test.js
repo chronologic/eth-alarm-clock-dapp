@@ -1,16 +1,17 @@
 import { ok } from 'assert';
 import TimeNodeStore from '../../app/stores/TimeNodeStore';
 import LocalStorageMock from '../../__mocks__/LocalStorageMock';
-import { services } from '../../app/services';
+import LocalStorageService from '../../app/services/storage';
 
 describe('Stores / TimeNode', () => {
   describe('getWorkerOptions', () => {
     it('does not try to decrypt password', () => {
-      global.localStorage = new LocalStorageMock();
       const KEYSTORE = '{}';
       const KEYSTORE_PASSWORD = 'testtest';
 
-      const timeNodeStore = new TimeNodeStore({}, {}, {}, services.storageService);
+      const localStorageMock = new LocalStorageMock();
+      const storageService = new LocalStorageService(localStorageMock);
+      const timeNodeStore = new TimeNodeStore({}, {}, {}, storageService);
 
       timeNodeStore.decrypt = encodedValue => {
         if (encodedValue === KEYSTORE_PASSWORD) {

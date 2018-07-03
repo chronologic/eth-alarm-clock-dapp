@@ -3,6 +3,8 @@ import { equal } from 'assert';
 import TransactionCache from '../../app/stores/TransactionCache';
 import FeaturesService from '../../app/services/features';
 import { KOVAN_NETWORK_ID } from '../../app/config/web3Config';
+import LocalStorageService from '../../app/services/storage';
+import LocalStorageMock from '../../__mocks__/LocalStorageMock';
 
 describe('Stores / TransactionFetcher', () => {
   describe('getTransactions', () => {
@@ -44,19 +46,7 @@ describe('Stores / TransactionFetcher', () => {
       }
     };
 
-    class StorageService {
-      map = {};
-
-      save(key, value) {
-        this.map[key] = value;
-      }
-
-      load(key) {
-        return this.map[key];
-      }
-    }
-
-    const storageService = new StorageService();
+    const storageService = new LocalStorageService(new LocalStorageMock());
 
     const transactionsCache = new TransactionCache(storageService);
 

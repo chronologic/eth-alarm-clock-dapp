@@ -82,6 +82,8 @@ export default class TimeNodeStore {
 
   _timeNodeStatusCheckIntervalRef = null;
 
+  _storageService = null;
+
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
@@ -100,7 +102,6 @@ export default class TimeNodeStore {
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
-    return;
   }
 
   getWorkerOptions(keystore, keystorePassword) {
@@ -215,7 +216,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
-    localStorage.setItem('isTimenodeScanning', true);
+    this._storageService.save('isTimenodeScanning', true);
   }
 
   stopScanning() {

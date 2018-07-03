@@ -36,7 +36,8 @@ export default class ScheduleStore {
   @observable isUsingTime;
   @observable isTokenTransfer;
 
-  @computed get transactionTimestamp() {
+  @computed
+  get transactionTimestamp() {
     return this.dateTimeValidatorStore.ts(
       this.transactionDate,
       this.transactionTime,
@@ -80,12 +81,10 @@ export default class ScheduleStore {
     this.isTokenTransfer = false;
   };
 
-  constructor(source) {
-    Object.assign(this, source);
+  constructor() {
     this.reset();
     this.dateTimeValidatorStore = new DateTimeValidatorStore();
   }
-
 
   get transactionTzTime() {
     return this.dateTimeValidatorStore
