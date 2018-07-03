@@ -39,7 +39,11 @@ describe('TransactionScanner', () => {
 
     const web3Service = new Web3Service({
       eth: {
-        accounts: []
+        accounts: [],
+        getBlockNumber(callback) {
+          callback(null, 9999999);
+        },
+        getAccounts: () => []
       },
       explorer: TEST_EXPLORER,
       web3: {
