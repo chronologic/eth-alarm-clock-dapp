@@ -12,7 +12,7 @@ import TransactionCache from './TransactionCache';
 const { eacService, featuresService, storageService, web3Service } = services;
 
 const eacVersions = {
-  client: require('eac.js-client').version,
+  client: require('timenode-core').version,
   contracts: eacService.contracts,
   lib: eacService.version
 };
