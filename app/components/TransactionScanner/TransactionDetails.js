@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import Alert from '../Common/Alert';
-import ScrollbarComponent from '../Common/ScrollbarComponent';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
@@ -20,13 +19,13 @@ const INITIAL_STATE = {
 @inject('transactionStore')
 @inject('eacService')
 @inject('web3Service')
-class TransactionDetails extends ScrollbarComponent {
+class TransactionDetails extends Component {
   state = INITIAL_STATE;
 
   _isMounted = false;
 
   constructor() {
-    super(...arguments);
+    super();
 
     this.state = INITIAL_STATE;
     this.refundBalance = this.refundBalance.bind(this);
@@ -174,15 +173,12 @@ class TransactionDetails extends ScrollbarComponent {
   }
 
   async componentDidMount() {
-    super.componentDidMount();
-
     this._isMounted = true;
 
     await this.setupDetails();
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
     this._isMounted = false;
   }
 
@@ -484,7 +480,8 @@ TransactionDetails.propTypes = {
   address: PropTypes.string,
   eacService: PropTypes.any,
   transaction: PropTypes.any,
-  transactionStore: PropTypes.any
+  transactionStore: PropTypes.any,
+  web3Service: PropTypes.any
 };
 
 export default TransactionDetails;

@@ -43,7 +43,7 @@ class SearchOverlay extends Component {
           this.redirectTo(`/transactions/owner/${address}`);
         }
       } else {
-        throw Error('Invalid address or txHash.');
+        throw Error('Invalid address or transaction hash.');
       }
     } catch (err) {
       this.setState({ searchError: err.message });
@@ -96,7 +96,7 @@ class SearchOverlay extends Component {
                 <input
                   id="overlay-search"
                   className="no-border overlay-search bg-transparent"
-                  placeholder="Search by Address / Tx hash..."
+                  placeholder="Search by address / tx hash..."
                   autoComplete="off"
                   spellCheck="false"
                   ref={el => (this.searchQuery = el)}

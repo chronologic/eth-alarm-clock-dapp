@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 import ExecutedGraph from './ExecutedGraph';
+import { BeatLoader } from 'react-spinners';
 
 @inject('timeNodeStore')
 @inject('keenStore')
@@ -20,7 +21,6 @@ class TimeNodeStatistics extends Component {
   }
 
   async UNSAFE_componentWillMount() {
-    await this.refreshBalances();
     this.setState({
       timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
     });
@@ -72,15 +72,8 @@ class TimeNodeStatistics extends Component {
       this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
   }
 
-  async refreshBalances() {
-    await this.props.timeNodeStore.getBalance();
-    await this.props.timeNodeStore.getDAYBalance();
-  }
-
   async refreshStats() {
     this.props.timeNodeStore.updateStats();
-    await this.props.timeNodeStore.getBalance();
-    await this.props.timeNodeStore.getDAYBalance();
   }
 
   getBalanceNotification() {
@@ -99,7 +92,15 @@ class TimeNodeStatistics extends Component {
 
   render() {
     let timeNodeStatus = null;
-    const { bounties, costs, profit, scanningStarted } = this.props.timeNodeStore;
+    const {
+      bounties,
+      costs,
+      profit,
+      scanningStarted,
+      balanceETH,
+      balanceDAY,
+      executedTransactions
+    } = this.props.timeNodeStore;
 
     if (this.state.timeNodeDisabled) {
       timeNodeStatus = TIMENODE_STATUS.DISABLED;
@@ -107,7 +108,7 @@ class TimeNodeStatistics extends Component {
       timeNodeStatus = scanningStarted ? 'running' : 'stopped';
     }
 
-    const profitStatus = profit !== null ? profit + ' ETH' : 'Loading...';
+    const profitStatus = profit !== null ? profit + ' ETH' : <BeatLoader />;
     const bountiesStatus =
       bounties !== null && costs !== null ? `${bounties} (bounties) - ${costs} (costs)` : '';
 
@@ -158,7 +159,7 @@ class TimeNodeStatistics extends Component {
           <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Executed: {this.props.timeNodeStore.totalExecuted}</div>
+                <div className="card-title">Executed: {executedTransactions.length}</div>
                 <div className="card-controls">
                   <ul>
                     <li>
@@ -174,7 +175,7 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div ref={el => (this.chartContainer = el)} className="card-body no-padding">
-                {this.props.timeNodeStore.executedTransactions.length > 0 ? (
+                {executedTransactions.length > 0 ? (
                   <ExecutedGraph />
                 ) : (
                   <p className="my-5 text-center">No data yet.</p>
@@ -193,7 +194,7 @@ class TimeNodeStatistics extends Component {
                       <a
                         data-toggle="refresh"
                         className="card-refresh"
-                        onClick={() => this.refreshBalances()}
+                        onClick={() => this.refreshStats()}
                       >
                         <i className="card-icon card-icon-refresh" />
                       </a>
@@ -204,12 +205,16 @@ class TimeNodeStatistics extends Component {
               <div className="card-body p-0 m-t-10">
                 <div className="row px-4">
                   <div className="col-6 col-md-6">ETH</div>
-                  <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceETH}</div>
+                  <div className="col-6 col-md-6">
+                    {balanceETH !== null ? balanceETH : <BeatLoader size={6} />}
+                  </div>
                 </div>
                 <hr className="mt-2 mb-2" />
                 <div className="row px-4 pb-2">
                   <div className="col-6 col-md-6">DAY</div>
-                  <div className="col-6 col-md-6">{this.props.timeNodeStore.balanceDAY}</div>
+                  <div className="col-6 col-md-6">
+                    {balanceDAY !== null ? balanceDAY : <BeatLoader size={6} />}
+                  </div>
                 </div>
               </div>
             </div>

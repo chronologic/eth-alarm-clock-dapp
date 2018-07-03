@@ -25,13 +25,13 @@ class SidePanel extends Component {
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
     const currentUrl = this.props.location.pathname;
-    const cls = type === 'thumbnail' ? 'active' : 'text-white';
+    const classToAdd = type === 'thumbnail' ? 'active' : 'text-white';
 
     if (substring) {
-      return currentUrl.includes(url) ? cls : '';
-    } else {
-      return currentUrl === url ? cls : '';
+      return currentUrl.includes(url) ? classToAdd : '';
     }
+
+    return currentUrl === url ? classToAdd : '';
   }
 
   render() {
@@ -89,7 +89,7 @@ class SidePanel extends Component {
           <ul className="menu-items">
             {!isElectron && (
               <li className="m-t-30 ">
-                <NavLink to="/">
+                <NavLink to="/" exact={true}>
                   <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
                   <span className={entryList[0].thumbnailClasses}>
                     <i className="pg-calender" />
