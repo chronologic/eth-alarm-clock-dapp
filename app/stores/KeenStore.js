@@ -11,7 +11,7 @@ const COLLECTIONS = {
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
-  @observable activeTimeNodes = '-';
+  @observable activeTimeNodes = null;
 
   projectId = '';
   writeKey = '';
@@ -19,6 +19,7 @@ export class KeenStore {
   analysisClient = null;
   trackingClient = null;
   networkId = null;
+  isBlacklisted = false;
 
   _web3Service = null;
 
@@ -136,16 +137,18 @@ export class KeenStore {
 
     if (isAlphaNode) {
       await this.analysisClient.run(alphaCount, (err, response) => {
-        if (err) {
-          this.activeTimeNodes = '-';
+        if (err || !response) {
+          this.activeTimeNodes = null;
+          this.isBlacklisted = true;
         }
         alphaNodes = response.result;
       });
     }
 
     this.analysisClient.run(count, (err, response) => {
-      if (err) {
-        this.activeTimeNodes = '-';
+      if (err || !response) {
+        this.activeTimeNodes = null;
+        this.isBlacklisted = true;
       }
       this.activeTimeNodes = isAlphaNode
         ? Number(alphaNodes) + Number(response.result)

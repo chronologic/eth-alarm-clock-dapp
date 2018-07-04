@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import NetworkChooser from './NetworkChooser';
 import { isRunningInElectron } from '../../lib/electron-util';
+import { BeatLoader } from 'react-spinners';
 
 @inject('web3Service')
 @inject('eacService')
@@ -19,6 +20,22 @@ class Header extends Component {
 
   componentDidMount() {
     this.fetchEacContracts();
+
+    const { jQuery } = window;
+
+    if (!jQuery) {
+      return;
+    }
+    jQuery('[data-toggle="tooltip"]').tooltip();
+  }
+
+  componentDidUpdate() {
+    const { jQuery } = window;
+
+    if (!jQuery) {
+      return;
+    }
+    jQuery('[data-toggle="tooltip"]').tooltip();
   }
 
   async fetchEacContracts() {
@@ -34,7 +51,26 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service } = this.props;
+    const { web3Service, keenStore } = this.props;
+
+    const activeTimenodes = keenStore.activeTimeNodes ? (
+      keenStore.activeTimeNodes
+    ) : (
+      <BeatLoader color="#fff" size={4} />
+    );
+
+    const infoBtn = (
+      <span
+        data-placement="bottom"
+        data-toggle="tooltip"
+        data-html="true"
+        title="Unable to load analytics. Please <strong>disable any privacy tools</strong> in order to view the network analytics."
+      >
+        <i className="fa fa-info-circle" style={{ color: 'gold' }} />
+      </span>
+    );
+
+    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
 
     return (
       <div className="header">
@@ -51,9 +87,10 @@ class Header extends Component {
         <div className="d-flex align-items-center">
           <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa fa-sitemap" />&nbsp;&nbsp;Active TimeNodes:&nbsp;
+              <i className="fa fa-sitemap" />
+              <span className="mx-2">Active TimeNodes:</span>
             </span>
-            <span className="timenode-count">{this.props.keenStore.activeTimeNodes}</span>
+            <span className="timenode-count">{displayActiveTimenodes}</span>
           </div>
           <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">

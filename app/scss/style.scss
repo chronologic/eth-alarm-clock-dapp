@@ -273,6 +273,9 @@ hr {
 .timenode-count {
   color: #fff;
 }
+  .timenode-count > div {
+    display: inline;
+  }
 
 #timenodeLogsField {
   height: 330px;
