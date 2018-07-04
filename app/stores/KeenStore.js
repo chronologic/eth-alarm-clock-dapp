@@ -137,9 +137,10 @@ export class KeenStore {
 
     if (isAlphaNode) {
       await this.analysisClient.run(alphaCount, (err, response) => {
-        if (err || !response) {
+        if (err || response === null || !response.hasOwnProperty('result')) {
           this.activeTimeNodes = null;
           this.isBlacklisted = true;
+          return;
         }
         alphaNodes = response.result;
         this.isBlacklisted = false;
@@ -147,9 +148,10 @@ export class KeenStore {
     }
 
     this.analysisClient.run(count, (err, response) => {
-      if (err || !response) {
+      if (err || response === null || !response.hasOwnProperty('result')) {
         this.activeTimeNodes = null;
         this.isBlacklisted = true;
+        return;
       }
       this.activeTimeNodes = isAlphaNode
         ? Number(alphaNodes) + Number(response.result)

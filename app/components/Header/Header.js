@@ -23,19 +23,17 @@ class Header extends Component {
 
     const { jQuery } = window;
 
-    if (!jQuery) {
-      return;
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
     }
-    jQuery('[data-toggle="tooltip"]').tooltip();
   }
 
   componentDidUpdate() {
     const { jQuery } = window;
 
-    if (!jQuery) {
-      return;
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
     }
-    jQuery('[data-toggle="tooltip"]').tooltip();
   }
 
   async fetchEacContracts() {
@@ -61,12 +59,13 @@ class Header extends Component {
 
     const infoBtn = (
       <span
+        className="analytics-info"
         data-placement="bottom"
         data-toggle="tooltip"
         data-html="true"
         title="Unable to load analytics. Please <strong>disable any privacy tools</strong> in order to view the network analytics."
       >
-        <i className="fa fa-info-circle" style={{ color: 'gold' }} />
+        <i className="fa fa-info-circle" />
       </span>
     );
 

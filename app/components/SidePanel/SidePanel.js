@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
+import { BeatLoader } from 'react-spinners';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -18,8 +19,20 @@ class SidePanel extends Component {
   componentDidMount() {
     const { jQuery } = window;
 
-    if (jQuery && jQuery.Pages) {
-      jQuery.Pages.init();
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
+
+      if (jQuery.Pages) {
+        jQuery.Pages.init();
+      }
+    }
+  }
+
+  componentDidUpdate() {
+    const { jQuery } = window;
+
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
     }
   }
 
@@ -64,6 +77,27 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
+    const { keenStore } = this.props;
+
+    const activeTimenodes = keenStore.activeTimeNodes ? (
+      keenStore.activeTimeNodes
+    ) : (
+      <BeatLoader color="#fff" size={4} />
+    );
+
+    const infoBtn = (
+      <span
+        className="analytics-info"
+        data-placement="bottom"
+        data-toggle="tooltip"
+        data-html="true"
+        title="Unable to load analytics. Please <strong>disable any privacy tools</strong> in order to view the network analytics."
+      >
+        <i className="fa fa-info-circle" />
+      </span>
+    );
+
+    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
 
     return (
       <nav className="page-sidebar" data-pages="sidebar">
@@ -194,9 +228,7 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Active TimeNodes</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">
-                      {this.props.keenStore.activeTimeNodes}
-                    </span>
+                    <span className="timenode-count col-6">{displayActiveTimenodes}</span>
                   </div>
                 </div>
               </div>
