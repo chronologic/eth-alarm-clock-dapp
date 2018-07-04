@@ -142,6 +142,7 @@ export class KeenStore {
           this.isBlacklisted = true;
         }
         alphaNodes = response.result;
+        this.isBlacklisted = false;
       });
     }
 
@@ -153,6 +154,7 @@ export class KeenStore {
       this.activeTimeNodes = isAlphaNode
         ? Number(alphaNodes) + Number(response.result)
         : response.result;
+      this.isBlacklisted = false;
     });
   }
 
