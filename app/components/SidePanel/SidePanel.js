@@ -91,7 +91,7 @@ class SidePanel extends Component {
         data-placement="bottom"
         data-toggle="tooltip"
         data-html="true"
-        title="Unable to load analytics. Please <strong>disable any privacy tools</strong> in order to view the network analytics."
+        title="To enable site analytics, please <strong>whitelist our site</strong>."
       >
         <i className="fa fa-info-circle" />
       </span>
