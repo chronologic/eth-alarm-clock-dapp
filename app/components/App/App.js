@@ -39,10 +39,8 @@ class App extends Component {
     - Detecting when to close the search overlay
   */
   onEscKey(event) {
-    if (event.keyCode === 27) {
-      if (this.state.showSearchOverlay) {
-        this.updateSearchState(false);
-      }
+    if (event.keyCode === 27 && this.state.showSearchOverlay) {
+      this.updateSearchState(false);
     }
   }
 

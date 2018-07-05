@@ -12,7 +12,7 @@ import TransactionCache from './TransactionCache';
 const { eacService, featuresService, storageService, web3Service } = services;
 
 const eacVersions = {
-  client: require('eac.js-client').version,
+  client: require('@ethereum-alarm-clock/timenode-core').version,
   contracts: eacService.contracts,
   lib: eacService.version
 };
@@ -27,7 +27,7 @@ const keenStore = new KeenStore(
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
-const scheduleStore = new ScheduleStore(false);
+const scheduleStore = new ScheduleStore();
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionCache = new TransactionCache(storageService);
@@ -44,7 +44,7 @@ export const transactionStore = new TransactionStore(
   transactionCache,
   featuresService
 );
-export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore);
+export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 

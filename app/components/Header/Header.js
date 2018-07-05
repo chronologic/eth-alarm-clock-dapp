@@ -25,7 +25,7 @@ class Header extends Component {
     const { web3Service } = this.props;
     await web3Service.init();
 
-    if (!this.props.featuresService._isCurrentNetworkSupported()) {
+    if (!this.props.featuresService._isCurrentNetworkSupported) {
       return;
     }
 

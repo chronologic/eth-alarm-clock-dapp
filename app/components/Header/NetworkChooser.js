@@ -8,6 +8,7 @@ const DEFAULT_NETWORK_ID = Networks[0].id;
 
 @inject('web3Service')
 @inject('timeNodeStore')
+@inject('storageService')
 @observer
 class NetworkChooser extends Component {
   constructor(props) {
@@ -64,10 +65,10 @@ class NetworkChooser extends Component {
    * MetaMask provider.
    */
   checkSelectedProvider() {
-    const selectedProviderId = parseInt(localStorage.getItem('selectedProviderId'));
-    const selectedProviderUrl = localStorage.getItem('selectedProviderUrl');
+    const { storageService, timeNodeStore } = this.props;
 
-    const { timeNodeStore } = this.props;
+    const selectedProviderId = parseInt(storageService.load('selectedProviderId'));
+    const selectedProviderUrl = storageService.load('selectedProviderUrl');
 
     if (selectedProviderId && selectedProviderUrl) {
       timeNodeStore.customProviderUrl = selectedProviderUrl;
@@ -78,32 +79,37 @@ class NetworkChooser extends Component {
   }
 
   hasCustomProvider() {
-    const selectedProviderId = parseInt(localStorage.getItem('selectedProviderId'));
+    const selectedProviderId = parseInt(this.props.storageService.load('selectedProviderId'));
+
     return selectedProviderId === CUSTOM_PROVIDER_NET_ID;
   }
 
   _handleSelectedNetworkChange(event) {
     const selectedNetId = parseInt(event.target.value);
 
-    if (selectedNetId !== CUSTOM_PROVIDER_NET_ID) {
-      const selectedProviderUrl = Networks[selectedNetId].endpoint;
-      this.props.timeNodeStore.customProviderUrl = selectedProviderUrl;
-      localStorage.setItem('selectedProviderId', selectedNetId);
-      localStorage.setItem('selectedProviderUrl', selectedProviderUrl);
-
-      // Reload the page so that the changes are refreshed
-      if (!isRunningInElectron()) {
-        window.location.reload();
-      } else {
-        // Workaround for getting the Electron app to reload
-        // since the regular reload results in a blank screen
-        window.location.href = '/index.html';
-      }
-    } else {
+    if (selectedNetId === CUSTOM_PROVIDER_NET_ID) {
       const { jQuery } = window;
       jQuery('#customProviderModal').modal({
         show: true
       });
+
+      return;
+    }
+
+    const { storageService, timeNodeStore } = this.props;
+
+    const selectedProviderUrl = Networks[selectedNetId].endpoint;
+    timeNodeStore.customProviderUrl = selectedProviderUrl;
+    storageService.save('selectedProviderId', selectedNetId);
+    storageService.save('selectedProviderUrl', selectedProviderUrl);
+
+    // Reload the page so that the changes are refreshed
+    if (isRunningInElectron()) {
+      // Workaround for getting the Electron app to reload
+      // since the regular reload results in a blank screen
+      window.location.href = '/index.html';
+    } else {
+      window.location.reload();
     }
   }
 
@@ -162,6 +168,7 @@ class NetworkChooser extends Component {
 }
 
 NetworkChooser.propTypes = {
+  storageService: PropTypes.any,
   web3Service: PropTypes.any,
   timeNodeStore: PropTypes.any,
   history: PropTypes.object.isRequired

@@ -263,6 +263,11 @@ class ScheduleWizard extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
+
+    if (!jQuery) {
+      return;
+    }
+
     jQuery('#scheduleWizard').bootstrapWizard({
       onTabShow: function(tab, navigation, index) {
         var $total = navigation.find('li').length;
@@ -303,7 +308,7 @@ class ScheduleWizard extends Component {
       <div id="scheduleWizard" className="subsection">
         <ul className="row nav nav-tabs nav-tabs-linetriangle nav-tabs-separator p-b-10">
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#timeSettings" onClick={this.initiateScrollbar}>
+            <a data-toggle="tab" href="#timeSettings">
               <div className="row">
                 <div className="col-md-4 text-right tab-icon-wrapper">
                   <i className="far fa-clock tab-icon" />
@@ -315,7 +320,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#infoSettings" onClick={this.initiateScrollbar}>
+            <a data-toggle="tab" href="#infoSettings">
               <div className="row">
                 <div className="col-md-4 text-right tab-icon-wrapper">
                   <i className="fas fa-info tab-icon" />
@@ -327,7 +332,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#bountySettings" onClick={this.initiateScrollbar}>
+            <a data-toggle="tab" href="#bountySettings">
               <div className="row">
                 <div className="col-md-4 text-right tab-icon-wrapper">
                   <i className="fab fa-ethereum tab-icon" />
@@ -339,7 +344,7 @@ class ScheduleWizard extends Component {
             </a>
           </li>
           <li className="col-3 col-md-3">
-            <a data-toggle="tab" href="#confirmSettings" onClick={this.initiateScrollbar}>
+            <a data-toggle="tab" href="#confirmSettings">
               <div className="row">
                 <div className="col-md-4 text-right tab-icon-wrapper">
                   <i className="fas fa-cloud-upload-alt tab-icon" />
@@ -374,7 +379,6 @@ class ScheduleWizard extends Component {
                 <li className="next">
                   <button
                     className="btn btn-primary btn-cons pull-right"
-                    onClick={this.initiateScrollbar}
                     type="button"
                     disabled={!enabled.scheduling}
                   >
@@ -393,20 +397,12 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
-                  <button
-                    className="btn btn-white btn-cons pull-right"
-                    onClick={this.initiateScrollbar}
-                    type="button"
-                  >
+                  <button className="btn btn-white btn-cons pull-right" type="button">
                     First
                   </button>
                 </li>
                 <li className="previous">
-                  <button
-                    className="btn btn-white btn-cons pull-right"
-                    onClick={this.initiateScrollbar}
-                    type="button"
-                  >
+                  <button className="btn btn-white btn-cons pull-right" type="button">
                     Previous
                   </button>
                 </li>

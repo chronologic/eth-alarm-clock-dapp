@@ -218,6 +218,7 @@ export default class Web3Service {
 
   async fetchBlockNumber() {
     const { web3 } = this;
+
     const block = await Bb.fromCallback(callback => web3.eth.getBlockNumber(callback));
     this.latestBlockNumber = block;
     return block;
