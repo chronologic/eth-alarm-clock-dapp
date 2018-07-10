@@ -5,6 +5,7 @@ import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 import ExecutedGraph from './ExecutedGraph';
 import { BeatLoader } from 'react-spinners';
+import ClaimedTxWarningModal from './Modals/ClaimedTxWarningModal';
 
 @inject('timeNodeStore')
 @inject('keenStore')
@@ -16,7 +17,6 @@ class TimeNodeStatistics extends Component {
       timeNodeDisabled: null
     };
     this.startTimeNode = this.startTimeNode.bind(this);
-    this.stopTimeNode = this.stopTimeNode.bind(this);
     this.refreshStats = this.refreshStats.bind(this);
   }
 
@@ -41,7 +41,8 @@ class TimeNodeStatistics extends Component {
     return (
       <button
         className="btn btn-danger px-4"
-        onClick={this.stopTimeNode}
+        data-toggle="modal"
+        data-target="#claimedTxWarningModal"
         disabled={this.state.timeNodeDisabled}
       >
         Stop
@@ -64,12 +65,6 @@ class TimeNodeStatistics extends Component {
   startTimeNode() {
     this.props.timeNodeStore.startScanning();
     this.props.keenStore.activeTimeNodes += 1;
-  }
-
-  stopTimeNode() {
-    this.props.timeNodeStore.stopScanning();
-    this.props.keenStore.activeTimeNodes =
-      this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
   }
 
   async refreshStats() {
@@ -220,6 +215,8 @@ class TimeNodeStatistics extends Component {
             </div>
           </div>
         </div>
+
+        <ClaimedTxWarningModal />
       </div>
     );
   }
