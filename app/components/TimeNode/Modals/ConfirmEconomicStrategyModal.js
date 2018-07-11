@@ -15,7 +15,7 @@ class ConfirmEconomicStrategyModal extends Component {
     const { maxDeposit, minBalance, minProfitability, timeNodeStore } = this.props;
 
     if (timeNodeStore.passwordMatchesKeystore(password)) {
-      timeNodeStore.setEconomicStrategy(maxDeposit, minBalance, minProfitability);
+      timeNodeStore.setEconomicStrategy({ maxDeposit, minBalance, minProfitability });
       timeNodeStore.restart(password);
       showNotification('Changes saved.', 'success');
       this.passwdRef.value = '';

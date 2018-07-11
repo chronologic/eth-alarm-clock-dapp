@@ -10,10 +10,11 @@ class TimeNodeSettings extends Component {
     super(props);
 
     const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
+    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
     this.state = {
-      maxDeposit: maxDeposit ? maxDeposit : '',
-      minProfitability: minProfitability ? minProfitability : '',
-      minBalance: minBalance ? minBalance : ''
+      maxDeposit: maxDeposit ? toEth(maxDeposit) : '',
+      minProfitability: minProfitability ? toEth(minProfitability) : '',
+      minBalance: minBalance ? toEth(minBalance) : ''
     };
     this.handleChange = this.handleChange.bind(this);
   }
