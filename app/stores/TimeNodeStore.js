@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
-
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
@@ -62,10 +61,17 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
+    const load = string => {
+      const value = this._storageService.load(string);
+      if (!value) return null;
+
+      return value;
+    };
+
     return {
-      maxDeposit: this._storageService.load('maxDeposit'),
-      minBalance: this._storageService.load('minBalance'),
-      minProfitability: this._storageService.load('minProfitability')
+      maxDeposit: load('maxDeposit'),
+      minBalance: load('minBalance'),
+      minProfitability: load('minProfitability')
     };
   }
 
@@ -98,7 +104,7 @@ export default class TimeNodeStore {
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(this._storageService.load('tn'), password);
+      this.startClient(this.walletKeystore, password);
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
@@ -338,17 +344,16 @@ export default class TimeNodeStore {
     }
   }
 
-  setEconomicStrategy(maxDeposit, minBalance, minProfitability) {
-    const numberFromString = string => {
-      if (string === '') {
-        return null;
-      }
-      return parseFloat(string);
-    };
+  setEconomicStrategy(economicStrategy) {
+    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
 
-    this._storageService.save('maxDeposit', numberFromString(maxDeposit));
-    this._storageService.save('minBalance', numberFromString(minBalance));
-    this._storageService.save('minProfitability', numberFromString(minProfitability));
+    for (let key of Object.keys(economicStrategy)) {
+      if (economicStrategy[key]) {
+        this._storageService.save(key, numberFromString(economicStrategy[key]));
+      } else {
+        this._storageService.remove(key);
+      }
+    }
   }
 
   hasStorageItems(itemList) {
