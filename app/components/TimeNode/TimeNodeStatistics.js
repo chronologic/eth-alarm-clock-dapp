@@ -44,8 +44,6 @@ class TimeNodeStatistics extends Component {
     return (
       <button
         className="btn btn-danger px-4"
-        // data-toggle="modal"
-        // data-target="#claimedTxWarningModal"
         onClick={this.shouldShowClaimedWarning}
         disabled={this.state.timeNodeDisabled}
       >
