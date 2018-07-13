@@ -27,6 +27,7 @@ export default class TimeNodeStore {
   @observable walletKeystore = '';
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+  @observable claiming = false;
 
   @observable basicLogs = [];
   @observable detailedLogs = [];
@@ -100,6 +101,7 @@ export default class TimeNodeStore {
       this.attachedDAYAccount = this._storageService.load('attachedDAYAccount');
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
+    if (this._storageService.load('claiming')) this.claiming = true;
   }
 
   unlockTimeNode(password) {
@@ -124,7 +126,8 @@ export default class TimeNodeStore {
       scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
-      economicStrategy: this.economicStrategy
+      economicStrategy: this.economicStrategy,
+      claiming: this.claiming
     };
   }
 
@@ -353,6 +356,12 @@ export default class TimeNodeStore {
       } else {
         this._storageService.remove(key);
       }
+    }
+
+    if (this.claiming) {
+      this._storageService.save('claiming', true);
+    } else {
+      this._storageService.remove('claiming');
     }
   }
 
