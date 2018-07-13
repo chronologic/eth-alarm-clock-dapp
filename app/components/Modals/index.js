@@ -1,1 +1,1 @@
-export { CustomProviderModal } from './CustomProviderModal';
+export { default } from './CustomProviderModal';

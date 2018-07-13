@@ -1,105 +1,140 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
-import { showNotification } from '../../services/notification';
+import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
+import ConfirmEconomicStrategyModal from './Modals/ConfirmEconomicStrategyModal';
+import Switch from 'react-switch';
 
 @inject('timeNodeStore')
 class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
-    this.resetWallet = this.resetWallet.bind(this);
-    this._handleEconomicStrategyChange = this._handleEconomicStrategyChange.bind(this);
+
+    const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
+    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
+    this.state = {
+      claiming: props.timeNodeStore.claiming,
+      maxDeposit: maxDeposit ? toEth(maxDeposit) : '',
+      minProfitability: minProfitability ? toEth(minProfitability) : '',
+      minBalance: minBalance ? toEth(minBalance) : ''
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.toggleClaiming = this.toggleClaiming.bind(this);
   }
 
-  resetWallet() {
-    this.props.timeNodeStore.resetWallet();
-    this.props.timeNodeStore.clearStats();
-    this.props.updateWalletUnlocked(false);
+  handleChange(event) {
+    this.setState({
+      [event.target.id]: event.target.value
+    });
   }
 
-  _handleEconomicStrategyChange() {
-    const password = this.passwdRef.value;
-
-    if (this.props.timeNodeStore.passwordMatchesKeystore(password)) {
-      this.props.timeNodeStore.setEconomicStrategy(
-        this.maxDeposit.value,
-        this.minBalance.value,
-        this.minProfitability.value
-      );
-      this.props.timeNodeStore.restart(password);
-      showNotification('Changes saved.', 'success');
-      this.passwdRef.value = '';
-    }
+  toggleClaiming() {
+    this.props.timeNodeStore.claiming = !this.props.timeNodeStore.claiming;
+    this.setState({
+      claiming: this.props.timeNodeStore.claiming
+    });
   }
 
   render() {
-    const { maxDeposit, minProfitability, minBalance } = this.props.timeNodeStore.economicStrategy;
-
     return (
       <div id="timeNodeSettings">
         <div className="card card-transparent">
           <div className="card-header separator">
-            <div className="card-title">Economic Strategy</div>
+            <div className="row">
+              <div className="col-6 col-md-6 vertical-align">
+                <div className="card-title">Claiming mode</div>
+              </div>
+              <div className="col-6 col-md-6 text-right">
+                <Switch
+                  onChange={this.toggleClaiming}
+                  checked={this.state.claiming}
+                  onHandleColor="#21ffff"
+                  offColor="#ddd"
+                  onColor="#000"
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                />
+              </div>
+            </div>
           </div>
           <div className="card-block p-3">
             <div className="mb-3">
-              You can fine tune which transactions you would like to claim and which you would avoid
-              claiming.<br />
-              <strong>Only claim transactions that</strong>:
+              Enables claiming transactions. Claiming helps you secure the execution of certain
+              transactions.<br />
+              <strong>Claiming transactions might cause a loss of funds.</strong>:
             </div>
+          </div>
+        </div>
 
-            <div className="row vertical-align">
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>Require a deposit lower than</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    placeholder="Max Deposit in ETH"
-                    defaultValue={maxDeposit ? maxDeposit : ''}
-                    ref={el => (this.maxDeposit = el)}
-                  />
+        {this.props.timeNodeStore.claiming && (
+          <div className="card card-transparent">
+            <div className="card-header separator">
+              <div className="card-title">Economic Strategy</div>
+            </div>
+            <div className="card-block p-3">
+              <div className="mb-3">
+                You can fine tune which transactions you would like to claim and which you would
+                avoid claiming. Fine tuning your settings lowers the risk of losing funds when
+                claiming, so we highly advise the usage of these features<br />
+                <strong>Only claim transactions that</strong>:
+              </div>
+
+              <div className="row vertical-align">
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>Require a deposit lower than</label>
+                    <input
+                      id="maxDeposit"
+                      className="form-control"
+                      type="number"
+                      placeholder="Max Deposit in ETH"
+                      value={this.state.maxDeposit}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>Bring a profit higher than</label>
+                    <input
+                      id="minProfitability"
+                      className="form-control"
+                      type="number"
+                      placeholder="Profit in ETH"
+                      value={this.state.minProfitability}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>My balance is higher than</label>
+                    <input
+                      id="minBalance"
+                      className="form-control"
+                      type="number"
+                      placeholder="Balance in ETH"
+                      value={this.state.minBalance}
+                      onChange={this.handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>Bring a profit higher than</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    placeholder="Profit in ETH"
-                    defaultValue={minProfitability ? minProfitability : ''}
-                    ref={el => (this.minProfitability = el)}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>My balance is higher than</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    placeholder="Balance in ETH"
-                    defaultValue={minBalance ? minBalance : ''}
-                    ref={el => (this.minBalance = el)}
-                  />
-                </div>
-              </div>
             </div>
+          </div>
+        )}
 
-            <div className="row">
-              <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
-                <button
-                  className="btn btn-primary btn-block mt-3"
-                  data-toggle="modal"
-                  data-target="#confirmEconomicStrategyModal"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
+        <div className="row">
+          <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
+            <button
+              className="btn btn-primary btn-block mt-3"
+              data-toggle="modal"
+              data-target="#confirmClaimingModal"
+            >
+              Save
+            </button>
           </div>
         </div>
 
@@ -128,104 +163,13 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        <div
-          className="modal fade stick-up"
-          id="timeNodeDetachModal"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="timeNodeDetachModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header clearfix text-left separator">
-                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                  <i className="pg-close fs-14" />
-                </button>
-                <h3 className="timenode-modal-title m-0">
-                  Detach wallet from <span className="semi-bold">TimeNode</span>
-                </h3>
-              </div>
-              <div className="modal-body">
-                <hr />
-                <p>Are you sure you want to do this?</p>
-                <span className="semi-bold">This will erase your TimeNode statistics.</span>
-              </div>
-              <div className="modal-footer">
-                <div className="row">
-                  <div className="col-md-6">
-                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
-                      Cancel
-                    </button>
-                  </div>
-                  <div className="col-md-6">
-                    <button
-                      className="btn btn-danger btn-block"
-                      type="button"
-                      data-dismiss="modal"
-                      onClick={this.resetWallet}
-                    >
-                      <strong>Detach</strong>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="modal fade stick-up"
-          id="confirmEconomicStrategyModal"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="confirmEconomicStrategyModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header clearfix text-left separator">
-                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                  <i className="pg-close fs-14" />
-                </button>
-                <h3 className="timenode-modal-title m-0">
-                  Confirm <span className="semi-bold">TimeNode</span> changes
-                </h3>
-              </div>
-              <div className="modal-body">
-                <hr />
-                <p>Please enter your password:</p>
-                <input
-                  id="walletPassword"
-                  type="password"
-                  placeholder="Password"
-                  className="form-control"
-                  ref={el => (this.passwdRef = el)}
-                  autoFocus
-                />
-              </div>
-              <div className="modal-footer">
-                <div className="row">
-                  <div className="col-md-6">
-                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
-                      Cancel
-                    </button>
-                  </div>
-                  <div className="col-md-6">
-                    <button
-                      className="btn btn-primary btn-block"
-                      type="button"
-                      data-dismiss="modal"
-                      onClick={this._handleEconomicStrategyChange}
-                    >
-                      <strong>Confirm</strong>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <ConfirmEconomicStrategyModal
+          updateWalletUnlocked={this.props.updateWalletUnlocked}
+          maxDeposit={this.state.maxDeposit}
+          minProfitability={this.state.minProfitability}
+          minBalance={this.state.minBalance}
+        />
       </div>
     );
   }
