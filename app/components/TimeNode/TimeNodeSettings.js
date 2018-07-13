@@ -1,40 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
-import { showNotification } from '../../services/notification';
+import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
+import ConfirmEconomicStrategyModal from './Modals/ConfirmEconomicStrategyModal';
 
 @inject('timeNodeStore')
 class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
-    this.resetWallet = this.resetWallet.bind(this);
-    this._handleEconomicStrategyChange = this._handleEconomicStrategyChange.bind(this);
+
+    const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
+    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
+    this.state = {
+      maxDeposit: maxDeposit ? toEth(maxDeposit) : '',
+      minProfitability: minProfitability ? toEth(minProfitability) : '',
+      minBalance: minBalance ? toEth(minBalance) : ''
+    };
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  resetWallet() {
-    this.props.timeNodeStore.resetWallet();
-    this.props.timeNodeStore.clearStats();
-    this.props.updateWalletUnlocked(false);
-  }
-
-  _handleEconomicStrategyChange() {
-    const password = this.passwdRef.value;
-
-    if (this.props.timeNodeStore.passwordMatchesKeystore(password)) {
-      this.props.timeNodeStore.setEconomicStrategy(
-        this.maxDeposit.value,
-        this.minBalance.value,
-        this.minProfitability.value
-      );
-      this.props.timeNodeStore.restart(password);
-      showNotification('Changes saved.', 'success');
-      this.passwdRef.value = '';
-    }
+  handleChange(event) {
+    this.setState({
+      [event.target.id]: event.target.value
+    });
   }
 
   render() {
-    const { maxDeposit, minProfitability, minBalance } = this.props.timeNodeStore.economicStrategy;
-
     return (
       <div id="timeNodeSettings">
         <div className="card card-transparent">
@@ -53,11 +44,12 @@ class TimeNodeSettings extends Component {
                 <div className="form-group form-group-default">
                   <label>Require a deposit lower than</label>
                   <input
+                    id="maxDeposit"
                     className="form-control"
                     type="number"
                     placeholder="Max Deposit in ETH"
-                    defaultValue={maxDeposit ? maxDeposit : ''}
-                    ref={el => (this.maxDeposit = el)}
+                    value={this.state.maxDeposit}
+                    onChange={this.handleChange}
                   />
                 </div>
               </div>
@@ -66,11 +58,12 @@ class TimeNodeSettings extends Component {
                 <div className="form-group form-group-default">
                   <label>Bring a profit higher than</label>
                   <input
+                    id="minProfitability"
                     className="form-control"
                     type="number"
                     placeholder="Profit in ETH"
-                    defaultValue={minProfitability ? minProfitability : ''}
-                    ref={el => (this.minProfitability = el)}
+                    value={this.state.minProfitability}
+                    onChange={this.handleChange}
                   />
                 </div>
               </div>
@@ -79,11 +72,12 @@ class TimeNodeSettings extends Component {
                 <div className="form-group form-group-default">
                   <label>My balance is higher than</label>
                   <input
+                    id="minBalance"
                     className="form-control"
                     type="number"
                     placeholder="Balance in ETH"
-                    defaultValue={minBalance ? minBalance : ''}
-                    ref={el => (this.minBalance = el)}
+                    value={this.state.minBalance}
+                    onChange={this.handleChange}
                   />
                 </div>
               </div>
@@ -128,104 +122,13 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        <div
-          className="modal fade stick-up"
-          id="timeNodeDetachModal"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="timeNodeDetachModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header clearfix text-left separator">
-                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                  <i className="pg-close fs-14" />
-                </button>
-                <h3 className="timenode-modal-title m-0">
-                  Detach wallet from <span className="semi-bold">TimeNode</span>
-                </h3>
-              </div>
-              <div className="modal-body">
-                <hr />
-                <p>Are you sure you want to do this?</p>
-                <span className="semi-bold">This will erase your TimeNode statistics.</span>
-              </div>
-              <div className="modal-footer">
-                <div className="row">
-                  <div className="col-md-6">
-                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
-                      Cancel
-                    </button>
-                  </div>
-                  <div className="col-md-6">
-                    <button
-                      className="btn btn-danger btn-block"
-                      type="button"
-                      data-dismiss="modal"
-                      onClick={this.resetWallet}
-                    >
-                      <strong>Detach</strong>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="modal fade stick-up"
-          id="confirmEconomicStrategyModal"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="confirmEconomicStrategyModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header clearfix text-left separator">
-                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                  <i className="pg-close fs-14" />
-                </button>
-                <h3 className="timenode-modal-title m-0">
-                  Confirm <span className="semi-bold">TimeNode</span> changes
-                </h3>
-              </div>
-              <div className="modal-body">
-                <hr />
-                <p>Please enter your password:</p>
-                <input
-                  id="walletPassword"
-                  type="password"
-                  placeholder="Password"
-                  className="form-control"
-                  ref={el => (this.passwdRef = el)}
-                  autoFocus
-                />
-              </div>
-              <div className="modal-footer">
-                <div className="row">
-                  <div className="col-md-6">
-                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
-                      Cancel
-                    </button>
-                  </div>
-                  <div className="col-md-6">
-                    <button
-                      className="btn btn-primary btn-block"
-                      type="button"
-                      data-dismiss="modal"
-                      onClick={this._handleEconomicStrategyChange}
-                    >
-                      <strong>Confirm</strong>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <ConfirmEconomicStrategyModal
+          updateWalletUnlocked={this.props.updateWalletUnlocked}
+          maxDeposit={this.state.maxDeposit}
+          minProfitability={this.state.minProfitability}
+          minBalance={this.state.minBalance}
+        />
       </div>
     );
   }

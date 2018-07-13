@@ -8,6 +8,7 @@ import { BeatLoader } from 'react-spinners';
 
 @inject('timeNodeStore')
 @inject('keenStore')
+@inject('transactionStore')
 @observer
 class TimeNodeStatistics extends Component {
   constructor(props) {
@@ -18,6 +19,8 @@ class TimeNodeStatistics extends Component {
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
     this.refreshStats = this.refreshStats.bind(this);
+    this.getScheduledTransactionsClaimedBy = this.getScheduledTransactionsClaimedBy.bind(this);
+    this.shouldShowClaimedWarning = this.shouldShowClaimedWarning.bind(this);
   }
 
   async UNSAFE_componentWillMount() {
@@ -41,7 +44,7 @@ class TimeNodeStatistics extends Component {
     return (
       <button
         className="btn btn-danger px-4"
-        onClick={this.stopTimeNode}
+        onClick={this.shouldShowClaimedWarning}
         disabled={this.state.timeNodeDisabled}
       >
         Stop
@@ -88,6 +91,27 @@ class TimeNodeStatistics extends Component {
 
   componentWillUnmount() {
     clearInterval(this.interval);
+  }
+
+  async shouldShowClaimedWarning() {
+    const claimed = await this.getScheduledTransactionsClaimedBy();
+    if (claimed > 0) {
+      const { jQuery } = window;
+
+      if (jQuery) {
+        jQuery('#claimedTxWarningModal').modal('show');
+      }
+    } else {
+      this.stopTimeNode();
+    }
+  }
+
+  async getScheduledTransactionsClaimedBy() {
+    const { transactionStore, timeNodeStore } = this.props;
+    const amount = await transactionStore.getScheduledTransactionsClaimedBy(
+      timeNodeStore.getMyAddress()
+    );
+    return amount;
   }
 
   render() {
@@ -214,6 +238,54 @@ class TimeNodeStatistics extends Component {
                   <div className="col-6 col-md-6">DAY</div>
                   <div className="col-6 col-md-6">
                     {balanceDAY !== null ? balanceDAY : <BeatLoader size={6} />}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="modal fade stick-up"
+          id="claimedTxWarningModal"
+          tabIndex="-1"
+          role="dialog"
+          aria-labelledby="claimedTxWarningModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header clearfix text-left separator">
+                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
+                  <i className="pg-close fs-14" />
+                </button>
+                <h3 className="timenode-modal-title m-0">
+                  You have <span className="semi-bold">claimed transactions</span>!
+                </h3>
+              </div>
+              <div className="modal-body">
+                <hr />
+                <span className="semi-bold">
+                  If the claimed transactions are not executed you will lose your deposit.
+                </span>
+                <p>Are you sure you want to stop the TimeNode?</p>
+              </div>
+              <div className="modal-footer">
+                <div className="row">
+                  <div className="col-md-6">
+                    <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="col-md-6">
+                    <button
+                      className="btn btn-danger btn-block"
+                      type="button"
+                      data-dismiss="modal"
+                      onClick={this.stopTimeNode}
+                    >
+                      <strong>Stop</strong>
+                    </button>
                   </div>
                 </div>
               </div>
