@@ -38,7 +38,7 @@
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "8.6.5",
     "babel-core": "6.26.3",
-    "babel-eslint": "8.2.5",
+    "babel-eslint": "8.2.6",
     "babel-jest": "23.0.1",
     "babel-loader": "7.1.5",
     "babel-plugin-transform-class-properties": "6.24.1",
@@ -80,7 +80,7 @@
     "sass-loader": "7.0.3",
     "style-loader": "0.21.0",
     "uglifyjs-webpack-plugin": "1.2.7",
-    "webpack": "4.15.0",
+    "webpack": "4.15.1",
     "webpack-bundle-analyzer": "2.13.1",
     "webpack-cli": "3.0.8",
     "webpack-dev-server": "3.1.4",
@@ -88,7 +88,7 @@
     "worker-loader": "2.0.0"
   },
   "dependencies": {
-    "@ethereum-alarm-clock/timenode-core": "4.0.2",
+    "@ethereum-alarm-clock/timenode-core": "4.0.3",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
     "bluebird": "3.5.1",

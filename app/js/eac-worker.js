@@ -7,6 +7,7 @@ import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
+import BigNumber from 'bignumber.js';
 
 import { TimeNode, Config, StatsDB } from '@ethereum-alarm-clock/timenode-core';
 
@@ -57,6 +58,12 @@ class EacWorker {
       autosave: true,
       autosaveInterval: 4000
     });
+
+    for (let key of Object.keys(options.economicStrategy)) {
+      if (options.economicStrategy[key]) {
+        options.economicStrategy[key] = new BigNumber(options.economicStrategy[key]);
+      }
+    }
 
     const configOptions = {
       web3: this.web3,
