@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
-
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
@@ -28,6 +27,7 @@ export default class TimeNodeStore {
   @observable walletKeystore = '';
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+  @observable claiming = false;
 
   @observable basicLogs = [];
   @observable detailedLogs = [];
@@ -62,10 +62,17 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
+    const load = string => {
+      const value = this._storageService.load(string);
+      if (!value) return null;
+
+      return value;
+    };
+
     return {
-      maxDeposit: this._storageService.load('maxDeposit'),
-      minBalance: this._storageService.load('minBalance'),
-      minProfitability: this._storageService.load('minProfitability')
+      maxDeposit: load('maxDeposit'),
+      minBalance: load('minBalance'),
+      minProfitability: load('minProfitability')
     };
   }
 
@@ -94,11 +101,12 @@ export default class TimeNodeStore {
       this.attachedDAYAccount = this._storageService.load('attachedDAYAccount');
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
+    if (this._storageService.load('claiming')) this.claiming = true;
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(this._storageService.load('tn'), password);
+      this.startClient(this.walletKeystore, password);
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
@@ -118,7 +126,8 @@ export default class TimeNodeStore {
       scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
-      economicStrategy: this.economicStrategy
+      economicStrategy: this.economicStrategy,
+      claiming: this.claiming
     };
   }
 
@@ -338,17 +347,21 @@ export default class TimeNodeStore {
     }
   }
 
-  setEconomicStrategy(maxDeposit, minBalance, minProfitability) {
-    const numberFromString = string => {
-      if (string === '') {
-        return null;
-      }
-      return parseFloat(string);
-    };
+  saveClaimingStrategy(economicStrategy) {
+    if (this.claiming) {
+      this._storageService.save('claiming', true);
+    } else {
+      this._storageService.remove('claiming');
+    }
 
-    this._storageService.save('maxDeposit', numberFromString(maxDeposit));
-    this._storageService.save('minBalance', numberFromString(minBalance));
-    this._storageService.save('minProfitability', numberFromString(minProfitability));
+    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
+    for (let key of Object.keys(economicStrategy)) {
+      if (economicStrategy[key]) {
+        this._storageService.save(key, numberFromString(economicStrategy[key]));
+      } else {
+        this._storageService.remove(key);
+      }
+    }
   }
 
   hasStorageItems(itemList) {
