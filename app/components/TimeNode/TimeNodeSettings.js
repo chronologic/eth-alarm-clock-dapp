@@ -122,21 +122,21 @@ class TimeNodeSettings extends Component {
                   </div>
                 </div>
               </div>
-
-              <div className="row">
-                <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
-                  <button
-                    className="btn btn-primary btn-block mt-3"
-                    data-toggle="modal"
-                    data-target="#confirmEconomicStrategyModal"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         )}
+
+        <div className="row">
+          <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
+            <button
+              className="btn btn-primary btn-block mt-3"
+              data-toggle="modal"
+              data-target="#confirmClaimingModal"
+            >
+              Save
+            </button>
+          </div>
+        </div>
 
         <div className="card card-transparent">
           <div className="card-header separator">

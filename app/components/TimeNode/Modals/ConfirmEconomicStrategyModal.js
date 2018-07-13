@@ -4,18 +4,18 @@ import { inject } from 'mobx-react';
 import { showNotification } from '../../../services/notification';
 
 @inject('timeNodeStore')
-class ConfirmEconomicStrategyModal extends Component {
+class ConfirmClaimingModal extends Component {
   constructor(props) {
     super(props);
-    this.saveEconomicStrategyChange = this.saveEconomicStrategyChange.bind(this);
+    this.saveClaimingChange = this.saveClaimingChange.bind(this);
   }
 
-  saveEconomicStrategyChange() {
+  saveClaimingChange() {
     const password = this.passwdRef.value;
     const { maxDeposit, minBalance, minProfitability, timeNodeStore } = this.props;
 
     if (timeNodeStore.passwordMatchesKeystore(password)) {
-      timeNodeStore.setEconomicStrategy({ maxDeposit, minBalance, minProfitability });
+      timeNodeStore.saveClaimingStrategy({ maxDeposit, minBalance, minProfitability });
       timeNodeStore.restart(password);
       showNotification('Changes saved.', 'success');
       this.passwdRef.value = '';
@@ -26,10 +26,10 @@ class ConfirmEconomicStrategyModal extends Component {
     return (
       <div
         className="modal fade stick-up"
-        id="confirmEconomicStrategyModal"
+        id="confirmClaimingModal"
         tabIndex="-1"
         role="dialog"
-        aria-labelledby="confirmEconomicStrategyModalLabel"
+        aria-labelledby="confirmClaimingModallLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog">
@@ -66,7 +66,7 @@ class ConfirmEconomicStrategyModal extends Component {
                     className="btn btn-primary btn-block"
                     type="button"
                     data-dismiss="modal"
-                    onClick={this.saveEconomicStrategyChange}
+                    onClick={this.saveClaimingChange}
                   >
                     <strong>Confirm</strong>
                   </button>
@@ -80,7 +80,7 @@ class ConfirmEconomicStrategyModal extends Component {
   }
 }
 
-ConfirmEconomicStrategyModal.propTypes = {
+ConfirmClaimingModal.propTypes = {
   timeNodeStore: PropTypes.any,
   updateWalletUnlocked: PropTypes.any,
   maxDeposit: PropTypes.any,
@@ -88,4 +88,4 @@ ConfirmEconomicStrategyModal.propTypes = {
   minProfitability: PropTypes.any
 };
 
-export default ConfirmEconomicStrategyModal;
+export default ConfirmClaimingModal;

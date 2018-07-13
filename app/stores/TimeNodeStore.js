@@ -347,21 +347,20 @@ export default class TimeNodeStore {
     }
   }
 
-  setEconomicStrategy(economicStrategy) {
-    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
+  saveClaimingStrategy(economicStrategy) {
+    if (this.claiming) {
+      this._storageService.save('claiming', true);
+    } else {
+      this._storageService.remove('claiming');
+    }
 
+    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
     for (let key of Object.keys(economicStrategy)) {
       if (economicStrategy[key]) {
         this._storageService.save(key, numberFromString(economicStrategy[key]));
       } else {
         this._storageService.remove(key);
       }
-    }
-
-    if (this.claiming) {
-      this._storageService.save('claiming', true);
-    } else {
-      this._storageService.remove('claiming');
     }
   }
 
