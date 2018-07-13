@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
 import ConfirmEconomicStrategyModal from './Modals/ConfirmEconomicStrategyModal';
+import Switch from 'react-switch';
 
 @inject('timeNodeStore')
 class TimeNodeSettings extends Component {
@@ -12,11 +13,13 @@ class TimeNodeSettings extends Component {
     const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
     const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
     this.state = {
+      claiming: props.timeNodeStore.claiming,
       maxDeposit: maxDeposit ? toEth(maxDeposit) : '',
       minProfitability: minProfitability ? toEth(minProfitability) : '',
       minBalance: minBalance ? toEth(minBalance) : ''
     };
     this.handleChange = this.handleChange.bind(this);
+    this.toggleClaiming = this.toggleClaiming.bind(this);
   }
 
   handleChange(event) {
@@ -25,75 +28,113 @@ class TimeNodeSettings extends Component {
     });
   }
 
+  toggleClaiming() {
+    this.props.timeNodeStore.claiming = !this.props.timeNodeStore.claiming;
+    this.setState({
+      claiming: this.props.timeNodeStore.claiming
+    });
+  }
+
   render() {
     return (
       <div id="timeNodeSettings">
         <div className="card card-transparent">
           <div className="card-header separator">
-            <div className="card-title">Economic Strategy</div>
+            <div className="row">
+              <div className="col-6 col-md-6 vertical-align">
+                <div className="card-title">Claiming mode</div>
+              </div>
+              <div className="col-6 col-md-6 text-right">
+                <Switch
+                  onChange={this.toggleClaiming}
+                  checked={this.state.claiming}
+                  onHandleColor="#21ffff"
+                  offColor="#ddd"
+                  onColor="#000"
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                />
+              </div>
+            </div>
           </div>
           <div className="card-block p-3">
             <div className="mb-3">
-              You can fine tune which transactions you would like to claim and which you would avoid
-              claiming.<br />
-              <strong>Only claim transactions that</strong>:
+              Enables claiming transactions. Claiming helps you secure the execution of certain
+              transactions.<br />
+              <strong>Claiming transactions might cause a loss of funds.</strong>:
             </div>
+          </div>
+        </div>
 
-            <div className="row vertical-align">
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>Require a deposit lower than</label>
-                  <input
-                    id="maxDeposit"
-                    className="form-control"
-                    type="number"
-                    placeholder="Max Deposit in ETH"
-                    value={this.state.maxDeposit}
-                    onChange={this.handleChange}
-                  />
+        {this.props.timeNodeStore.claiming && (
+          <div className="card card-transparent">
+            <div className="card-header separator">
+              <div className="card-title">Economic Strategy</div>
+            </div>
+            <div className="card-block p-3">
+              <div className="mb-3">
+                You can fine tune which transactions you would like to claim and which you would
+                avoid claiming. Fine tuning your settings lowers the risk of losing funds when
+                claiming, so we highly advise the usage of these features<br />
+                <strong>Only claim transactions that</strong>:
+              </div>
+
+              <div className="row vertical-align">
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>Require a deposit lower than</label>
+                    <input
+                      id="maxDeposit"
+                      className="form-control"
+                      type="number"
+                      placeholder="Max Deposit in ETH"
+                      value={this.state.maxDeposit}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>Bring a profit higher than</label>
+                    <input
+                      id="minProfitability"
+                      className="form-control"
+                      type="number"
+                      placeholder="Profit in ETH"
+                      value={this.state.minProfitability}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-group form-group-default">
+                    <label>My balance is higher than</label>
+                    <input
+                      id="minBalance"
+                      className="form-control"
+                      type="number"
+                      placeholder="Balance in ETH"
+                      value={this.state.minBalance}
+                      onChange={this.handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>Bring a profit higher than</label>
-                  <input
-                    id="minProfitability"
-                    className="form-control"
-                    type="number"
-                    placeholder="Profit in ETH"
-                    value={this.state.minProfitability}
-                    onChange={this.handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <div className="form-group form-group-default">
-                  <label>My balance is higher than</label>
-                  <input
-                    id="minBalance"
-                    className="form-control"
-                    type="number"
-                    placeholder="Balance in ETH"
-                    value={this.state.minBalance}
-                    onChange={this.handleChange}
-                  />
-                </div>
-              </div>
             </div>
+          </div>
+        )}
 
-            <div className="row">
-              <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
-                <button
-                  className="btn btn-primary btn-block mt-3"
-                  data-toggle="modal"
-                  data-target="#confirmEconomicStrategyModal"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
+        <div className="row">
+          <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
+            <button
+              className="btn btn-primary btn-block mt-3"
+              data-toggle="modal"
+              data-target="#confirmClaimingModal"
+            >
+              Save
+            </button>
           </div>
         </div>
 
