@@ -80,7 +80,7 @@
     "sass-loader": "7.0.3",
     "style-loader": "0.21.0",
     "uglifyjs-webpack-plugin": "1.2.7",
-    "webpack": "4.15.1",
+    "webpack": "4.16.0",
     "webpack-bundle-analyzer": "2.13.1",
     "webpack-cli": "3.0.8",
     "webpack-dev-server": "3.1.4",
@@ -88,11 +88,11 @@
     "worker-loader": "2.0.0"
   },
   "dependencies": {
-    "@ethereum-alarm-clock/timenode-core": "4.0.3",
+    "@ethereum-alarm-clock/timenode-core": "4.1.0",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
     "bluebird": "3.5.1",
-    "bootstrap": "4.0.0-beta.2",
+    "bootstrap": "4.1.2",
     "bootstrap-datepicker": "1.7.1",
     "bootstrap-timepicker": "0.5.2",
     "chart.js": "2.7.2",

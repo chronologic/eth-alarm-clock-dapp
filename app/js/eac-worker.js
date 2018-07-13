@@ -69,6 +69,7 @@ class EacWorker {
       web3: this.web3,
       eac: this.eac,
       provider,
+      claiming: options.claiming,
       scanSpread: options.scan,
       logfile: options.logfile,
       logLevel: options.logLevel,
