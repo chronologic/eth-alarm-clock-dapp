@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
-
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
@@ -28,6 +27,7 @@ export default class TimeNodeStore {
   @observable walletKeystore = '';
   @observable attachedDAYAccount = '';
   @observable scanningStarted = false;
+  @observable claiming = false;
 
   @observable basicLogs = [];
   @observable detailedLogs = [];
@@ -62,10 +62,17 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
+    const load = string => {
+      const value = this._storageService.load(string);
+      if (!value) return null;
+
+      return value;
+    };
+
     return {
-      maxDeposit: this.getStorageItem('maxDeposit'),
-      minBalance: this.getStorageItem('minBalance'),
-      minProfitability: this.getStorageItem('minProfitability')
+      maxDeposit: load('maxDeposit'),
+      minBalance: load('minBalance'),
+      minProfitability: load('minProfitability')
     };
   }
 
@@ -82,23 +89,27 @@ export default class TimeNodeStore {
 
   _timeNodeStatusCheckIntervalRef = null;
 
-  constructor(eacService, web3Service, keenStore) {
+  _storageService = null;
+
+  constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
     this._keenStore = keenStore;
+    this._storageService = storageService;
 
-    if (this.getStorageItem('attachedDAYAccount') !== null)
-      this.attachedDAYAccount = this.getStorageItem('attachedDAYAccount');
-    if (this.getStorageItem('tn') !== null) this.walletKeystore = this.getStorageItem('tn');
+    if (this._storageService.load('attachedDAYAccount') !== null)
+      this.attachedDAYAccount = this._storageService.load('attachedDAYAccount');
+    if (this._storageService.load('tn') !== null)
+      this.walletKeystore = this._storageService.load('tn');
+    if (this._storageService.load('claiming')) this.claiming = true;
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(this.getStorageItem('tn'), password);
+      this.startClient(this.walletKeystore, password);
     } else {
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
-    return;
   }
 
   getWorkerOptions(keystore, keystorePassword) {
@@ -115,7 +126,8 @@ export default class TimeNodeStore {
       scan: 950, // ~65min on kovan
       repl: false,
       browserDB: true,
-      economicStrategy: this.economicStrategy
+      economicStrategy: this.economicStrategy,
+      claiming: this.claiming
     };
   }
 
@@ -213,7 +225,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
-    localStorage.setItem('isTimenodeScanning', true);
+    this._storageService.save('isTimenodeScanning', true);
   }
 
   stopScanning() {
@@ -228,7 +240,7 @@ export default class TimeNodeStore {
         type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
       });
     }
-    localStorage.removeItem('isTimenodeScanning');
+    this._storageService.remove('isTimenodeScanning');
   }
 
   encrypt(message) {
@@ -255,7 +267,7 @@ export default class TimeNodeStore {
 
   setKeyStore(keystore) {
     this.walletKeystore = keystore;
-    this.setStorageItem('tn', keystore);
+    this._storageService.save('tn', keystore);
   }
 
   getMyAddress() {
@@ -268,7 +280,7 @@ export default class TimeNodeStore {
   }
 
   getAttachedDAYAddress() {
-    const encryptedAddress = this.getStorageItem('attachedDAYAccount');
+    const encryptedAddress = this._storageService.load('attachedDAYAccount');
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
@@ -324,7 +336,7 @@ export default class TimeNodeStore {
       const encryptedAttachedAddress = this.encrypt(signature.address);
 
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-        this.setStorageItem('attachedDAYAccount', encryptedAttachedAddress);
+        this._storageService.save('attachedDAYAccount', encryptedAttachedAddress);
         this.attachedDAYAccount = encryptedAttachedAddress;
         showNotification('Success.', 'success');
       } else {
@@ -335,34 +347,30 @@ export default class TimeNodeStore {
     }
   }
 
-  setEconomicStrategy(maxDeposit, minBalance, minProfitability) {
-    const numberFromString = string => {
-      if (string === '') {
-        return null;
-      }
-      return parseFloat(string);
-    };
+  saveClaimingStrategy(economicStrategy) {
+    if (this.claiming) {
+      this._storageService.save('claiming', true);
+    } else {
+      this._storageService.remove('claiming');
+    }
 
-    this.setStorageItem('maxDeposit', numberFromString(maxDeposit));
-    this.setStorageItem('minBalance', numberFromString(minBalance));
-    this.setStorageItem('minProfitability', numberFromString(minProfitability));
+    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
+    for (let key of Object.keys(economicStrategy)) {
+      if (economicStrategy[key]) {
+        this._storageService.save(key, numberFromString(economicStrategy[key]));
+      } else {
+        this._storageService.remove(key);
+      }
+    }
   }
 
   hasStorageItems(itemList) {
     for (let item of itemList) {
-      if (!this.getStorageItem(item)) {
+      if (!this._storageService.load(item)) {
         return false;
       }
     }
     return true;
-  }
-
-  setStorageItem(key, value) {
-    localStorage.setItem(key, value);
-  }
-
-  getStorageItem(key) {
-    return localStorage.getItem(key);
   }
 
   restart(password) {
@@ -372,8 +380,8 @@ export default class TimeNodeStore {
   }
 
   resetWallet() {
-    localStorage.removeItem('tn');
-    localStorage.removeItem('attachedDAYAccount');
+    this._storageService.remove('tn');
+    this._storageService.remove('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     this.stopScanning();

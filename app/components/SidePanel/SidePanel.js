@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
+import { BeatLoader } from 'react-spinners';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -18,20 +19,32 @@ class SidePanel extends Component {
   componentDidMount() {
     const { jQuery } = window;
 
-    if (jQuery && jQuery.Pages) {
-      jQuery.Pages.init();
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
+
+      if (jQuery.Pages) {
+        jQuery.Pages.init();
+      }
+    }
+  }
+
+  componentDidUpdate() {
+    const { jQuery } = window;
+
+    if (jQuery) {
+      jQuery('[data-toggle="tooltip"]').tooltip();
     }
   }
 
   isUrlActive(url, type = 'thumbnail', substring = false) {
     const currentUrl = this.props.location.pathname;
-    const cls = type === 'thumbnail' ? 'active' : 'text-white';
+    const classToAdd = type === 'thumbnail' ? 'active' : 'text-white';
 
     if (substring) {
-      return currentUrl.includes(url) ? cls : '';
-    } else {
-      return currentUrl === url ? cls : '';
+      return currentUrl.includes(url) ? classToAdd : '';
     }
+
+    return currentUrl === url ? classToAdd : '';
   }
 
   render() {
@@ -64,6 +77,27 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
+    const { keenStore } = this.props;
+
+    const activeTimenodes = keenStore.activeTimeNodes ? (
+      keenStore.activeTimeNodes
+    ) : (
+      <BeatLoader color="#fff" size={4} />
+    );
+
+    const infoBtn = (
+      <span
+        className="analytics-info"
+        data-placement="bottom"
+        data-toggle="tooltip"
+        data-html="true"
+        title="To enable site analytics, please <strong>whitelist our site</strong>."
+      >
+        <i className="fa fa-info-circle" />
+      </span>
+    );
+
+    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
 
     return (
       <nav className="page-sidebar" data-pages="sidebar">
@@ -89,7 +123,7 @@ class SidePanel extends Component {
           <ul className="menu-items">
             {!isElectron && (
               <li className="m-t-30 ">
-                <NavLink to="/">
+                <NavLink to="/" exact={true}>
                   <span className={entryList[0].titleClasses}>{entryList[0].title}</span>
                   <span className={entryList[0].thumbnailClasses}>
                     <i className="pg-calender" />
@@ -194,9 +228,7 @@ class SidePanel extends Component {
                     <span className="active-timenodes">Active TimeNodes</span>
                   </div>
                   <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">
-                      {this.props.keenStore.activeTimeNodes}
-                    </span>
+                    <span className="timenode-count col-6">{displayActiveTimenodes}</span>
                   </div>
                 </div>
               </div>

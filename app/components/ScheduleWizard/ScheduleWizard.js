@@ -263,6 +263,11 @@ class ScheduleWizard extends Component {
 
   componentDidMount() {
     const { jQuery } = window;
+
+    if (!jQuery) {
+      return;
+    }
+
     jQuery('#scheduleWizard').bootstrapWizard({
       onTabShow: function(tab, navigation, index) {
         var $total = navigation.find('li').length;
