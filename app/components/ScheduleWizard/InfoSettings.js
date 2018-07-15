@@ -309,7 +309,6 @@ class InfoSettings extends AbstractSetting {
                 onChange={this.onChangeCheck('toAddress')}
                 onKeyUp={this.onChangeCheck('toAddress')}
                 onBlur={this.validate('toAddress')}
-                ref={this.toAddressRef}
                 className="form-control"
               />
             </div>
