@@ -1,3 +1,5 @@
+/*eslint no-control-regex: "off"*/
+
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
@@ -5,6 +7,12 @@ import { Networks, Explorers } from '../config/web3Config.js';
 import standardTokenAbi from '../abi/standardToken';
 
 let instance = null;
+
+function cleanAsciiText(text) {
+  if (text) {
+    return text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
+  }
+}
 
 export default class Web3Service {
   web3 = null;
@@ -149,10 +157,42 @@ export default class Web3Service {
 
     return {
       address,
-      name: (await Bb.fromCallback(callback => contract.name.call(callback))).valueOf(),
-      symbol: (await Bb.fromCallback(callback => contract.symbol.call(callback))).valueOf(),
+      name: await this.getTokenName(address),
+      symbol: await this.getTokenSymbol(address),
       decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf()
     };
+  }
+
+  async getTokenSymbol(address) {
+    return new Promise(resolve => {
+      const SYMBOL_CALL_DATA = '0x95d89b41';
+
+      this.web3.eth.call(
+        {
+          to: address,
+          data: SYMBOL_CALL_DATA
+        },
+        (error, result) => {
+          resolve(cleanAsciiText(this.web3.toAscii(result)));
+        }
+      );
+    });
+  }
+
+  async getTokenName(address) {
+    return new Promise(resolve => {
+      const NAME_CALL_DATA = '0x06fdde03';
+
+      this.web3.eth.call(
+        {
+          to: address,
+          data: NAME_CALL_DATA
+        },
+        (error, result) => {
+          resolve(cleanAsciiText(this.web3.toAscii(result)));
+        }
+      );
+    });
   }
 
   async fetchTokenBalance(address) {

@@ -4,6 +4,8 @@ import Bb from 'bluebird';
 import Switch from 'react-switch';
 import AbstractSetting from './AbstractSetting';
 import Alert from '../Common/Alert';
+import { TOKEN_ADDRESSES, PREDEFINED_TOKENS_FOR_NETWORK } from '../../config/web3Config';
+import Select from '../Common/Select';
 
 @inject('scheduleStore')
 @inject('web3Service')
@@ -22,8 +24,8 @@ class InfoSettings extends AbstractSetting {
     this._validationsErrors = _validationsErrors.InfoSettings;
 
     this.toggleField = this.toggleField.bind(this);
-
     this.onChangeCheck = this.onChangeCheck.bind(this);
+    this.useToken = this.useToken.bind(this);
   }
 
   validators = {
@@ -185,7 +187,7 @@ class InfoSettings extends AbstractSetting {
       this.validators.tokenToSend = this.decimalValidator();
       return;
     }
-    if (property == 'toAddress') {
+    if (property === 'toAddress') {
       await this.getTokenDetails();
     }
     await this.calculateTokenTransferMinimumGasandData();
@@ -208,9 +210,21 @@ class InfoSettings extends AbstractSetting {
     this.forceUpdate();
   };
 
+  async useToken(tokenSymbol) {
+    if (!tokenSymbol) {
+      return;
+    }
+
+    this.props.scheduleStore.toAddress =
+      TOKEN_ADDRESSES[tokenSymbol][this.props.web3Service.network.id];
+
+    await this.tokenChangeCheck('toAddress');
+  }
+
   componentDidMount() {
     this._mounted = true;
     this.checkAccountUpdate();
+
     this.updateInterval = setInterval(() => this.checkAccountUpdate(), 2000);
   }
 
@@ -222,9 +236,12 @@ class InfoSettings extends AbstractSetting {
   }
 
   render() {
-    const { scheduleStore } = this.props;
+    const { scheduleStore, web3Service } = this.props;
     const { _validations, _validationsErrors } = this;
     this.validators.gasAmount = this.integerValidator(this.state.minGas);
+
+    const predefinedTokens =
+      web3Service.network && PREDEFINED_TOKENS_FOR_NETWORK[web3Service.network.id];
 
     return (
       <div id="infoSettings" className="tab-pane slide">
@@ -292,6 +309,7 @@ class InfoSettings extends AbstractSetting {
                 onChange={this.onChangeCheck('toAddress')}
                 onKeyUp={this.onChangeCheck('toAddress')}
                 onBlur={this.validate('toAddress')}
+                ref={this.toAddressRef}
                 className="form-control"
               />
             </div>
@@ -425,6 +443,22 @@ class InfoSettings extends AbstractSetting {
             <label htmlFor="checkboxAddData">Add Data</label>
           </div>
         )}
+        {scheduleStore.isTokenTransfer &&
+          predefinedTokens && (
+            <div>
+              <Select
+                setupOptions={{ width: '160px' }}
+                onChange={event => this.useToken(event.target.value)}
+              >
+                <option value="">Predefined tokens</option>
+                {predefinedTokens.map(token => (
+                  <option key={token} value={token}>
+                    {token}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )}
         {!scheduleStore.isTokenTransfer &&
           scheduleStore.useData && (
             <div className="row">
