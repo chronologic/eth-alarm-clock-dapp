@@ -4,6 +4,9 @@
         "experimentalDecorators": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "out",
+        "docker",
+        "app/pages"
     ]
 }
