@@ -4,6 +4,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import momentDurationFormatSetup from 'moment-duration-format';
 import AbstractSetting from '../AbstractSetting';
+import Select from '../../Common/Select';
 
 const presetExecutionWindows = [{ value: 5 }, { value: 10 }, { value: 15 }];
 
@@ -38,6 +39,7 @@ class TimeComponent extends AbstractSetting {
     this.timeValidator = this.timeValidator.bind(this);
     this.dateValidator = this.dateValidator.bind(this);
     this.onRadioChange = this.onRadioChange.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
@@ -60,16 +62,15 @@ class TimeComponent extends AbstractSetting {
     scheduleStore.transactionDate = scheduleStore.transactionDate || defaultDate;
     scheduleStore.executionWindow = scheduleStore.executionWindow || 10;
 
+    this.timepickerRef.value = scheduleStore.transactionTime;
+
     const jQuery = window.jQuery;
 
     if (!jQuery) {
       return;
     }
 
-    jQuery('#timepicker').val(scheduleStore.transactionTime);
-    jQuery('#timezoneSelect').val(scheduleStore.timeZone);
-
-    jQuery('#timepicker')
+    jQuery(this.timepickerRef)
       .timepicker({
         showMeridian: false
       })
@@ -88,7 +89,8 @@ class TimeComponent extends AbstractSetting {
         scheduleStore.transactionTime = e.time.value;
         that.validate('transactionTime')();
       });
-    jQuery('#datepicker-component')
+
+    jQuery(this.datepickerRef)
       .datepicker({
         autoclose: true,
         startDate: new Date(),
@@ -100,7 +102,6 @@ class TimeComponent extends AbstractSetting {
         that.validate('transactionDate')();
         that.forceUpdate();
       });
-    jQuery('#timezoneSelect').select2();
   }
 
   timeValidator() {
@@ -127,7 +128,7 @@ class TimeComponent extends AbstractSetting {
   }
 
   validators = {
-    timezone: {
+    timeZone: {
       validator: value => (typeof moment.tz.zone(value) == 'object' ? 0 : 1),
       errors: ['Kindly indicate Valid time zone']
     },
@@ -168,8 +169,7 @@ class TimeComponent extends AbstractSetting {
               }
             >
               <label className="">Timezone</label>
-              <select
-                id="timezoneSelect"
+              <Select
                 className="full-width"
                 value={scheduleStore.timeZone}
                 onBlur={this.validate('timeZone')}
@@ -180,7 +180,7 @@ class TimeComponent extends AbstractSetting {
                     {timezone}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             {!_validations.timezone && (
               <label className="error">{_validationsErrors.timeZone}</label>
@@ -202,7 +202,7 @@ class TimeComponent extends AbstractSetting {
                   value={scheduleStore.transactionDate}
                   onChange={this.onChange('transactionDate')}
                   placeholder="Pick a date"
-                  id="datepicker-component"
+                  ref={ref => (this.datepickerRef = ref)}
                 />
               </div>
               <div className="input-group-addon">
@@ -224,12 +224,12 @@ class TimeComponent extends AbstractSetting {
               <div className="form-input-group">
                 <label>Transaction Time</label>
                 <input
-                  id="timepicker"
                   type="text"
                   className="form-control"
                   value={scheduleStore.transactionTime}
                   onBlur={this.validate('transactionTime')}
                   onChange={this.onChange('transactionTime')}
+                  ref={ref => (this.timepickerRef = ref)}
                 />
               </div>
               <div className="input-group-addon">
