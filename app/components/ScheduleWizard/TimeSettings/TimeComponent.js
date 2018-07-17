@@ -39,7 +39,6 @@ class TimeComponent extends AbstractSetting {
     this.timeValidator = this.timeValidator.bind(this);
     this.dateValidator = this.dateValidator.bind(this);
     this.onRadioChange = this.onRadioChange.bind(this);
-    this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
