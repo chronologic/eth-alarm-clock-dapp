@@ -320,10 +320,12 @@ export default class TransactionFetcher {
     const transactionsEventsMap = await this.getEventsMapForAddresses(addresses);
 
     for (const transaction of transactions) {
+      const eventName = transactionsEventsMap[transaction.address];
+
       this.updateTransactionDataBasedOnEvents(
         transaction,
-        transactionsEventsMap[transaction.address] === TRANSACTION_EVENT.CANCELLED,
-        transactionsEventsMap[transaction.address] === TRANSACTION_EVENT.EXECUTED
+        eventName === TRANSACTION_EVENT.CANCELLED,
+        eventName === TRANSACTION_EVENT.EXECUTED
       );
     }
   }
@@ -370,7 +372,12 @@ export default class TransactionFetcher {
           break;
       }
 
-      TX_EVENTS_MAP[event.address] = eventType;
+      if (
+        eventType !== TRANSACTION_EVENT.ABORTED ||
+        TX_EVENTS_MAP[event.address] !== TRANSACTION_EVENT.EXECUTED
+      ) {
+        TX_EVENTS_MAP[event.address] = eventType;
+      }
     }
 
     this._cache.cacheAddressesEvents(TX_EVENTS_MAP);
