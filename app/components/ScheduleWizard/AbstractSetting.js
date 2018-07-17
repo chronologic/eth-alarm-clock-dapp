@@ -83,14 +83,14 @@ class AbstractSetting extends Component {
         if (!value && value !== true) return 1;
         return 0;
       },
-      errors: ['Kindly indicate Value']
+      errors: ['Please indicate a value']
     };
   }
 
   ethereumAddressValidator() {
     return {
       validator: (value, web3) => (web3.isAddress(value) ? 0 : 1),
-      errors: ['Kindly provide valid address']
+      errors: ['Please provide a valid address']
     };
   }
 

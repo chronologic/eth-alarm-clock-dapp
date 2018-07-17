@@ -35,7 +35,7 @@ class InfoSettings extends AbstractSetting {
     gasPrice: this.integerValidator(),
     yourData: {
       validator: value => (typeof value === 'string' ? 0 : 1),
-      errors: ['Kindly provide valid input Data']
+      errors: ['Please provide valid input data']
     },
     receiverAddress: this.ethereumAddressValidator(),
     tokenToSend: this.decimalValidator()
@@ -211,14 +211,18 @@ class InfoSettings extends AbstractSetting {
   };
 
   async useToken(tokenSymbol) {
-    if (!tokenSymbol) {
-      return;
+    if (tokenSymbol && tokenSymbol !== 'PLACEHOLDER') {
+      this.props.scheduleStore.toAddress =
+        TOKEN_ADDRESSES[tokenSymbol][this.props.web3Service.network.id];
+    } else {
+      this.props.scheduleStore.toAddress = '';
     }
 
-    this.props.scheduleStore.toAddress =
-      TOKEN_ADDRESSES[tokenSymbol][this.props.web3Service.network.id];
-
     await this.tokenChangeCheck('toAddress');
+
+    this.validate('toAddress')();
+
+    this.forceUpdate();
   }
 
   componentDidMount() {
@@ -277,15 +281,44 @@ class InfoSettings extends AbstractSetting {
               <div className={'form-group'}>
                 <div className="row">
                   <div className="col-sm-4">
-                    <label> Name :</label>
-                    <span className="w-100 d-block">{this.state.token.name}</span>
+                    <label>Name:</label>
+                    <span className="w-100 d-block">
+                      {scheduleStore.isTokenTransfer &&
+                      predefinedTokens &&
+                      (!scheduleStore.toAddress ||
+                        predefinedTokens.includes(this.state.token.symbol)) ? (
+                        <div>
+                          <Select
+                            setupOptions={{
+                              placeholder: {
+                                id: 'PLACEHOLDER',
+                                text: 'Predefined Tokens'
+                              },
+                              width: '160px'
+                            }}
+                            onChange={event => this.useToken(event.target.value)}
+                            value={this.state.token.symbol}
+                          >
+                            <option value="PLACEHOLDER">Predefined Tokens</option>
+
+                            {predefinedTokens.map(token => (
+                              <option key={token} value={token}>
+                                {token}
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+                      ) : (
+                        this.state.token.name
+                      )}
+                    </span>
                   </div>
                   <div className="col-sm-4">
-                    <label> Decimals :</label>
+                    <label>Decimals:</label>
                     <span className="w-100 d-block">{this.state.token.decimals}</span>
                   </div>
                   <div className="col-sm-4">
-                    <label> Balance :</label>
+                    <label>Balance:</label>
                     <span className="w-100 d-block">{this.state.token.balance}</span>
                   </div>
                 </div>
@@ -442,22 +475,6 @@ class InfoSettings extends AbstractSetting {
             <label htmlFor="checkboxAddData">Add Data</label>
           </div>
         )}
-        {scheduleStore.isTokenTransfer &&
-          predefinedTokens && (
-            <div>
-              <Select
-                setupOptions={{ width: '160px' }}
-                onChange={event => this.useToken(event.target.value)}
-              >
-                <option value="">Predefined tokens</option>
-                {predefinedTokens.map(token => (
-                  <option key={token} value={token}>
-                    {token}
-                  </option>
-                ))}
-              </Select>
-            </div>
-          )}
         {!scheduleStore.isTokenTransfer &&
           scheduleStore.useData && (
             <div className="row">
