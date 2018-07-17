@@ -20,14 +20,14 @@ class AbstractSetting extends Component {
 
     return {
       validator: value => {
-        if (!new RegExp('^\\d+$').test(value)) return 1;
-        if (min) {
-          if (Number(value) < Number(min)) {
-            return 2;
-          }
-        } else if (!(Number(value) > 0)) {
+        if (!new RegExp('^\\d+$').test(value)) {
+          return 1;
+        }
+
+        if ((min && Number(value) < Number(min)) || Number(value) <= 0) {
           return 2;
         }
+
         return 0;
       },
       errors: [_validations.Errors.numeric, minError || _validations.Errors.minimum_numeric]
@@ -40,13 +40,11 @@ class AbstractSetting extends Component {
     return {
       validator: value => {
         if (!new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
-        if (min) {
-          if (Number(value) < Number(min)) {
-            return 2;
-          }
-        } else if (!(Number(value) > 0)) {
+
+        if ((min && Number(value) < Number(min)) || Number(value) <= 0) {
           return 2;
         }
+
         return 0;
       },
       errors: [_validations.Errors.numeric, minError]
@@ -114,6 +112,7 @@ class AbstractSetting extends Component {
       const { web3 } = web3Service;
       Web3 = web3;
     }
+
     const errorState = validator(value, Web3);
     if (errorState == 0) {
       _validations[property] = true;
