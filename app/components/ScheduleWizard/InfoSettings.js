@@ -51,6 +51,7 @@ class InfoSettings extends AbstractSetting {
 
   checkAmountValidation() {
     const { scheduleStore } = this.props;
+
     if (!scheduleStore.isTokenTransfer && scheduleStore.amountToSend !== '') {
       this.validate('amountToSend')();
     }
@@ -167,9 +168,16 @@ class InfoSettings extends AbstractSetting {
   toggleField = property => () => {
     const { scheduleStore } = this.props;
     scheduleStore[property] = !scheduleStore[property];
+
     if (scheduleStore.isTokenTransfer) {
+      scheduleStore.receiverAddress = scheduleStore.toAddress;
+      scheduleStore.toAddress = '';
       this.tokenChangeCheck('toAddress');
     } else {
+      if (property === 'isTokenTransfer') {
+        scheduleStore.toAddress = scheduleStore.receiverAddress;
+      }
+
       this.checkAmountValidation();
       this.calculateMinimumGas();
     }
@@ -364,7 +372,7 @@ class InfoSettings extends AbstractSetting {
                 (_validations.receiverAddress ? '' : ' has-error')
               }
             >
-              <label> Receiver Address</label>
+              <label>To Address</label>
               <input
                 type="text"
                 placeholder="Enter address"
