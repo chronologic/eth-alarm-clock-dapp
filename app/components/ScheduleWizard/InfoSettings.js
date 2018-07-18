@@ -218,6 +218,10 @@ class InfoSettings extends AbstractSetting {
       this.props.scheduleStore.toAddress = '';
     }
 
+    await this.revalidateToAddress();
+  }
+
+  async revalidateToAddress() {
     await this.tokenChangeCheck('toAddress');
 
     this.validate('toAddress')();
@@ -228,6 +232,10 @@ class InfoSettings extends AbstractSetting {
   componentDidMount() {
     this._mounted = true;
     this.checkAccountUpdate();
+
+    if (this.props.scheduleStore.toAddress) {
+      this.revalidateToAddress();
+    }
 
     this.updateInterval = setInterval(() => this.checkAccountUpdate(), 2000);
   }
