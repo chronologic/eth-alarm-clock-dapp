@@ -88,7 +88,7 @@
     "worker-loader": "2.0.0"
   },
   "dependencies": {
-    "@ethereum-alarm-clock/timenode-core": "4.2.1",
+    "@ethereum-alarm-clock/timenode-core": "4.2.2",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
     "bluebird": "3.5.1",
