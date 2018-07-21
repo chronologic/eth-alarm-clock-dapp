@@ -24,8 +24,7 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
-    const persistenceAdapter = new LokiIndexedAdapter(netId);
+    const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,

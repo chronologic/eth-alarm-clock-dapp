@@ -62,12 +62,7 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const load = string => {
-      const value = this._storageService.load(string);
-      if (!value) return null;
-
-      return value;
-    };
+    const load = string => this._storageService.load(string) || null;
 
     return {
       maxDeposit: load('maxDeposit'),
