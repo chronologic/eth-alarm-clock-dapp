@@ -123,21 +123,6 @@ export class TransactionStore {
     return transactions;
   }
 
-  async getAllScheduledTransactions(cached) {
-    const transactions = await this.getAllTransactions(cached);
-
-    let scheduled = [];
-
-    for (let transaction of transactions) {
-      const status = await this.getTxStatus(transaction);
-      if (transaction.isClaimed && status === TRANSACTION_STATUS.SCHEDULED) {
-        scheduled.push(transaction);
-      }
-    }
-
-    return scheduled;
-  }
-
   async getAllTransactionAddresses() {
     if (
       this._fetcher.allTransactionsAddresses &&
@@ -363,27 +348,6 @@ export class TransactionStore {
     await this._web3.init();
 
     return await this._eac.transactionRequest(address, this._web3);
-  }
-
-  async getScheduledTransactionsClaimedBy(address) {
-    const scheduled = await this.getAllScheduledTransactions(true);
-    let promises = [];
-
-    for (let transaction of scheduled) {
-      promises.push(transaction.fillData());
-    }
-
-    await Promise.all(promises);
-
-    let claimedByAddress = 0;
-
-    for (let transaction of scheduled) {
-      if (transaction.claimedBy == address) {
-        claimedByAddress++;
-      }
-    }
-
-    return claimedByAddress;
   }
 
   async isTransactionResolved(transaction) {

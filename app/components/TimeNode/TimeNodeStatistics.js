@@ -19,7 +19,6 @@ class TimeNodeStatistics extends Component {
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
     this.refreshStats = this.refreshStats.bind(this);
-    this.getScheduledTransactionsClaimedBy = this.getScheduledTransactionsClaimedBy.bind(this);
     this.shouldShowClaimedWarning = this.shouldShowClaimedWarning.bind(this);
   }
 
@@ -94,7 +93,7 @@ class TimeNodeStatistics extends Component {
   }
 
   async shouldShowClaimedWarning() {
-    const claimed = await this.getScheduledTransactionsClaimedBy();
+    const claimed = await this.props.timeNodeStore.getClaimedNotExecutedTransactions();
     if (claimed > 0) {
       const { jQuery } = window;
 
@@ -104,14 +103,6 @@ class TimeNodeStatistics extends Component {
     } else {
       this.stopTimeNode();
     }
-  }
-
-  async getScheduledTransactionsClaimedBy() {
-    const { transactionStore, timeNodeStore } = this.props;
-    const amount = await transactionStore.getScheduledTransactionsClaimedBy(
-      timeNodeStore.getMyAddress()
-    );
-    return amount;
   }
 
   render() {
