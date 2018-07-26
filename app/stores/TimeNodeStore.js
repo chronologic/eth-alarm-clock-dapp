@@ -139,21 +139,35 @@ export default class TimeNodeStore {
         });
       };
 
-      if (type === EAC_WORKER_MESSAGE_TYPES.LOG) {
-        this.handleLogMessage(value);
-      } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS) {
-        getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
-      } else if (type === EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES) {
-        getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
-      } else if (type === EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS) {
-        if (event.data.clearedStats) {
-          showNotification('Cleared the stats.', 'success');
-          this.updateStats();
-        } else {
-          showNotification('Unable to clear the stats.', 'danger', 3000);
-        }
-      } else if (type === EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO) {
-        getValuesIfInMessage(['providerBlockNumber']);
+      switch (type) {
+        case EAC_WORKER_MESSAGE_TYPES.LOG:
+          this.handleLogMessage(value);
+          break;
+
+        case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+          getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
+          break;
+
+        case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+          getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
+          break;
+
+        case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
+          if (event.data.clearedStats) {
+            showNotification('Cleared the stats.', 'success');
+            this.updateStats();
+          } else {
+            showNotification('Unable to clear the stats.', 'danger', 3000);
+          }
+          break;
+
+        case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+          getValuesIfInMessage(['providerBlockNumber']);
+          break;
+
+        case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+          this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
+          break;
       }
     };
 
@@ -163,6 +177,16 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
+  }
+
+  async getClaimedNotExecutedTransactions() {
+    this.eacWorker.postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS
+    });
+
+    return new Promise(resolve => {
+      this._getClaimedNotExecutedTransactionsPromiseResolver = resolve;
+    });
   }
 
   pushToLog(logs, log) {

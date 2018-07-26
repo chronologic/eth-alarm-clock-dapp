@@ -195,6 +195,13 @@ class EacWorker {
       });
     };
   }
+
+  async getClaimedNotExecutedTransactions() {
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
+      transactions: await this.timenode.getClaimedNotExecutedTransactions()
+    });
+  }
 }
 
 let eacWorker = null;
@@ -227,6 +234,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
       eacWorker.clearStats();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+      eacWorker.getClaimedNotExecutedTransactions();
       break;
   }
 };
