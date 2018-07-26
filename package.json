@@ -53,7 +53,7 @@
     "copy-webpack-plugin": "4.5.2",
     "css-loader": "0.28.11",
     "debug": "3.1.0",
-    "electron": "2.0.4",
+    "electron": "2.0.5",
     "electron-builder": "20.25.0",
     "electron-packager": "12.1.0",
     "enzyme": "3.3.0",
