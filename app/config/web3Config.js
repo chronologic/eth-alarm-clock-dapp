@@ -71,4 +71,34 @@ const Explorers = {
 
 const CUSTOM_PROVIDER_NET_ID = 9999;
 
-export { Networks, Explorers, CUSTOM_PROVIDER_NET_ID };
+const TOKEN_ADDRESSES = {
+  DAI: {
+    [KOVAN_NETWORK_ID]: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
+  },
+  DAY: {
+    [KOVAN_NETWORK_ID]: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
+  }
+};
+
+const PREDEFINED_TOKENS_FOR_NETWORK = {
+  0: [],
+  1: [],
+  2: [],
+  3: [],
+  4: [],
+  [KOVAN_NETWORK_ID]: []
+};
+
+for (let token of Object.keys(TOKEN_ADDRESSES)) {
+  for (let network of Object.keys(TOKEN_ADDRESSES[token])) {
+    PREDEFINED_TOKENS_FOR_NETWORK[network].push(token);
+  }
+}
+
+export {
+  Networks,
+  Explorers,
+  CUSTOM_PROVIDER_NET_ID,
+  PREDEFINED_TOKENS_FOR_NETWORK,
+  TOKEN_ADDRESSES
+};

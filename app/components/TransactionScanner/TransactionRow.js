@@ -73,10 +73,16 @@ class TransactionsRow extends Component {
 
     const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
 
-    let time;
+    const state = {
+      asyncPropsFetched: false,
+      bounty: transaction.bounty,
+      deposit: transaction.requiredDeposit,
+      isTimestamp,
+      value: transaction.callValue
+    };
 
     if (isTimestamp) {
-      time = TransactionsRow.getFormattedTimestamp(transaction.windowStart);
+      state.time = TransactionsRow.getFormattedTimestamp(transaction.windowStart);
     }
 
     let timeWindow = transaction.windowSize.toNumber();
@@ -85,17 +91,11 @@ class TransactionsRow extends Component {
       timeWindow = timeWindow * CONFIG.averageBlockTime;
     }
 
-    timeWindow = moment.duration(timeWindow, 'seconds').format('d [days], h [hours], m [minutes]');
+    state.timeWindow = moment
+      .duration(timeWindow, 'seconds')
+      .format('d [days], h [hours], m [minutes]');
 
-    return {
-      asyncPropsFetched: false,
-      bounty: transaction.bounty,
-      deposit: transaction.requiredDeposit,
-      isTimestamp,
-      time,
-      timeWindow,
-      value: transaction.callValue
-    };
+    return state;
   }
 
   async updateAsyncStateProps() {
@@ -114,8 +114,11 @@ class TransactionsRow extends Component {
     await this.updateAsyncStateProps();
   }
 
-  async componentDidUpdate() {
-    if (!this.state.asyncPropsFetched) {
+  async componentDidUpdate(prevProps) {
+    if (
+      this.props.transaction.address !== prevProps.transaction.address &&
+      !this.state.asyncPropsFetched
+    ) {
       await this.updateAsyncStateProps();
     }
   }

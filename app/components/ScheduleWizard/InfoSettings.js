@@ -4,6 +4,8 @@ import Bb from 'bluebird';
 import Switch from 'react-switch';
 import AbstractSetting from './AbstractSetting';
 import Alert from '../Common/Alert';
+import { TOKEN_ADDRESSES, PREDEFINED_TOKENS_FOR_NETWORK } from '../../config/web3Config';
+import Select from '../Common/Select';
 
 @inject('scheduleStore')
 @inject('web3Service')
@@ -22,8 +24,8 @@ class InfoSettings extends AbstractSetting {
     this._validationsErrors = _validationsErrors.InfoSettings;
 
     this.toggleField = this.toggleField.bind(this);
-
     this.onChangeCheck = this.onChangeCheck.bind(this);
+    this.useToken = this.useToken.bind(this);
   }
 
   validators = {
@@ -33,7 +35,7 @@ class InfoSettings extends AbstractSetting {
     gasPrice: this.integerValidator(),
     yourData: {
       validator: value => (typeof value === 'string' ? 0 : 1),
-      errors: ['Kindly provide valid input Data']
+      errors: ['Please provide valid input data']
     },
     receiverAddress: this.ethereumAddressValidator(),
     tokenToSend: this.decimalValidator()
@@ -49,6 +51,7 @@ class InfoSettings extends AbstractSetting {
 
   checkAmountValidation() {
     const { scheduleStore } = this.props;
+
     if (!scheduleStore.isTokenTransfer && scheduleStore.amountToSend !== '') {
       this.validate('amountToSend')();
     }
@@ -165,9 +168,16 @@ class InfoSettings extends AbstractSetting {
   toggleField = property => () => {
     const { scheduleStore } = this.props;
     scheduleStore[property] = !scheduleStore[property];
+
     if (scheduleStore.isTokenTransfer) {
+      scheduleStore.receiverAddress = scheduleStore.toAddress;
+      scheduleStore.toAddress = '';
       this.tokenChangeCheck('toAddress');
     } else {
+      if (property === 'isTokenTransfer') {
+        scheduleStore.toAddress = scheduleStore.receiverAddress;
+      }
+
       this.checkAmountValidation();
       this.calculateMinimumGas();
     }
@@ -185,7 +195,7 @@ class InfoSettings extends AbstractSetting {
       this.validators.tokenToSend = this.decimalValidator();
       return;
     }
-    if (property == 'toAddress') {
+    if (property === 'toAddress') {
       await this.getTokenDetails();
     }
     await this.calculateTokenTransferMinimumGasandData();
@@ -208,9 +218,33 @@ class InfoSettings extends AbstractSetting {
     this.forceUpdate();
   };
 
+  async useToken(tokenSymbol) {
+    if (tokenSymbol && tokenSymbol !== 'PLACEHOLDER') {
+      this.props.scheduleStore.toAddress =
+        TOKEN_ADDRESSES[tokenSymbol][this.props.web3Service.network.id];
+    } else {
+      this.props.scheduleStore.toAddress = '';
+    }
+
+    await this.revalidateToAddress();
+  }
+
+  async revalidateToAddress() {
+    await this.tokenChangeCheck('toAddress');
+
+    this.validate('toAddress')();
+
+    this.forceUpdate();
+  }
+
   componentDidMount() {
     this._mounted = true;
     this.checkAccountUpdate();
+
+    if (this.props.scheduleStore.toAddress) {
+      this.revalidateToAddress();
+    }
+
     this.updateInterval = setInterval(() => this.checkAccountUpdate(), 2000);
   }
 
@@ -222,9 +256,12 @@ class InfoSettings extends AbstractSetting {
   }
 
   render() {
-    const { scheduleStore } = this.props;
+    const { scheduleStore, web3Service } = this.props;
     const { _validations, _validationsErrors } = this;
     this.validators.gasAmount = this.integerValidator(this.state.minGas);
+
+    const predefinedTokens =
+      web3Service.network && PREDEFINED_TOKENS_FOR_NETWORK[web3Service.network.id];
 
     return (
       <div id="infoSettings" className="tab-pane slide">
@@ -260,15 +297,44 @@ class InfoSettings extends AbstractSetting {
               <div className={'form-group'}>
                 <div className="row">
                   <div className="col-sm-4">
-                    <label> Name :</label>
-                    <span className="w-100 d-block">{this.state.token.name}</span>
+                    <label>Name:</label>
+                    <span className="w-100 d-block">
+                      {scheduleStore.isTokenTransfer &&
+                      predefinedTokens &&
+                      (!scheduleStore.toAddress ||
+                        predefinedTokens.includes(this.state.token.symbol)) ? (
+                        <div>
+                          <Select
+                            setupOptions={{
+                              placeholder: {
+                                id: 'PLACEHOLDER',
+                                text: 'Predefined Tokens'
+                              },
+                              width: '160px'
+                            }}
+                            onChange={event => this.useToken(event.target.value)}
+                            value={this.state.token.symbol}
+                          >
+                            <option value="PLACEHOLDER">Predefined Tokens</option>
+
+                            {predefinedTokens.map(token => (
+                              <option key={token} value={token}>
+                                {token}
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+                      ) : (
+                        this.state.token.name
+                      )}
+                    </span>
                   </div>
                   <div className="col-sm-4">
-                    <label> Decimals :</label>
+                    <label>Decimals:</label>
                     <span className="w-100 d-block">{this.state.token.decimals}</span>
                   </div>
                   <div className="col-sm-4">
-                    <label> Balance :</label>
+                    <label>Balance:</label>
                     <span className="w-100 d-block">{this.state.token.balance}</span>
                   </div>
                 </div>
@@ -306,7 +372,7 @@ class InfoSettings extends AbstractSetting {
                 (_validations.receiverAddress ? '' : ' has-error')
               }
             >
-              <label> Receiver Address</label>
+              <label>To Address</label>
               <input
                 type="text"
                 placeholder="Enter address"

@@ -1,6 +1,3 @@
-import Web3 from 'web3/index';
-import Web3WsProvider from 'web3-providers-ws';
-import EAC from 'eac.js-lib';
 import Bb from 'bluebird';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
@@ -9,13 +6,11 @@ import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
 
-import { TimeNode, Config, StatsDB } from '@ethereum-alarm-clock/timenode-core';
+import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
 class EacWorker {
   timenode = null;
   network = null;
-  web3 = null;
-  eac = null;
   dayAccountAddress = null;
   keystore = null;
 
@@ -23,35 +18,13 @@ class EacWorker {
     const { customProviderUrl, network, dayAccountAddress } = options;
     this.network = network;
     this.dayAccountAddress = dayAccountAddress;
+    this.keystore = options.keystore;
 
     const providerUrl = customProviderUrl !== null ? customProviderUrl : this.network.endpoint;
-    let provider = null;
-
-    if (this.network) {
-      provider = (() => {
-        if (new RegExp('ws://').test(providerUrl) || new RegExp('wss://').test(providerUrl)) {
-          const ws = new Web3WsProvider(`${providerUrl}`);
-          ws.__proto__.sendAsync = ws.__proto__.send;
-          return ws;
-        } else if (
-          new RegExp('http://').test(providerUrl) ||
-          new RegExp('https://').test(providerUrl)
-        ) {
-          return new Web3.providers.HttpProvider(`${providerUrl}`);
-        }
-      })();
-    } else {
-      provider = new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER);
-    }
-
-    this.web3 = new Web3(provider);
-    this.eac = EAC(this.web3);
-    this.keystore = options.keystore;
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
-    const persistenceAdapter = new LokiIndexedAdapter(netId);
+    const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
@@ -65,10 +38,8 @@ class EacWorker {
       }
     }
 
-    const configOptions = {
-      web3: this.web3,
-      eac: this.eac,
-      provider,
+    this.config = new Config({
+      providerUrl,
       claiming: options.claiming,
       scanSpread: options.scan,
       logfile: options.logfile,
@@ -77,14 +48,9 @@ class EacWorker {
       password: options.keystorePassword,
       autostart: options.autostart,
       logger,
-      factory: await this.eac.requestFactory(),
-      economicStrategy: options.economicStrategy
-    };
-
-    this.config = new Config(configOptions);
-
-    this.config.logger = logger;
-    this.config.statsDb = new StatsDB(this.web3, browserDB);
+      economicStrategy: options.economicStrategy,
+      statsDb: browserDB
+    });
 
     this.myAddress = await this.config.wallet.getAddresses()[0];
 
@@ -127,7 +93,7 @@ class EacWorker {
    */
   async getNetworkInfo() {
     const providerBlockNumber = await Bb.fromCallback(callback =>
-      this.web3.eth.getBlockNumber(callback)
+      this.config.web3.eth.getBlockNumber(callback)
     );
 
     postMessage({
@@ -139,12 +105,12 @@ class EacWorker {
   async getBalances() {
     await this.awaitTimeNodeInitialized();
 
-    const balance = await this.eac.Util.getBalance(this.myAddress);
-    const balanceETH = this.web3.fromWei(balance);
+    const balance = await this.config.eac.Util.getBalance(this.myAddress);
+    const balanceETH = this.config.web3.fromWei(balance);
 
     const { balanceDAY, mintingPower } = await getDAYBalance(
       this.network,
-      this.web3,
+      this.config.web3,
       this.dayAccountAddress
     );
 
@@ -175,7 +141,7 @@ class EacWorker {
 
     if (bounties !== null && costs !== null) {
       const weiToEth = amount => {
-        const amountEth = this.web3.fromWei(amount, 'ether');
+        const amountEth = this.config.web3.fromWei(amount, 'ether');
         return Math.round(amountEth * 1000) / 1000;
       };
 
@@ -229,6 +195,13 @@ class EacWorker {
       });
     };
   }
+
+  async getClaimedNotExecutedTransactions() {
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
+      transactions: await this.timenode.getClaimedNotExecutedTransactions()
+    });
+  }
 }
 
 let eacWorker = null;
@@ -261,6 +234,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
       eacWorker.clearStats();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+      eacWorker.getClaimedNotExecutedTransactions();
       break;
   }
 };
