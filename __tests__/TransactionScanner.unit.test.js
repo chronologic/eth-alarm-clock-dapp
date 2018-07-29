@@ -142,7 +142,9 @@ describe('TransactionScanner', () => {
       },
       calcBucketForTimestamp() {
         return Promise.resolve(1527588000);
-      }
+      },
+
+      fillUpTransactions() {}
     };
 
     const featuresService = {
