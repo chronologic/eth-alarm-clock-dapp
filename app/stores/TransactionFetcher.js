@@ -9,12 +9,18 @@ export default class TransactionFetcher {
   fetchInterval = 60 * 1000;
   fetcher = '';
 
-  @observable requestFactoryStartBlock = 0;
-  @observable running = false;
-  @observable syncing = false;
-  @observable cacheDefault = true;
-  @observable lastBlock = '';
-  @observable lastUpdate = '';
+  @observable
+  requestFactoryStartBlock = 0;
+  @observable
+  running = false;
+  @observable
+  syncing = false;
+  @observable
+  cacheDefault = true;
+  @observable
+  lastBlock = '';
+  @observable
+  lastUpdate = '';
 
   _requestFactory;
   _features;
@@ -355,7 +361,7 @@ export default class TransactionFetcher {
     }
 
     const events = await this.getTransactionsEventsForAddresses(addressesToCheck);
-    const TX_EVENTS_MAP = this._cache.addressesEvents ? this._cache.addressesEvents : {};
+    const TX_EVENTS_MAP = this._cache.addressesEvents || {};
 
     for (const event of events) {
       let eventType;
