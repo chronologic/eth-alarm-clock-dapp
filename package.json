@@ -22,7 +22,7 @@
     "docker-rebuild": "npm run docker-remove && npm run docker-build",
     "docker-rebuild:nocache": "npm run docker-remove && npm run docker-build:nocache",
     "package:win": "npm run build && electron-packager . --overwrite --icon=app/assets/img/electron/icon.png --platform=win32",
-    "package:linux": "npm run build && electron-packager . --overwrite --platform=linux --arch=x64",
+    "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
     "package:mac": "npm run build && electron-packager . --overwrite  --icon=app/assets/img/electron/icon-osx.icns --platform=darwin",
     "precommit": "lint-staged",
     "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
@@ -141,12 +141,6 @@
     ],
     "moduleNameMapper": {
       "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
-    }
-  },
-  "build": {
-    "appId": "app.chronologic.network",
-    "mac": {
-      "category": "your.app.category.type"
     }
   }
 }
