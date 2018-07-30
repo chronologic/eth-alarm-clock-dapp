@@ -39,9 +39,11 @@ exports[`SidePanel is correctly rendered 1`] = `
         className="m-t-30 "
       >
         <a
-          aria-current={null}
+          aria-current="page"
+          className="active"
           href="/"
           onClick={[Function]}
+          style={Object {}}
         >
           <span
             className="title "
