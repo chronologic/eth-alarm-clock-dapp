@@ -2,6 +2,7 @@ import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { CONFIG } from '../lib/consts';
+import { TRANSACTION_EVENT } from '../services/eac';
 
 const requestFactoryStartBlocks = {
   3: 2594245,
@@ -176,7 +177,7 @@ export class TransactionStore {
     unresolved,
     sortByTimestampAscending
   }) {
-    const processed = [];
+    let processed = [];
     let total = 0;
     let buckets;
 
@@ -185,7 +186,7 @@ export class TransactionStore {
     }
 
     for (const transaction of transactions) {
-      const isResolved = await this.isTransactionResolved(transaction);
+      let isResolved = this.isTransactionResolved(transaction);
       let includeTransaction = false;
 
       if ((isResolved && resolved) || (!isResolved && unresolved)) {
@@ -198,6 +199,31 @@ export class TransactionStore {
 
       if (includeTransaction) {
         processed.push(transaction);
+      }
+    }
+
+    if (unresolved) {
+      const transactionsToCheck = [];
+      const transactionsToExclude = [];
+
+      for (const transaction of processed) {
+        if (this.isTransactionAfterWindowStart(transaction)) {
+          transactionsToCheck.push(transaction);
+        }
+      }
+
+      if (transactionsToCheck.length > 0) {
+        await this._fetcher.fillUpTransactions(transactions);
+
+        for (const transaction of transactionsToCheck) {
+          if (this.isTransactionResolved(transaction)) {
+            transactionsToExclude.push(transaction);
+          }
+        }
+
+        if (transactionsToExclude.length > 0) {
+          processed = processed.filter(item => !transactionsToExclude.includes(item));
+        }
       }
     }
 
@@ -337,7 +363,7 @@ export class TransactionStore {
       status = TRANSACTION_STATUS.CANCELLED;
     }
 
-    if (await this.isTransactionMissed(transaction)) {
+    if (this.isTransactionMissed(transaction)) {
       status = TRANSACTION_STATUS.MISSED;
     }
 
@@ -350,13 +376,21 @@ export class TransactionStore {
     return await this._eac.transactionRequest(address, this._web3);
   }
 
-  async isTransactionResolved(transaction) {
-    const isMissed = await this.isTransactionMissed(transaction);
+  isTransactionResolved(transaction) {
+    const isMissed = this.isTransactionMissed(transaction);
 
-    return isMissed || transaction.wasCalled || transaction.isCancelled;
+    if (isMissed || transaction.wasCalled || transaction.isCancelled) {
+      return true;
+    }
+
+    const TX_EVENTS_MAP = this._cache.addressesEvents || {};
+
+    const txEvent = TX_EVENTS_MAP[transaction.address];
+
+    return [TRANSACTION_EVENT.EXECUTED, TRANSACTION_EVENT.CANCELLED].indexOf(txEvent) !== -1;
   }
 
-  async isTransactionMissed(transaction) {
+  isTransactionMissed(transaction) {
     let afterExecutionWindow;
 
     if (this.isTxUnitTimestamp(transaction)) {
@@ -366,6 +400,12 @@ export class TransactionStore {
     }
 
     return Boolean(afterExecutionWindow && !transaction.wasCalled);
+  }
+
+  isTransactionAfterWindowStart(transaction) {
+    return transaction.windowStart.lessThan(
+      this.isTxUnitTimestamp(transaction) ? moment().unix() : this._fetcher.lastBlock
+    );
   }
 
   async isTransactionFrozen(transaction) {
