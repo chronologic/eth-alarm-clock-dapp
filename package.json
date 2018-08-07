@@ -78,7 +78,7 @@
     "react-test-renderer": "16.4.1",
     "resolve-url-loader": "2.3.0",
     "sass-loader": "7.0.3",
-    "style-loader": "0.21.0",
+    "style-loader": "0.22.0",
     "uglifyjs-webpack-plugin": "1.2.7",
     "webpack": "4.16.3",
     "webpack-bundle-analyzer": "2.13.1",
