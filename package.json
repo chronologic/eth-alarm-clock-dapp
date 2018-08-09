@@ -141,6 +141,7 @@
     ],
     "moduleNameMapper": {
       "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
-    }
+    },
+    "testURL": "http://localhost"
   }
 }
