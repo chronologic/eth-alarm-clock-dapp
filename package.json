@@ -51,7 +51,7 @@
     "compression-webpack-plugin": "1.1.11",
     "concurrently": "3.6.1",
     "copy-webpack-plugin": "4.5.2",
-    "css-loader": "0.28.11",
+    "css-loader": "1.0.0",
     "debug": "3.1.0",
     "electron": "2.0.7",
     "electron-builder": "20.27.1",
@@ -72,7 +72,7 @@
     "lint-staged": "7.2.0",
     "mini-css-extract-plugin": "0.4.1",
     "node-sass": "4.9.2",
-    "postcss-loader": "2.1.6",
+    "postcss-loader": "3.0.0",
     "prettier": "1.14.2",
     "react-hot-loader": "4.3.4",
     "react-test-renderer": "16.4.2",
@@ -88,7 +88,7 @@
     "worker-loader": "2.0.0"
   },
   "dependencies": {
-    "@ethereum-alarm-clock/timenode-core": "4.2.5",
+    "@ethereum-alarm-clock/timenode-core": "4.2.8",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
     "bluebird": "3.5.1",
@@ -98,7 +98,7 @@
     "chart.js": "2.7.2",
     "crypto-js": "3.1.9-1",
     "dotenv-webpack": "1.5.7",
-    "eac.js-lib": "2.0.2",
+    "eac.js-lib": "2.1.1",
     "electron-is-dev": "0.3.0",
     "ethereumjs-util": "5.1.5",
     "ethereumjs-wallet": "0.6.2",
@@ -128,7 +128,7 @@
     "select2": "4.0.4",
     "wait-on": "2.1.0",
     "web3": "0.20.6",
-    "web3-providers-ws": "1.0.0-beta.34",
+    "web3-providers-ws": "1.0.0-beta.35",
     "websocket": "1.0.26"
   },
   "browserslist": [
