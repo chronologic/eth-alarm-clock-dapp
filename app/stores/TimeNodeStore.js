@@ -24,23 +24,33 @@ const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
 
 export default class TimeNodeStore {
-  @observable walletKeystore = '';
-  @observable attachedDAYAccount = '';
-  @observable scanningStarted = false;
-  @observable claiming = false;
+  @observable
+  walletKeystore = '';
+  @observable
+  attachedDAYAccount = '';
+  @observable
+  scanningStarted = false;
+  @observable
+  claiming = false;
 
-  @observable basicLogs = [];
-  @observable detailedLogs = [];
+  @observable
+  basicLogs = [];
+  @observable
+  detailedLogs = [];
 
-  @observable logType = LOG_TYPE.BASIC;
+  @observable
+  logType = LOG_TYPE.BASIC;
   @computed
   get logs() {
     return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
   }
 
-  @observable executedTransactions = [];
-  @observable balanceETH = null;
-  @observable balanceDAY = null;
+  @observable
+  executedTransactions = [];
+  @observable
+  balanceETH = null;
+  @observable
+  balanceDAY = null;
   isTimeMint = null;
 
   @computed
@@ -56,9 +66,12 @@ export default class TimeNodeStore {
     }
   }
 
-  @observable bounties = null;
-  @observable costs = null;
-  @observable profit = null;
+  @observable
+  bounties = null;
+  @observable
+  costs = null;
+  @observable
+  profit = null;
 
   @computed
   get economicStrategy() {
@@ -71,12 +84,15 @@ export default class TimeNodeStore {
     };
   }
 
-  @observable nodeStatus = TIMENODE_STATUS.TIMENODE;
+  @observable
+  nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   // If a TimeNode has selected a custom provider URL
   // it will be stored in this variable
-  @observable customProviderUrl = null;
-  @observable providerBlockNumber = null;
+  @observable
+  customProviderUrl = null;
+  @observable
+  providerBlockNumber = null;
 
   eacWorker = null;
 
@@ -292,10 +308,16 @@ export default class TimeNodeStore {
   getMyAddress() {
     if (this.walletKeystore) {
       const ks = this.decrypt(this.walletKeystore);
-      return '0x' + JSON.parse(ks).address;
-    } else {
-      return '';
+      const address = JSON.parse(ks).address;
+
+      if (address && address.indexOf('0x') === -1) {
+        return '0x' + address;
+      }
+
+      return address;
     }
+
+    return '';
   }
 
   getAttachedDAYAddress() {
