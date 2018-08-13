@@ -4,6 +4,7 @@ import { inject } from 'mobx-react';
 import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
 import ConfirmEconomicStrategyModal from './Modals/ConfirmEconomicStrategyModal';
 import Switch from 'react-switch';
+import { Config } from '@ethereum-alarm-clock/timenode-core';
 
 @inject('timeNodeStore')
 class TimeNodeSettings extends Component {
@@ -12,11 +13,20 @@ class TimeNodeSettings extends Component {
 
     const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
     const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
+    const hasPropertyOrNotDefault = strategy => {
+      if (!strategy) {
+        return false;
+      }
+      const setStrategy = props.timeNodeStore.economicStrategy[strategy];
+      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
+      return setStrategy !== defaultStrategy;
+    };
+
     this.state = {
       claiming: props.timeNodeStore.claiming,
-      maxDeposit: maxDeposit ? toEth(maxDeposit) : '',
-      minProfitability: minProfitability ? toEth(minProfitability) : '',
-      minBalance: minBalance ? toEth(minBalance) : ''
+      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? toEth(maxDeposit) : '',
+      minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
+      minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
@@ -60,8 +70,9 @@ class TimeNodeSettings extends Component {
           <div className="card-block p-3">
             <div className="mb-3">
               Enables claiming transactions. Claiming helps you secure the execution of certain
-              transactions.<br />
-              <strong>Claiming transactions might cause a loss of funds.</strong>:
+              transactions.
+              <br />
+              <strong>Claiming transactions might cause a loss of funds.</strong>
             </div>
           </div>
         </div>
@@ -75,7 +86,8 @@ class TimeNodeSettings extends Component {
               <div className="mb-3">
                 You can fine tune which transactions you would like to claim and which you would
                 avoid claiming. Fine tuning your settings lowers the risk of losing funds when
-                claiming, so we highly advise the usage of these features<br />
+                claiming, so we highly advise the usage of these features
+                <br />
                 <strong>Only claim transactions that</strong>:
               </div>
 
@@ -87,7 +99,9 @@ class TimeNodeSettings extends Component {
                       id="maxDeposit"
                       className="form-control"
                       type="number"
-                      placeholder="Max Deposit in ETH"
+                      placeholder={
+                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit + ' ETH'
+                      }
                       value={this.state.maxDeposit}
                       onChange={this.handleChange}
                     />
@@ -101,7 +115,9 @@ class TimeNodeSettings extends Component {
                       id="minProfitability"
                       className="form-control"
                       type="number"
-                      placeholder="Profit in ETH"
+                      placeholder={
+                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability + ' ETH'
+                      }
                       value={this.state.minProfitability}
                       onChange={this.handleChange}
                     />
@@ -115,7 +131,9 @@ class TimeNodeSettings extends Component {
                       id="minBalance"
                       className="form-control"
                       type="number"
-                      placeholder="Balance in ETH"
+                      placeholder={
+                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.minBalance + ' ETH'
+                      }
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
