@@ -14,26 +14,22 @@ export const LOG_TYPE = {
 };
 
 export default class WorkerLogger {
-  // 1 - debug / cache
+  // 1 - debug
   // 2 - info
   // 3 - error
-  cache(message) {
-    this.log(message, LOGGER_MSG_TYPES.CACHE);
+  info(message, address = '') {
+    this.log(message, address, LOGGER_MSG_TYPES.INFO);
   }
 
-  info(message) {
-    this.log(message, LOGGER_MSG_TYPES.INFO);
+  debug(message, address = '') {
+    this.log(message, address, LOGGER_MSG_TYPES.DEBUG);
   }
 
-  debug(message) {
-    this.log(message, LOGGER_MSG_TYPES.DEBUG);
+  error(message, address = '') {
+    this.log(message, address, LOGGER_MSG_TYPES.ERROR);
   }
 
-  error(message) {
-    this.log(message, LOGGER_MSG_TYPES.ERROR);
-  }
-
-  log(message, type) {
+  log(message, address, type) {
     const timestamp = moment().unix();
 
     if (typeof message !== 'string') {
@@ -45,7 +41,7 @@ export default class WorkerLogger {
       type: EAC_WORKER_MESSAGE_TYPES.LOG,
       value: {
         timestamp,
-        message,
+        message: `${address} ${message}`,
         type
       }
     });
