@@ -1,12 +1,14 @@
 import Bb from 'bluebird';
 import Loki from 'lokijs';
+import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
-import localforage from 'localforage';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
+
+const STATS_SAVE_INTERVAL = 2000;
 
 class EacWorker {
   timenode = null;
@@ -25,13 +27,12 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new PersistenceAdapter(options.network.id);
+    const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
     this.browserDB = new Loki('stats.db', {
-      autoloadCallback: this.autoloadCallback.bind(this),
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
-      autosaveInterval: 5000
+      autosaveInterval: STATS_SAVE_INTERVAL
     });
 
     for (let key of Object.keys(options.economicStrategy)) {
@@ -142,6 +143,10 @@ class EacWorker {
     let profit = null;
 
     if (bounties !== null && costs !== null) {
+      if (typeof bounties === 'string' && typeof costs === 'string') {
+        bounties = new BigNumber(bounties);
+        costs = new BigNumber(costs);
+      }
       const weiToEth = amount => {
         const amountEth = this.config.web3.fromWei(amount, 'ether');
         return Math.round(amountEth * 100000) / 100000; // Round the stats to 5 decimals
@@ -198,11 +203,6 @@ class EacWorker {
     };
   }
 
-  // implement the autoloadback referenced in loki constructor
-  autoloadCallback() {
-    // let entries = this.browserDB.getCollection('stats');
-  }
-
   async getClaimedNotExecutedTransactions() {
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
@@ -248,29 +248,3 @@ onmessage = async function(event) {
       break;
   }
 };
-
-class PersistenceAdapter {
-  constructor(networkId) {
-    this.networkId = networkId;
-  }
-
-  async saveDatabase(dbname, dbstring, callback) {
-    const success = await localforage.setItem(this.networkId.toString(), dbstring);
-
-    if (success) {
-      callback(null);
-    } else {
-      callback(new Error(`An error was encountered loading ${dbname} database.`));
-    }
-  }
-
-  async loadDatabase(dbname, callback) {
-    const success = await localforage.getItem(this.networkId.toString());
-
-    if (success) {
-      callback(success);
-    } else {
-      callback(new Error('There was a problem loading the database'));
-    }
-  }
-}
