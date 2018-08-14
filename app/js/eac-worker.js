@@ -1,10 +1,11 @@
 import Bb from 'bluebird';
 import Loki from 'lokijs';
-import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
+// import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
+import localforage from 'localforage';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
@@ -13,6 +14,7 @@ class EacWorker {
   network = null;
   dayAccountAddress = null;
   keystore = null;
+  browserDB = null;
 
   async start(options) {
     const { customProviderUrl, network, dayAccountAddress } = options;
@@ -24,12 +26,13 @@ class EacWorker {
 
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
-    const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
-    const browserDB = new Loki('stats.db', {
+    const persistenceAdapter = new PersistenceAdapter(options.network.id);
+    this.browserDB = new Loki('stats.db', {
+      autoloadCallback: this.autoloadCallback.bind(this),
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
-      autosaveInterval: 4000
+      autosaveInterval: 1000
     });
 
     for (let key of Object.keys(options.economicStrategy)) {
@@ -49,7 +52,7 @@ class EacWorker {
       autostart: options.autostart,
       logger,
       economicStrategy: options.economicStrategy,
-      statsDb: browserDB
+      statsDb: this.browserDB
     });
 
     this.myAddress = await this.config.wallet.getAddresses()[0];
@@ -142,7 +145,7 @@ class EacWorker {
     if (bounties !== null && costs !== null) {
       const weiToEth = amount => {
         const amountEth = this.config.web3.fromWei(amount, 'ether');
-        return Math.round(amountEth * 1000) / 1000;
+        return Math.round(amountEth * 100000) / 100000; // Round the stats to 5 decimals
       };
 
       profit = weiToEth(bounties.minus(costs));
@@ -196,6 +199,11 @@ class EacWorker {
     };
   }
 
+  // implement the autoloadback referenced in loki constructor
+  autoloadCallback() {
+    // let entries = this.browserDB.getCollection('stats');
+  }
+
   async getClaimedNotExecutedTransactions() {
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
@@ -241,3 +249,31 @@ onmessage = async function(event) {
       break;
   }
 };
+
+class PersistenceAdapter {
+  constructor(networkId) {
+    this.networkId = networkId;
+  }
+
+  async saveDatabase(dbname, dbstring, callback) {
+    // store the database, for this example to localstorage
+    const success = await localforage.setItem(this.networkId.toString(), dbstring);
+
+    if (success) {
+      callback(null);
+    } else {
+      callback(new Error(`An error was encountered loading ${dbname} database.`));
+    }
+  }
+
+  async loadDatabase(dbname, callback) {
+    // using dbname, load the database from wherever your adapter expects it
+    const success = await localforage.getItem(this.networkId.toString());
+
+    if (success) {
+      callback(success);
+    } else {
+      callback(new Error('There was a problem loading the database'));
+    }
+  }
+}
