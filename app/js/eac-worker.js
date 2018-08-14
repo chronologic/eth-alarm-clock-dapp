@@ -1,6 +1,5 @@
 import Bb from 'bluebird';
 import Loki from 'lokijs';
-// import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
@@ -32,7 +31,7 @@ class EacWorker {
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
-      autosaveInterval: 1000
+      autosaveInterval: 5000
     });
 
     for (let key of Object.keys(options.economicStrategy)) {
@@ -256,7 +255,6 @@ class PersistenceAdapter {
   }
 
   async saveDatabase(dbname, dbstring, callback) {
-    // store the database, for this example to localstorage
     const success = await localforage.setItem(this.networkId.toString(), dbstring);
 
     if (success) {
@@ -267,7 +265,6 @@ class PersistenceAdapter {
   }
 
   async loadDatabase(dbname, callback) {
-    // using dbname, load the database from wherever your adapter expects it
     const success = await localforage.getItem(this.networkId.toString());
 
     if (success) {
