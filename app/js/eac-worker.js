@@ -15,7 +15,6 @@ class EacWorker {
   network = null;
   dayAccountAddress = null;
   keystore = null;
-  browserDB = null;
 
   async start(options) {
     const { customProviderUrl, network, dayAccountAddress } = options;
@@ -28,7 +27,7 @@ class EacWorker {
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
     const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
-    this.browserDB = new Loki('stats.db', {
+    const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
@@ -52,7 +51,7 @@ class EacWorker {
       autostart: options.autostart,
       logger,
       economicStrategy: options.economicStrategy,
-      statsDb: this.browserDB
+      statsDb: browserDB
     });
 
     this.myAddress = await this.config.wallet.getAddresses()[0];
