@@ -73,7 +73,10 @@ export class KeenStore {
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
     await this.awaitKeenInitialized();
-    nodeAddress = this._web3Service.web3.sha3(nodeAddress);
+    nodeAddress = this._web3Service.web3.sha3(nodeAddress).toString();
+    dayAddress = this._web3Service.web3.sha3(dayAddress).toString();
+    networkId = networkId.toString();
+
     const event = {
       nodeAddress,
       dayAddress,

@@ -7,6 +7,7 @@ import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
+import { Config } from '@ethereum-alarm-clock/timenode-core';
 
 /*
  * TimeNode classification based on the number
@@ -75,12 +76,14 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const load = string => this._storageService.load(string) || null;
+    const load = string =>
+      this._storageService.load(string) || Config.DEFAULT_ECONOMIC_STRATEGY[string].toString();
 
     return {
       maxDeposit: load('maxDeposit'),
       minBalance: load('minBalance'),
-      minProfitability: load('minProfitability')
+      minProfitability: load('minProfitability'),
+      maxGasSubsidy: load('maxGasSubsidy')
     };
   }
 
