@@ -142,7 +142,8 @@ class EacWorker {
     if (bounties !== null && costs !== null) {
       const weiToEth = amount => {
         const amountEth = this.config.web3.fromWei(amount, 'ether');
-        return Math.round(amountEth * 1000) / 1000;
+        const zeros = 100000;
+        return Math.round(amountEth * zeros) / zeros;
       };
 
       profit = weiToEth(bounties.minus(costs));
