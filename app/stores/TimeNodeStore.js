@@ -80,7 +80,7 @@ export default class TimeNodeStore {
     const load = (strategy) => {
       const loaded = this._storageService.load(strategy);
       return loaded ? new BigNumber(loaded) : Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
-    }
+    };
 
     return {
       maxDeposit: load('maxDeposit'),
