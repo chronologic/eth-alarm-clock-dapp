@@ -8,6 +8,9 @@ import BigNumber from 'bignumber.js';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
+const STATS_SAVE_INTERVAL = 2000;
+const STATS_NUM_DECIMALS = 5;
+
 class EacWorker {
   timenode = null;
   network = null;
@@ -29,7 +32,7 @@ class EacWorker {
       adapter: persistenceAdapter,
       autoload: true,
       autosave: true,
-      autosaveInterval: 4000
+      autosaveInterval: STATS_SAVE_INTERVAL
     });
 
     for (let key of Object.keys(options.economicStrategy)) {
@@ -140,9 +143,16 @@ class EacWorker {
     let profit = null;
 
     if (bounties !== null && costs !== null) {
+      if (typeof bounties === 'string' && typeof costs === 'string') {
+        bounties = new BigNumber(bounties);
+        costs = new BigNumber(costs);
+      }
       const weiToEth = amount => {
         const amountEth = this.config.web3.fromWei(amount, 'ether');
-        return Math.round(amountEth * 1000) / 1000;
+        return (
+          Math.round(amountEth * Math.pow(10, STATS_NUM_DECIMALS)) /
+          Math.pow(10, STATS_NUM_DECIMALS)
+        ); // Round the stats to 5 decimals
       };
 
       profit = weiToEth(bounties.minus(costs));
