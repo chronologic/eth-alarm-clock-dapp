@@ -77,9 +77,10 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const load = strategy =>
-      new BigNumber(this._storageService.load(strategy)) ||
-      Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
+    const load = (strategy) => {
+      const loaded = this._storageService.load(strategy);
+      return loaded ? new BigNumber(loaded) : Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
+    }
 
     return {
       maxDeposit: load('maxDeposit'),
