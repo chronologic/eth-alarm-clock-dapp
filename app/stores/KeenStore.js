@@ -11,7 +11,8 @@ const COLLECTIONS = {
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
-  @observable activeTimeNodes = null;
+  @observable
+  activeTimeNodes = null;
 
   projectId = '';
   writeKey = '';
@@ -73,7 +74,10 @@ export class KeenStore {
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
     await this.awaitKeenInitialized();
-    nodeAddress = this._web3Service.web3.sha3(nodeAddress);
+    nodeAddress = this._web3Service.web3.sha3(nodeAddress).toString();
+    dayAddress = this._web3Service.web3.sha3(dayAddress).toString();
+    networkId = networkId.toString();
+
     const event = {
       nodeAddress,
       dayAddress,
