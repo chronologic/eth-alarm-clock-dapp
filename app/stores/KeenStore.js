@@ -11,7 +11,8 @@ const COLLECTIONS = {
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
 
 export class KeenStore {
-  @observable activeTimeNodes = null;
+  @observable
+  activeTimeNodes = null;
 
   projectId = '';
   writeKey = '';
