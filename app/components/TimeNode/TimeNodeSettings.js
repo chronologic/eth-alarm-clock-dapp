@@ -12,6 +12,8 @@ class TimeNodeSettings extends Component {
     super(props);
 
     const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
+
+    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
     const hasPropertyOrNotDefault = strategy => {
       if (!strategy) {
         return false;
@@ -23,21 +25,15 @@ class TimeNodeSettings extends Component {
 
     this.state = {
       claiming: props.timeNodeStore.claiming,
-      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? this.toEth(maxDeposit) : '',
-      minProfitability: hasPropertyOrNotDefault('minProfitability')
-        ? this.toEth(minProfitability)
-        : '',
-      minBalance: hasPropertyOrNotDefault('minBalance') ? this.toEth(minBalance) : '',
-      defaultMaxDeposit: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
-      defaultMinProfitability: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
-      defaultMinBalance: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance)
+      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? toEth(maxDeposit) : '',
+      minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
+      minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : '',
+      defaultMaxDeposit: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
+      defaultMinProfitability: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
+      defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance)
     };
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
-  }
-
-  toEth(wei) {
-    return this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
   }
 
   handleChange(event) {
