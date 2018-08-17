@@ -1,6 +1,7 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
+import BigNumber from 'bignumber.js';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
@@ -76,8 +77,9 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const load = string =>
-      this._storageService.load(string) || Config.DEFAULT_ECONOMIC_STRATEGY[string].toString();
+    const load = strategy =>
+      new BigNumber(this._storageService.load(strategy)) ||
+      Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
 
     return {
       maxDeposit: load('maxDeposit'),
