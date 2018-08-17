@@ -18,7 +18,7 @@ class TimeNodeSettings extends Component {
         return false;
       }
       const setStrategy = props.timeNodeStore.economicStrategy[strategy];
-      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
+      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
       return setStrategy !== defaultStrategy;
     };
 
