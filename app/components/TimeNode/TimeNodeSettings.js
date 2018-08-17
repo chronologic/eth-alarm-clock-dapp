@@ -12,24 +12,32 @@ class TimeNodeSettings extends Component {
     super(props);
 
     const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
-    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
     const hasPropertyOrNotDefault = strategy => {
       if (!strategy) {
         return false;
       }
       const setStrategy = props.timeNodeStore.economicStrategy[strategy];
-      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy];
+      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
       return setStrategy !== defaultStrategy;
     };
 
     this.state = {
       claiming: props.timeNodeStore.claiming,
-      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? toEth(maxDeposit) : '',
-      minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
-      minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : ''
+      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? this.toEth(maxDeposit) : '',
+      minProfitability: hasPropertyOrNotDefault('minProfitability')
+        ? this.toEth(minProfitability)
+        : '',
+      minBalance: hasPropertyOrNotDefault('minBalance') ? this.toEth(minBalance) : '',
+      defaultMaxDeposit: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
+      defaultMinProfitability: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
+      defaultMinBalance: this.toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance)
     };
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
+  }
+
+  toEth(wei) {
+    return this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
   }
 
   handleChange(event) {
@@ -99,9 +107,7 @@ class TimeNodeSettings extends Component {
                       id="maxDeposit"
                       className="form-control"
                       type="number"
-                      placeholder={
-                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit + ' ETH'
-                      }
+                      placeholder={`Default: ${this.state.defaultMaxDeposit} ETH`}
                       value={this.state.maxDeposit}
                       onChange={this.handleChange}
                     />
@@ -115,9 +121,7 @@ class TimeNodeSettings extends Component {
                       id="minProfitability"
                       className="form-control"
                       type="number"
-                      placeholder={
-                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability + ' ETH'
-                      }
+                      placeholder={`Default: ${this.state.defaultMinProfitability} ETH`}
                       value={this.state.minProfitability}
                       onChange={this.handleChange}
                     />
@@ -131,9 +135,7 @@ class TimeNodeSettings extends Component {
                       id="minBalance"
                       className="form-control"
                       type="number"
-                      placeholder={
-                        'Default: ' + Config.DEFAULT_ECONOMIC_STRATEGY.minBalance + ' ETH'
-                      }
+                      placeholder={`Default: ${this.state.defaultMinBalance} ETH`}
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
