@@ -37,6 +37,16 @@ class EacWorker {
     const browserDB = new Loki('stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
+      autoloadCallback: () => {
+        // LokiJS stores BN objects as a string.
+        // This causes problems when loading from persistent storage.
+        // Convert any stored non-BN into BN.
+        const stats = browserDB.getCollection('timenode-stats').data;
+        stats.forEach(stat => {
+          stat.bounty = new BigNumber(stat.bounty);
+          stat.cost = new BigNumber(stat.cost);
+        });
+      },
       autosave: true,
       autosaveInterval: STATS_SAVE_INTERVAL
     });
@@ -142,13 +152,20 @@ class EacWorker {
     const profit = bounties.minus(costs);
 
     const executedTransactions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
+    let executedTransactionsTimestamps = [];
+
+    executedTransactions.forEach(tx => {
+      executedTransactionsTimestamps.push({ timestamp: tx.timestamp });
+    });
+
+    const toEth = num => this.config.web3.fromWei(num, 'ether');
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      bounties: formatBN(bounties),
-      costs: formatBN(costs),
-      profit: formatBN(profit),
-      executedTransactions: executedTransactions.length
+      bounties: formatBN(toEth(bounties)),
+      costs: formatBN(toEth(costs)),
+      profit: formatBN(toEth(profit)),
+      executedTransactions: executedTransactionsTimestamps
     });
   }
 
