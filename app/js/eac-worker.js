@@ -11,6 +11,12 @@ import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 const STATS_SAVE_INTERVAL = 2000;
 const STATS_NUM_DECIMALS = 5;
 
+const formatBN = num => {
+  return (
+    Math.round(num.toNumber() * Math.pow(10, STATS_NUM_DECIMALS)) / Math.pow(10, STATS_NUM_DECIMALS)
+  );
+};
+
 class EacWorker {
   timenode = null;
   network = null;
@@ -118,8 +124,8 @@ class EacWorker {
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES,
-      balanceETH: balanceETH.toNumber().toFixed(STATS_NUM_DECIMALS),
-      balanceDAY: balanceDAY.toNumber().toFixed(STATS_NUM_DECIMALS),
+      balanceETH: formatBN(balanceETH),
+      balanceDAY: formatBN(balanceDAY),
       isTimeMint: mintingPower > 0
     });
   }
@@ -139,9 +145,9 @@ class EacWorker {
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      bounties: bounties.toNumber().toFixed(STATS_NUM_DECIMALS),
-      costs: costs.toNumber().toFixed(STATS_NUM_DECIMALS),
-      profit: profit.toNumber().toFixed(STATS_NUM_DECIMALS),
+      bounties: formatBN(bounties),
+      costs: formatBN(costs),
+      profit: formatBN(profit),
       executedTransactions: executedTransactions.length
     });
   }
