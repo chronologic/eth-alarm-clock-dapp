@@ -57,7 +57,6 @@ class EacWorker {
 
     this.myAddress = await this.config.wallet.getAddresses()[0];
 
-    this.config.statsDb.initialize([this.myAddress]);
     this.timenode = new TimeNode(this.config);
 
     this.updateStats();
@@ -119,8 +118,8 @@ class EacWorker {
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES,
-      balanceETH: balanceETH.toNumber().toFixed(2),
-      balanceDAY: balanceDAY.toNumber(),
+      balanceETH: balanceETH.toNumber().toFixed(STATS_NUM_DECIMALS),
+      balanceDAY: balanceDAY.toNumber().toFixed(STATS_NUM_DECIMALS),
       isTimeMint: mintingPower > 0
     });
   }
@@ -132,78 +131,23 @@ class EacWorker {
   async updateStats() {
     await this.awaitTimeNodeInitialized();
 
-    const empty = {
-      bounties: null,
-      costs: null,
-      executedTransactions: []
-    };
+    const bounties = this.config.statsDb.totalBounty(this.myAddress);
+    const costs = this.config.statsDb.totalCost(this.myAddress);
+    const profit = bounties.minus(costs);
 
-    let { bounties, costs, executedTransactions } = this.config ? this.getMyStats() : empty;
-
-    let profit = null;
-
-    if (bounties !== null && costs !== null) {
-      if (typeof bounties === 'string' && typeof costs === 'string') {
-        bounties = new BigNumber(bounties);
-        costs = new BigNumber(costs);
-      }
-      const weiToEth = amount => {
-        const amountEth = this.config.web3.fromWei(amount, 'ether');
-        return (
-          Math.round(amountEth * Math.pow(10, STATS_NUM_DECIMALS)) /
-          Math.pow(10, STATS_NUM_DECIMALS)
-        ); // Round the stats to 5 decimals
-      };
-
-      profit = weiToEth(bounties.minus(costs));
-      bounties = weiToEth(bounties);
-      costs = weiToEth(costs);
-    }
+    const executedTransactions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      bounties,
-      costs,
-      profit,
-      executedTransactions: executedTransactions
+      bounties: bounties.toNumber().toFixed(STATS_NUM_DECIMALS),
+      costs: costs.toNumber().toFixed(STATS_NUM_DECIMALS),
+      profit: profit.toNumber().toFixed(STATS_NUM_DECIMALS),
+      executedTransactions: executedTransactions.length
     });
   }
 
-  getMyStats() {
-    const stats = this.config.statsDb.getStats();
-    for (let stat of stats) {
-      if (stat.account === this.myAddress) {
-        return stat;
-      }
-    }
-  }
-
-  /*
-   * Resets the stats saved in the IndexedDB.
-   */
   clearStats() {
-    const DBDeleteRequest = indexedDB.deleteDatabase('LokiAKV');
-
-    DBDeleteRequest.onerror = function() {
-      postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        clearedStats: false
-      });
-    };
-
-    DBDeleteRequest.onsuccess = function() {
-      postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        clearedStats: true
-      });
-    };
-
-    DBDeleteRequest.onblocked = function() {
-      postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS,
-        clearedStats: false
-      });
-    };
+    this.config.statsDb.clearAll();
   }
 
   async getClaimedNotExecutedTransactions() {
