@@ -34,7 +34,7 @@ class EacWorker {
     const logger = new WorkerLogger(options.logLevel, this.logs);
 
     const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
-    const browserDB = new Loki('stats.db', {
+    const browserDB = new Loki('timenode-stats.db', {
       adapter: persistenceAdapter,
       autoload: true,
       autoloadCallback: () => {
