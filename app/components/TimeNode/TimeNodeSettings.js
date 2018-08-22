@@ -12,7 +12,12 @@ class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
 
-    const { maxDeposit, minProfitability, minBalance } = props.timeNodeStore.economicStrategy;
+    const {
+      maxDeposit,
+      minProfitability,
+      minBalance,
+      maxGasSubsidy
+    } = props.timeNodeStore.economicStrategy;
 
     const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
     const hasPropertyOrNotDefault = strategy => {
@@ -29,9 +34,11 @@ class TimeNodeSettings extends Component {
       maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? toEth(maxDeposit) : '',
       minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
       minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : '',
+      maxGasSubsidy: hasPropertyOrNotDefault('maxGasSubsidy') ? maxGasSubsidy : '',
       defaultMaxDeposit: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
       defaultMinProfitability: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
-      defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance)
+      defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
+      defaultMaxGasSubsidy: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
     };
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
@@ -85,13 +92,13 @@ class TimeNodeSettings extends Component {
         {this.props.timeNodeStore.claiming && (
           <div className="card card-transparent">
             <div className="card-header separator">
-              <div className="card-title">Economic Strategy</div>
+              <div className="card-title">Economic Strategy - Claiming</div>
             </div>
             <div className="card-block p-3">
               <div className="mb-3">
                 You can fine tune which transactions you would like to claim and which you would
                 avoid claiming. Fine tuning your settings lowers the risk of losing funds when
-                claiming, so we highly advise the usage of these features
+                claiming, so we highly advise the usage of these features.
                 <br />
                 <strong>Only claim transactions that</strong>:
               </div>
@@ -142,6 +149,36 @@ class TimeNodeSettings extends Component {
             </div>
           </div>
         )}
+
+        <div className="card card-transparent">
+          <div className="card-header separator">
+            <div className="card-title">Execution gas subsidization</div>
+          </div>
+          <div className="card-block p-3">
+            <div className="mb-3">
+              In order to guarantee transaction execution in cases of peaking gas prices, TimeNodes
+              can choose to subsidize a part of the gas costs in cases where the gas price goes up
+              too high. By setting this the TimeNode commits to subsidize gas costs up to a certain
+              percentage higher.
+            </div>
+
+            <div className="row vertical-align">
+              <div className="col-md-4">
+                <div className="form-group form-group-default">
+                  <label>Maximum Gas Subsidy</label>
+                  <input
+                    id="maxGasSubsidy"
+                    className="form-control"
+                    type="number"
+                    placeholder={`Default: ${this.state.defaultMaxGasSubsidy}%`}
+                    value={this.state.maxGasSubsidy}
+                    onChange={this.handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="row">
           <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
@@ -211,6 +248,7 @@ class TimeNodeSettings extends Component {
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}
           minBalance={this.state.minBalance}
+          maxGasSubsidy={this.state.maxGasSubsidy}
         />
       </div>
     );
