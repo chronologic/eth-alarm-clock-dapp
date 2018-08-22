@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
 
 @inject('timeNodeStore')
 @observer
@@ -59,6 +60,15 @@ class TimeNodeUnlock extends Component {
               </div>
             </div>
           </div>
+
+          <div className="mt-5">
+            <p>
+              Forgot your password?&nbsp;
+              <a href="#" data-toggle="modal" data-target="#timeNodeDetachModal">
+                Detach your wallet.
+              </a>
+            </p>
+          </div>
         </div>
 
         <div className="row">
@@ -79,6 +89,8 @@ class TimeNodeUnlock extends Component {
             <PoweredByEAC className="mt-5" />
           </div>
         </div>
+
+        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
       </div>
     );
   }
