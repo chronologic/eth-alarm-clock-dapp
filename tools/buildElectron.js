@@ -27,6 +27,7 @@ async function buildElectron() {
 
   // Builder requires package.json be in the app directory, so copy it in
   fs.copyFileSync(path.join(paths.root, 'package.json'), path.join(jsBuildDir, 'package.json'));
+  fs.copyFileSync(path.join(paths.electron, 'main/index.js'), path.join(jsBuildDir, 'main.js'));
 
   console.log('Building...');
   try {

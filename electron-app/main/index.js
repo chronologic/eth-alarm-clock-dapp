@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
+const os = require('os');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -30,17 +31,31 @@ function createWindow() {
   };
 
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    // // Strip protocol
+    // Strip protocol
     let url = request.url.substr(PROTOCOL.length + 1);
 
-    const packagePath = __dirname;
+    let packagePath = __dirname;
+    const windows = os.platform() === 'win32';
+
+    if (windows) {
+      packagePath = packagePath.replace(/\\/g, '/');
+
+      if (url.indexOf('///') === 0) {
+        url = url.slice(3, url.length);
+      }
+    }
 
     if (url.indexOf(packagePath) === -1) {
       // Build complete path for node require function for file paths
-      url = path.join(packagePath, url);
+      if (windows) {
+        url = path.join(packagePath, url.slice(3, url.length));
 
-      // Replace backslashes by forward slashes (windows)
-      // url = url.replace(/\\/g, '/');
+        // Replace backslashes by forward slashes (windows)
+        url = url.replace(/\\/g, '/');
+      } else {
+        url = path.join(packagePath, url);
+      }
+
       url = path.normalize(url);
     }
 
