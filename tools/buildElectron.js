@@ -37,8 +37,8 @@ async function buildElectron() {
       x64: true,
       ia32: false,
       config: {
-        appId: 'com.github.chronologic.eth-alarm-clock-dapp',
-        productName: 'Ethereum Alarm Clock Dapp',
+        appId: 'com.github.chronologic.timenode',
+        productName: 'TimeNode',
         directories: {
           app: jsBuildDir,
           output: electronBuildsDir
