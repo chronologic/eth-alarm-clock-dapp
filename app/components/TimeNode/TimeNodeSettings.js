@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import TimeNodeDetachModal from './Modals/TimeNodeDetachModal';
+import TimeNodeResetStatsModal from './Modals/TimeNodeResetStatsModal';
 import ConfirmEconomicStrategyModal from './Modals/ConfirmEconomicStrategyModal';
 import Switch from 'react-switch';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
@@ -156,6 +157,30 @@ class TimeNodeSettings extends Component {
 
         <div className="card card-transparent">
           <div className="card-header separator">
+            <div className="card-title">Reset Statistics</div>
+          </div>
+          <div className="card-block p-3">
+            <div className="row vertical-align">
+              <div className="col-md-9 col-lg-10 my-2">
+                <p className="m-0">
+                  You have the option of resetting the statistics of your TimeNode.
+                </p>
+              </div>
+              <div className="col-md-3 col-lg-2">
+                <button
+                  className="btn btn-secondary btn-block"
+                  data-toggle="modal"
+                  data-target="#timeNodeResetStatsModal"
+                >
+                  Reset stats
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card card-transparent">
+          <div className="card-header separator">
             <div className="card-title">Detach Wallet</div>
           </div>
           <div className="card-block p-3">
@@ -180,6 +205,7 @@ class TimeNodeSettings extends Component {
         </div>
 
         <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
           updateWalletUnlocked={this.props.updateWalletUnlocked}
           maxDeposit={this.state.maxDeposit}
