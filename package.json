@@ -88,9 +88,7 @@
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.1.5",
     "webpack-merge": "4.1.4",
-    "worker-loader": "2.0.0"
-  },
-  "dependencies": {
+    "worker-loader": "2.0.0",
     "@ethereum-alarm-clock/timenode-core": "4.3.1",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
