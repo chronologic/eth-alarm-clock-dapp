@@ -35,10 +35,10 @@ class TimeNodeSettings extends Component {
       minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
       minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : '',
       maxGasSubsidy: hasPropertyOrNotDefault('maxGasSubsidy') ? maxGasSubsidy : '',
-      defaultMaxDeposit: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
-      defaultMinProfitability: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
-      defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
-      defaultMaxGasSubsidy: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
+      maxDepositDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
+      minProfitabilityDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
+      minBalanceDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
+      maxGasSubsidyDefault: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -61,30 +61,22 @@ class TimeNodeSettings extends Component {
 
   hasUnsavedChanges() {
     let unsavedChanges = false;
-    const attributesToCheck = ['maxDeposit', 'minProfitability', 'minBalance', 'maxGasSubsidy'];
+    const fieldsToCheck = ['maxDeposit', 'minProfitability', 'minBalance', 'maxGasSubsidy'];
     const { economicStrategy, _web3Service } = this.props.timeNodeStore;
 
-    attributesToCheck.forEach(attr => {
-      let value =
-        attr === 'maxGasSubsidy'
-          ? this.state[attr]
-          : _web3Service.web3.toWei(this.state[attr], 'ether');
+    fieldsToCheck.forEach(field => {
+      let detectedValue = this.state[field];
+      const defaultValue = this.state[`${field}Default`].toString();
+      const currentSetField =
+        field === 'maxGasSubsidy'
+          ? economicStrategy[field]
+          : _web3Service.web3.fromWei(economicStrategy[field], 'ether');
 
-      if (value === '') value = Config.DEFAULT_ECONOMIC_STRATEGY[attr].toString();
-
-      if (value != economicStrategy[attr]) unsavedChanges = true;
-      // console.log({
-      //   attr,
-      //   value,
-      //   default: economicStrategy[attr]
-      // });
+      if (detectedValue === '') detectedValue = defaultValue;
+      if (detectedValue != currentSetField) unsavedChanges = true;
     });
 
     if (this.state.claiming !== this.props.timeNodeStore.claiming) unsavedChanges = true;
-    // console.log({
-    //   expected: this.state.claiming,
-    //   set: this.props.timeNodeStore.claiming
-    // });
 
     return unsavedChanges;
   }
@@ -147,7 +139,7 @@ class TimeNodeSettings extends Component {
                       id="maxDeposit"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMaxDeposit} ETH`}
+                      placeholder={`Default: ${this.state.maxDepositDefault} ETH`}
                       value={this.state.maxDeposit}
                       onChange={this.handleChange}
                     />
@@ -161,7 +153,7 @@ class TimeNodeSettings extends Component {
                       id="minProfitability"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMinProfitability} ETH`}
+                      placeholder={`Default: ${this.state.minProfitabilityDefault} ETH`}
                       value={this.state.minProfitability}
                       onChange={this.handleChange}
                     />
@@ -175,7 +167,7 @@ class TimeNodeSettings extends Component {
                       id="minBalance"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMinBalance} ETH`}
+                      placeholder={`Default: ${this.state.minBalanceDefault} ETH`}
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
@@ -206,7 +198,7 @@ class TimeNodeSettings extends Component {
                     id="maxGasSubsidy"
                     className="form-control"
                     type="number"
-                    placeholder={`Default: ${this.state.defaultMaxGasSubsidy}%`}
+                    placeholder={`Default: ${this.state.maxGasSubsidyDefault}%`}
                     value={this.state.maxGasSubsidy}
                     onChange={this.handleChange}
                   />
