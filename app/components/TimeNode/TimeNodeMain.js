@@ -8,9 +8,6 @@ import PoweredByEAC from '../Common/PoweredByEAC';
 class TimeNodeMain extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      unsavedChangesInSettings: false
-    };
 
     this.handleClick = this.handleClick.bind(this);
     this.settingsTab = React.createRef();
