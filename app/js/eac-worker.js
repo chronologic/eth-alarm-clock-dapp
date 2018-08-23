@@ -36,17 +36,6 @@ class EacWorker {
     const persistenceAdapter = new LokiIndexedAdapter(options.network.id);
     const browserDB = new Loki('timenode-stats.db', {
       adapter: persistenceAdapter,
-      autoload: true,
-      autoloadCallback: () => {
-        // LokiJS stores BN objects as a string.
-        // This causes problems when loading from persistent storage.
-        // Convert any stored non-BN into BN.
-        const stats = browserDB.getCollection('timenode-stats').data;
-        stats.forEach(stat => {
-          stat.bounty = new BigNumber(stat.bounty);
-          stat.cost = new BigNumber(stat.cost);
-        });
-      },
       autosave: true,
       autosaveInterval: STATS_SAVE_INTERVAL
     });
@@ -70,6 +59,8 @@ class EacWorker {
       economicStrategy: options.economicStrategy,
       statsDb: browserDB
     });
+
+    await this.config.statsDbLoaded;
 
     this.myAddress = await this.config.wallet.getAddresses()[0];
 

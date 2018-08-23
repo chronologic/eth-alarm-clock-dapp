@@ -1,6 +1,8 @@
-out/
+dist/
 node_modules/
 app/pages/
 app/plugins/
 abi
 eth-alarm-clock-dapp**
+electron-builds
+tools

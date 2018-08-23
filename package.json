@@ -1,12 +1,14 @@
 {
   "name": "eth-alarm-clock-dapp",
   "version": "0.9.14",
-  "main": "tools/electron.js",
+  "main": "main.js",
   "description": "",
   "scripts": {
     "test": "jest",
     "test-watch": "jest -u --watchAll",
     "build": "webpack --config webpack/prod.config.js",
+    "build:electron:dev": "webpack --config webpack/electron.dev.config.js",
+    "build:electron:prod": "webpack --config webpack/electron.prod.config.js",
     "dev-docker": "node_modules/.bin/webpack-dev-server --config webpack/docker.dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron tools/electron.js\"",
@@ -21,10 +23,11 @@
     "docker-remove": "docker-compose down -v",
     "docker-rebuild": "npm run docker-remove && npm run docker-build",
     "docker-rebuild:nocache": "npm run docker-remove && npm run docker-build:nocache",
-    "package:win": "npm run build && electron-packager . --overwrite --icon=app/assets/img/electron/icon.ico --platform=win32",
+    "package:win": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.ico --platform=win32",
     "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
-    "package:mac": "npm run build && electron-packager . --overwrite --icon=app/assets/img/electron/icon-osx.icns --platform=darwin",
+    "package:mac": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.icns --platform=darwin",
     "precommit": "lint-staged",
+    "release": "npm run build:electron:prod && node tools/buildElectron.js && npm run build && node tools/prepareRelease.js",
     "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
   },
   "lint-staged": {
@@ -33,6 +36,9 @@
       "prettier --write --config ./.prettierrc --config-precedence file-override",
       "git add"
     ]
+  },
+  "dependencies": {
+    "electron-is-dev": "0.3.0"
   },
   "devDependencies": {
     "acorn5-object-spread": "5.1.2",
@@ -55,7 +61,7 @@
     "debug": "3.1.0",
     "electron": "2.0.8",
     "electron-builder": "20.28.1",
-    "electron-packager": "12.1.0",
+    "electron-packager": "12.1.1",
     "enzyme": "3.4.3",
     "enzyme-adapter-react-16": "1.2.0",
     "eslint": "5.0.1",
@@ -85,10 +91,8 @@
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.1.5",
     "webpack-merge": "4.1.4",
-    "worker-loader": "2.0.0"
-  },
-  "dependencies": {
-    "@ethereum-alarm-clock/timenode-core": "5.0.1",
+    "worker-loader": "2.0.0",
+    "@ethereum-alarm-clock/timenode-core": "5.0.2",
     "babel-runtime": "6.26.0",
     "bignumber.js": "5.0.0",
     "bluebird": "3.5.1",
@@ -99,10 +103,10 @@
     "crypto-js": "3.1.9-1",
     "dotenv-webpack": "1.5.7",
     "eac.js-lib": "2.3.7",
-    "electron-is-dev": "0.3.0",
-    "ethereumjs-util": "5.1.5",
+    "ethereumjs-util": "5.2.0",
     "ethereumjs-wallet": "0.6.2",
     "font-awesome": "4.7.0",
+    "html-webpack-plugin": "3.2.0",
     "is-url": "1.2.4",
     "jquery": "3.3.1",
     "jquery.scrollbar": "0.2.11",
