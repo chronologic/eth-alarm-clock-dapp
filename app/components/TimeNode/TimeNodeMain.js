@@ -6,33 +6,63 @@ import TimeNodeSettings from './TimeNodeSettings';
 import PoweredByEAC from '../Common/PoweredByEAC';
 
 class TimeNodeMain extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      unsavedChangesInSettings: false
+    };
+
+    this.handleClick = this.handleClick.bind(this);
+    this.settingsTab = React.createRef();
+  }
+
+  componentDidMount() {
+    window.jQuery('a[data-toggle="tab"]').on('show.bs.tab', this.handleClick);
+  }
+
+  handleClick(e) {
+    const clickedOnTab = e.target.name;
+    const settingsTab = this.settingsTab.current.wrappedInstance;
+
+    if (clickedOnTab === 'logs' || clickedOnTab === 'statistics') {
+      if (settingsTab.hasUnsavedChanges()) {
+        const leave = confirm('Unsaved changes. Are you sure you want to leave the tab?');
+        if (!leave) {
+          e.preventDefault();
+        } else {
+          settingsTab.resetFields();
+        }
+      }
+    }
+  }
+
   render() {
     return (
       <div id="timeNodeMain">
-        <ul className="nav nav-tabs nav-tabs-simple" role="tablist">
+        <ul id="timeNodeTab" className="nav nav-tabs nav-tabs-simple" role="tablist">
           <li className="nav-item">
             <a
+              name="statistics"
               className="active px-4 py-3"
               data-toggle="tab"
               role="tab"
-              data-target="#tabStatistics"
-              href="#"
+              href="#tabStatistics"
             >
               Statistics
             </a>
           </li>
           <li className="nav-item">
-            <a className="px-4 py-3" href="#" data-toggle="tab" role="tab" data-target="#tabLogs">
+            <a name="logs" className="px-4 py-3" href="#tabLogs" data-toggle="tab" role="tab">
               Logs
             </a>
           </li>
           <li className="nav-item">
             <a
+              name="settings"
               className="px-4 py-3"
-              href="#"
+              href="#tabSettings"
               data-toggle="tab"
               role="tab"
-              data-target="#tabSettings"
             >
               Settings
             </a>
@@ -46,7 +76,10 @@ class TimeNodeMain extends Component {
             <TimeNodeLogs />
           </div>
           <div className="tab-pane " id="tabSettings">
-            <TimeNodeSettings updateWalletUnlocked={this.props.updateWalletUnlocked} />
+            <TimeNodeSettings
+              updateWalletUnlocked={this.props.updateWalletUnlocked}
+              ref={this.settingsTab}
+            />
           </div>
           <PoweredByEAC />
         </div>

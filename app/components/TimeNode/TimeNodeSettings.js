@@ -12,39 +12,46 @@ class TimeNodeSettings extends Component {
   constructor(props) {
     super(props);
 
-    const {
-      maxDeposit,
-      minProfitability,
-      minBalance,
-      maxGasSubsidy
-    } = props.timeNodeStore.economicStrategy;
-
-    const toEth = wei => this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
-    const hasPropertyOrNotDefault = strategy => {
-      if (!strategy) {
-        return false;
-      }
-      const setStrategy = props.timeNodeStore.economicStrategy[strategy];
-      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
-      return setStrategy !== defaultStrategy;
-    };
-
     this.state = {
       claiming: props.timeNodeStore.claiming,
-      maxDeposit: hasPropertyOrNotDefault('maxDeposit') ? toEth(maxDeposit) : '',
-      minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
-      minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : '',
-      maxGasSubsidy: hasPropertyOrNotDefault('maxGasSubsidy') ? maxGasSubsidy : '',
-      maxDepositDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
-      minProfitabilityDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
-      minBalanceDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
-      maxGasSubsidyDefault: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
+      maxDepositDefault: this._toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
+      minProfitabilityDefault: this._toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
+      minBalanceDefault: this._toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
+      maxGasSubsidyDefault: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy,
+      maxDeposit: this._initField('maxDeposit'),
+      minProfitability: this._initField('minProfitability'),
+      minBalance: this._initField('minBalance'),
+      maxGasSubsidy: this._initField('maxGasSubsidy')
     };
+
+    this._toEth = this._toEth.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
     this.hasUnsavedChanges = this.hasUnsavedChanges.bind(this);
     this.refreshChanges = this.refreshChanges.bind(this);
+  }
+
+  _toEth(wei) {
+    return this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
+  }
+
+  _initField(field) {
+    const hasPropertyOrNotDefault = strategy => {
+      if (!strategy) {
+        return false;
+      }
+      const setStrategy = this.props.timeNodeStore.economicStrategy[strategy];
+      const defaultStrategy = Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
+      return setStrategy !== defaultStrategy;
+    };
+
+    if (hasPropertyOrNotDefault(field)) {
+      const setValue = this.props.timeNodeStore.economicStrategy[field];
+      return field !== 'maxGasSubsidy' ? this._toEth(setValue) : setValue;
+    }
+
+    return '';
   }
 
   handleChange(event) {
@@ -79,6 +86,15 @@ class TimeNodeSettings extends Component {
     if (this.state.claiming !== this.props.timeNodeStore.claiming) unsavedChanges = true;
 
     return unsavedChanges;
+  }
+
+  resetFields() {
+    this.setState({
+      maxDeposit: this._initField('maxDeposit'),
+      minProfitability: this._initField('minProfitability'),
+      minBalance: this._initField('minBalance'),
+      maxGasSubsidy: this._initField('maxGasSubsidy')
+    });
   }
 
   refreshChanges() {
