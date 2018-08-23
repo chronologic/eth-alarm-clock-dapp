@@ -1,40 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
-import { showNotification } from '../../../services/notification';
 
 @inject('timeNodeStore')
-class ConfirmClaimingModal extends Component {
+class TimeNodeResetStatsModal extends Component {
   constructor(props) {
     super(props);
-    this.saveClaimingChange = this.saveClaimingChange.bind(this);
+    this.resetStats = this.resetStats.bind(this);
   }
 
-  saveClaimingChange() {
-    const password = this.passwdRef.value;
-    const { maxDeposit, minBalance, minProfitability, maxGasSubsidy, timeNodeStore } = this.props;
-
-    if (timeNodeStore.passwordMatchesKeystore(password)) {
-      timeNodeStore.saveClaimingStrategy({
-        maxDeposit,
-        minBalance,
-        minProfitability,
-        maxGasSubsidy
-      });
-      timeNodeStore.restart(password);
-      showNotification('Changes saved.', 'success');
-      this.passwdRef.value = '';
-    }
+  resetStats() {
+    this.props.timeNodeStore.clearStats();
   }
 
   render() {
     return (
       <div
         className="modal fade stick-up"
-        id="confirmClaimingModal"
+        id="timeNodeResetStatsModal"
         tabIndex="-1"
         role="dialog"
-        aria-labelledby="confirmClaimingModallLabel"
+        aria-labelledby="timeNodeResetStatsModalLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog">
@@ -44,20 +30,13 @@ class ConfirmClaimingModal extends Component {
                 <i className="pg-close fs-14" />
               </button>
               <h3 className="timenode-modal-title m-0">
-                Confirm <span className="semi-bold">TimeNode</span> changes
+                Reset stats for <span className="semi-bold">TimeNode</span>
               </h3>
             </div>
             <div className="modal-body">
               <hr />
-              <p>Please enter your password:</p>
-              <input
-                id="walletPassword"
-                type="password"
-                placeholder="Password"
-                className="form-control"
-                ref={el => (this.passwdRef = el)}
-                autoFocus
-              />
+              <p>Are you sure you want to do this?</p>
+              <span className="semi-bold">This will erase your TimeNode statistics.</span>
             </div>
             <div className="modal-footer">
               <div className="row">
@@ -71,9 +50,9 @@ class ConfirmClaimingModal extends Component {
                     className="btn btn-primary btn-block"
                     type="button"
                     data-dismiss="modal"
-                    onClick={this.saveClaimingChange}
+                    onClick={this.resetStats}
                   >
-                    <strong>Confirm</strong>
+                    <strong>Reset</strong>
                   </button>
                 </div>
               </div>
@@ -85,13 +64,9 @@ class ConfirmClaimingModal extends Component {
   }
 }
 
-ConfirmClaimingModal.propTypes = {
+TimeNodeResetStatsModal.propTypes = {
   timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any,
-  maxDeposit: PropTypes.any,
-  minBalance: PropTypes.any,
-  minProfitability: PropTypes.any,
-  maxGasSubsidy: PropTypes.any
+  updateWalletUnlocked: PropTypes.any
 };
 
-export default ConfirmClaimingModal;
+export default TimeNodeResetStatsModal;
