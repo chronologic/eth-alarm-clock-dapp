@@ -51,9 +51,8 @@ class TimeNodeSettings extends Component {
   }
 
   toggleClaiming() {
-    this.props.timeNodeStore.claiming = !this.props.timeNodeStore.claiming;
     this.setState({
-      claiming: this.props.timeNodeStore.claiming
+      claiming: !this.state.claiming
     });
   }
 
@@ -89,7 +88,7 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        {this.props.timeNodeStore.claiming && (
+        {this.state.claiming && (
           <div className="card card-transparent">
             <div className="card-header separator">
               <div className="card-title">Economic Strategy - Claiming</div>
@@ -245,6 +244,7 @@ class TimeNodeSettings extends Component {
         <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
           updateWalletUnlocked={this.props.updateWalletUnlocked}
+          claiming={this.state.claiming}
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}
           minBalance={this.state.minBalance}
