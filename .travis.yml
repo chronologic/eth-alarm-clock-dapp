@@ -57,7 +57,7 @@ deploy:
     skip_cleanup: true
     acl: public_read
     on:
-      branch: feature/automate-electron
+      branch: develop
       condition: $DEPLOY_RELEASE = true
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY
