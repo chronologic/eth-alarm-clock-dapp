@@ -94,6 +94,16 @@ class TimeNodeStatistics extends Component {
     );
   }
 
+  getClaimingNotification() {
+    return this.props.timeNodeStore.claiming ? null : (
+      <Alert
+        type="warning"
+        close={false}
+        msg={`You are not using the Claiming Mode. This might make your TimeNode unprofitable. Please enable Claiming Mode in TimeNode Settings.\nFor more info on claiming, see: https://blog.chronologic.network/how-to-mitigate-timenode-risks-b8551bb28f9d`}
+      />
+    );
+  }
+
   componentWillUnmount() {
     clearInterval(this.interval);
   }
@@ -141,6 +151,7 @@ class TimeNodeStatistics extends Component {
       <div id="timeNodeStatistics">
         {this.state.timeNodeDisabled ? dayTokenError : null}
         {this.getBalanceNotification()}
+        {this.getClaimingNotification()}
 
         <h2 className="py-4">
           Your TimeNode is currently {timeNodeStatus}.
