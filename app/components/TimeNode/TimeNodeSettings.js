@@ -40,8 +40,10 @@ class TimeNodeSettings extends Component {
       defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
       defaultMaxGasSubsidy: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
     };
+
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
+    this.hasUnsavedChanges = this.hasUnsavedChanges.bind(this);
   }
 
   handleChange(event) {
@@ -54,6 +56,27 @@ class TimeNodeSettings extends Component {
     this.setState({
       claiming: !this.state.claiming
     });
+  }
+
+  hasUnsavedChanges() {
+    let unsavedChanges = false;
+    const attributesToCheck = ['maxDeposit', 'minProfitability', 'minBalance', 'maxGasSubsidy'];
+    const { economicStrategy, _web3Service } = this.props.timeNodeStore;
+
+    attributesToCheck.forEach(attr => {
+      let value =
+        attr === 'maxGasSubsidy'
+          ? this.state[attr]
+          : _web3Service.web3.toWei(this.state[attr], 'ether');
+
+      if (value === '') value = Config.DEFAULT_ECONOMIC_STRATEGY[attr].toString();
+
+      if (value != economicStrategy[attr]) unsavedChanges = true;
+    });
+
+    if (this.state.claiming !== this.props.timeNodeStore.claiming) unsavedChanges = true;
+
+    return unsavedChanges;
   }
 
   render() {
@@ -179,10 +202,15 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
+        <div className="row mx-3">
+          <div className="col-md-9 col-lg-10">
+            {this.hasUnsavedChanges() && (
+              <div className="pull-right mt-1 text-danger">You have unsaved changes.</div>
+            )}
+          </div>
+          <div className="col-md-3 col-lg-2 px-0">
             <button
-              className="btn btn-primary btn-block mt-3"
+              className="btn btn-primary px-5 btn-block pull-right"
               data-toggle="modal"
               data-target="#confirmClaimingModal"
             >
