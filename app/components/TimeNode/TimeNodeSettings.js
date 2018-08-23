@@ -35,13 +35,16 @@ class TimeNodeSettings extends Component {
       minProfitability: hasPropertyOrNotDefault('minProfitability') ? toEth(minProfitability) : '',
       minBalance: hasPropertyOrNotDefault('minBalance') ? toEth(minBalance) : '',
       maxGasSubsidy: hasPropertyOrNotDefault('maxGasSubsidy') ? maxGasSubsidy : '',
-      defaultMaxDeposit: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
-      defaultMinProfitability: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
-      defaultMinBalance: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
-      defaultMaxGasSubsidy: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
+      maxDepositDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.maxDeposit),
+      minProfitabilityDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minProfitability),
+      minBalanceDefault: toEth(Config.DEFAULT_ECONOMIC_STRATEGY.minBalance),
+      maxGasSubsidyDefault: Config.DEFAULT_ECONOMIC_STRATEGY.maxGasSubsidy
     };
+
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
+    this.hasUnsavedChanges = this.hasUnsavedChanges.bind(this);
+    this.refreshChanges = this.refreshChanges.bind(this);
   }
 
   handleChange(event) {
@@ -51,10 +54,35 @@ class TimeNodeSettings extends Component {
   }
 
   toggleClaiming() {
-    this.props.timeNodeStore.claiming = !this.props.timeNodeStore.claiming;
     this.setState({
-      claiming: this.props.timeNodeStore.claiming
+      claiming: !this.state.claiming
     });
+  }
+
+  hasUnsavedChanges() {
+    let unsavedChanges = false;
+    const fieldsToCheck = ['maxDeposit', 'minProfitability', 'minBalance', 'maxGasSubsidy'];
+    const { economicStrategy, _web3Service } = this.props.timeNodeStore;
+
+    fieldsToCheck.forEach(field => {
+      let detectedValue = this.state[field];
+      const defaultValue = this.state[`${field}Default`].toString();
+      const currentSetField =
+        field === 'maxGasSubsidy'
+          ? economicStrategy[field]
+          : _web3Service.web3.fromWei(economicStrategy[field], 'ether');
+
+      if (detectedValue === '') detectedValue = defaultValue;
+      if (detectedValue != currentSetField) unsavedChanges = true;
+    });
+
+    if (this.state.claiming !== this.props.timeNodeStore.claiming) unsavedChanges = true;
+
+    return unsavedChanges;
+  }
+
+  refreshChanges() {
+    this.setState({});
   }
 
   render() {
@@ -89,7 +117,7 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        {this.props.timeNodeStore.claiming && (
+        {this.state.claiming && (
           <div className="card card-transparent">
             <div className="card-header separator">
               <div className="card-title">Economic Strategy - Claiming</div>
@@ -111,7 +139,7 @@ class TimeNodeSettings extends Component {
                       id="maxDeposit"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMaxDeposit} ETH`}
+                      placeholder={`Default: ${this.state.maxDepositDefault} ETH`}
                       value={this.state.maxDeposit}
                       onChange={this.handleChange}
                     />
@@ -125,7 +153,7 @@ class TimeNodeSettings extends Component {
                       id="minProfitability"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMinProfitability} ETH`}
+                      placeholder={`Default: ${this.state.minProfitabilityDefault} ETH`}
                       value={this.state.minProfitability}
                       onChange={this.handleChange}
                     />
@@ -139,7 +167,7 @@ class TimeNodeSettings extends Component {
                       id="minBalance"
                       className="form-control"
                       type="number"
-                      placeholder={`Default: ${this.state.defaultMinBalance} ETH`}
+                      placeholder={`Default: ${this.state.minBalanceDefault} ETH`}
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
@@ -170,7 +198,7 @@ class TimeNodeSettings extends Component {
                     id="maxGasSubsidy"
                     className="form-control"
                     type="number"
-                    placeholder={`Default: ${this.state.defaultMaxGasSubsidy}%`}
+                    placeholder={`Default: ${this.state.maxGasSubsidyDefault}%`}
                     value={this.state.maxGasSubsidy}
                     onChange={this.handleChange}
                   />
@@ -180,10 +208,15 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-md-3 offset-md-9 col-lg-2 offset-lg-10">
+        <div className="row mx-3">
+          <div className="col-md-9 col-lg-10">
+            {this.hasUnsavedChanges() && (
+              <div className="pull-right mt-1 text-danger">You have unsaved changes.</div>
+            )}
+          </div>
+          <div className="col-md-3 col-lg-2 px-0">
             <button
-              className="btn btn-primary btn-block mt-3"
+              className="btn btn-primary px-5 btn-block pull-right"
               data-toggle="modal"
               data-target="#confirmClaimingModal"
             >
@@ -245,10 +278,12 @@ class TimeNodeSettings extends Component {
         <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
           updateWalletUnlocked={this.props.updateWalletUnlocked}
+          claiming={this.state.claiming}
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}
           minBalance={this.state.minBalance}
           maxGasSubsidy={this.state.maxGasSubsidy}
+          refreshParent={this.refreshChanges}
         />
       </div>
     );

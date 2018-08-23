@@ -12,9 +12,17 @@ class ConfirmClaimingModal extends Component {
 
   saveClaimingChange() {
     const password = this.passwdRef.value;
-    const { maxDeposit, minBalance, minProfitability, maxGasSubsidy, timeNodeStore } = this.props;
+    const {
+      claiming,
+      maxDeposit,
+      minBalance,
+      minProfitability,
+      maxGasSubsidy,
+      timeNodeStore
+    } = this.props;
 
     if (timeNodeStore.passwordMatchesKeystore(password)) {
+      timeNodeStore.claiming = claiming;
       timeNodeStore.saveClaimingStrategy({
         maxDeposit,
         minBalance,
@@ -24,6 +32,7 @@ class ConfirmClaimingModal extends Component {
       timeNodeStore.restart(password);
       showNotification('Changes saved.', 'success');
       this.passwdRef.value = '';
+      this.props.refreshParent();
     }
   }
 
@@ -88,10 +97,12 @@ class ConfirmClaimingModal extends Component {
 ConfirmClaimingModal.propTypes = {
   timeNodeStore: PropTypes.any,
   updateWalletUnlocked: PropTypes.any,
-  maxDeposit: PropTypes.any,
-  minBalance: PropTypes.any,
-  minProfitability: PropTypes.any,
-  maxGasSubsidy: PropTypes.any
+  claiming: PropTypes.bool,
+  maxDeposit: PropTypes.string,
+  minBalance: PropTypes.string,
+  minProfitability: PropTypes.string,
+  maxGasSubsidy: PropTypes.string,
+  refreshParent: PropTypes.any
 };
 
 export default ConfirmClaimingModal;
