@@ -44,6 +44,7 @@ class TimeNodeSettings extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.toggleClaiming = this.toggleClaiming.bind(this);
     this.hasUnsavedChanges = this.hasUnsavedChanges.bind(this);
+    this.refreshChanges = this.refreshChanges.bind(this);
   }
 
   handleChange(event) {
@@ -72,11 +73,24 @@ class TimeNodeSettings extends Component {
       if (value === '') value = Config.DEFAULT_ECONOMIC_STRATEGY[attr].toString();
 
       if (value != economicStrategy[attr]) unsavedChanges = true;
+      // console.log({
+      //   attr,
+      //   value,
+      //   default: economicStrategy[attr]
+      // });
     });
 
     if (this.state.claiming !== this.props.timeNodeStore.claiming) unsavedChanges = true;
+    // console.log({
+    //   expected: this.state.claiming,
+    //   set: this.props.timeNodeStore.claiming
+    // });
 
     return unsavedChanges;
+  }
+
+  refreshChanges() {
+    this.setState({});
   }
 
   render() {
@@ -277,6 +291,7 @@ class TimeNodeSettings extends Component {
           minProfitability={this.state.minProfitability}
           minBalance={this.state.minBalance}
           maxGasSubsidy={this.state.maxGasSubsidy}
+          refreshParent={this.refreshChanges}
         />
       </div>
     );
