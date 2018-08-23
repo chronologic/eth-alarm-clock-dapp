@@ -32,6 +32,7 @@ class ConfirmClaimingModal extends Component {
       timeNodeStore.restart(password);
       showNotification('Changes saved.', 'success');
       this.passwdRef.value = '';
+      this.props.refreshParent();
     }
   }
 
@@ -100,7 +101,8 @@ ConfirmClaimingModal.propTypes = {
   maxDeposit: PropTypes.string,
   minBalance: PropTypes.string,
   minProfitability: PropTypes.string,
-  maxGasSubsidy: PropTypes.string
+  maxGasSubsidy: PropTypes.string,
+  refreshParent: PropTypes.any
 };
 
 export default ConfirmClaimingModal;
