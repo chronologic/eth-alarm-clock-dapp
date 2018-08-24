@@ -7,7 +7,7 @@ import PoweredByEAC from '../Common/PoweredByEAC';
 import ConfirmModal from '../Common/ConfirmModal';
 
 const INITIAL_STATE = {
-  hasClickedTab: null
+  dontPreventTab: null
 };
 
 class TimeNodeMain extends Component {
@@ -31,13 +31,13 @@ class TimeNodeMain extends Component {
     const clickedOnTab = e.target.name;
     const settingsTab = this.settingsTab.current.wrappedInstance;
 
-    const { hasClickedTab } = this.state;
+    const { dontPreventTab } = this.state;
 
-    if (hasClickedTab === null) {
+    if (!dontPreventTab) {
       if (clickedOnTab === 'logs' || clickedOnTab === 'statistics') {
         if (settingsTab.hasUnsavedChanges()) {
           this.setState({
-            hasClickedTab: e.target
+            dontPreventTab: e.target
           });
 
           // Prevent moving to the other tab before confirmed
@@ -50,7 +50,7 @@ class TimeNodeMain extends Component {
       }
     } else {
       this.setState({
-        hasClickedTab: null
+        dontPreventTab: null
       });
     }
   }
@@ -63,7 +63,7 @@ class TimeNodeMain extends Component {
 
     // Manually trigger moving to the other tab
     const $ = window.jQuery;
-    const tabName = this.state.hasClickedTab.href.split('#')[1];
+    const tabName = this.state.dontPreventTab.href.split('#')[1];
     $(`.nav-tabs a[href="#${tabName}"]`).tab('show');
   }
 
