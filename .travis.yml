@@ -22,7 +22,7 @@ matrix:
           - $HOME/.npm/_prebuilds
 
     - os: linux
-      dist: trusty
+      dist: bionic
       sudo: required
       services: docker
       env:
