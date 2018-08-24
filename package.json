@@ -136,8 +136,8 @@
     "websocket": "1.0.26"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/chronologic/eth-alarm-clock-dapp"
+    "type": "git",
+    "url": "https://github.com/chronologic/eth-alarm-clock-dapp"
   },
   "browserslist": [
     "defaults",
