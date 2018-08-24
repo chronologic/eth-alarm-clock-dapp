@@ -40,7 +40,7 @@ async function buildElectron() {
       config: {
         appId: 'com.github.chronologic.timenode',
         productName: 'TimeNode',
-        artifactName: '${productName}-${version}-${arch}-${env.TRAVIS_COMMIT}.${ext}',
+        artifactName: '${productName}-${version}-${arch}.${ext}',
         directories: {
           app: jsBuildDir,
           output: electronBuildsDir
