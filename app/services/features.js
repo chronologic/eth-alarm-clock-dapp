@@ -2,16 +2,6 @@ import { computed, observable } from 'mobx';
 import { showNotification } from './notification';
 import { Networks } from '../config/web3Config';
 
-const supportedNetworks = () => {
-  let supported = [];
-  Object.keys(Networks).forEach(netId => {
-    if (Networks[netId].supported) {
-      supported.push(Networks[netId]);
-    }
-  });
-  return supported;
-};
-
 export default class FeaturesService {
   _web3;
 
@@ -30,9 +20,7 @@ export default class FeaturesService {
     this.isCurrentNetworkSupported = this._isCurrentNetworkSupported();
 
     if (!this.isCurrentNetworkSupported) {
-      const networkList = supportedNetworks()
-        .map(network => network.name)
-        .join(', ');
+      const networkList = this.supportedNetworks.map(network => network.name).join(', ');
       showNotification(
         `Network unsupported. Please change it to one of the following: <b>${networkList}</b>`,
         'danger'
@@ -56,7 +44,17 @@ export default class FeaturesService {
     };
   }
 
+  get supportedNetworks() {
+    let supported = [];
+    Object.keys(Networks).forEach(netId => {
+      if (Networks[netId].supported) {
+        supported.push(Networks[netId]);
+      }
+    });
+    return supported;
+  }
+
   _isCurrentNetworkSupported() {
-    return supportedNetworks().includes(this._web3.network);
+    return this.supportedNetworks.includes(this._web3.network);
   }
 }
