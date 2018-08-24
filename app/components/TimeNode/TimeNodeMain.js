@@ -55,7 +55,7 @@ class TimeNodeMain extends Component {
     }
   }
 
-  // Once the user confirms he wants to leav the page
+  // Once the user confirms he wants to leave the page
   resetFields() {
     // Reset the fields in the settings tab
     const settingsTab = this.settingsTab.current.wrappedInstance;
@@ -122,7 +122,7 @@ class TimeNodeMain extends Component {
         <ConfirmModal
           modalName="confirmUnsavedChanges"
           modalTitle="You have unsaved changes."
-          modalBody="Are you sure you want to leave the settings tab? All unsaved changes will be discarded"
+          modalBody="Are you sure you want to leave the settings tab? All unsaved changes will be discarded."
           onConfirm={this.resetFields}
           onCancel={this.resetState}
         />
