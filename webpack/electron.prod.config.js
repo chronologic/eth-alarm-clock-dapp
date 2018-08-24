@@ -1,6 +1,9 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const prodConfig = require('./prod.config.js');
+const path = require('path');
+const paths = require('./paths');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = merge(prodConfig, {
   node: {
@@ -12,6 +15,10 @@ module.exports = merge(prodConfig, {
     minimize: false
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(paths.src, 'index.html'),
+      inject: true
+    }),
     new webpack.ExternalsPlugin('commonjs', [
       'desktop-capturer',
       'electron',
