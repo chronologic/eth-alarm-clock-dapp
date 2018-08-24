@@ -4,12 +4,22 @@ import TimeNodeStatistics from './TimeNodeStatistics';
 import TimeNodeLogs from './TimeNodeLogs';
 import TimeNodeSettings from './TimeNodeSettings';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import ConfirmModal from '../Common/ConfirmModal';
+
+const INITIAL_STATE = {
+  hasClickedTab: null
+};
 
 class TimeNodeMain extends Component {
   constructor(props) {
     super(props);
 
+    this.state = INITIAL_STATE;
+
     this.handleClick = this.handleClick.bind(this);
+    this.resetFields = this.resetFields.bind(this);
+    this.resetState = this.resetState.bind(this);
+
     this.settingsTab = React.createRef();
   }
 
@@ -21,22 +31,50 @@ class TimeNodeMain extends Component {
     const clickedOnTab = e.target.name;
     const settingsTab = this.settingsTab.current.wrappedInstance;
 
-    if (clickedOnTab === 'logs' || clickedOnTab === 'statistics') {
-      if (settingsTab.hasUnsavedChanges()) {
-        const leave = confirm('Unsaved changes. Are you sure you want to leave the tab?');
-        if (!leave) {
+    const { hasClickedTab } = this.state;
+
+    if (hasClickedTab === null) {
+      if (clickedOnTab === 'logs' || clickedOnTab === 'statistics') {
+        if (settingsTab.hasUnsavedChanges()) {
+          this.setState({
+            hasClickedTab: e.target
+          });
+
+          // Prevent moving to the other tab before confirmed
           e.preventDefault();
-        } else {
-          settingsTab.resetFields();
+
+          // Ask the user if he's sure he wants to leave the page
+          const $ = window.jQuery;
+          $('#confirmUnsavedChangesModal').modal('show');
         }
       }
+    } else {
+      this.setState({
+        hasClickedTab: null
+      });
     }
+  }
+
+  // Once the user confirms he wants to leav the page
+  resetFields() {
+    // Reset the fields in the settings tab
+    const settingsTab = this.settingsTab.current.wrappedInstance;
+    settingsTab.resetFields();
+
+    // Manually trigger moving to the other tab
+    const $ = window.jQuery;
+    const tabName = this.state.hasClickedTab.href.split('#')[1];
+    $(`.nav-tabs a[href="#${tabName}"]`).tab('show');
+  }
+
+  resetState() {
+    this.setState(INITIAL_STATE);
   }
 
   render() {
     return (
       <div id="timeNodeMain">
-        <ul id="timeNodeTab" className="nav nav-tabs nav-tabs-simple" role="tablist">
+        <ul className="nav nav-tabs nav-tabs-simple" role="tablist">
           <li className="nav-item">
             <a
               name="statistics"
@@ -80,6 +118,14 @@ class TimeNodeMain extends Component {
           </div>
           <PoweredByEAC />
         </div>
+
+        <ConfirmModal
+          modalName="confirmUnsavedChanges"
+          modalTitle="You have unsaved changes."
+          modalBody="Are you sure you want to leave the settings tab? All unsaved changes will be discarded"
+          onConfirm={this.resetFields}
+          onCancel={this.resetState}
+        />
       </div>
     );
   }

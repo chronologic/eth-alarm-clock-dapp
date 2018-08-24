@@ -90,6 +90,7 @@ class TimeNodeSettings extends Component {
 
   resetFields() {
     this.setState({
+      claiming: this.props.timeNodeStore.claiming,
       maxDeposit: this._initField('maxDeposit'),
       minProfitability: this._initField('minProfitability'),
       minBalance: this._initField('minBalance'),
