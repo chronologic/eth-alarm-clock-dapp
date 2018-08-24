@@ -7,7 +7,6 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - USE_HARD_LINKS=false
-        - DEPLOY_RELEASE=true
   include:
     - os: osx
       osx_image: xcode9.3
@@ -15,12 +14,13 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - USE_HARD_LINKS=false
-        - DEPLOY_RELEASE=true
 
     - os: linux
       dist: trusty
       sudo: required
       services: docker
+      env:
+        - DEPLOY_RELEASE=true
 
 language: node_js
 node_js: "8"

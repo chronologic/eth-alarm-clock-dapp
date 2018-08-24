@@ -32,8 +32,8 @@ async function buildElectron() {
   console.log('Building...');
   try {
     await builder.build({
-      mac: shouldBuildOs('mac') ? ['zip', 'dmg'] : undefined,
-      win: shouldBuildOs('windows') ? ['nsis'] : undefined,
+      // mac: shouldBuildOs('mac') ? ['zip', 'dmg'] : undefined,
+      // win: shouldBuildOs('windows') ? ['nsis'] : undefined,
       linux: shouldBuildOs('linux') ? ['AppImage'] : undefined,
       x64: true,
       ia32: false,
@@ -59,7 +59,15 @@ async function buildElectron() {
           compression
         },
         // IMPORTANT: Prevents from auto publishing to GitHub in CI environments
-        publish: null,
+        publish: [
+          {
+            provider: 'bintray',
+            package: 'Package-1',
+            repo: 'eth-alarm-clock-dapp',
+            owner: 'kuzirashi',
+            user: 'kuzirashi'
+          }
+        ],
         // IMPORTANT: Prevents extending configs in node_modules
         extends: null
       }
