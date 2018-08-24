@@ -1,12 +1,4 @@
 matrix:
-  fast_finish: true
-  allow_failures:
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-        - USE_HARD_LINKS=false
   include:
     - os: osx
       osx_image: xcode9.3
