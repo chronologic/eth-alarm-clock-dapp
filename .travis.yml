@@ -1,13 +1,4 @@
 matrix:
-  fast_finish: true
-  allow_failures:
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-        - USE_HARD_LINKS=false
-        - DEPLOY_RELEASE=true
   include:
     - os: osx
       osx_image: xcode9.3
@@ -15,22 +6,27 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - USE_HARD_LINKS=false
-        - DEPLOY_RELEASE=true
+      if: tag IS present
+      cache:
+        directories:
+          - node_modules
+          - $HOME/.cache/electron
+          - $HOME/.cache/electron-builder
+          - $HOME/.npm/_prebuilds
 
     - os: linux
       dist: trusty
       sudo: required
       services: docker
+      env:
+        - DEPLOY_RELEASE=true
+      cache:
+        directories:
+          - node_modules
+          - $HOME/.npm/_prebuilds
 
 language: node_js
 node_js: "8"
-
-cache:
-  directories:
-    - node_modules
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
-    - $HOME/.npm/_prebuilds
 
 install: npm install
 

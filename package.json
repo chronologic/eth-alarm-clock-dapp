@@ -27,7 +27,7 @@
     "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
     "package:mac": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.icns --platform=darwin",
     "precommit": "lint-staged",
-    "release": "npm run build:electron:prod && node tools/buildElectron.js && npm run build && node tools/prepareRelease.js",
+    "electron:distribute": "npm run build:electron:prod && node tools/buildElectron.js",
     "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
   },
   "lint-staged": {
@@ -134,6 +134,10 @@
     "web3": "0.20.6",
     "web3-providers-ws": "1.0.0-beta.35",
     "websocket": "1.0.26"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/chronologic/eth-alarm-clock-dapp"
   },
   "browserslist": [
     "defaults",
