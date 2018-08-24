@@ -403,7 +403,9 @@ export default class TimeNodeStore {
     const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
     for (let key of Object.keys(economicStrategy)) {
       if (economicStrategy[key]) {
-        this._storageService.save(key, numberFromString(economicStrategy[key]));
+        const value =
+          key === 'maxGasSubsidy' ? economicStrategy[key] : numberFromString(economicStrategy[key]);
+        this._storageService.save(key, value);
       } else {
         this._storageService.remove(key);
       }

@@ -3,7 +3,7 @@
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable, runInAction } from 'mobx';
-import { Networks, Explorers } from '../config/web3Config.js';
+import { Networks } from '../config/web3Config.js';
 import standardTokenAbi from '../abi/standardToken';
 
 let instance = null;
@@ -19,11 +19,16 @@ export default class Web3Service {
   tokenInstance = null;
   network = null;
 
-  @observable initialized = false;
-  @observable connectedToMetaMask = null;
-  @observable accounts = null;
-  @observable explorer = null;
-  @observable latestBlockNumber = null;
+  @observable
+  initialized = false;
+  @observable
+  connectedToMetaMask = null;
+  @observable
+  accounts = null;
+  @observable
+  explorer = null;
+  @observable
+  latestBlockNumber = null;
 
   constructor(props) {
     Object.assign(this, props);
@@ -304,7 +309,7 @@ export default class Web3Service {
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
     runInAction(() => {
       this.network = Networks[netId];
-      this.explorer = Explorers[netId];
+      this.explorer = this.network.explorer;
     });
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;

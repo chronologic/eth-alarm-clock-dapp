@@ -2,7 +2,7 @@ import TransactionFetcher from '../../app/stores/TransactionFetcher';
 import { equal } from 'assert';
 import TransactionCache from '../../app/stores/TransactionCache';
 import FeaturesService from '../../app/services/features';
-import { KOVAN_NETWORK_ID } from '../../app/config/web3Config';
+import { Networks, KOVAN_NETWORK_ID } from '../../app/config/web3Config';
 import LocalStorageService from '../../app/services/storage';
 import LocalStorageMock from '../../__mocks__/LocalStorageMock';
 
@@ -51,9 +51,7 @@ describe('Stores / TransactionFetcher', () => {
     const transactionsCache = new TransactionCache(storageService);
 
     const web3 = {
-      network: {
-        id: KOVAN_NETWORK_ID
-      },
+      network: Networks[KOVAN_NETWORK_ID],
       filter() {
         return {
           get(callback) {
