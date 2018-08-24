@@ -1,13 +1,22 @@
-import { EAC_SUPPORTED_NETWORKS } from './eac';
 import { computed, observable } from 'mobx';
 import { showNotification } from './notification';
+import { Networks } from '../config/web3Config';
 
-const UNSUPPORTED_NETWORK_MESSAGE = 'Network unsupported. Please change it to <b>Kovan.</b>';
+const supportedNetworks = () => {
+  let supported = [];
+  Object.keys(Networks).forEach(netId => {
+    if (Networks[netId].supported) {
+      supported.push(Networks[netId]);
+    }
+  });
+  return supported;
+};
 
 export default class FeaturesService {
   _web3;
 
-  @observable isCurrentNetworkSupported = null;
+  @observable
+  isCurrentNetworkSupported = null;
 
   constructor(web3Service) {
     this._web3 = web3Service;
@@ -21,7 +30,13 @@ export default class FeaturesService {
     this.isCurrentNetworkSupported = this._isCurrentNetworkSupported();
 
     if (!this.isCurrentNetworkSupported) {
-      showNotification(UNSUPPORTED_NETWORK_MESSAGE, 'danger');
+      const networkList = supportedNetworks()
+        .map(network => network.name)
+        .join(', ');
+      showNotification(
+        `Network unsupported. Please change it to one of the following: <b>${networkList}</b>`,
+        'danger'
+      );
     }
 
     this.initialized = true;
@@ -42,6 +57,6 @@ export default class FeaturesService {
   }
 
   _isCurrentNetworkSupported() {
-    return EAC_SUPPORTED_NETWORKS.includes(this._web3.network.id);
+    return supportedNetworks().includes(this._web3.network);
   }
 }
