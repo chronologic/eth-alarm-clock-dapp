@@ -6,6 +6,7 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - USE_HARD_LINKS=false
+      if: tag IS present
       cache:
         directories:
           - node_modules
