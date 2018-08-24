@@ -63,10 +63,8 @@ async function buildElectron() {
         publish: [
           {
             provider: 'bintray',
-            package: 'Package-1',
             repo: 'eth-alarm-clock-dapp',
-            owner: 'kuzirashi',
-            user: 'kuzirashi'
+            owner: 'kuzirashi'
           }
         ],
         // IMPORTANT: Prevents extending configs in node_modules
