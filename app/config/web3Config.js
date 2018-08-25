@@ -16,7 +16,8 @@ const Networks = {
   1: {
     id: 1,
     name: 'Mainnet',
-    endpoint: 'https://mainnet.infura.io/6M6ROam68gmdp9OeNmym',
+    endpoint:
+      'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
     showInChooser: true,
     dayTokenAddress: '0xe814aee960a85208c3db542c53e7d4a6c8d5f60f',
     supported: true,
