@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "0.9.14",
+  "version": "1.0.0-rc.1",
   "main": "main.js",
   "description": "",
   "scripts": {
@@ -114,7 +114,7 @@
     "keen-analysis": "3.0.4",
     "keen-tracking": "3.1.2",
     "lokijs": "1.5.3",
-    "mobx": "5.0.4",
+    "mobx": "5.0.5",
     "mobx-react": "5.2.5",
     "mobx-react-router": "4.0.4",
     "moment": "2.22.2",
