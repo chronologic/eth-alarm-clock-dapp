@@ -5,6 +5,7 @@ import { CONFIG } from '../lib/consts';
 import { TRANSACTION_EVENT } from '../services/eac';
 
 const requestFactoryStartBlocks = {
+  1: 6204104,
   3: 2594245,
   42: 5555500
 };
