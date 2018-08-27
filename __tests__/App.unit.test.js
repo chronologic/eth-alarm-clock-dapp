@@ -219,7 +219,7 @@ describe('App', () => {
         .find('.view-title')
         .text()
         .trim()
-    ).toBe('TimeNode');
+    ).toBe('Loading');
     expect(
       mockedRender
         .find('.tab-pane.active h2')

@@ -101,7 +101,7 @@ export class TransactionStore {
 
     this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
-    this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock || 1;
     this._fetcher.startLazy();
 
     this.initialized = true;
