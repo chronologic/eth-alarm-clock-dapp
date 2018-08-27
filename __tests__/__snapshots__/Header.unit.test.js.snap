@@ -41,19 +41,7 @@ exports[`Header displays current block number 1`] = `
       </span>
       <span
         className="timenode-count"
-      >
-        <div>
-          <div
-            className="css-1ncsqv2"
-          />
-          <div
-            className="css-o7y5po"
-          />
-          <div
-            className="css-1ncsqv2"
-          />
-        </div>
-      </span>
+      />
     </div>
     <div
       className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none"
@@ -170,17 +158,5 @@ exports[`Header displays current block number 1`] = `
 exports[`Header displays current block number 2`] = `
 <span
   className="timenode-count"
->
-  <div>
-    <div
-      className="css-1ncsqv2"
-    />
-    <div
-      className="css-o7y5po"
-    />
-    <div
-      className="css-1ncsqv2"
-    />
-  </div>
-</span>
+/>
 `;
