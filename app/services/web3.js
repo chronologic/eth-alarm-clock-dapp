@@ -293,7 +293,19 @@ export default class Web3Service {
   async connect() {
     let { web3 } = this;
     if (!web3) {
-      if (typeof window.web3 !== 'undefined') {
+      if (typeof window.web3 === 'undefined') {
+        // Future MetaMask flow
+        window.addEventListener('message', ({ data }) => {
+          if (data && data.type && data.type === 'ETHEREUM_PROVIDER_SUCCESS') {
+            web3 = new Web3(window.ethereum);
+            this.web3HTTP = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
+            this.connectedToMetaMask = true;
+          }
+        });
+
+        window.postMessage({ type: 'ETHEREUM_PROVIDER_REQUEST' }, '*');
+      } else if (typeof window.web3 !== 'undefined') {
+        // Current MetaMask flow
         web3 = new Web3(window.web3.currentProvider);
         this.web3HTTP = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
         this.connectedToMetaMask = true;
@@ -303,6 +315,7 @@ export default class Web3Service {
         this.connectedToMetaMask = false;
       }
 
+      // TODO handle async web3 initialization due to future MetaMask flow - Logan
       this.web3 = web3;
     }
 
