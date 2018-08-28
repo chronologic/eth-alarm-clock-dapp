@@ -8,6 +8,7 @@ import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { isRunningInElectron } from '../lib/electron-util';
 
 /*
  * TimeNode classification based on the number
@@ -321,6 +322,21 @@ export default class TimeNodeStore {
   setKeyStore(keystore) {
     this.walletKeystore = keystore;
     this._storageService.save('tn', keystore);
+  }
+
+  setCustomProviderUrl(netId, url) {
+    this.customProviderUrl = url;
+    this._storageService.save('selectedProviderId', netId);
+    this._storageService.save('selectedProviderUrl', url);
+
+    // Reload the page so that the changes are refreshed
+    if (isRunningInElectron()) {
+      // Workaround for getting the Electron app to reload
+      // since the regular reload results in a blank screen
+      window.location.href = '/index.html';
+    } else {
+      window.location.reload();
+    }
   }
 
   getMyAddress() {
