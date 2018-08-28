@@ -14,10 +14,20 @@ import { Config } from '@ethereum-alarm-clock/timenode-core';
  * of DAY tokens held by the owner.
  */
 export class TIMENODE_STATUS {
-  static MASTER_CHRONONODE = 'Master ChronoNode';
-  static CHRONONODE = 'ChronoNode';
-  static TIMENODE = 'TimeNode';
+  static MASTER_CHRONONODE = {
+    name: 'Master ChronoNode',
+    minBalance: 3333
+  };
+  static CHRONONODE = {
+    name: 'ChronoNode',
+    minBalance: 888
+  };
+  static TIMENODE = {
+    name: 'TimeNode',
+    minBalance: 333
+  };
   static DISABLED = 'Disabled';
+  static LOADING = 'Loading';
 }
 
 // 2 minute as milliseconds
@@ -56,14 +66,20 @@ export default class TimeNodeStore {
 
   @computed
   get nodeStatus() {
-    if (this.balance >= 3333) {
-      return TIMENODE_STATUS.MASTER_CHRONONODE;
-    } else if (this.balance >= 888) {
-      return TIMENODE_STATUS.CHRONONODE;
-    } else if (this.balance >= 333 || this.isTimeMint) {
-      return TIMENODE_STATUS.TIMENODE;
+    const { MASTER_CHRONONODE, CHRONONODE, TIMENODE, DISABLED, LOADING } = TIMENODE_STATUS;
+
+    if (this.balanceDAY === null) {
+      return LOADING;
+    }
+
+    if (this.balanceDAY >= MASTER_CHRONONODE.minBalance) {
+      return MASTER_CHRONONODE.name;
+    } else if (this.balanceDAY >= CHRONONODE.minBalance) {
+      return CHRONONODE.name;
+    } else if (this.balanceDAY >= TIMENODE.minBalance || this.isTimeMint) {
+      return TIMENODE.name;
     } else {
-      return TIMENODE_STATUS.DISABLED;
+      return DISABLED;
     }
   }
 
@@ -88,9 +104,6 @@ export default class TimeNodeStore {
       maxGasSubsidy: load('maxGasSubsidy')
     };
   }
-
-  @observable
-  nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   // If a TimeNode has selected a custom provider URL
   // it will be stored in this variable
