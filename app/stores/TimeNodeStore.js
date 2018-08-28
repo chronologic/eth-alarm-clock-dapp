@@ -329,6 +329,8 @@ export default class TimeNodeStore {
     this._storageService.save('selectedProviderId', netId);
     this._storageService.save('selectedProviderUrl', url);
 
+    this.stopScanning();
+
     // Reload the page so that the changes are refreshed
     if (isRunningInElectron()) {
       // Workaround for getting the Electron app to reload
