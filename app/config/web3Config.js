@@ -1,9 +1,12 @@
 import dayFaucetABI from '../abi/dayFaucetABI';
 import dayTokenABI from '../abi/dayTokenABI';
 
+export const MAIN_NETWORK_ID = 1;
 export const ROPSTEN_NETWORK_ID = 3;
 export const KOVAN_NETWORK_ID = 42;
 export const DOCKER_NETWORK_ID = 1001;
+
+export const DEFAULT_NETWORK_WHEN_NO_METAMASK = MAIN_NETWORK_ID;
 
 const Networks = {
   0: {
@@ -13,17 +16,19 @@ const Networks = {
     showInChooser: false,
     explorer: '127.0.0.1:7545'
   },
-  1: {
-    id: 1,
+  [MAIN_NETWORK_ID]: {
+    id: [MAIN_NETWORK_ID],
     name: 'Mainnet',
     endpoint:
       'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
+    httpEndpoint:
+      'https://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
     showInChooser: true,
     dayTokenAddress: '0xe814aee960a85208c3db542c53e7d4a6c8d5f60f',
     supported: true,
     explorer: 'https://etherscan.io/'
   },
-  3: {
+  [ROPSTEN_NETWORK_ID]: {
     id: ROPSTEN_NETWORK_ID,
     name: 'Ropsten',
     endpoint:
@@ -49,6 +54,8 @@ const Networks = {
     name: 'Kovan',
     endpoint:
       'wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
+    httpEndpoint:
+      'https://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
     showInChooser: true,
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
     dayTokenAbi: dayTokenABI,
