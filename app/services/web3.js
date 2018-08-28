@@ -30,8 +30,12 @@ export default class Web3Service {
   @observable
   latestBlockNumber = null;
 
-  constructor(props) {
+  _keyModifier = null;
+
+  constructor(props, networkAwareKeyModifier) {
     Object.assign(this, props);
+
+    this._keyModifier = networkAwareKeyModifier;
   }
 
   _initializationPromise;
@@ -307,6 +311,7 @@ export default class Web3Service {
     }
 
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+    this._keyModifier.setNetworkId(netId);
     runInAction(() => {
       this.network = Networks[netId];
       this.explorer = this.network.explorer;
@@ -375,13 +380,13 @@ export default class Web3Service {
   }
 }
 
-export function initWeb3Service(isServer, source) {
+export function initWeb3Service(isServer, source, keyModifier) {
   if (isServer) {
-    return new Web3Service(source);
+    return new Web3Service(source, keyModifier);
   }
 
   if (instance === null) {
-    instance = new Web3Service(source);
+    instance = new Web3Service(source, keyModifier);
   }
 
   return instance;
