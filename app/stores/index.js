@@ -9,7 +9,13 @@ import { KeenStore } from './KeenStore';
 import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
 
-const { eacService, featuresService, storageService, web3Service } = services;
+const {
+  eacService,
+  featuresService,
+  storageService,
+  web3Service,
+  networkAwareStorageService
+} = services;
 
 const eacVersions = {
   client: require('@ethereum-alarm-clock/timenode-core').version,
@@ -30,7 +36,7 @@ const routingStore = new RouterStore();
 const scheduleStore = new ScheduleStore();
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
-export const transactionCache = new TransactionCache(storageService);
+export const transactionCache = new TransactionCache(networkAwareStorageService);
 export const transactionFetcher = new TransactionFetcher(
   eacService,
   transactionCache,
