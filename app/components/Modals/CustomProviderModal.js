@@ -112,4 +112,4 @@ CustomProviderModal.propTypes = {
   timeNodeStore: PropTypes.any
 };
 
-export default CustomProviderModal;
+export { CustomProviderModal };

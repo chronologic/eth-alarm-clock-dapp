@@ -20,7 +20,8 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      currentPath: props.history.location.pathname
+      currentPath: props.history.location.pathname,
+      selectedNetId: null // Used for communicating the selected network to the modal
     };
 
     this.props.history.listen(location => {
@@ -33,6 +34,7 @@ class NetworkChooser extends Component {
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
     this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
+    this.changeProvider = this.changeProvider.bind(this);
   }
 
   isOnTimeNodeScreen() {
@@ -86,18 +88,30 @@ class NetworkChooser extends Component {
 
   _handleSelectedNetworkChange(event) {
     const selectedNetId = parseInt(event.target.value);
+    const $ = window.jQuery;
 
-    if (selectedNetId === CUSTOM_PROVIDER_NET_ID) {
-      const $ = window.jQuery;
-      $('#customProviderModal').modal({
-        show: true
-      });
+    const isCustomSelected = selectedNetId === CUSTOM_PROVIDER_NET_ID;
+    const modalToShow = isCustomSelected ? '#customProviderModal' : '#confirmProviderChangeModal';
 
-      return;
-    }
+    this.setState({ selectedNetId }); // Let the modal know which network was selected
+
+    $(modalToShow).modal({
+      show: true,
+      backdrop: isCustomSelected // Backdrop breaks #confirmProviderChangeModal, so enable only for custom
+    });
+  }
+
+  changeProvider() {
+    // Retrieve the selected network id in the modal
+    const { selectedNetId } = this.state;
 
     const selectedProviderUrl = Networks[selectedNetId].endpoint;
     this.props.timeNodeStore.setCustomProviderUrl(selectedNetId, selectedProviderUrl);
+
+    // Once we read the new network ID, reset it
+    this.setState({
+      selectedNetId: null
+    });
   }
 
   getCurrentTimeNodeBlock() {
@@ -151,11 +165,10 @@ class NetworkChooser extends Component {
         {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
 
         <ConfirmModal
-          modalName="confirmCustomProviderChange"
+          modalName="confirmProviderChange"
           modalTitle="You are about to change your TimeNode provider."
           modalBody="Are you sure you want to change it? Your TimeNode will be stopped."
-          onConfirm={this.resetFields}
-          onCancel={this.resetState}
+          onConfirm={this.changeProvider}
         />
       </span>
     );
