@@ -1,7 +1,6 @@
-import mainnetDAYTokenABI from '../abi/mainnetDAYTokenABI';
+import DAYTokenABI from '../abi/DAYTokenABI';
 
 import testnetDAYFaucetABI from '../abi/testnetDAYFaucetABI';
-import testnetDAYTokenABI from '../abi/testnetDAYTokenABI';
 
 export const ROPSTEN_NETWORK_ID = 3;
 export const KOVAN_NETWORK_ID = 42;
@@ -22,7 +21,7 @@ const Networks = {
       'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
     showInChooser: true,
     dayTokenAddress: '0xe814aee960a85208c3db542c53e7d4a6c8d5f60f',
-    dayTokenAbi: mainnetDAYTokenABI,
+    dayTokenAbi: DAYTokenABI,
     supported: true,
     explorer: 'https://etherscan.io/'
   },
@@ -33,7 +32,7 @@ const Networks = {
       'wss://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/',
     showInChooser: true,
     dayTokenAddress: '0x7941bc77E1d6BD4628467b6cD3650F20F745dB06',
-    dayTokenAbi: testnetDAYTokenABI,
+    dayTokenAbi: DAYTokenABI,
     dayFaucetAddress: '0xfc5c1dc438411dce1cee4971fa333ecd3c3fa7d3',
     dayFaucetAbi: testnetDAYFaucetABI,
     supported: true,
@@ -54,7 +53,7 @@ const Networks = {
       'wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
     showInChooser: true,
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
-    dayTokenAbi: testnetDAYTokenABI,
+    dayTokenAbi: DAYTokenABI,
     dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
     dayFaucetAbi: testnetDAYFaucetABI,
     supported: true,
