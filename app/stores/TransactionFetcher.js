@@ -342,7 +342,7 @@ export default class TransactionFetcher {
         .filter({
           address: addresses,
           topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
-          fromBlock: 0,
+          fromBlock: this.requestFactoryStartBlock,
           toBlock: 'latest'
         })
         .get((error, events) => {
