@@ -40,6 +40,7 @@ async function buildElectron() {
       config: {
         appId: 'com.github.chronologic.timenode',
         productName: 'TimeNode',
+        artifactName: '${productName}-${version}-${arch}.${ext}',
         directories: {
           app: jsBuildDir,
           output: electronBuildsDir
@@ -59,7 +60,13 @@ async function buildElectron() {
           compression
         },
         // IMPORTANT: Prevents from auto publishing to GitHub in CI environments
-        publish: null,
+        publish: [
+          {
+            provider: 'bintray',
+            repo: 'eth-alarm-clock-dapp',
+            owner: 'kuzirashi'
+          }
+        ],
         // IMPORTANT: Prevents extending configs in node_modules
         extends: null
       }
