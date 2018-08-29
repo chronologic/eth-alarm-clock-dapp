@@ -20,25 +20,13 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      currentPath: props.history.location.pathname,
+      onTimeNodeScreen: props.onTimeNodeScreen,
       selectedNetId: null // Used for communicating the selected network to the modal
     };
-
-    this.props.history.listen(location => {
-      if (location.pathname !== this.state.currentPath) {
-        this.setState({
-          currentPath: location.pathname
-        });
-      }
-    });
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
     this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
     this.changeProvider = this.changeProvider.bind(this);
-  }
-
-  isOnTimeNodeScreen() {
-    return this.state.currentPath === '/timenode';
   }
 
   async componentDidMount() {
@@ -60,6 +48,12 @@ class NetworkChooser extends Component {
 
   componentDidUpdate() {
     this.getCurrentTimeNodeBlock();
+  }
+
+  static getDerivedStateFromProps(newProps) {
+    return {
+      onTimeNodeScreen: newProps.onTimeNodeScreen
+    };
   }
 
   /*
@@ -116,7 +110,7 @@ class NetworkChooser extends Component {
 
   getCurrentTimeNodeBlock() {
     // If the current screen is the TimeNode
-    if (this.isOnTimeNodeScreen()) {
+    if (this.state.onTimeNodeScreen) {
       // Get the block number from the eac-worker
       this.props.timeNodeStore.getNetworkInfo();
     }
@@ -130,7 +124,7 @@ class NetworkChooser extends Component {
     const { timeNodeNetworkId, metaMaskNetworkId } = this.state;
     const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
-    if (!this.isOnTimeNodeScreen()) {
+    if (!this.state.onTimeNodeScreen) {
       return (
         <span>
           {Networks[metaMaskNetworkId].name}
@@ -179,7 +173,7 @@ NetworkChooser.propTypes = {
   storageService: PropTypes.any,
   web3Service: PropTypes.any,
   timeNodeStore: PropTypes.any,
-  history: PropTypes.object.isRequired
+  onTimeNodeScreen: PropTypes.bool
 };
 
 export default NetworkChooser;
