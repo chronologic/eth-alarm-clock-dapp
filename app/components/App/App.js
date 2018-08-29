@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
-import CustomProviderModal from '../Modals/CustomProviderModal';
+import { CustomProviderModal } from '../Modals';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
 import Faucet from '../Common/Faucet';
@@ -84,6 +84,7 @@ class App extends Component {
         {this.state.showSearchOverlay && (
           <SearchOverlay updateSearchState={this.updateSearchState} history={this.props.history} />
         )}
+
         <CustomProviderModal />
       </div>
     );

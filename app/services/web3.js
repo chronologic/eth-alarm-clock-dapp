@@ -2,9 +2,14 @@
 
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
-import { action, observable, runInAction } from 'mobx';
-import { Networks } from '../config/web3Config.js';
+import { action, observable } from 'mobx';
+import {
+  Networks,
+  DEFAULT_NETWORK_WHEN_NO_METAMASK,
+  MAIN_NETWORK_ID
+} from '../config/web3Config.js';
 import standardTokenAbi from '../abi/standardToken';
+import Web3WsProvider from 'web3-providers-ws';
 
 let instance = null;
 
@@ -13,6 +18,19 @@ function cleanAsciiText(text) {
     return text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
   }
 }
+
+const getWeb3FromProviderUrl = providerUrl => {
+  let provider;
+
+  if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
+    provider = new Web3.providers.HttpProvider(providerUrl);
+  } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
+    provider = new Web3WsProvider(providerUrl);
+    provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+  }
+
+  return new Web3(provider);
+};
 
 export default class Web3Service {
   web3 = null;
@@ -30,11 +48,16 @@ export default class Web3Service {
   @observable
   latestBlockNumber = null;
 
-  constructor(props) {
+  _keyModifier = null;
+
+  constructor(props, networkAwareKeyModifier) {
     Object.assign(this, props);
+
+    this._keyModifier = networkAwareKeyModifier;
   }
 
   _initializationPromise;
+  web3AlternativeToMetaMask;
 
   async _init() {
     if (this.initialized) {
@@ -295,10 +318,9 @@ export default class Web3Service {
     if (!web3) {
       if (typeof window.web3 !== 'undefined') {
         web3 = new Web3(window.web3.currentProvider);
-        this.web3HTTP = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
         this.connectedToMetaMask = true;
       } else {
-        web3 = new Web3(new Web3.providers.HttpProvider(process.env.HTTP_PROVIDER));
+        web3 = getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
@@ -307,10 +329,14 @@ export default class Web3Service {
     }
 
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
-    runInAction(() => {
-      this.network = Networks[netId];
-      this.explorer = this.network.explorer;
-    });
+    this._keyModifier.setNetworkId(netId);
+
+    this.network = Networks[netId];
+    this.explorer = this.network.explorer;
+
+    if (this.network && this.network.endpoint && this.connectedToMetaMask) {
+      this.web3AlternativeToMetaMask = getWeb3FromProviderUrl(this.network.endpoint);
+    }
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
 
@@ -361,6 +387,10 @@ export default class Web3Service {
     return `${display} ${unit}`;
   }
 
+  isOnMainnet() {
+    return this.network === Networks[MAIN_NETWORK_ID];
+  }
+
   /**
    * Since there are problems with using filter for events
    * with array as an address parameter in MetaMask,
@@ -369,19 +399,19 @@ export default class Web3Service {
    * @param {object} options
    */
   filter(options) {
-    const web3 = this.web3HTTP || this.web3;
+    const web3 = this.web3AlternativeToMetaMask || this.web3;
 
     return web3.eth.filter(options);
   }
 }
 
-export function initWeb3Service(isServer, source) {
+export function initWeb3Service(isServer, source, keyModifier) {
   if (isServer) {
-    return new Web3Service(source);
+    return new Web3Service(source, keyModifier);
   }
 
   if (instance === null) {
-    instance = new Web3Service(source);
+    instance = new Web3Service(source, keyModifier);
   }
 
   return instance;
