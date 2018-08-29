@@ -105,9 +105,12 @@ class EacWorker {
       this.config.web3.eth.getBlockNumber(callback)
     );
 
+    const netId = await Bb.fromCallback(callback => this.config.web3.version.getNetwork(callback));
+
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
-      providerBlockNumber
+      providerBlockNumber,
+      netId
     });
   }
 

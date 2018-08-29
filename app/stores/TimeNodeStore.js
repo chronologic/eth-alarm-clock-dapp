@@ -1,4 +1,5 @@
 import { observable, computed } from 'mobx';
+import Web3 from 'web3/index';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
@@ -10,6 +11,7 @@ import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
 import { isRunningInElectron } from '../lib/electron-util';
 import { Networks } from '../config/web3Config';
+import Web3WsProvider from 'web3-providers-ws';
 
 /*
  * TimeNode classification based on the number
@@ -35,6 +37,19 @@ export class TIMENODE_STATUS {
 // 2 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
+
+const getWeb3FromProviderUrl = providerUrl => {
+  let provider;
+
+  if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
+    provider = new Web3.providers.HttpProvider(providerUrl);
+  } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
+    provider = new Web3WsProvider(providerUrl);
+    provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+  }
+
+  return new Web3(provider);
+};
 
 export default class TimeNodeStore {
   @observable
@@ -114,18 +129,22 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
-  get netId() {
-    const customNetId = this.getCustomProvider().netId;
-    return customNetId ? customNetId : this._web3Service.network.id;
+  netId = null;
+
+  get network() {
+    const customNetId = this.getCustomProvider().id;
+    const currentNetId = customNetId ? customNetId : this._web3Service.network.id;
+    if (!Networks[currentNetId]) {
+      return this.getCustomProvider();
+    }
+    return Networks[currentNetId];
   }
 
   eacWorker = null;
 
   _keenStore = null;
-
-  _timeNodeStatusCheckIntervalRef = null;
-
   _storageService = null;
+  _timeNodeStatusCheckIntervalRef = null;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -150,7 +169,7 @@ export default class TimeNodeStore {
 
   getWorkerOptions(keystore, keystorePassword) {
     return {
-      network: Networks[this.netId],
+      network: this.network,
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
@@ -203,7 +222,7 @@ export default class TimeNodeStore {
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-          getValuesIfInMessage(['providerBlockNumber']);
+          getValuesIfInMessage(['providerBlockNumber', 'netId']);
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
@@ -330,10 +349,10 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
-  setCustomProvider(netId, url) {
-    this.customProviderUrl = url;
-    this._storageService.save('selectedProviderId', netId);
-    this._storageService.save('selectedProviderUrl', url);
+  setCustomProvider(id, endpoint) {
+    this.customProviderUrl = endpoint;
+    this._storageService.save('selectedProviderId', id);
+    this._storageService.save('selectedProviderEndpoint', endpoint);
 
     this.stopScanning();
 
@@ -349,8 +368,8 @@ export default class TimeNodeStore {
 
   getCustomProvider() {
     return {
-      netId: parseInt(this._storageService.load('selectedProviderId')),
-      url: this._storageService.load('selectedProviderUrl')
+      id: parseInt(this._storageService.load('selectedProviderId')),
+      endpoint: this._storageService.load('selectedProviderEndpoint')
     };
   }
 
@@ -415,8 +434,8 @@ export default class TimeNodeStore {
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
-        Networks[this.netId],
-        this._web3Service.web3,
+        this.network,
+        getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
@@ -433,7 +452,11 @@ export default class TimeNodeStore {
         showNotification('Not enough DAY tokens. Current balance: ' + balanceDAY.toString());
       }
     } catch (error) {
-      showNotification(error);
+      if (error == `TypeError: Cannot read property 'dayTokenAddress' of undefined`) {
+        showNotification('Unsupported custom provider.');
+      } else {
+        showNotification(error);
+      }
     }
   }
 
