@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
 import isUrl from 'is-url';
-import { isRunningInElectron } from '../../lib/electron-util';
 
 @inject('timeNodeStore')
 @observer
@@ -21,19 +20,8 @@ class CustomProviderModal extends Component {
   setCustomProvider() {
     const url = this.providerInputField.value;
 
-    if (this._validateProviderUrl) {
-      this.props.timeNodeStore.customProviderUrl = url;
-      localStorage.setItem('selectedProviderId', CUSTOM_PROVIDER_NET_ID);
-      localStorage.setItem('selectedProviderUrl', url);
-
-      // Reload the page so that the changes are refreshed
-      if (!isRunningInElectron()) {
-        window.location.reload();
-      } else {
-        // Workaround for getting the Electron app to reload
-        // since the regular reload results in a blank screen
-        window.location.href = '/index.html';
-      }
+    if (this._validateProviderUrl()) {
+      this.props.timeNodeStore.setCustomProviderUrl(CUSTOM_PROVIDER_NET_ID, url);
     }
   }
 
@@ -124,4 +112,4 @@ CustomProviderModal.propTypes = {
   timeNodeStore: PropTypes.any
 };
 
-export default CustomProviderModal;
+export { CustomProviderModal };
