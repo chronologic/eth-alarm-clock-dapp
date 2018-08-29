@@ -5,6 +5,7 @@ import { CONFIG } from '../lib/consts';
 import { TRANSACTION_EVENT } from '../services/eac';
 
 const requestFactoryStartBlocks = {
+  1: 6204104,
   3: 2594245,
   42: 5555500
 };
@@ -100,7 +101,7 @@ export class TransactionStore {
 
     this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
-    this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock;
+    this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock || 1;
     this._fetcher.startLazy();
 
     this.initialized = true;

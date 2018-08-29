@@ -8,16 +8,27 @@ import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { isRunningInElectron } from '../lib/electron-util';
 
 /*
  * TimeNode classification based on the number
  * of DAY tokens held by the owner.
  */
 export class TIMENODE_STATUS {
-  static MASTER_CHRONONODE = 'Master ChronoNode';
-  static CHRONONODE = 'ChronoNode';
-  static TIMENODE = 'TimeNode';
+  static MASTER_CHRONONODE = {
+    name: 'Master ChronoNode',
+    minBalance: 3333
+  };
+  static CHRONONODE = {
+    name: 'ChronoNode',
+    minBalance: 888
+  };
+  static TIMENODE = {
+    name: 'TimeNode',
+    minBalance: 333
+  };
   static DISABLED = 'Disabled';
+  static LOADING = 'Loading';
 }
 
 // 2 minute as milliseconds
@@ -56,14 +67,20 @@ export default class TimeNodeStore {
 
   @computed
   get nodeStatus() {
-    if (this.balance >= 3333) {
-      return TIMENODE_STATUS.MASTER_CHRONONODE;
-    } else if (this.balance >= 888) {
-      return TIMENODE_STATUS.CHRONONODE;
-    } else if (this.balance >= 333 || this.isTimeMint) {
-      return TIMENODE_STATUS.TIMENODE;
+    const { MASTER_CHRONONODE, CHRONONODE, TIMENODE, DISABLED, LOADING } = TIMENODE_STATUS;
+
+    if (this.balanceDAY === null) {
+      return LOADING;
+    }
+
+    if (this.balanceDAY >= MASTER_CHRONONODE.minBalance) {
+      return MASTER_CHRONONODE.name;
+    } else if (this.balanceDAY >= CHRONONODE.minBalance) {
+      return CHRONONODE.name;
+    } else if (this.balanceDAY >= TIMENODE.minBalance || this.isTimeMint) {
+      return TIMENODE.name;
     } else {
-      return TIMENODE_STATUS.DISABLED;
+      return DISABLED;
     }
   }
 
@@ -76,8 +93,10 @@ export default class TimeNodeStore {
 
   @computed
   get economicStrategy() {
-    const load = string =>
-      this._storageService.load(string) || Config.DEFAULT_ECONOMIC_STRATEGY[string].toString();
+    const load = strategy => {
+      const loaded = this._storageService.load(strategy);
+      return loaded ? loaded : Config.DEFAULT_ECONOMIC_STRATEGY[strategy].toString();
+    };
 
     return {
       maxDeposit: load('maxDeposit'),
@@ -86,9 +105,6 @@ export default class TimeNodeStore {
       maxGasSubsidy: load('maxGasSubsidy')
     };
   }
-
-  @observable
-  nodeStatus = TIMENODE_STATUS.TIMENODE;
 
   // If a TimeNode has selected a custom provider URL
   // it will be stored in this variable
@@ -308,6 +324,23 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
+  setCustomProviderUrl(netId, url) {
+    this.customProviderUrl = url;
+    this._storageService.save('selectedProviderId', netId);
+    this._storageService.save('selectedProviderUrl', url);
+
+    this.stopScanning();
+
+    // Reload the page so that the changes are refreshed
+    if (isRunningInElectron()) {
+      // Workaround for getting the Electron app to reload
+      // since the regular reload results in a blank screen
+      window.location.href = '/index.html';
+    } else {
+      window.location.reload();
+    }
+  }
+
   getMyAddress() {
     if (this.walletKeystore) {
       const ks = this.decrypt(this.walletKeystore);
@@ -401,7 +434,9 @@ export default class TimeNodeStore {
     const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
     for (let key of Object.keys(economicStrategy)) {
       if (economicStrategy[key]) {
-        this._storageService.save(key, numberFromString(economicStrategy[key]));
+        const value =
+          key === 'maxGasSubsidy' ? economicStrategy[key] : numberFromString(economicStrategy[key]);
+        this._storageService.save(key, value);
       } else {
         this._storageService.remove(key);
       }
@@ -417,10 +452,11 @@ export default class TimeNodeStore {
     return true;
   }
 
-  restart(password) {
+  async restart(password) {
     this.stopScanning();
     this.eacWorker = null;
     this.startClient(this.walletKeystore, password);
+    await this.startScanning();
   }
 
   resetWallet() {
