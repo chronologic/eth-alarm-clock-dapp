@@ -13,19 +13,11 @@ import { BeatLoader } from 'react-spinners';
 class TimeNodeStatistics extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      timeNodeDisabled: null
-    };
+
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
     this.refreshStats = this.refreshStats.bind(this);
     this.shouldShowClaimedWarning = this.shouldShowClaimedWarning.bind(this);
-  }
-
-  async UNSAFE_componentWillMount() {
-    this.setState({
-      timeNodeDisabled: this.props.timeNodeStore.nodeStatus === TIMENODE_STATUS.DISABLED
-    });
   }
 
   componentDidMount() {
@@ -45,25 +37,21 @@ class TimeNodeStatistics extends Component {
     this.interval = setInterval(this.refreshStats, 5000);
   }
 
-  getStopButton() {
+  getStopButton(disabled) {
     return (
       <button
         className="btn btn-danger px-4"
         onClick={this.shouldShowClaimedWarning}
-        disabled={this.state.timeNodeDisabled}
+        disabled={disabled}
       >
         Stop
       </button>
     );
   }
 
-  getStartButton() {
+  getStartButton(disabled) {
     return (
-      <button
-        className="btn btn-primary px-4"
-        onClick={this.startTimeNode}
-        disabled={this.state.timeNodeDisabled}
-      >
+      <button className="btn btn-primary px-4" onClick={this.startTimeNode} disabled={disabled}>
         Start
       </button>
     );
@@ -104,6 +92,18 @@ class TimeNodeStatistics extends Component {
     );
   }
 
+  getDAYBalanceNotification(disabled) {
+    return !disabled ? null : (
+      <Alert
+        type="danger"
+        close={false}
+        msg={`Your DAY token balance is insufficient to start a TimeNode. Make sure you have at least ${
+          TIMENODE_STATUS.TIMENODE.minBalance
+        } DAY.`}
+      />
+    );
+  }
+
   componentWillUnmount() {
     clearInterval(this.interval);
   }
@@ -122,7 +122,6 @@ class TimeNodeStatistics extends Component {
   }
 
   render() {
-    let timeNodeStatus = null;
     const {
       bounties,
       costs,
@@ -130,35 +129,30 @@ class TimeNodeStatistics extends Component {
       scanningStarted,
       balanceETH,
       balanceDAY,
-      executedTransactions
+      executedTransactions,
+      nodeStatus
     } = this.props.timeNodeStore;
 
-    if (this.state.timeNodeDisabled) {
-      timeNodeStatus = TIMENODE_STATUS.DISABLED;
-    } else {
-      timeNodeStatus = scanningStarted ? 'running' : 'stopped';
-    }
+    const { DISABLED, LOADING } = TIMENODE_STATUS;
+    const timeNodeDisabled = nodeStatus === DISABLED || nodeStatus === LOADING;
+    const scanningStatus = scanningStarted ? 'running' : 'stopped';
 
     const profitStatus = profit !== null ? profit + ' ETH' : <BeatLoader />;
     const bountiesStatus =
       bounties !== null && costs !== null ? `${bounties} (bounties) - ${costs} (costs)` : '';
 
-    const dayTokenError = (
-      <Alert msg="Your DAY token balance is too low. Please make sure you have at least 333 DAY tokens." />
-    );
-
     return (
       <div id="timeNodeStatistics">
-        {this.state.timeNodeDisabled ? dayTokenError : null}
-        {this.getBalanceNotification()}
+        {nodeStatus !== LOADING && this.getDAYBalanceNotification(timeNodeDisabled)}
+        {balanceETH !== null && this.getBalanceNotification()}
         {this.getClaimingNotification()}
 
         <h2 className="py-4">
-          Your TimeNode is currently {timeNodeStatus}.
+          Your TimeNode is {timeNodeDisabled ? DISABLED.toLowerCase() : scanningStatus}.
           <span className="ml-2">
-            {this.props.timeNodeStore.scanningStarted
-              ? this.getStopButton()
-              : this.getStartButton()}
+            {scanningStarted
+              ? this.getStopButton(timeNodeDisabled)
+              : this.getStartButton(timeNodeDisabled)}
           </span>
         </h2>
 

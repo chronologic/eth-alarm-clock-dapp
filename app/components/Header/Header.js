@@ -51,11 +51,12 @@ class Header extends Component {
   render() {
     const { web3Service, keenStore } = this.props;
 
-    const activeTimenodes = keenStore.activeTimeNodes ? (
-      keenStore.activeTimeNodes
-    ) : (
-      <BeatLoader color="#fff" size={4} />
-    );
+    const activeTimenodes =
+      keenStore.activeTimeNodes !== null ? (
+        keenStore.activeTimeNodes
+      ) : (
+        <BeatLoader color="#fff" size={4} />
+      );
 
     const infoBtn = (
       <span
@@ -93,7 +94,8 @@ class Header extends Component {
           </div>
           <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes">
-              <i className="fa fa-th-large" />&nbsp;Network:&nbsp;
+              <i className="fa fa-th-large" />
+              &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
               <NetworkChooser history={this.props.history} />
@@ -101,7 +103,8 @@ class Header extends Component {
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
             <span className="active-timenodes" data-toggle="dropdown">
-              <i className="fa fa-file-alt ml-2 cursor-pointer" />&nbsp;
+              <i className="fa fa-file-alt ml-2 cursor-pointer" />
+              &nbsp;
             </span>
             <div
               className="dropdown-menu notification-toggle"
