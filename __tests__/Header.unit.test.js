@@ -8,6 +8,7 @@ import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import LocalStorageService from '../app/services/storage';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
+import TimeNodeStore from '../app/stores/TimeNodeStore';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
@@ -29,7 +30,6 @@ describe('Header', () => {
     });
 
     const keenStore = {};
-    const timeNodeStore = {};
     const eacService = {
       getActiveContracts: () => {
         return {};
@@ -38,6 +38,7 @@ describe('Header', () => {
     const featuresService = {};
 
     const storageService = new LocalStorageService(new LocalStorageMock());
+    const timeNodeStore = new TimeNodeStore({}, web3Service, {}, storageService);
 
     const injectables = {
       featuresService,

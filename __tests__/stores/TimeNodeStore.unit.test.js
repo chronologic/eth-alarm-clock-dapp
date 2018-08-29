@@ -2,6 +2,8 @@ import { equal, ok } from 'assert';
 import TimeNodeStore from '../../app/stores/TimeNodeStore';
 import LocalStorageMock from '../../__mocks__/LocalStorageMock';
 import LocalStorageService from '../../app/services/storage';
+import Web3Service from '../../app/services/web3';
+import { Networks, MAIN_NETWORK_ID } from '../../app/config/web3Config';
 
 describe('Stores / TimeNode', () => {
   describe('getWorkerOptions', () => {
@@ -11,7 +13,10 @@ describe('Stores / TimeNode', () => {
 
       const localStorageMock = new LocalStorageMock();
       const storageService = new LocalStorageService(localStorageMock);
-      const timeNodeStore = new TimeNodeStore({}, {}, {}, storageService);
+      const web3Service = new Web3Service({
+        network: Networks[MAIN_NETWORK_ID]
+      });
+      const timeNodeStore = new TimeNodeStore({}, web3Service, {}, storageService);
 
       timeNodeStore.decrypt = encodedValue => {
         if (encodedValue === KEYSTORE_PASSWORD) {

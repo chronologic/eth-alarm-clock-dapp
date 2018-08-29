@@ -114,7 +114,10 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
-  netId = null;
+  get netId() {
+    const customNetId = this.getCustomProvider().netId;
+    return customNetId ? customNetId : this._web3Service.network.id;
+  }
 
   eacWorker = null;
 
@@ -135,10 +138,6 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
-
-    this.netId = this.getCustomProvider().netId
-      ? this.getCustomProvider().netId
-      : this._web3Service.network.id;
   }
 
   unlockTimeNode(password) {
