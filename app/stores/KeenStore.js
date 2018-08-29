@@ -14,6 +14,9 @@ export class KeenStore {
   @observable
   activeTimeNodes = null;
 
+  @observable
+  activeTimeNodesTimeNodeSpecificProvider = null;
+
   projectId = '';
   writeKey = '';
   readKey = '';
@@ -24,11 +27,12 @@ export class KeenStore {
 
   _web3Service = null;
 
-  constructor(projectId, writeKey, readKey, web3Service, versions) {
+  constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
     this.projectId = projectId;
     this.writeKey = writeKey;
     this.readKey = readKey;
 
+    this._storageService = storageService;
     this._web3Service = web3Service;
     this.versions = versions;
 
@@ -89,29 +93,24 @@ export class KeenStore {
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
+  async refreshActiveTimeNodesCount(networkId) {
+    const timeNodeSpecificProviderNetId = parseInt(this._storageService.load('selectedProviderId'));
+
+    this.activeTimeNodes = await this.getActiveTimeNodesCount(networkId);
+
+    if (timeNodeSpecificProviderNetId === networkId) {
+      this.activeTimeNodesTimeNodeSpecificProvider = this.activeTimeNodes;
+    } else {
+      this.activeTimeNodesTimeNodeSpecificProvider = await this.getActiveTimeNodesCount(
+        timeNodeSpecificProviderNetId
+      );
+    }
+
+    this.isBlacklisted = this.activeTimeNodes === null;
+  }
+
   async getActiveTimeNodesCount(networkId) {
-    const alphaCount = new KeenAnalysis.Query('count', {
-      event_collection: COLLECTIONS.TIMENODES,
-      target_property: 'nodeAddress',
-      timeframe: 'previous_2_minutes',
-      filters: [
-        {
-          property_name: 'networkId',
-          operator: 'eq',
-          property_value: networkId
-        },
-        {
-          property_name: 'eacVersions.contracts',
-          operator: 'exists',
-          property_value: false
-        },
-        {
-          property_name: 'status',
-          operator: 'eq',
-          property_value: 'active'
-        }
-      ]
-    });
+    await this.awaitKeenInitialized();
 
     const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
@@ -136,39 +135,20 @@ export class KeenStore {
       ]
     });
 
-    let alphaNodes;
-    const isAlphaNode = this.versions.contracts === '0.9.3';
+    const response = await this.analysisClient.run(count);
 
-    if (isAlphaNode) {
-      await this.analysisClient.run(alphaCount, (err, response) => {
-        if (err || response === null || !response.hasOwnProperty('result')) {
-          this.activeTimeNodes = null;
-          this.isBlacklisted = true;
-          return;
-        }
-        alphaNodes = response.result;
-        this.isBlacklisted = false;
-      });
+    if (response === null || !response.hasOwnProperty('result') || response.hasOwnProperty('err')) {
+      return null;
     }
 
-    this.analysisClient.run(count, (err, response) => {
-      if (err || response === null || !response.hasOwnProperty('result')) {
-        this.activeTimeNodes = null;
-        this.isBlacklisted = true;
-        return;
-      }
-      this.activeTimeNodes = isAlphaNode
-        ? Number(alphaNodes) + Number(response.result)
-        : response.result;
-      this.isBlacklisted = false;
-    });
+    return response.result;
   }
 
   async pollActiveTimeNodesCount() {
-    await this.getActiveTimeNodesCount(this.networkId);
+    await this.refreshActiveTimeNodesCount(this.networkId);
 
     setInterval(
-      () => this.getActiveTimeNodesCount(this.networkId),
+      () => this.refreshActiveTimeNodesCount(this.networkId),
       ACTIVE_TIMENODES_POLLING_INTERVAL
     );
   }

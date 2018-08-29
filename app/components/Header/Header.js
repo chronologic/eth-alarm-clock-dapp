@@ -14,25 +14,32 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentPath: props.history.location.pathname,
       eacContracts: {}
     };
+
+    this.props.history.listen(location => {
+      if (location.pathname !== this.state.currentPath) {
+        this.setState({
+          currentPath: location.pathname
+        });
+      }
+    });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.fetchEacContracts();
 
-    const { jQuery } = window;
-
-    if (jQuery) {
-      jQuery('[data-toggle="tooltip"]').tooltip();
+    const $ = window.jQuery;
+    if ($) {
+      $('[data-toggle="tooltip"]').tooltip();
     }
   }
 
   componentDidUpdate() {
-    const { jQuery } = window;
-
-    if (jQuery) {
-      jQuery('[data-toggle="tooltip"]').tooltip();
+    const $ = window.jQuery;
+    if ($) {
+      $('[data-toggle="tooltip"]').tooltip();
     }
   }
 
@@ -48,15 +55,19 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
+  isOnTimeNodeScreen() {
+    return this.state.currentPath === '/timenode';
+  }
+
   render() {
     const { web3Service, keenStore } = this.props;
 
+    const numActiveTimeNodes = this.isOnTimeNodeScreen()
+      ? keenStore.activeTimeNodesTimeNodeSpecificProvider // Load TimeNode worker provider specific counter
+      : keenStore.activeTimeNodes; // Load web3 counter
+
     const activeTimenodes =
-      keenStore.activeTimeNodes !== null ? (
-        keenStore.activeTimeNodes
-      ) : (
-        <BeatLoader color="#fff" size={4} />
-      );
+      numActiveTimeNodes !== null ? numActiveTimeNodes : <BeatLoader color="#fff" size={4} />;
 
     const infoBtn = (
       <span
@@ -98,7 +109,7 @@ class Header extends Component {
               &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser history={this.props.history} />
+              <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">

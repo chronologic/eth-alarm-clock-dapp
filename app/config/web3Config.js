@@ -18,7 +18,7 @@ const Networks = {
     explorer: '127.0.0.1:7545'
   },
   [MAIN_NETWORK_ID]: {
-    id: [MAIN_NETWORK_ID],
+    id: MAIN_NETWORK_ID,
     name: 'Mainnet',
     endpoint:
       'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
