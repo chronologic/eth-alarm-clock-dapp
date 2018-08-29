@@ -16,6 +16,7 @@ export class KeenStore {
 
   @observable
   activeTimeNodesTimeNodeSpecificProvider = null;
+  timeNodeSpecificProviderNetId = null;
 
   projectId = '';
   writeKey = '';
@@ -56,7 +57,7 @@ export class KeenStore {
 
     this.sendPageView();
 
-    this.pollActiveTimeNodesCount();
+    this._pollActiveTimeNodesCount();
   }
 
   async awaitKeenInitialized() {
@@ -93,16 +94,20 @@ export class KeenStore {
     this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
   }
 
-  async refreshActiveTimeNodesCount(networkId) {
-    const timeNodeSpecificProviderNetId = parseInt(this._storageService.load('selectedProviderId'));
+  setTimeNodeSpecificProviderNetId(netId) {
+    this.timeNodeSpecificProviderNetId = parseInt(netId);
+  }
 
-    this.activeTimeNodes = await this.getActiveTimeNodesCount(networkId);
+  async refreshActiveTimeNodesCount() {
+    this.activeTimeNodes = await this.getActiveTimeNodesCount(this.networkId);
 
-    if (timeNodeSpecificProviderNetId === networkId) {
+    if (this.timeNodeSpecificProviderNetId === this.networkId) {
       this.activeTimeNodesTimeNodeSpecificProvider = this.activeTimeNodes;
+    } else if (this.timeNodeSpecificProviderNetId === null) {
+      this.activeTimeNodesTimeNodeSpecificProvider = null;
     } else {
       this.activeTimeNodesTimeNodeSpecificProvider = await this.getActiveTimeNodesCount(
-        timeNodeSpecificProviderNetId
+        this.timeNodeSpecificProviderNetId
       );
     }
 
@@ -144,12 +149,9 @@ export class KeenStore {
     return response.result;
   }
 
-  async pollActiveTimeNodesCount() {
-    await this.refreshActiveTimeNodesCount(this.networkId);
+  async _pollActiveTimeNodesCount() {
+    await this.refreshActiveTimeNodesCount();
 
-    setInterval(
-      () => this.refreshActiveTimeNodesCount(this.networkId),
-      ACTIVE_TIMENODES_POLLING_INTERVAL
-    );
+    setInterval(() => this.refreshActiveTimeNodesCount(), ACTIVE_TIMENODES_POLLING_INTERVAL);
   }
 }

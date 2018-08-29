@@ -24,7 +24,6 @@ class NetworkChooser extends Component {
     };
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
-    this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
     this.changeProvider = this.changeProvider.bind(this);
   }
 
@@ -39,14 +38,6 @@ class NetworkChooser extends Component {
       if (web3Service.network.id !== this.state.timeNodeNetworkId)
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
-
-    this.getCurrentTimeNodeBlock();
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentTimeNodeBlock, 10000);
-  }
-
-  componentDidUpdate() {
-    this.getCurrentTimeNodeBlock();
   }
 
   static getDerivedStateFromProps(newProps) {
@@ -104,14 +95,6 @@ class NetworkChooser extends Component {
     this.setState({
       selectedNetId: null
     });
-  }
-
-  getCurrentTimeNodeBlock() {
-    // If the current screen is the TimeNode
-    if (this.state.onTimeNodeScreen) {
-      // Get the block number from the eac-worker
-      this.props.timeNodeStore.getNetworkInfo();
-    }
   }
 
   componentWillUnmount() {

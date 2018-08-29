@@ -5,6 +5,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
+import { Networks, CUSTOM_PROVIDER_NET_ID } from '../config/web3Config';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
@@ -22,6 +23,7 @@ class EacWorker {
   network = null;
   dayAccountAddress = null;
   keystore = null;
+  detectedNetId = null;
 
   async start(options) {
     const { customProviderUrl, network, dayAccountAddress } = options;
@@ -66,8 +68,7 @@ class EacWorker {
 
     this.timenode = new TimeNode(this.config);
 
-    this.updateStats();
-    this.getNetworkInfo();
+    await this._detectNetworkId();
   }
 
   async awaitTimeNodeInitialized() {
@@ -105,12 +106,12 @@ class EacWorker {
       this.config.web3.eth.getBlockNumber(callback)
     );
 
-    const netId = await Bb.fromCallback(callback => this.config.web3.version.getNetwork(callback));
+    await this._detectNetworkId();
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
       providerBlockNumber,
-      netId
+      netId: this.detectedNetId ? this.detectedNetId : this.network.id
     });
   }
 
@@ -119,9 +120,14 @@ class EacWorker {
 
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
     const balanceETH = this.config.web3.fromWei(balance);
+    let network = this.network;
+
+    if (this.detectedNetId) {
+      network = Networks[this.detectedNetId];
+    }
 
     const { balanceDAY, mintingPower } = await getDAYBalance(
-      this.network,
+      network,
       this.config.web3,
       this.dayAccountAddress
     );
@@ -172,6 +178,14 @@ class EacWorker {
       type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
       transactions: await this.timenode.getClaimedNotExecutedTransactions()
     });
+  }
+
+  async _detectNetworkId() {
+    if (this.network.id === CUSTOM_PROVIDER_NET_ID) {
+      this.detectedNetId = await Bb.fromCallback(callback =>
+        this.config.web3.version.getNetwork(callback)
+      );
+    }
   }
 }
 

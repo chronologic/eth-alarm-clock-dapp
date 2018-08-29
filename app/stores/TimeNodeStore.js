@@ -157,6 +157,9 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
+
+    this.updateStats = this.updateStats.bind(this);
+    this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
   unlockTimeNode(password) {
@@ -189,7 +192,7 @@ export default class TimeNodeStore {
   startWorker(options) {
     this.eacWorker = new EacWorker();
 
-    this.eacWorker.onmessage = event => {
+    this.eacWorker.onmessage = async event => {
       const { type, value } = event.data;
       const getValuesIfInMessage = values => {
         values.forEach(value => {
@@ -223,6 +226,10 @@ export default class TimeNodeStore {
 
         case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
           getValuesIfInMessage(['providerBlockNumber', 'netId']);
+          if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
+            this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
+            await this._keenStore.refreshActiveTimeNodesCount();
+          }
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
@@ -236,7 +243,12 @@ export default class TimeNodeStore {
       options
     });
 
+    // Set intervals for fetching info from worker
     this.updateStats();
+    setInterval(this.updateStats, 5000);
+
+    this.getNetworkInfo();
+    setInterval(this.getNetworkInfo, 15000);
   }
 
   async getClaimedNotExecutedTransactions() {
