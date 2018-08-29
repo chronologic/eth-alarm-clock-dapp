@@ -10,7 +10,7 @@ class ConfirmClaimingModal extends Component {
     this.saveClaimingChange = this.saveClaimingChange.bind(this);
   }
 
-  saveClaimingChange() {
+  async saveClaimingChange() {
     const password = this.passwdRef.value;
     const {
       claiming,
@@ -29,7 +29,7 @@ class ConfirmClaimingModal extends Component {
         minProfitability,
         maxGasSubsidy
       });
-      timeNodeStore.restart(password);
+      await timeNodeStore.restart(password);
       showNotification('Changes saved.', 'success');
       this.passwdRef.value = '';
       this.props.refreshParent();
