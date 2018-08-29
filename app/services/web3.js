@@ -3,7 +3,11 @@
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
-import { Networks, DEFAULT_NETWORK_WHEN_NO_METAMASK } from '../config/web3Config.js';
+import {
+  Networks,
+  DEFAULT_NETWORK_WHEN_NO_METAMASK,
+  MAIN_NETWORK_ID
+} from '../config/web3Config.js';
 import standardTokenAbi from '../abi/standardToken';
 import Web3WsProvider from 'web3-providers-ws';
 
@@ -384,7 +388,7 @@ export default class Web3Service {
   }
 
   isOnMainnet() {
-    return this.network === Networks[1];
+    return this.network === Networks[MAIN_NETWORK_ID];
   }
 
   /**
