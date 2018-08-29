@@ -383,6 +383,10 @@ export default class Web3Service {
     return `${display} ${unit}`;
   }
 
+  isOnMainnet() {
+    return this.network === Networks[1];
+  }
+
   /**
    * Since there are problems with using filter for events
    * with array as an address parameter in MetaMask,
