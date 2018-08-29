@@ -89,7 +89,7 @@
     "webpack": "4.17.0",
     "webpack-bundle-analyzer": "2.13.1",
     "webpack-cli": "3.1.0",
-    "webpack-dev-server": "3.1.6",
+    "webpack-dev-server": "3.1.7",
     "webpack-merge": "4.1.4",
     "worker-loader": "2.0.0",
     "@ethereum-alarm-clock/timenode-core": "5.1.3",
