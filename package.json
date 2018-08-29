@@ -70,7 +70,7 @@
     "eslint-plugin-jest": "21.22.0",
     "eslint-plugin-node": "7.0.1",
     "eslint-plugin-promise": "4.0.0",
-    "eslint-plugin-react": "7.11.0",
+    "eslint-plugin-react": "7.11.1",
     "eslint-plugin-standard": "4.0.0",
     "file-loader": "1.1.11",
     "husky": "0.14.3",
