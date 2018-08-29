@@ -1,5 +1,5 @@
 import FeaturesService from '../../app/services/features';
-import { KOVAN_NETWORK_ID } from '../../app/config/web3Config';
+import { Networks, KOVAN_NETWORK_ID } from '../../app/config/web3Config';
 import { TransactionStore, TEMPORAL_UNIT } from '../../app/stores/TransactionStore';
 
 describe('Stores / TransactionStore', () => {
@@ -44,9 +44,7 @@ describe('Stores / TransactionStore', () => {
     };
 
     const web3 = {
-      network: {
-        id: KOVAN_NETWORK_ID
-      },
+      network: Networks[KOVAN_NETWORK_ID],
       filter() {
         return {
           get(callback) {

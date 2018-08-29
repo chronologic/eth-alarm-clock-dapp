@@ -77,7 +77,7 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
-    const { keenStore } = this.props;
+    const { keenStore, web3Service } = this.props;
 
     const activeTimenodes = keenStore.activeTimeNodes ? (
       keenStore.activeTimeNodes
@@ -196,16 +196,17 @@ class SidePanel extends Component {
                 </a>
               </li>
             )}
-            {!isElectron && (
-              <li>
-                <NavLink to="/faucet">
-                  <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                  <span className={entryList[3].thumbnailClasses}>
-                    <i className="fas fa-tint" />
-                  </span>
-                </NavLink>
-              </li>
-            )}
+            {!isElectron &&
+              !web3Service.isOnMainnet() && (
+                <li>
+                  <NavLink to="/faucet">
+                    <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                    <span className={entryList[3].thumbnailClasses}>
+                      <i className="fas fa-tint" />
+                    </span>
+                  </NavLink>
+                </li>
+              )}
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
