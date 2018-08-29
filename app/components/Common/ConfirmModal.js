@@ -20,7 +20,10 @@ class ConfirmModal extends Component {
               </button>
               <h3 className="timenode-modal-title m-0">{this.props.modalTitle}</h3>
             </div>
-            <div className="modal-body">{this.props.modalBody}</div>
+            <div className="modal-body text-dark">
+              <hr />
+              <p>{this.props.modalBody}</p>
+            </div>
             <div className="modal-footer">
               <div className="row">
                 <div className="col-md-6">

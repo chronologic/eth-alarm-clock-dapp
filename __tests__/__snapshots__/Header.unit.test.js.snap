@@ -58,7 +58,7 @@ exports[`Header displays current block number 1`] = `
         className="timenode-count"
       >
         <span>
-          Private
+          Mainnet
           
         </span>
       </span>
