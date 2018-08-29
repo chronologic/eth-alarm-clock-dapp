@@ -1,7 +1,6 @@
 import EAC from 'eac.js-lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
-import { KOVAN_NETWORK_ID, DOCKER_NETWORK_ID } from '../config/web3Config';
 
 let instance = null;
 let web3 = null;
@@ -11,8 +10,6 @@ export const TRANSACTION_EVENT = {
   CANCELLED: 'cancelled',
   EXECUTED: 'executed'
 };
-
-export const EAC_SUPPORTED_NETWORKS = [KOVAN_NETWORK_ID, DOCKER_NETWORK_ID];
 
 const getAdditionalProperties = () => ({
   getRequestLibInstance(address) {

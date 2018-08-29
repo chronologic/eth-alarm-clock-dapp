@@ -24,7 +24,7 @@ class TimeNodeRoute extends Component {
   }
 
   render() {
-    const { walletKeystore, attachedDAYAccount } = this.props.timeNodeStore;
+    const { walletKeystore, attachedDAYAccount, nodeStatus } = this.props.timeNodeStore;
 
     const { walletUnlocked } = this.state;
 
@@ -46,7 +46,8 @@ class TimeNodeRoute extends Component {
     return (
       <div id="timenodeRoute" className="container padding-25 sm-padding-10 subsection">
         <h1 className="view-title">
-          {this.props.timeNodeStore.nodeStatus}&nbsp;
+          {nodeStatus}
+          &nbsp;
           <span className="view-subtitle d-none d-md-inline">
             {this.props.timeNodeStore.getMyAddress()}
           </span>

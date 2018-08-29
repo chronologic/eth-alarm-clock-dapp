@@ -5,6 +5,10 @@ const nonExactPrefixes = ['~', '^', '>', '>=', '<', '<='];
 
 describe('package.json', () => {
   it('dependencies should not contain any non-exact versions', () => {
+    if (!packageJSON.dependencies) {
+      return;
+    }
+
     const deps = Object.values(packageJSON.dependencies);
     deps.forEach(depVersion => {
       nonExactPrefixes.forEach(badPrefix => {
