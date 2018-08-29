@@ -8,7 +8,6 @@ const DEFAULT_NETWORK_ID = Networks[1].id; // Mainnet
 
 @inject('web3Service')
 @inject('timeNodeStore')
-@inject('storageService')
 @observer
 class NetworkChooser extends Component {
   constructor(props) {
@@ -61,14 +60,13 @@ class NetworkChooser extends Component {
    * MetaMask provider.
    */
   checkSelectedProvider() {
-    const { storageService, timeNodeStore } = this.props;
+    const { timeNodeStore } = this.props;
 
-    const selectedProviderId = parseInt(storageService.load('selectedProviderId'));
-    const selectedProviderUrl = storageService.load('selectedProviderUrl');
+    const { netId, url } = timeNodeStore.getCustomProvider();
 
-    if (selectedProviderId && selectedProviderUrl) {
-      timeNodeStore.customProviderUrl = selectedProviderUrl;
-      return selectedProviderId;
+    if (netId && url) {
+      timeNodeStore.customProviderUrl = url;
+      return netId;
     }
 
     return DEFAULT_NETWORK_ID;
@@ -100,7 +98,7 @@ class NetworkChooser extends Component {
     const { selectedNetId } = this.state;
 
     const selectedProviderUrl = Networks[selectedNetId].endpoint;
-    this.props.timeNodeStore.setCustomProviderUrl(selectedNetId, selectedProviderUrl);
+    this.props.timeNodeStore.setCustomProvider(selectedNetId, selectedProviderUrl);
 
     // Once we read the new network ID, reset it
     this.setState({

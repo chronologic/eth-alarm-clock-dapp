@@ -9,6 +9,7 @@ import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from
 import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
 import { isRunningInElectron } from '../lib/electron-util';
+import { Networks } from '../config/web3Config';
 
 /*
  * TimeNode classification based on the number
@@ -113,6 +114,8 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
+  netId = null;
+
   eacWorker = null;
 
   _keenStore = null;
@@ -132,6 +135,10 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
+
+    this.netId = this.getCustomProvider().netId
+      ? this.getCustomProvider().netId
+      : this._web3Service.network.id;
   }
 
   unlockTimeNode(password) {
@@ -144,7 +151,7 @@ export default class TimeNodeStore {
 
   getWorkerOptions(keystore, keystorePassword) {
     return {
-      network: this._web3Service.network,
+      network: Networks[this.netId],
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
@@ -324,7 +331,7 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
-  setCustomProviderUrl(netId, url) {
+  setCustomProvider(netId, url) {
     this.customProviderUrl = url;
     this._storageService.save('selectedProviderId', netId);
     this._storageService.save('selectedProviderUrl', url);
@@ -339,6 +346,13 @@ export default class TimeNodeStore {
     } else {
       window.location.reload();
     }
+  }
+
+  getCustomProvider() {
+    return {
+      netId: parseInt(this._storageService.load('selectedProviderId')),
+      url: this._storageService.load('selectedProviderUrl')
+    };
   }
 
   getMyAddress() {
@@ -402,7 +416,7 @@ export default class TimeNodeStore {
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
-        this._web3Service.network,
+        Networks[this.netId],
         this._web3Service.web3,
         signature.address
       );

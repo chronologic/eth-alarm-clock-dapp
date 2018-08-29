@@ -21,7 +21,7 @@ class CustomProviderModal extends Component {
     const url = this.providerInputField.value;
 
     if (this._validateProviderUrl()) {
-      this.props.timeNodeStore.setCustomProviderUrl(CUSTOM_PROVIDER_NET_ID, url);
+      this.props.timeNodeStore.setCustomProvider(CUSTOM_PROVIDER_NET_ID, url);
     }
   }
 
