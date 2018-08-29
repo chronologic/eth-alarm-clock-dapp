@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { Networks, CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
-import { isRunningInElectron } from '../../lib/electron-util';
+import ConfirmModal from '../Common/ConfirmModal';
 
-const DEFAULT_NETWORK_ID = Networks[0].id;
+const DEFAULT_NETWORK_ID = Networks[1].id; // Mainnet
 
 @inject('web3Service')
 @inject('timeNodeStore')
@@ -20,7 +20,8 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      currentPath: props.history.location.pathname
+      currentPath: props.history.location.pathname,
+      selectedNetId: null // Used for communicating the selected network to the modal
     };
 
     this.props.history.listen(location => {
@@ -33,6 +34,7 @@ class NetworkChooser extends Component {
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
     this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
+    this.changeProvider = this.changeProvider.bind(this);
   }
 
   isOnTimeNodeScreen() {
@@ -86,31 +88,30 @@ class NetworkChooser extends Component {
 
   _handleSelectedNetworkChange(event) {
     const selectedNetId = parseInt(event.target.value);
+    const $ = window.jQuery;
 
-    if (selectedNetId === CUSTOM_PROVIDER_NET_ID) {
-      const { jQuery } = window;
-      jQuery('#customProviderModal').modal({
-        show: true
-      });
+    const isCustomSelected = selectedNetId === CUSTOM_PROVIDER_NET_ID;
+    const modalToShow = isCustomSelected ? '#customProviderModal' : '#confirmProviderChangeModal';
 
-      return;
-    }
+    this.setState({ selectedNetId }); // Let the modal know which network was selected
 
-    const { storageService, timeNodeStore } = this.props;
+    $(modalToShow).modal({
+      show: true,
+      backdrop: isCustomSelected // Backdrop breaks #confirmProviderChangeModal, so enable only for custom
+    });
+  }
+
+  changeProvider() {
+    // Retrieve the selected network id in the modal
+    const { selectedNetId } = this.state;
 
     const selectedProviderUrl = Networks[selectedNetId].endpoint;
-    timeNodeStore.customProviderUrl = selectedProviderUrl;
-    storageService.save('selectedProviderId', selectedNetId);
-    storageService.save('selectedProviderUrl', selectedProviderUrl);
+    this.props.timeNodeStore.setCustomProviderUrl(selectedNetId, selectedProviderUrl);
 
-    // Reload the page so that the changes are refreshed
-    if (isRunningInElectron()) {
-      // Workaround for getting the Electron app to reload
-      // since the regular reload results in a blank screen
-      window.location.href = '/index.html';
-    } else {
-      window.location.reload();
-    }
+    // Once we read the new network ID, reset it
+    this.setState({
+      selectedNetId: null
+    });
   }
 
   getCurrentTimeNodeBlock() {
@@ -162,6 +163,13 @@ class NetworkChooser extends Component {
           </select>
         </span>
         {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
+
+        <ConfirmModal
+          modalName="confirmProviderChange"
+          modalTitle="You are about to change your TimeNode provider."
+          modalBody="Are you sure you want to change it? Your TimeNode will be stopped."
+          onConfirm={this.changeProvider}
+        />
       </span>
     );
   }
