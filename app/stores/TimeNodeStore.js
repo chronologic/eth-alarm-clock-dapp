@@ -434,10 +434,11 @@ export default class TimeNodeStore {
     return true;
   }
 
-  restart(password) {
+  async restart(password) {
     this.stopScanning();
     this.eacWorker = null;
     this.startClient(this.walletKeystore, password);
+    await this.startScanning();
   }
 
   resetWallet() {
