@@ -96,7 +96,6 @@ class ConfirmClaimingModal extends Component {
 
 ConfirmClaimingModal.propTypes = {
   timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any,
   claiming: PropTypes.bool,
   maxDeposit: PropTypes.string,
   minBalance: PropTypes.string,

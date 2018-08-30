@@ -47,6 +47,9 @@ export default class TimeNodeStore {
   claiming = false;
 
   @observable
+  unlocked = false;
+
+  @observable
   basicLogs = [];
   @observable
   detailedLogs = [];
@@ -114,18 +117,22 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
-  get netId() {
-    const customNetId = this.getCustomProvider().netId;
-    return customNetId ? customNetId : this._web3Service.network.id;
+  netId = null;
+
+  get network() {
+    const customNetId = this.getCustomProvider().id;
+    const currentNetId = customNetId ? customNetId : this._web3Service.network.id;
+    if (!Networks[currentNetId]) {
+      return this.getCustomProvider();
+    }
+    return Networks[currentNetId];
   }
 
   eacWorker = null;
 
   _keenStore = null;
-
-  _timeNodeStatusCheckIntervalRef = null;
-
   _storageService = null;
+  _timeNodeStatusCheckIntervalRef = null;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -138,19 +145,24 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
+
+    this.updateStats = this.updateStats.bind(this);
+    this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
+      this.unlocked = true;
       this.startClient(this.walletKeystore, password);
     } else {
+      this.unlocked = false;
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
   }
 
   getWorkerOptions(keystore, keystorePassword) {
     return {
-      network: Networks[this.netId],
+      network: this.network,
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
@@ -170,7 +182,7 @@ export default class TimeNodeStore {
   startWorker(options) {
     this.eacWorker = new EacWorker();
 
-    this.eacWorker.onmessage = event => {
+    this.eacWorker.onmessage = async event => {
       const { type, value } = event.data;
       const getValuesIfInMessage = values => {
         values.forEach(value => {
@@ -203,7 +215,11 @@ export default class TimeNodeStore {
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-          getValuesIfInMessage(['providerBlockNumber']);
+          getValuesIfInMessage(['providerBlockNumber', 'netId']);
+          if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
+            this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
+            await this._keenStore.refreshActiveTimeNodesCount();
+          }
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
@@ -217,7 +233,12 @@ export default class TimeNodeStore {
       options
     });
 
+    // Set intervals for fetching info from worker
     this.updateStats();
+    setInterval(this.updateStats, 1000);
+
+    this.getNetworkInfo();
+    setInterval(this.getNetworkInfo, 15000);
   }
 
   async getClaimedNotExecutedTransactions() {
@@ -330,10 +351,10 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
-  setCustomProvider(netId, url) {
-    this.customProviderUrl = url;
-    this._storageService.save('selectedProviderId', netId);
-    this._storageService.save('selectedProviderUrl', url);
+  setCustomProvider(id, endpoint) {
+    this.customProviderUrl = endpoint;
+    this._storageService.save('selectedProviderId', id);
+    this._storageService.save('selectedProviderEndpoint', endpoint);
 
     this.stopScanning();
 
@@ -349,8 +370,8 @@ export default class TimeNodeStore {
 
   getCustomProvider() {
     return {
-      netId: parseInt(this._storageService.load('selectedProviderId')),
-      url: this._storageService.load('selectedProviderUrl')
+      id: parseInt(this._storageService.load('selectedProviderId')),
+      endpoint: this._storageService.load('selectedProviderEndpoint')
     };
   }
 
@@ -415,8 +436,8 @@ export default class TimeNodeStore {
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
-        Networks[this.netId],
-        this._web3Service.web3,
+        this.network,
+        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
@@ -433,7 +454,11 @@ export default class TimeNodeStore {
         showNotification('Not enough DAY tokens. Current balance: ' + balanceDAY.toString());
       }
     } catch (error) {
-      showNotification(error);
+      if (error == `TypeError: Cannot read property 'dayTokenAddress' of undefined`) {
+        showNotification('Unsupported custom provider.');
+      } else {
+        showNotification(error);
+      }
     }
   }
 
@@ -472,14 +497,14 @@ export default class TimeNodeStore {
     await this.startScanning();
   }
 
-  resetWallet() {
+  detachWallet() {
     this._storageService.remove('tn');
     this._storageService.remove('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     this.stopScanning();
     this.eacWorker = null;
-    showNotification('Your wallet has been reset.', 'success');
+    showNotification('Your wallet has been detached.', 'success');
   }
 
   passwordMatchesKeystore(password) {
