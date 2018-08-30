@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, protocol } = require('electron');
+const { app, BrowserWindow, Menu, protocol, shell } = require('electron');
 const path = require('path');
 const os = require('os');
 
@@ -104,6 +104,11 @@ function createWindow() {
   if (!isDev) {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   }
+
+  mainWindow.webContents.on('new-window', (e, url) => {
+    e.preventDefault();
+    shell.openExternal(url);
+  });
 }
 
 // This method will be called when Electron has finished
