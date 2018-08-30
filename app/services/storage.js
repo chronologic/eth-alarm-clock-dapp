@@ -20,4 +20,8 @@ export default class LocalStorageService {
   remove(key) {
     return this._localStorage.removeItem(key);
   }
+
+  async waitForInitialization() {
+    return Promise.resolve();
+  }
 }

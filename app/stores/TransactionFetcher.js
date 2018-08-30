@@ -321,9 +321,7 @@ export default class TransactionFetcher {
   }
 
   async fillUpTransactions(transactions) {
-    const addresses = transactions.map(t => t.address);
-
-    const transactionsEventsMap = await this.getEventsMapForAddresses(addresses);
+    const transactionsEventsMap = await this.getEventsMapForTransactions(transactions);
 
     for (const transaction of transactions) {
       const eventName = transactionsEventsMap[transaction.address];
@@ -337,31 +335,44 @@ export default class TransactionFetcher {
   }
 
   async getTransactionsEventsForAddresses(addresses) {
-    return new Promise(resolve => {
-      this._web3
-        .filter({
-          address: addresses,
-          topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
-          fromBlock: this.requestFactoryStartBlock,
-          toBlock: 'latest'
-        })
-        .get((error, events) => {
-          resolve(events);
-        });
-    });
+    const MAX_ADDRESSES_AMOUNT_IN_CHUNK = 80;
+
+    let allEvents = [];
+
+    for (let i = 0; i < addresses.length; i += MAX_ADDRESSES_AMOUNT_IN_CHUNK) {
+      await new Promise(resolve => {
+        this._web3
+          .filter({
+            address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
+            topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
+            fromBlock: this.requestFactoryStartBlock,
+            toBlock: 'latest'
+          })
+          .get((error, events) => {
+            allEvents = allEvents.concat(...events);
+            resolve();
+          });
+      });
+    }
+
+    return allEvents;
   }
 
-  async getEventsMapForAddresses(addresses) {
+  async getEventsMapForTransactions(transactions) {
+    const addresses = transactions.map(t => t.address);
+
     let addressesToCheck = [];
 
-    if (this._cache.addressesEvents) {
-      addressesToCheck = addresses.filter(
-        address => typeof this._cache.addressesEvents[address] === 'undefined'
-      );
+    await this._cache.loadAddressesEventsFromStorage();
+
+    const cachedEvents = this._cache.addressesEvents;
+
+    if (cachedEvents) {
+      addressesToCheck = addresses.filter(address => typeof cachedEvents[address] === 'undefined');
     }
 
     const events = await this.getTransactionsEventsForAddresses(addressesToCheck);
-    const TX_EVENTS_MAP = this._cache.addressesEvents || {};
+    const TX_EVENTS_MAP = cachedEvents || {};
 
     for (const event of events) {
       let eventType;

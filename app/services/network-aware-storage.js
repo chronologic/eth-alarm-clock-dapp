@@ -27,4 +27,8 @@ export default class NetworkAwareLocalStorageService {
   getModifiedKey(key) {
     return this._keyModifier ? this._keyModifier.modify(key) : key;
   }
+
+  async waitForInitialization() {
+    return this._keyModifier.waitForInitialization();
+  }
 }
