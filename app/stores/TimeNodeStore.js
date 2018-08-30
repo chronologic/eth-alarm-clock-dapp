@@ -47,6 +47,9 @@ export default class TimeNodeStore {
   claiming = false;
 
   @observable
+  unlocked = false;
+
+  @observable
   basicLogs = [];
   @observable
   detailedLogs = [];
@@ -149,8 +152,10 @@ export default class TimeNodeStore {
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
+      this.unlocked = true;
       this.startClient(this.walletKeystore, password);
     } else {
+      this.unlocked = false;
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
   }
@@ -230,7 +235,7 @@ export default class TimeNodeStore {
 
     // Set intervals for fetching info from worker
     this.updateStats();
-    setInterval(this.updateStats, 5000);
+    setInterval(this.updateStats, 1000);
 
     this.getNetworkInfo();
     setInterval(this.getNetworkInfo, 15000);
@@ -492,14 +497,14 @@ export default class TimeNodeStore {
     await this.startScanning();
   }
 
-  resetWallet() {
+  detachWallet() {
     this._storageService.remove('tn');
     this._storageService.remove('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     this.stopScanning();
     this.eacWorker = null;
-    showNotification('Your wallet has been reset.', 'success');
+    showNotification('Your wallet has been detached.', 'success');
   }
 
   passwordMatchesKeystore(password) {
