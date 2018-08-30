@@ -266,7 +266,9 @@ export default class TimeNodeStore {
   }
 
   sendActiveTimeNodeEvent() {
-    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
+    if (this.scanningStarted) {
+      this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
+    }
   }
 
   async awaitScanReady() {
