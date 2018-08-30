@@ -6,6 +6,7 @@ import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 import { showNotification } from '../../services/notification';
+import moment from 'moment';
 
 const INITIAL_STATE = {
   callData: '',
@@ -198,7 +199,7 @@ class TransactionDetails extends Component {
     this.setState({
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
-      status: await transactionStore.getTxStatus(transaction),
+      status: await transactionStore.getTxStatus(transaction, moment().unix()),
       executedAt,
       isFrozen: ''
     });
@@ -331,7 +332,13 @@ class TransactionDetails extends Component {
     if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       messages.push('The transaction has been frozen.');
     }
-    return <div>{messages.map(msg => <div key={msg}>{msg}</div>)}</div>;
+    return (
+      <div>
+        {messages.map(msg => (
+          <div key={msg}>{msg}</div>
+        ))}
+      </div>
+    );
   }
 
   render() {

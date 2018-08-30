@@ -3,7 +3,7 @@ import { initEacService } from './eac';
 import LocalStorageService from './storage';
 import FeaturesService from './features';
 import NetworkAwareKeyModifier from './network-specific-key-modifier';
-import NetworkAwareLocalStorageService from './networkAwareStorage';
+import NetworkAwareLocalStorageService from './network-aware-storage';
 
 const networkAwareKeyModifier = new NetworkAwareKeyModifier();
 

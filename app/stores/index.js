@@ -8,6 +8,7 @@ import DateTimeValidatorStore from './DateTimeValidatorStore';
 import { KeenStore } from './KeenStore';
 import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
+import TransactionHelper from '../services/transaction-helper';
 
 const {
   eacService,
@@ -38,6 +39,9 @@ const scheduleStore = new ScheduleStore();
 const dateTimeValidatorStore = new DateTimeValidatorStore();
 
 export const transactionCache = new TransactionCache(networkAwareStorageService);
+
+const transactionHelper = new TransactionHelper(transactionCache);
+
 export const transactionFetcher = new TransactionFetcher(
   eacService,
   transactionCache,
@@ -49,7 +53,8 @@ export const transactionStore = new TransactionStore(
   web3Service,
   transactionFetcher,
   transactionCache,
-  featuresService
+  featuresService,
+  transactionHelper
 );
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
 
