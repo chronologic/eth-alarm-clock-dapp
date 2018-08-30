@@ -1,5 +1,4 @@
 import { observable, computed } from 'mobx';
-import Web3 from 'web3/index';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
 import EacWorker from 'worker-loader!../js/eac-worker.js';
@@ -11,7 +10,6 @@ import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
 import { isRunningInElectron } from '../lib/electron-util';
 import { Networks } from '../config/web3Config';
-import Web3WsProvider from 'web3-providers-ws';
 
 /*
  * TimeNode classification based on the number
@@ -37,19 +35,6 @@ export class TIMENODE_STATUS {
 // 2 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
-
-const getWeb3FromProviderUrl = providerUrl => {
-  let provider;
-
-  if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
-    provider = new Web3.providers.HttpProvider(providerUrl);
-  } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
-    provider = new Web3WsProvider(providerUrl);
-    provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
-  }
-
-  return new Web3(provider);
-};
 
 export default class TimeNodeStore {
   @observable
@@ -447,7 +432,7 @@ export default class TimeNodeStore {
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
         this.network,
-        getWeb3FromProviderUrl(this.network.endpoint),
+        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 

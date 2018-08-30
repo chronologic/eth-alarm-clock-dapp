@@ -111,7 +111,7 @@ class EacWorker {
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
       providerBlockNumber,
-      netId: this.detectedNetId ? this.detectedNetId : this.network.id
+      netId: this.detectedNetId || this.network.id
     });
   }
 
