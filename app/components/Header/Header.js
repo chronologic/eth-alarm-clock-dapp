@@ -9,6 +9,7 @@ import { BeatLoader } from 'react-spinners';
 @inject('eacService')
 @inject('keenStore')
 @inject('featuresService')
+@inject('timeNodeStore')
 @observer
 class Header extends Component {
   constructor(props) {
@@ -59,29 +60,41 @@ class Header extends Component {
     return this.state.currentPath === '/timenode';
   }
 
-  render() {
-    const { web3Service, keenStore } = this.props;
-
-    const numActiveTimeNodes = this.isOnTimeNodeScreen()
-      ? keenStore.activeTimeNodesTimeNodeSpecificProvider // Load TimeNode worker provider specific counter
-      : keenStore.activeTimeNodes; // Load web3 counter
-
-    const activeTimenodes =
-      numActiveTimeNodes !== null ? numActiveTimeNodes : <BeatLoader color="#fff" size={4} />;
-
-    const infoBtn = (
+  getInfoButton(message) {
+    return (
       <span
         className="analytics-info"
         data-placement="bottom"
         data-toggle="tooltip"
         data-html="true"
-        title="To enable site analytics, please <strong>whitelist our site</strong>."
+        title={message}
       >
         <i className="fa fa-info-circle" />
       </span>
     );
+  }
 
-    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
+  render() {
+    const { web3Service, keenStore, timeNodeStore } = this.props;
+
+    const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
+
+    const numActiveTimeNodes = {
+      timeNodeScreen: timeNodeStore.unlocked
+        ? keenStore.activeTimeNodesTimeNodeSpecificProvider
+        : this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
+      otherScreens: keenStore.activeTimeNodes
+    };
+
+    const whichCounter = loaderIfNull(
+      this.isOnTimeNodeScreen()
+        ? numActiveTimeNodes.timeNodeScreen
+        : numActiveTimeNodes.otherScreens
+    );
+
+    const displayActiveTimenodes = keenStore.isBlacklisted
+      ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
+      : whichCounter;
 
     return (
       <div className="header">
@@ -243,6 +256,7 @@ Header.propTypes = {
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   keenStore: PropTypes.any,
+  timeNodeStore: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 

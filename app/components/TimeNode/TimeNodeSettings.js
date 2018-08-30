@@ -291,10 +291,9 @@ class TimeNodeSettings extends Component {
           </div>
         </div>
 
-        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <TimeNodeDetachModal />
         <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
-          updateWalletUnlocked={this.props.updateWalletUnlocked}
           claiming={this.state.claiming}
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}
@@ -308,8 +307,7 @@ class TimeNodeSettings extends Component {
 }
 
 TimeNodeSettings.propTypes = {
-  timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeSettings;

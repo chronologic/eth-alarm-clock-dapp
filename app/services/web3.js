@@ -19,19 +19,6 @@ function cleanAsciiText(text) {
   }
 }
 
-const getWeb3FromProviderUrl = providerUrl => {
-  let provider;
-
-  if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
-    provider = new Web3.providers.HttpProvider(providerUrl);
-  } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
-    provider = new Web3WsProvider(providerUrl);
-    provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
-  }
-
-  return new Web3(provider);
-};
-
 export default class Web3Service {
   web3 = null;
   tokenInstance = null;
@@ -320,7 +307,7 @@ export default class Web3Service {
         web3 = new Web3(window.web3.currentProvider);
         this.connectedToMetaMask = true;
       } else {
-        web3 = getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
+        web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
@@ -335,7 +322,7 @@ export default class Web3Service {
     this.explorer = this.network.explorer;
 
     if (this.network && this.network.endpoint && this.connectedToMetaMask) {
-      this.web3AlternativeToMetaMask = getWeb3FromProviderUrl(this.network.endpoint);
+      this.web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
@@ -358,6 +345,19 @@ export default class Web3Service {
       this.accounts = accounts;
       this.web3.eth.defaultAccount = this.accounts[0];
     }
+  }
+
+  getWeb3FromProviderUrl(providerUrl) {
+    let provider;
+
+    if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
+      provider = new Web3.providers.HttpProvider(providerUrl);
+    } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
+      provider = new Web3WsProvider(providerUrl);
+      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+    }
+
+    return new Web3(provider);
   }
 
   humanizeCurrencyDisplay(priceInWei) {

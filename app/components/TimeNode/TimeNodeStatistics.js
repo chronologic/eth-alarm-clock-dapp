@@ -33,8 +33,6 @@ class TimeNodeStatistics extends Component {
     }
 
     this.refreshStats();
-    // Refreshes the stats every 5 seconds
-    this.interval = setInterval(this.refreshStats, 5000);
   }
 
   getStopButton(disabled) {
@@ -102,10 +100,6 @@ class TimeNodeStatistics extends Component {
         } DAY.`}
       />
     );
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
   }
 
   async shouldShowClaimedWarning() {
