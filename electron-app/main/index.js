@@ -90,6 +90,8 @@ function createWindow() {
   ];
 
   if (process.platform === 'darwin') {
+    app.getName = () => 'TimeNode';
+
     template.unshift({
       label: 'TimeNode',
       submenu: [
