@@ -3,15 +3,12 @@ import { initEacService } from './eac';
 import LocalStorageService from './storage';
 import FeaturesService from './features';
 import NetworkAwareKeyModifier from './network-specific-key-modifier';
-import NetworkAwareLocalStorageService from './network-aware-storage';
+import NetworkAwareStorageService from './network-aware-storage';
 
 const networkAwareKeyModifier = new NetworkAwareKeyModifier();
 
 const storageService = new LocalStorageService();
-const networkAwareStorageService = new NetworkAwareLocalStorageService(
-  undefined,
-  networkAwareKeyModifier
-);
+const networkAwareStorageService = new NetworkAwareStorageService(networkAwareKeyModifier);
 
 const web3Service = initWeb3Service(false, window.web3, networkAwareKeyModifier);
 web3Service.init();
