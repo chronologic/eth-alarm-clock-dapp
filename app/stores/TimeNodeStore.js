@@ -8,6 +8,8 @@ import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { isRunningInElectron } from '../lib/electron-util';
+import { Networks } from '../config/web3Config';
 
 /*
  * TimeNode classification based on the number
@@ -43,6 +45,9 @@ export default class TimeNodeStore {
   scanningStarted = false;
   @observable
   claiming = false;
+
+  @observable
+  unlocked = false;
 
   @observable
   basicLogs = [];
@@ -112,13 +117,22 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
+  netId = null;
+
+  get network() {
+    const customNetId = this.getCustomProvider().id;
+    const currentNetId = customNetId ? customNetId : this._web3Service.network.id;
+    if (!Networks[currentNetId]) {
+      return this.getCustomProvider();
+    }
+    return Networks[currentNetId];
+  }
+
   eacWorker = null;
 
   _keenStore = null;
-
-  _timeNodeStatusCheckIntervalRef = null;
-
   _storageService = null;
+  _timeNodeStatusCheckIntervalRef = null;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -131,19 +145,24 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
+
+    this.updateStats = this.updateStats.bind(this);
+    this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
   unlockTimeNode(password) {
     if (this.walletKeystore && password) {
+      this.unlocked = true;
       this.startClient(this.walletKeystore, password);
     } else {
+      this.unlocked = false;
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
   }
 
   getWorkerOptions(keystore, keystorePassword) {
     return {
-      network: this._web3Service.network,
+      network: this.network,
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
@@ -163,7 +182,7 @@ export default class TimeNodeStore {
   startWorker(options) {
     this.eacWorker = new EacWorker();
 
-    this.eacWorker.onmessage = event => {
+    this.eacWorker.onmessage = async event => {
       const { type, value } = event.data;
       const getValuesIfInMessage = values => {
         values.forEach(value => {
@@ -196,7 +215,11 @@ export default class TimeNodeStore {
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-          getValuesIfInMessage(['providerBlockNumber']);
+          getValuesIfInMessage(['providerBlockNumber', 'netId']);
+          if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
+            this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
+            await this._keenStore.refreshActiveTimeNodesCount();
+          }
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
@@ -210,7 +233,12 @@ export default class TimeNodeStore {
       options
     });
 
+    // Set intervals for fetching info from worker
     this.updateStats();
+    setInterval(this.updateStats, 1000);
+
+    this.getNetworkInfo();
+    setInterval(this.getNetworkInfo, 15000);
   }
 
   async getClaimedNotExecutedTransactions() {
@@ -238,7 +266,9 @@ export default class TimeNodeStore {
   }
 
   sendActiveTimeNodeEvent() {
-    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
+    if (this.scanningStarted) {
+      this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
+    }
   }
 
   async awaitScanReady() {
@@ -323,6 +353,30 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
+  setCustomProvider(id, endpoint) {
+    this.customProviderUrl = endpoint;
+    this._storageService.save('selectedProviderId', id);
+    this._storageService.save('selectedProviderEndpoint', endpoint);
+
+    this.stopScanning();
+
+    // Reload the page so that the changes are refreshed
+    if (isRunningInElectron()) {
+      // Workaround for getting the Electron app to reload
+      // since the regular reload results in a blank screen
+      window.location.href = '/index.html';
+    } else {
+      window.location.reload();
+    }
+  }
+
+  getCustomProvider() {
+    return {
+      id: parseInt(this._storageService.load('selectedProviderId')),
+      endpoint: this._storageService.load('selectedProviderEndpoint')
+    };
+  }
+
   getMyAddress() {
     if (this.walletKeystore) {
       const ks = this.decrypt(this.walletKeystore);
@@ -384,8 +438,8 @@ export default class TimeNodeStore {
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
-        this._web3Service.network,
-        this._web3Service.web3,
+        this.network,
+        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
@@ -402,7 +456,11 @@ export default class TimeNodeStore {
         showNotification('Not enough DAY tokens. Current balance: ' + balanceDAY.toString());
       }
     } catch (error) {
-      showNotification(error);
+      if (error == `TypeError: Cannot read property 'dayTokenAddress' of undefined`) {
+        showNotification('Unsupported custom provider.');
+      } else {
+        showNotification(error);
+      }
     }
   }
 
@@ -434,20 +492,21 @@ export default class TimeNodeStore {
     return true;
   }
 
-  restart(password) {
+  async restart(password) {
     this.stopScanning();
     this.eacWorker = null;
     this.startClient(this.walletKeystore, password);
+    await this.startScanning();
   }
 
-  resetWallet() {
+  detachWallet() {
     this._storageService.remove('tn');
     this._storageService.remove('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     this.stopScanning();
     this.eacWorker = null;
-    showNotification('Your wallet has been reset.', 'success');
+    showNotification('Your wallet has been detached.', 'success');
   }
 
   passwordMatchesKeystore(password) {

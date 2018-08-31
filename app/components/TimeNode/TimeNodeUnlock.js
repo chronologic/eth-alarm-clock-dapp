@@ -31,7 +31,6 @@ class TimeNodeUnlock extends Component {
 
     if (this.props.timeNodeStore.passwordMatchesKeystore(password)) {
       this.props.timeNodeStore.unlockTimeNode(password);
-      this.props.updateWalletUnlocked(true);
     }
   }
 
@@ -90,15 +89,14 @@ class TimeNodeUnlock extends Component {
           </div>
         </div>
 
-        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <TimeNodeDetachModal />
       </div>
     );
   }
 }
 
 TimeNodeUnlock.propTypes = {
-  timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeUnlock;

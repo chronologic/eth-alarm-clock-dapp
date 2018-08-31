@@ -9,30 +9,38 @@ import { BeatLoader } from 'react-spinners';
 @inject('eacService')
 @inject('keenStore')
 @inject('featuresService')
+@inject('timeNodeStore')
 @observer
 class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentPath: props.history.location.pathname,
       eacContracts: {}
     };
+
+    this.props.history.listen(location => {
+      if (location.pathname !== this.state.currentPath) {
+        this.setState({
+          currentPath: location.pathname
+        });
+      }
+    });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.fetchEacContracts();
 
-    const { jQuery } = window;
-
-    if (jQuery) {
-      jQuery('[data-toggle="tooltip"]').tooltip();
+    const $ = window.jQuery;
+    if ($) {
+      $('[data-toggle="tooltip"]').tooltip();
     }
   }
 
   componentDidUpdate() {
-    const { jQuery } = window;
-
-    if (jQuery) {
-      jQuery('[data-toggle="tooltip"]').tooltip();
+    const $ = window.jQuery;
+    if ($) {
+      $('[data-toggle="tooltip"]').tooltip();
     }
   }
 
@@ -48,29 +56,45 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
-  render() {
-    const { web3Service, keenStore } = this.props;
+  isOnTimeNodeScreen() {
+    return this.state.currentPath === '/timenode';
+  }
 
-    const activeTimenodes =
-      keenStore.activeTimeNodes !== null ? (
-        keenStore.activeTimeNodes
-      ) : (
-        <BeatLoader color="#fff" size={4} />
-      );
-
-    const infoBtn = (
+  getInfoButton(message) {
+    return (
       <span
         className="analytics-info"
         data-placement="bottom"
         data-toggle="tooltip"
         data-html="true"
-        title="To enable site analytics, please <strong>whitelist our site</strong>."
+        title={message}
       >
         <i className="fa fa-info-circle" />
       </span>
     );
+  }
 
-    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
+  render() {
+    const { web3Service, keenStore, timeNodeStore } = this.props;
+
+    const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
+
+    const numActiveTimeNodes = {
+      timeNodeScreen: timeNodeStore.unlocked
+        ? keenStore.activeTimeNodesTimeNodeSpecificProvider
+        : this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
+      otherScreens: keenStore.activeTimeNodes
+    };
+
+    const whichCounter = loaderIfNull(
+      this.isOnTimeNodeScreen()
+        ? numActiveTimeNodes.timeNodeScreen
+        : numActiveTimeNodes.otherScreens
+    );
+
+    const displayActiveTimenodes = keenStore.isBlacklisted
+      ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
+      : whichCounter;
 
     return (
       <div className="header">
@@ -98,7 +122,7 @@ class Header extends Component {
               &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser history={this.props.history} />
+              <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
             </span>
           </div>
           <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
@@ -232,6 +256,7 @@ Header.propTypes = {
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   keenStore: PropTypes.any,
+  timeNodeStore: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 
