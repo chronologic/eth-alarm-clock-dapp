@@ -76,18 +76,6 @@ function createWindow() {
 
   const template = [
     {
-      label: 'Application',
-      submenu: [
-        {
-          label: 'Quit',
-          accelerator: 'Command+Q',
-          click: function() {
-            app.quit();
-          }
-        }
-      ]
-    },
-    {
       label: 'Edit',
       submenu: [
         { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
@@ -100,6 +88,23 @@ function createWindow() {
       ]
     }
   ];
+
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: 'TimeNode',
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services', submenu: [] },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    });
+  }
 
   if (!isDev) {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
