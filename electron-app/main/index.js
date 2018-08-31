@@ -3,6 +3,8 @@ const { app, BrowserWindow, Menu, protocol, shell } = require('electron');
 const path = require('path');
 const os = require('os');
 
+const packageJson = require('./package.json');
+
 const isDev = require('electron-is-dev');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -74,19 +76,24 @@ function createWindow() {
     mainWindow = null;
   });
 
-  const template = [
-    {
-      label: 'Application',
-      submenu: [
-        {
-          label: 'Quit',
-          accelerator: 'Command+Q',
-          click: function() {
-            app.quit();
-          }
+  const HELP_MENU = {
+    role: 'help',
+    submenu: [
+      {
+        label: `TimeNode v${packageJson.version}`,
+        enabled: false
+      },
+      { type: 'separator' },
+      {
+        label: 'Report a Bug',
+        click() {
+          shell.openExternal(`${packageJson.repository.url}/issues/new`);
         }
-      ]
-    },
+      }
+    ]
+  };
+
+  const template = [
     {
       label: 'Edit',
       submenu: [
@@ -98,8 +105,28 @@ function createWindow() {
         { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
         { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
       ]
-    }
+    },
+    HELP_MENU
   ];
+
+  if (process.platform === 'darwin') {
+    app.getName = () => 'TimeNode';
+
+    template.unshift({
+      label: 'TimeNode',
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services', submenu: [] },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    });
+  }
 
   if (!isDev) {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
