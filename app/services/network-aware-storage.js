@@ -17,7 +17,7 @@ export default class NetworkAwareStorageService {
   /**
    * @type {string}
    */
-  _collectionName = 'jsons';
+  _collectionName = 'basic-key-value-pairs';
 
   /**
    * @type {Loki}
