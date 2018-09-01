@@ -130,7 +130,7 @@
     "react-spinners": "0.3.2",
     "react-switch": "3.0.4",
     "select2": "4.0.4",
-    "wait-on": "2.1.0",
+    "wait-on": "2.1.1",
     "web3": "0.20.6",
     "web3-providers-ws": "1.0.0-beta.36",
     "websocket": "1.0.26"
