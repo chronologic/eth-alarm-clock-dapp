@@ -5,14 +5,23 @@ import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
 import ExecutedGraph from './ExecutedGraph';
 import { BeatLoader } from 'react-spinners';
+import moment from 'moment';
 
 @inject('timeNodeStore')
 @inject('keenStore')
 @inject('transactionStore')
+@inject('dateTimeValidatorStore')
 @observer
 class TimeNodeStatistics extends Component {
   constructor(props) {
     super(props);
+
+    const { scanningStarted } = props.timeNodeStore;
+
+    this.state = {
+      scanning: scanningStarted,
+      lastStarted: moment()
+    };
 
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
@@ -38,7 +47,7 @@ class TimeNodeStatistics extends Component {
   getStopButton(disabled) {
     return (
       <button
-        className="btn btn-danger px-4"
+        className="btn btn-danger btn-lg px-5"
         onClick={this.shouldShowClaimedWarning}
         disabled={disabled}
       >
@@ -49,7 +58,11 @@ class TimeNodeStatistics extends Component {
 
   getStartButton(disabled) {
     return (
-      <button className="btn btn-primary px-4" onClick={this.startTimeNode} disabled={disabled}>
+      <button
+        className="btn btn-primary btn-lg px-5"
+        onClick={this.startTimeNode}
+        disabled={disabled}
+      >
         Start
       </button>
     );
@@ -115,25 +128,89 @@ class TimeNodeStatistics extends Component {
     }
   }
 
+  static getDerivedStateFromProps(props, state) {
+    const { scanningStarted } = props.timeNodeStore;
+
+    if (state.scanning !== scanningStarted) {
+      state.scanning = scanningStarted;
+
+      if (scanningStarted) {
+        state.lastStarted = moment();
+      }
+    }
+    return state;
+  }
+
+  showLoaderIfNull(opts) {
+    if (opts.value === undefined) {
+      throw Error('Value needed.');
+    }
+
+    const options = {
+      value: opts.value,
+      loaderSize: opts.loaderSize || 8,
+      alt: opts.alt || opts.value,
+      array: opts.array || false
+    };
+
+    if (options.value !== null) {
+      return options.array ? options.value.length : options.alt;
+    }
+
+    return <BeatLoader size={options.loaderSize} />;
+  }
+
   render() {
-    const {
+    let {
       bounties,
       costs,
       profit,
       scanningStarted,
       balanceETH,
       balanceDAY,
-      executedTransactions,
-      nodeStatus
+      nodeStatus,
+      successfulClaims,
+      failedClaims,
+      successfulExecutions,
+      failedExecutions,
+      discovered
     } = this.props.timeNodeStore;
+
+    const { scanning, lastStarted } = this.state;
 
     const { DISABLED, LOADING } = TIMENODE_STATUS;
     const timeNodeDisabled = nodeStatus === DISABLED || nodeStatus === LOADING;
     const scanningStatus = scanningStarted ? 'running' : 'stopped';
 
-    const profitStatus = profit !== null ? profit + ' ETH' : <BeatLoader />;
-    const bountiesStatus =
+    bounties =
       bounties !== null && costs !== null ? `${bounties} (bounties) - ${costs} (costs)` : '';
+
+    const runningTime = scanning ? moment().to(lastStarted, true) : 'stopped';
+
+    const graph =
+      successfulExecutions !== null ? (
+        successfulExecutions.length > 0 ? (
+          <ExecutedGraph />
+        ) : (
+          <p className="my-5 text-center">No data yet.</p>
+        )
+      ) : (
+        <BeatLoader size={12} />
+      );
+
+    const isNotNull = value => value !== null;
+
+    let allActions;
+    if (
+      isNotNull(successfulClaims) &&
+      isNotNull(failedClaims) &&
+      isNotNull(successfulExecutions) &&
+      isNotNull(failedExecutions)
+    ) {
+      allActions = successfulClaims.concat(failedClaims, successfulExecutions, failedExecutions);
+    } else {
+      allActions = null;
+    }
 
     return (
       <div id="timeNodeStatistics">
@@ -141,20 +218,24 @@ class TimeNodeStatistics extends Component {
         {balanceETH !== null && this.getBalanceNotification()}
         {this.getClaimingNotification()}
 
-        <h2 className="py-4">
-          Your TimeNode is {timeNodeDisabled ? DISABLED.toLowerCase() : scanningStatus}.
-          <span className="ml-2">
-            {scanningStarted
-              ? this.getStopButton(timeNodeDisabled)
-              : this.getStartButton(timeNodeDisabled)}
-          </span>
-        </h2>
+        <div data-pages="card" className="card card-default">
+          <div className="card-body">
+            <h2>
+              Your TimeNode is {timeNodeDisabled ? DISABLED.toLowerCase() : scanningStatus}.
+              <span className="ml-2 pull-right">
+                {scanningStarted
+                  ? this.getStopButton(timeNodeDisabled)
+                  : this.getStartButton(timeNodeDisabled)}
+              </span>
+            </h2>
+          </div>
+        </div>
 
         <div className="row">
           <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Claimed</div>
+                <div className="card-title">Profit</div>
                 <div className="card-controls">
                   <ul>
                     <li>
@@ -170,36 +251,48 @@ class TimeNodeStatistics extends Component {
                 </div>
               </div>
               <div className="card-body">
-                <h2>{profitStatus}</h2>
-                <small>{bountiesStatus}</small>
+                <h2>
+                  {this.showLoaderIfNull({
+                    value: profit,
+                    loaderSize: 10,
+                    alt: `${profit} ETH`
+                  })}
+                </h2>
+                <small>{bounties}</small>
               </div>
             </div>
-          </div>
 
-          <div className="col-md-4">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Executed: {executedTransactions.length}</div>
+                <div className="card-title">Summary</div>
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a
-                        data-toggle="refresh"
-                        className="card-refresh"
-                        onClick={() => this.refreshStats()}
-                      >
+                      <a data-toggle="refresh" className="card-refresh text-black" href="#">
                         <i className="card-icon card-icon-refresh" />
                       </a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div ref={el => (this.chartContainer = el)} className="card-body no-padding">
-                {executedTransactions.length > 0 ? (
-                  <ExecutedGraph />
-                ) : (
-                  <p className="my-5 text-center">No data yet.</p>
-                )}
+
+              <div className="card-body p-0 m-t-10">
+                <div className="row px-4">
+                  <div className="col-7">Running time</div>
+                  <div className="col-5">{runningTime}</div>
+                </div>
+                <hr className="mt-2 mb-2" />
+                <div className="row px-4 pb-2">
+                  <div className="col-7">Discovered transactions</div>
+                  <div className="col-5">
+                    {this.showLoaderIfNull({ value: discovered, loaderSize: 6 })}
+                  </div>
+                </div>
+                <hr className="mt-2 mb-2" />
+                <div className="row px-4 pb-2">
+                  <div className="col-7">Pending bounties</div>
+                  <div className="col-5">1 000 000 ETH</div>
+                </div>
               </div>
             </div>
           </div>
@@ -224,20 +317,190 @@ class TimeNodeStatistics extends Component {
               </div>
               <div className="card-body p-0 m-t-10">
                 <div className="row px-4">
-                  <div className="col-6 col-md-6">ETH</div>
-                  <div className="col-6 col-md-6">
-                    {balanceETH !== null ? balanceETH : <BeatLoader size={6} />}
+                  <div className="col-6">ETH</div>
+                  <div className="col-6">
+                    {this.showLoaderIfNull({ value: balanceETH, loaderSize: 6 })}
                   </div>
                 </div>
                 <hr className="mt-2 mb-2" />
                 <div className="row px-4 pb-2">
-                  <div className="col-6 col-md-6">DAY</div>
-                  <div className="col-6 col-md-6">
-                    {balanceDAY !== null ? balanceDAY : <BeatLoader size={6} />}
+                  <div className="col-6">DAY</div>
+                  <div className="col-6">
+                    {this.showLoaderIfNull({ value: balanceDAY, loaderSize: 6 })}
                   </div>
                 </div>
               </div>
             </div>
+
+            <div data-pages="card no-border no-margin" className="card card-default">
+              <div className="card-header">
+                <div className="card-title">Actions</div>
+                <div className="card-controls">
+                  <ul>
+                    <li>
+                      <a data-toggle="refresh" className="card-refresh text-black" href="#">
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="auto-overflow">
+                <table className="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th />
+                      <th className="font-montserrat all-caps text-warning">
+                        <i className="fas fa-exclamation-triangle" title="Failed execution." />
+                      </th>
+                      <th className="font-montserrat all-caps text-success">
+                        <i className="fa fa-check" title="Successful execution." />
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style={{ width: '50%' }} className="all-caps">
+                        Executions
+                      </td>
+                      <td style={{ width: '25%' }} className="b-r b-dashed b-grey hint-text small">
+                        {this.showLoaderIfNull({
+                          value: failedExecutions,
+                          loaderSize: 6,
+                          array: true
+                        })}
+                      </td>
+                      <td style={{ width: '25%' }} className="font-montserrat">
+                        {this.showLoaderIfNull({
+                          value: successfulExecutions,
+                          loaderSize: 6,
+                          array: true
+                        })}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="all-caps">Claims</td>
+                      <td className="b-r b-dashed b-grey hint-text small">
+                        {this.showLoaderIfNull({ value: failedClaims, loaderSize: 6, array: true })}
+                      </td>
+                      <td className="font-montserrat">
+                        {this.showLoaderIfNull({
+                          value: successfulClaims,
+                          loaderSize: 6,
+                          array: true
+                        })}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div data-pages="card" className="card card-default" style={{ height: '326px' }}>
+              <div className="card-header">
+                <div className="card-title">
+                  Executed:{' '}
+                  {this.showLoaderIfNull({
+                    value: successfulExecutions,
+                    loaderSize: 6,
+                    array: true
+                  })}
+                </div>
+                <div className="card-controls">
+                  <ul>
+                    <li>
+                      <a
+                        data-toggle="refresh"
+                        className="card-refresh"
+                        onClick={() => this.refreshStats()}
+                      >
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="card-body no-padding">{graph}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card no-border no-margin widget-loader-bar">
+          <div className="card-header">
+            <div className="card-title">Details</div>
+            <div className="card-controls">
+              <ul>
+                <li>
+                  <a data-toggle="refresh" className="card-refresh text-black" href="#">
+                    <i className="card-icon card-icon-refresh" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="auto-overflow" style={{ height: '200px' }}>
+            <table className="table table-condensed">
+              <thead>
+                <tr>
+                  <th className="font-montserrat">Time</th>
+                  <th className="font-montserrat">Action</th>
+                  <th className="font-montserrat">Transaction</th>
+                  <th className="font-montserrat">Bounty</th>
+                  <th className="font-montserrat">Cost</th>
+                  <th className="font-montserrat">Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allActions !== null
+                  ? allActions.map((action, i) => {
+                      switch (action.action) {
+                        case 1:
+                          action.action = 'Claim';
+                          break;
+                        case 2:
+                          action.action = 'Execute';
+                      }
+
+                      switch (action.result) {
+                        case 0:
+                          action.result = 'Failed';
+                          break;
+                        case 1:
+                          action.result = 'Success';
+                      }
+
+                      return (
+                        <tr key={i}>
+                          <td>{action.timestamp}</td>
+                          <td className="font-montserrat all-caps">{action.action}</td>
+                          <td className="hint-text small">
+                            <a href="#">{action.txAddress}</a>
+                          </td>
+                          <td className="">{action.bounty} wei</td>
+                          <td className="">{action.cost} wei</td>
+                          <td className="font-montserrat all-caps b-l b-dashed b-grey">
+                            {action.result}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : null}
+              </tbody>
+            </table>
+          </div>
+          <div className="padding-25">
+            <p className="small no-margin">
+              <a href="#">
+                <i className="fa fs-16 fa-arrow-circle-o-down text-success m-r-10" />
+              </a>
+              <span className="hint-text ">For more details, see the LOGS tab.</span>
+            </p>
           </div>
         </div>
 
@@ -295,7 +558,8 @@ class TimeNodeStatistics extends Component {
 
 TimeNodeStatistics.propTypes = {
   timeNodeStore: PropTypes.any,
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  dateTimeValidatorStore: PropTypes.any
 };
 
 export default TimeNodeStatistics;

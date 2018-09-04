@@ -147,16 +147,19 @@ class EacWorker {
   async updateStats() {
     await this.awaitTimeNodeInitialized();
 
-    const bounties = this.config.statsDb.totalBounty(this.myAddress);
-    const costs = this.config.statsDb.totalCost(this.myAddress);
+    const { statsDb } = this.config;
+
+    const bounties = statsDb.totalBounty(this.myAddress);
+    const costs = statsDb.totalCost(this.myAddress);
     const profit = bounties.minus(costs);
 
-    const executedTransactions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
-    let executedTransactionsTimestamps = [];
+    const discovered = statsDb.getDiscovered(this.myAddress);
 
-    executedTransactions.forEach(tx => {
-      executedTransactionsTimestamps.push({ timestamp: tx.timestamp });
-    });
+    const successfulClaims = this.config.statsDb.getSuccessfulClaims(this.myAddress);
+    const failedClaims = this.config.statsDb.getFailedClaims(this.myAddress);
+
+    const successfulExecutions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
+    const failedExecutions = this.config.statsDb.getFailedExecutions(this.myAddress);
 
     const toEth = num => this.config.web3.fromWei(num, 'ether');
 
@@ -165,8 +168,31 @@ class EacWorker {
       bounties: formatBN(toEth(bounties)),
       costs: formatBN(toEth(costs)),
       profit: formatBN(toEth(profit)),
-      executedTransactions: executedTransactionsTimestamps
+      successfulClaims: this._rawStatsArray(successfulClaims),
+      failedClaims: this._rawStatsArray(failedClaims),
+      successfulExecutions: this._rawStatsArray(successfulExecutions),
+      failedExecutions: this._rawStatsArray(failedExecutions),
+      discovered: discovered.length
     });
+  }
+
+  _rawStatsArray(array) {
+    let rawArray = [];
+
+    // Convert BN objects to strings for sending
+    array.forEach(entry => {
+      rawArray.push({
+        txAddress: entry.txAddress,
+        from: entry.from,
+        timestamp: entry.timestamp,
+        bounty: entry.bounty.toNumber(),
+        cost: entry.cost.toNumber(),
+        result: entry.result,
+        action: entry.action
+      });
+    });
+
+    return rawArray;
   }
 
   clearStats() {

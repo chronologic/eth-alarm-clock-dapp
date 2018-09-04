@@ -64,6 +64,7 @@ export const stores = {
   routing: routingStore,
   transactionStore,
   transactionCache,
+  transactionFetcher,
   timeNodeStore,
   scheduleStore,
   dateTimeValidatorStore,

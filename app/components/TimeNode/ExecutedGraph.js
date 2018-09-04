@@ -22,11 +22,11 @@ class ExecutedGraph extends Component {
   }
 
   refreshChart() {
-    const data = this.props.timeNodeStore.executedTransactions;
+    const data = this.props.timeNodeStore.successfulExecutions;
 
     // We will not be taking any transactions before this date into consideration
     // Equals: NOW - 24h
-    const lastValidTime = new Date().getTime() - (24 * 60 * 60 * 1000);
+    const lastValidTime = new Date().getTime() - 24 * 60 * 60 * 1000;
 
     let timeIntervals = [];
 
@@ -52,7 +52,7 @@ class ExecutedGraph extends Component {
         // If the time interval doesn't exist already
         if (!timeIntervalExists) {
           // Create the time interval and bump the executed flag
-          timeIntervals.push({ 'datetime': transactionDate, 'executed': 1 });
+          timeIntervals.push({ datetime: transactionDate, executed: 1 });
         }
       }
     }
@@ -69,33 +69,35 @@ class ExecutedGraph extends Component {
       type: 'line',
       data: {
         labels: dataLabels,
-        datasets: [{
-          data: dataExecuted,
-          backgroundColor:'rgba(33, 255, 255, 0.2)',
-          borderColor: 'rgba(33, 255, 255, 1)',
-          borderWidth: 2,
-          datalabels: {
-            align: 'start',
-            anchor: 'start'
+        datasets: [
+          {
+            data: dataExecuted,
+            backgroundColor: 'rgba(33, 255, 255, 0.2)',
+            borderColor: 'rgba(33, 255, 255, 1)',
+            borderWidth: 2,
+            datalabels: {
+              align: 'start',
+              anchor: 'start'
+            }
           }
-        }]
+        ]
       },
       options: {
         animation: {
           duration: 1,
-          onComplete: function () {
+          onComplete: function() {
             const chartInstance = this.chart;
             const ctx = this.chart.ctx;
             ctx.fillStyle = 'black';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'bottom';
 
-            this.data.datasets.forEach(function (dataset, i) {
-                const meta = chartInstance.controller.getDatasetMeta(i);
-                meta.data.forEach(function (bar, index) {
-                    var data = dataset.data[index];
-                    ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                });
+            this.data.datasets.forEach(function(dataset, i) {
+              const meta = chartInstance.controller.getDatasetMeta(i);
+              meta.data.forEach(function(bar, index) {
+                var data = dataset.data[index];
+                ctx.fillText(data, bar._model.x, bar._model.y - 5);
+              });
             });
           }
         },
@@ -108,24 +110,29 @@ class ExecutedGraph extends Component {
           display: false
         },
         scales: {
-          yAxes: [{
-            display: false,
-            gridLines: {
-              tickMarkLength: 0
+          yAxes: [
+            {
+              display: false,
+              gridLines: {
+                tickMarkLength: 0
+              }
             }
-          }],
-          xAxes: [{
-            display: true
-          }],
+          ],
+          xAxes: [
+            {
+              display: true
+            }
+          ]
         },
         layout: {
           padding: {
             top: 20
           }
-        }
+        },
+        responsive: true,
+        maintainAspectRatio: false
       }
     });
-
   }
 
   compareDates(a, b) {
@@ -135,9 +142,7 @@ class ExecutedGraph extends Component {
   }
 
   render() {
-    return (
-      <canvas ref={(el) => this.chartRef = el}/>
-    );
+    return <canvas ref={el => (this.chartRef = el)} />;
   }
 }
 

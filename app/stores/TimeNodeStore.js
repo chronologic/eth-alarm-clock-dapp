@@ -62,7 +62,16 @@ export default class TimeNodeStore {
   }
 
   @observable
-  executedTransactions = [];
+  successfulExecutions = null;
+  @observable
+  failedExecutions = null;
+  @observable
+  successfulClaims = null;
+  @observable
+  failedClaims = null;
+  @observable
+  discovered = null;
+
   @observable
   balanceETH = null;
   @observable
@@ -198,7 +207,16 @@ export default class TimeNodeStore {
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-          getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
+          getValuesIfInMessage([
+            'bounties',
+            'costs',
+            'profit',
+            'successfulClaims',
+            'failedClaims',
+            'successfulExecutions',
+            'failedExecutions',
+            'discovered'
+          ]);
           break;
 
         case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
