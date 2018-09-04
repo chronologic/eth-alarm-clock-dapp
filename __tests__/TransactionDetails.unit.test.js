@@ -5,6 +5,7 @@ import Web3Service from '../app/services/web3';
 import BigNumber from 'bignumber.js';
 import TransactionDetails from '../app/components/TransactionScanner/TransactionDetails';
 import { TransactionStore } from '../app/stores/TransactionStore';
+import TokenHelper from '../app/services/token-helper';
 
 describe('TransactionDetails', () => {
   it('correctly renders', async () => {
@@ -53,9 +54,11 @@ describe('TransactionDetails', () => {
     };
 
     const transactionStore = new TransactionStore(eacService, web3Service);
+    const tokenHelper = new TokenHelper(web3Service);
 
     const injectables = {
       eacService,
+      tokenHelper,
       transactionStore,
       web3Service
     };

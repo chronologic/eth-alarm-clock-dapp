@@ -6,13 +6,14 @@ import { inject } from 'mobx-react';
 class TimeNodeDetachModal extends Component {
   constructor(props) {
     super(props);
-    this.resetWallet = this.resetWallet.bind(this);
+    this.detachWallet = this.detachWallet.bind(this);
   }
 
-  resetWallet() {
-    this.props.timeNodeStore.resetWallet();
-    this.props.timeNodeStore.clearStats();
-    this.props.updateWalletUnlocked(false);
+  detachWallet() {
+    const { timeNodeStore } = this.props;
+    timeNodeStore.detachWallet();
+    timeNodeStore.clearStats();
+    timeNodeStore.unlocked = false;
   }
 
   render() {
@@ -52,7 +53,7 @@ class TimeNodeDetachModal extends Component {
                     className="btn btn-danger btn-block"
                     type="button"
                     data-dismiss="modal"
-                    onClick={this.resetWallet}
+                    onClick={this.detachWallet}
                   >
                     <strong>Detach</strong>
                   </button>
@@ -67,8 +68,7 @@ class TimeNodeDetachModal extends Component {
 }
 
 TimeNodeDetachModal.propTypes = {
-  timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeDetachModal;

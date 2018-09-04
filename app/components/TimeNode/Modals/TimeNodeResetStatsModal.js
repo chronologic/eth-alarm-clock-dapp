@@ -65,8 +65,7 @@ class TimeNodeResetStatsModal extends Component {
 }
 
 TimeNodeResetStatsModal.propTypes = {
-  timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeResetStatsModal;

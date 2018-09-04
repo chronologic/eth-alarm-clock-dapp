@@ -6,6 +6,7 @@ import { ValueDisplay } from '../Common/ValueDisplay';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 import { showNotification } from '../../services/notification';
+import moment from 'moment';
 
 const INITIAL_STATE = {
   callData: '',
@@ -16,6 +17,7 @@ const INITIAL_STATE = {
   isTokenTransfer: false
 };
 
+@inject('tokenHelper')
 @inject('transactionStore')
 @inject('eacService')
 @inject('web3Service')
@@ -42,19 +44,19 @@ class TransactionDetails extends Component {
   }
 
   async testToken() {
-    const { transaction, web3Service } = this.props;
+    const { tokenHelper, transaction } = this.props;
     const { address, toAddress } = transaction;
 
     let tokenTransferApproved;
-    const isTokenTransfer = web3Service.isTokenTransferTransaction(this.state.callData);
+    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
 
     if (isTokenTransfer) {
       await this.fetchTokenTransferInfo();
 
-      const info = await web3Service.getTokenTransferInfoFromData(this.state.callData);
+      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
       this.setState({ token: Object.assign(this.state.token, { info }) });
 
-      tokenTransferApproved = await web3Service.isTokenTransferApproved(
+      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
         toAddress,
         address,
         this.state.token.info.value
@@ -64,9 +66,10 @@ class TransactionDetails extends Component {
   }
 
   async fetchTokenTransferInfo() {
-    const { transaction, web3Service } = this.props;
+    const { tokenHelper, transaction } = this.props;
     const { toAddress } = transaction;
-    const tokenDetails = await web3Service.fetchTokenDetails(toAddress);
+    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
+
     this.setState({ token: tokenDetails });
   }
 
@@ -137,7 +140,7 @@ class TransactionDetails extends Component {
 
   async approveTokenTransfer(event) {
     const { target } = event;
-    const { transaction, web3Service } = this.props;
+    const { transaction, tokenHelper } = this.props;
     const { address, toAddress } = transaction;
 
     const originalBodyCss = document.body.className;
@@ -145,7 +148,7 @@ class TransactionDetails extends Component {
     target.innerHTML = 'Approving...';
 
     try {
-      const approved = await web3Service.approveTokenTransfer(
+      const approved = await tokenHelper.approveTokenTransfer(
         toAddress,
         address,
         this.state.token.info.value
@@ -168,8 +171,8 @@ class TransactionDetails extends Component {
         eth: { accounts }
       }
     } = this.props;
-    const isOwner = accounts[0] == owner;
-    return isOwner;
+
+    return accounts[0] == owner;
   }
 
   async componentDidMount() {
@@ -198,7 +201,7 @@ class TransactionDetails extends Component {
     this.setState({
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
-      status: await transactionStore.getTxStatus(transaction),
+      status: await transactionStore.getTxStatus(transaction, moment().unix()),
       executedAt,
       isFrozen: ''
     });
@@ -331,7 +334,13 @@ class TransactionDetails extends Component {
     if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
       messages.push('The transaction has been frozen.');
     }
-    return <div>{messages.map(msg => <div key={msg}>{msg}</div>)}</div>;
+    return (
+      <div>
+        {messages.map(msg => (
+          <div key={msg}>{msg}</div>
+        ))}
+      </div>
+    );
   }
 
   render() {
@@ -479,6 +488,7 @@ class TransactionDetails extends Component {
 TransactionDetails.propTypes = {
   address: PropTypes.string,
   eacService: PropTypes.any,
+  tokenHelper: PropTypes.any,
   transaction: PropTypes.any,
   transactionStore: PropTypes.any,
   web3Service: PropTypes.any
