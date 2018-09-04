@@ -15,6 +15,7 @@ import ScheduleStore from '../app/stores/ScheduleStore';
 import DateTimeValidator from '../app/stores/DateTimeValidatorStore';
 import LocalStorageService from '../app/services/storage';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
+import TokenHelper from '../app/services/token-helper';
 
 momentDurationFormatSetup(moment);
 
@@ -175,6 +176,8 @@ describe('App', () => {
 
     const dateTimeValidatorStore = new DateTimeValidator();
 
+    const tokenHelper = new TokenHelper(web3Service);
+
     const injectables = {
       dateTimeValidatorStore,
       eacService,
@@ -182,6 +185,7 @@ describe('App', () => {
       keenStore,
       scheduleStore,
       storageService,
+      tokenHelper,
       transactionStore,
       timeNodeStore,
       web3Service
