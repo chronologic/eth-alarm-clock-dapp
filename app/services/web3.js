@@ -1,5 +1,3 @@
-/*eslint no-control-regex: "off"*/
-
 import Web3 from 'web3/index';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
@@ -8,16 +6,8 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
-import standardTokenAbi from '../abi/standardToken';
-import Web3WsProvider from 'web3-providers-ws';
 
 let instance = null;
-
-function cleanAsciiText(text) {
-  if (text) {
-    return text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
-  }
-}
 
 export default class Web3Service {
   web3 = null;
@@ -35,26 +25,18 @@ export default class Web3Service {
   @observable
   latestBlockNumber = null;
 
-  _keyModifier = null;
+  _keyModifier;
+  _w3Util;
 
-  constructor(props, networkAwareKeyModifier) {
+  constructor(props, networkAwareKeyModifier, w3Util) {
     Object.assign(this, props);
 
     this._keyModifier = networkAwareKeyModifier;
+    this._w3Util = w3Util;
   }
 
   _initializationPromise;
-  web3AlternativeToMetaMask;
-
-  async _init() {
-    if (this.initialized) {
-      return;
-    }
-
-    await this.connect();
-
-    this.initialized = true;
-  }
+  _web3AlternativeToMetaMask;
 
   @action
   init() {
@@ -65,166 +47,12 @@ export default class Web3Service {
     return this._initializationPromise;
   }
 
-  toEth(_wei) {
-    const _toWei = this.web3.toWei(_wei, 'gwei');
-    const ethValue = this.web3.fromWei(_toWei, 'ether');
-    return ethValue;
-  }
-
   fromWei(wei) {
     return this.web3.fromWei(wei);
   }
 
-  encodeFunctionName(functionName) {
-    if (typeof functionName === 'undefined') {
-      return;
-    }
-    const encoded = this.web3.sha3(functionName);
-    return encoded.substring(0, 10);
-  }
-
-  encodeTransactionData(functionName, params) {
-    if (typeof functionName === 'undefined' || params.length < 1) {
-      return;
-    }
-    let types = [];
-    let values = [];
-    const Coder = require('web3/lib/solidity/coder');
-    for (let p = 0; p < params.length; p++) {
-      types.push(params[p].type);
-      values.push(params[p].value);
-    }
-    const funcName = `${functionName}(${types.join(',')})`;
-    const func = this.encodeFunctionName(funcName);
-    const encoded = Coder.encodeParams(types, values);
-    return func + encoded;
-  }
-
-  decodeTransactionData(callData, functionName, params) {
-    if (typeof functionName === 'undefined' || params.length < 1) {
-      return;
-    }
-    let types = [];
-    const Coder = require('web3/lib/solidity/coder');
-    for (let p = 0; p < params.length; p++) {
-      types.push(params[p].type);
-    }
-    const funcName = `${functionName}(${types.join(',')})`;
-    const func = this.encodeFunctionName(funcName);
-    const preparedData = callData.substring(func.length);
-    const decoded = Coder.decodeParams(types, preparedData);
-    return decoded;
-  }
-
-  isTokenTransferTransaction(callData) {
-    if (!callData) {
-      return false;
-    }
-    const functionName = 'transferFrom(address,address,uint256)';
-    const encodedFunction = this.encodeFunctionName(functionName);
-    return new RegExp(encodedFunction).test(callData);
-  }
-
-  async isTokenTransferApproved(token, sender, value) {
-    const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-    const owner = this.accounts[0];
-    const allowance = await Bb.fromCallback(callback =>
-      contract.allowance(owner, sender, callback)
-    );
-    return Number(allowance) >= Number(value);
-  }
-
-  async getTokenTransferInfoFromData(callData) {
-    const functionName = 'transferFrom';
-    const params = [
-      { type: 'address', name: 'owner' },
-      { type: 'address', name: 'sender' },
-      { type: 'uint256', name: 'value' }
-    ];
-
-    const details = this.decodeTransactionData(callData, functionName, params);
-
-    details.map((val, index) => (details[params[index].name] = val));
-
-    return details;
-  }
-
-  async getTokenTransferData(token, receiver, amount) {
-    const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-    const sender = this.accounts[0];
-
-    return contract.transferFrom.getData(sender, receiver, amount);
-  }
-
-  async estimateTokenTransfer(token, receiver, amount) {
-    if (Number(amount) === 0) {
-      return 0;
-    }
-    const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-    const estimate = await Bb.fromCallback(callback =>
-      contract.transfer.estimateGas(receiver, amount, callback)
-    );
-    return estimate;
-  }
-
-  async fetchTokenDetails(address) {
-    const contract = this.web3.eth.contract(standardTokenAbi).at(address);
-
-    return {
-      address,
-      name: await this.getTokenName(address),
-      symbol: await this.getTokenSymbol(address),
-      decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf()
-    };
-  }
-
-  async getTokenSymbol(address) {
-    return new Promise(resolve => {
-      const SYMBOL_CALL_DATA = '0x95d89b41';
-
-      this.web3.eth.call(
-        {
-          to: address,
-          data: SYMBOL_CALL_DATA
-        },
-        (error, result) => {
-          resolve(cleanAsciiText(this.web3.toAscii(result)));
-        }
-      );
-    });
-  }
-
-  async getTokenName(address) {
-    return new Promise(resolve => {
-      const NAME_CALL_DATA = '0x06fdde03';
-
-      this.web3.eth.call(
-        {
-          to: address,
-          data: NAME_CALL_DATA
-        },
-        (error, result) => {
-          resolve(cleanAsciiText(this.web3.toAscii(result)));
-        }
-      );
-    });
-  }
-
-  async fetchTokenBalance(address) {
-    const contract = this.web3.eth.contract(standardTokenAbi).at(address);
-    const balance =
-      this.accounts && this.accounts[0]
-        ? (await Bb.fromCallback(callback =>
-            contract.balanceOf.call(this.accounts[0], callback)
-          )).valueOf()
-        : '-';
-    return balance;
-  }
-
   async fetchReceipt(hash) {
-    let { web3 } = this;
-
-    return await Bb.fromCallback(callback => web3.eth.getTransactionReceipt(hash, callback));
+    return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
   }
 
   async fetchLog(hash, event) {
@@ -260,12 +88,11 @@ export default class Web3Service {
     const block = await this.fetchBlockNumber();
 
     if (!mined || !mined.blockNumber) {
-      const confirmations = new Promise(resolve => {
+      return new Promise(resolve => {
         setTimeout(async () => {
           resolve(await this.fetchConfirmations(transaction));
         }, 2000);
       });
-      return confirmations;
     }
 
     return block - mined.blockNumber;
@@ -276,26 +103,14 @@ export default class Web3Service {
 
     const block = await Bb.fromCallback(callback => web3.eth.getBlockNumber(callback));
     this.latestBlockNumber = block;
+
     return block;
-  }
-
-  async hasCode(address) {
-    const { web3 } = this;
-    const code = await Bb.fromCallback(callback => web3.eth.getCode(address, callback));
-    return code.toString() != '0x0';
-  }
-
-  async approveTokenTransfer(token, receiver, amount) {
-    const contract = this.web3.eth.contract(standardTokenAbi).at(token);
-    const approve = await Bb.fromCallback(callback =>
-      contract.approve(receiver, amount, { from: this.defaultAccount }, callback)
-    );
-    return approve;
   }
 
   async getAddressBalance(address) {
     const { web3 } = this;
     const balance = await Bb.fromCallback(callback => web3.eth.getBalance(address, callback));
+
     return balance.valueOf();
   }
 
@@ -322,7 +137,7 @@ export default class Web3Service {
     this.explorer = this.network.explorer;
 
     if (this.network && this.network.endpoint && this.connectedToMetaMask) {
-      this.web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
+      this._web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
@@ -347,48 +162,12 @@ export default class Web3Service {
     }
   }
 
-  getWeb3FromProviderUrl(providerUrl) {
-    let provider;
-
-    if (providerUrl.includes('http://') || providerUrl.includes('https://')) {
-      provider = new Web3.providers.HttpProvider(providerUrl);
-    } else if (providerUrl.includes('ws://') || providerUrl.includes('wss://')) {
-      provider = new Web3WsProvider(providerUrl);
-      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
-    }
-
-    return new Web3(provider);
-  }
-
-  humanizeCurrencyDisplay(priceInWei) {
-    const ETHER_UNITS_VALUES_MAPPING = {
-      WEI: 1,
-      MWEI: 1000000,
-      ETH: 1000000000000000000
-    };
-
-    let unit = 'ETH';
-
-    if (!priceInWei) {
-      return null;
-    }
-
-    const priceAsNumber = priceInWei.toNumber();
-
-    let display = priceAsNumber;
-
-    if (priceAsNumber < ETHER_UNITS_VALUES_MAPPING.MWEI && priceAsNumber > 0) {
-      unit = 'WEI';
-    } else {
-      display = priceInWei.div(ETHER_UNITS_VALUES_MAPPING.ETH).toFixed();
-      unit = 'ETH';
-    }
-
-    return `${display} ${unit}`;
-  }
-
   isOnMainnet() {
     return this.network === Networks[MAIN_NETWORK_ID];
+  }
+
+  getWeb3FromProviderUrl(url) {
+    return this._w3Util.getWeb3FromProviderUrl(url);
   }
 
   /**
@@ -399,19 +178,32 @@ export default class Web3Service {
    * @param {object} options
    */
   filter(options) {
-    const web3 = this.web3AlternativeToMetaMask || this.web3;
+    const web3 = this._web3AlternativeToMetaMask || this.web3;
 
     return web3.eth.filter(options);
   }
+
+  /**
+   * @private
+   */
+  async _init() {
+    if (this.initialized) {
+      return;
+    }
+
+    await this.connect();
+
+    this.initialized = true;
+  }
 }
 
-export function initWeb3Service(isServer, source, keyModifier) {
+export function initWeb3Service(isServer, source, keyModifier, w3Util) {
   if (isServer) {
-    return new Web3Service(source, keyModifier);
+    return new Web3Service(source, keyModifier, w3Util);
   }
 
   if (instance === null) {
-    instance = new Web3Service(source, keyModifier);
+    instance = new Web3Service(source, keyModifier, w3Util);
   }
 
   return instance;
