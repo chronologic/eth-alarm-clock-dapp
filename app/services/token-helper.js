@@ -6,9 +6,11 @@ const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '')
 
 export default class TokenHelper {
   _web3;
+  _web3Service;
 
-  constructor(web3) {
-    this._web3 = web3;
+  constructor(web3Service) {
+    this._web3Service = web3Service;
+    this._web3 = web3Service.web3;
   }
 
   async approveTokenTransfer(token, receiver, amount) {
@@ -121,7 +123,7 @@ export default class TokenHelper {
 
     return this._firstAccount
       ? (await Bb.fromCallback(callback =>
-          contract.balanceOf.call(this.accounts[0], callback)
+          contract.balanceOf.call(this._firstAccount, callback)
         )).valueOf()
       : '-';
   }
@@ -166,13 +168,13 @@ export default class TokenHelper {
    * @private
    */
   get _defaultAccount() {
-    return this._web3.defaultAccount;
+    return this._web3Service.defaultAccount;
   }
 
   /**
    * @private
    */
   get _firstAccount() {
-    return this._web3.accounts && this._web3.accounts[0];
+    return this._web3Service.accounts && this._web3Service.accounts[0];
   }
 }

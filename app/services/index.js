@@ -1,4 +1,4 @@
-import { W3Util } from 'timenode-core';
+import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 import { initWeb3Service } from './web3';
 import { initEacService } from './eac';
 import LocalStorageService from './storage';
