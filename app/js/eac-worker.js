@@ -214,9 +214,12 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
       await eacWorker.updateStats();
-      await eacWorker.getBalances();
       break;
 
+    case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+      await eacWorker.getBalances();
+      break;
+      
     case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
       eacWorker.clearStats();
       break;

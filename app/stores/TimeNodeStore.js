@@ -147,6 +147,7 @@ export default class TimeNodeStore {
     if (this._storageService.load('claiming')) this.claiming = true;
 
     this.updateStats = this.updateStats.bind(this);
+    this.updateBalances = this.updateBalances.bind(this);
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
@@ -235,7 +236,10 @@ export default class TimeNodeStore {
 
     // Set intervals for fetching info from worker
     this.updateStats();
-    setInterval(this.updateStats, 1000);
+    setInterval(this.updateStats, 5000);
+
+    this.updateBalances();
+    setInterval(this.updateBalances, 15000);
 
     this.getNetworkInfo();
     setInterval(this.getNetworkInfo, 15000);
@@ -415,6 +419,10 @@ export default class TimeNodeStore {
 
   updateStats() {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
+  }
+
+  updateBalances() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES);
   }
 
   clearStats() {
