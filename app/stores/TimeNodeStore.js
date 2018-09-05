@@ -298,31 +298,13 @@ export default class TimeNodeStore {
       this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
     }
   }
-
-  async awaitScanReady() {
-    if (
-      !this.eacWorker ||
-      this.eacWorker === null ||
-      !this._keenStore ||
-      this._keenStore === null
-    ) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitScanReady());
-        }, 500);
-      });
-    }
-    return true;
-  }
-
+ 
   async startScanning() {
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
     }
 
     this.scanningStarted = true;
-
-    await this.awaitScanReady();
 
     this.sendActiveTimeNodeEvent();
 
