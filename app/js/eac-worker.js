@@ -179,14 +179,16 @@ class EacWorker {
   _rawStatsArray(array) {
     let rawArray = [];
 
+    const toNumberIfBN = num => (typeof num === 'object' ? num.toNumber() : num);
+
     // Convert BN objects to strings for sending
     array.forEach(entry => {
       rawArray.push({
         txAddress: entry.txAddress,
         from: entry.from,
         timestamp: entry.timestamp,
-        bounty: entry.bounty.toNumber(),
-        cost: entry.cost.toNumber(),
+        bounty: toNumberIfBN(entry.bounty),
+        cost: toNumberIfBN(entry.cost),
         result: entry.result,
         action: entry.action
       });

@@ -7,6 +7,8 @@ import ExecutedGraph from './ExecutedGraph';
 import { BeatLoader } from 'react-spinners';
 import moment from 'moment';
 
+const PAGE_SIZE = 100;
+
 @inject('timeNodeStore')
 @inject('keenStore')
 @inject('transactionStore')
@@ -20,12 +22,14 @@ class TimeNodeStatistics extends Component {
 
     this.state = {
       scanning: scanningStarted,
-      lastStarted: moment()
+      lastStarted: moment(),
+      currentPage: 1
     };
 
     this.startTimeNode = this.startTimeNode.bind(this);
     this.stopTimeNode = this.stopTimeNode.bind(this);
     this.refreshStats = this.refreshStats.bind(this);
+    this.changePage = this.changePage.bind(this);
     this.shouldShowClaimedWarning = this.shouldShowClaimedWarning.bind(this);
   }
 
@@ -115,6 +119,12 @@ class TimeNodeStatistics extends Component {
     );
   }
 
+  changePage(page) {
+    this.setState({
+      currentPage: page
+    });
+  }
+
   async shouldShowClaimedWarning() {
     const claimed = await this.props.timeNodeStore.getClaimedNotExecutedTransactions();
     if (claimed > 0) {
@@ -176,7 +186,7 @@ class TimeNodeStatistics extends Component {
       discovered
     } = this.props.timeNodeStore;
 
-    const { scanning, lastStarted } = this.state;
+    const { scanning, lastStarted, currentPage } = this.state;
 
     const { DISABLED, LOADING } = TIMENODE_STATUS;
     const timeNodeDisabled = nodeStatus === DISABLED || nodeStatus === LOADING;
@@ -195,22 +205,30 @@ class TimeNodeStatistics extends Component {
           <p className="my-5 text-center">No data yet.</p>
         )
       ) : (
-        <BeatLoader size={12} />
+        <BeatLoader size={12} style={{ align: 'center' }} />
       );
 
-    const isNotNull = value => value !== null;
+    const concatActions = actionArrays => {
+      let concatedActions = [];
+      actionArrays.forEach(actions => {
+        if (actions !== null) {
+          actions.forEach(action => concatedActions.push(action));
+        }
+      });
+      return concatedActions.sort((a, b) => b.timestamp - a.timestamp);
+    };
 
-    let allActions;
-    if (
-      isNotNull(successfulClaims) &&
-      isNotNull(failedClaims) &&
-      isNotNull(successfulExecutions) &&
-      isNotNull(failedExecutions)
-    ) {
-      allActions = successfulClaims.concat(failedClaims, successfulExecutions, failedExecutions);
-    } else {
-      allActions = null;
-    }
+    const allActions = concatActions([
+      successfulClaims,
+      failedClaims,
+      successfulExecutions,
+      failedExecutions
+    ]);
+
+    const pagination = { from: (currentPage - 1) * PAGE_SIZE, to: currentPage * PAGE_SIZE };
+
+    const filteredActions = allActions.slice(pagination.from, pagination.to);
+    const numPages = allActions.length > 0 ? Math.ceil(allActions.length / PAGE_SIZE) : 0;
 
     return (
       <div id="timeNodeStatistics">
@@ -287,11 +305,6 @@ class TimeNodeStatistics extends Component {
                   <div className="col-5">
                     {this.showLoaderIfNull({ value: discovered, loaderSize: 6 })}
                   </div>
-                </div>
-                <hr className="mt-2 mb-2" />
-                <div className="row px-4 pb-2">
-                  <div className="col-7">Pending bounties</div>
-                  <div className="col-5">1 000 000 ETH</div>
                 </div>
               </div>
             </div>
@@ -404,12 +417,7 @@ class TimeNodeStatistics extends Component {
             <div data-pages="card" className="card card-default" style={{ height: '326px' }}>
               <div className="card-header">
                 <div className="card-title">
-                  Executed:{' '}
-                  {this.showLoaderIfNull({
-                    value: successfulExecutions,
-                    loaderSize: 6,
-                    array: true
-                  })}
+                  {`Executed: ${successfulExecutions !== null ? successfulExecutions.length : ''}`}
                 </div>
                 <div className="card-controls">
                   <ul>
@@ -425,7 +433,7 @@ class TimeNodeStatistics extends Component {
                   </ul>
                 </div>
               </div>
-              <div className="card-body no-padding">{graph}</div>
+              <div className="card-body no-padding horizontal-center">{graph}</div>
             </div>
           </div>
         </div>
@@ -444,8 +452,16 @@ class TimeNodeStatistics extends Component {
             </div>
           </div>
 
-          <div className="auto-overflow" style={{ height: '200px' }}>
-            <table className="table table-condensed">
+          <div className="card-body">
+            <div className="pull-right font-montserrat">
+              Showing actions: {pagination.from}-
+              {pagination.to > allActions.length ? allActions.length : pagination.to}/
+              {allActions.length}
+            </div>
+          </div>
+
+          <div className="auto-overflow" style={{ height: '250px' }}>
+            <table className="table table-condensed header-fixed">
               <thead>
                 <tr>
                   <th className="font-montserrat">Time</th>
@@ -457,44 +473,50 @@ class TimeNodeStatistics extends Component {
                 </tr>
               </thead>
               <tbody>
-                {allActions !== null
-                  ? allActions.map((action, i) => {
-                      switch (action.action) {
-                        case 1:
-                          action.action = 'Claim';
-                          break;
-                        case 2:
-                          action.action = 'Execute';
-                      }
+                {filteredActions.map((action, i) => {
+                  switch (action.action) {
+                    case 1:
+                      action.action = 'Claim';
+                      break;
+                    case 2:
+                      action.action = 'Execute';
+                  }
 
-                      switch (action.result) {
-                        case 0:
-                          action.result = 'Failed';
-                          break;
-                        case 1:
-                          action.result = 'Success';
-                      }
+                  switch (action.result) {
+                    case 0:
+                      action.result = 'Failed';
+                      break;
+                    case 1:
+                      action.result = 'Success';
+                  }
 
-                      return (
-                        <tr key={i}>
-                          <td>{action.timestamp}</td>
-                          <td className="font-montserrat all-caps">{action.action}</td>
-                          <td className="hint-text small">
-                            <a href="#">{action.txAddress}</a>
-                          </td>
-                          <td className="">{action.bounty} wei</td>
-                          <td className="">{action.cost} wei</td>
-                          <td className="font-montserrat all-caps b-l b-dashed b-grey">
-                            {action.result}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  : null}
+                  return (
+                    <tr key={i}>
+                      <td>{moment(action.timestamp).format('DD/MM/YYYY HH:mm:ss')}</td>
+                      <td className="font-montserrat all-caps">{action.action}</td>
+                      <td className="hint-text small">
+                        <a href="#">{action.txAddress}</a>
+                      </td>
+                      <td className="">{action.bounty} wei</td>
+                      <td className="">{action.cost} wei</td>
+                      <td className="font-montserrat all-caps b-l b-dashed b-grey">
+                        {action.result}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
           <div className="padding-25">
+            {Array.from(Array(numPages).keys()).map(i => {
+              const page = i + 1;
+              return (
+                <span key={i} className="px-3" onClick={() => this.changePage(page)}>
+                  {page}
+                </span>
+              );
+            })}
             <p className="small no-margin">
               <a href="#">
                 <i className="fa fs-16 fa-arrow-circle-o-down text-success m-r-10" />
