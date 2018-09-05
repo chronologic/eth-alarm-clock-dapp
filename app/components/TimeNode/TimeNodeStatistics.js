@@ -35,13 +35,6 @@ class TimeNodeStatistics extends Component {
         `Your browser doesn't support a stable version of IndexedDB. Statistics will not be available.`
       );
     }
-
-    // Restarts the timenode in case the user refreshed the page with the timenode running
-    if (localStorage.getItem('isTimenodeScanning') && !this.props.timeNodeStore.scanningStarted) {
-      this.startTimeNode();
-    }
-
-    this.refreshStats();
   }
 
   getStopButton(disabled) {
