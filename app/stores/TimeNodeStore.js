@@ -156,7 +156,6 @@ export default class TimeNodeStore {
   }
 
   async unlockTimeNode(password) {
-    console.log("unlockTimeNode")
     if (this.walletKeystore && password) {
       this.unlocked = true;
       await this.startClient(this.walletKeystore, password);
