@@ -150,4 +150,4 @@ ExecutedGraph.propTypes = {
   timeNodeStore: PropTypes.any
 };
 
-export default ExecutedGraph;
+export { ExecutedGraph };
