@@ -222,7 +222,7 @@ export default class TimeNodeStore {
           case EAC_WORKER_MESSAGE_TYPES.STARTED:
             this.stopIntervals();
             this.startIntervals();
-    
+
             resolve();
             break;
 
@@ -297,7 +297,7 @@ export default class TimeNodeStore {
       this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
     }
   }
- 
+
   async startScanning() {
     if (this.nodeStatus === TIMENODE_STATUS.DISABLED) {
       return;
