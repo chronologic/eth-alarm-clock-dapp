@@ -134,6 +134,10 @@ export default class TimeNodeStore {
   _storageService = null;
   _timeNodeStatusCheckIntervalRef = null;
 
+  updateStatsInterval = null;
+  updateBalancesInterval = null;
+  getNetworkInfoInterval = null;
+
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
@@ -151,10 +155,14 @@ export default class TimeNodeStore {
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
-  unlockTimeNode(password) {
+  async unlockTimeNode(password) {
+    console.log("unlockTimeNode")
     if (this.walletKeystore && password) {
       this.unlocked = true;
-      this.startClient(this.walletKeystore, password);
+      await this.startClient(this.walletKeystore, password);
+      if (localStorage.getItem('isTimenodeScanning')) {
+        await this.startScanning();
+      }
     } else {
       this.unlocked = false;
       showNotification('Unable to unlock the TimeNode. Please try again');
@@ -180,69 +188,85 @@ export default class TimeNodeStore {
     };
   }
 
-  startWorker(options) {
-    this.eacWorker = new EacWorker();
+  stopIntervals() {
+    clearInterval(this.updateStatsInterval);
+    clearInterval(this.updateBalancesInterval);
+    clearInterval(this.getNetworkInfoInterval);
+  }
 
-    this.eacWorker.onmessage = async event => {
-      const { type, value } = event.data;
-      const getValuesIfInMessage = values => {
-        values.forEach(value => {
-          if (event.data[value] !== null) {
-            this[value] = event.data[value];
-          }
-        });
-      };
-
-      switch (type) {
-        case EAC_WORKER_MESSAGE_TYPES.LOG:
-          this.handleLogMessage(value);
-          break;
-
-        case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-          getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
-          break;
-
-        case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
-          getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
-          break;
-
-        case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
-          if (event.data.clearedStats) {
-            showNotification('Cleared the stats.', 'success');
-            this.updateStats();
-          } else {
-            showNotification('Unable to clear the stats.', 'danger', 3000);
-          }
-          break;
-
-        case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-          getValuesIfInMessage(['providerBlockNumber', 'netId']);
-          if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
-            this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
-            await this._keenStore.refreshActiveTimeNodesCount();
-          }
-          break;
-
-        case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
-          this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
-          break;
-      }
-    };
-
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.START,
-      options
-    });
-
-    // Set intervals for fetching info from worker
+  startIntervals() {
     this.updateStats();
-    setInterval(this.updateStats, 5000);
+    this.updateStatsInterval = setInterval(this.updateStats, 5000);
 
     this.updateBalances();
-    setInterval(this.updateBalances, 15000);
+    this.updateBalancesInterval = setInterval(this.updateBalances, 15000);
 
     this.getNetworkInfo();
-    setInterval(this.getNetworkInfo, 15000);
+    this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
+  }
+
+  startWorker(options) {
+    return new Promise(resolve => {
+      this.eacWorker = new EacWorker();
+
+      this.eacWorker.onmessage = async event => {
+        const { type, value } = event.data;
+        const getValuesIfInMessage = values => {
+          values.forEach(value => {
+            if (event.data[value] !== null) {
+              this[value] = event.data[value];
+            }
+          });
+        };
+
+        switch (type) {
+          case EAC_WORKER_MESSAGE_TYPES.STARTED:
+            this.stopIntervals();
+            this.startIntervals();
+    
+            resolve();
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.LOG:
+            this.handleLogMessage(value);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+            getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+            getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
+            if (event.data.clearedStats) {
+              showNotification('Cleared the stats.', 'success');
+              this.updateStats();
+            } else {
+              showNotification('Unable to clear the stats.', 'danger', 3000);
+            }
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+            getValuesIfInMessage(['providerBlockNumber', 'netId']);
+            if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
+              this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
+              await this._keenStore.refreshActiveTimeNodesCount();
+            }
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+            this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
+            break;
+        }
+      };
+
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.START,
+        options
+      });
+    });
   }
 
   async getClaimedNotExecutedTransactions() {
@@ -349,7 +373,7 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    this.startWorker(this.getWorkerOptions(keystore, password));
+    await this.startWorker(this.getWorkerOptions(keystore, password));
   }
 
   setKeyStore(keystore) {
@@ -502,8 +526,9 @@ export default class TimeNodeStore {
 
   async restart(password) {
     this.stopScanning();
+    this.stopIntervals();
     this.eacWorker = null;
-    this.startClient(this.walletKeystore, password);
+    await this.startClient(this.walletKeystore, password);
     await this.startScanning();
   }
 
