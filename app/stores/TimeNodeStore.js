@@ -76,7 +76,8 @@ export default class TimeNodeStore {
   balanceETH = null;
   @observable
   balanceDAY = null;
-  isTimeMint = null;
+  @observable
+  isTimeMint;
 
   @computed
   get nodeStatus() {
