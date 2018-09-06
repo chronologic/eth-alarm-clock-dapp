@@ -102,17 +102,23 @@ class TimeNodeMain extends Component {
             </a>
           </li>
         </ul>
-        <div className="tab-content padding-25">
-          <div className="tab-pane active" id="tabStatistics">
+        <div className="tab-content padding-0">
+          <div
+            className="tab-pane padding-25 active"
+            id="tabStatistics"
+            style={{ backgroundColor: 'rgb(245, 245, 245)' }}
+          >
             <TimeNodeStatistics />
+            <PoweredByEAC className="py-3" style={{ backgroundColor: 'rgb(245, 245, 245)' }} />
           </div>
-          <div className="tab-pane " id="tabLogs">
+          <div className="tab-pane padding-25 " id="tabLogs">
             <TimeNodeLogs />
+            <PoweredByEAC className="py-3" />
           </div>
-          <div className="tab-pane " id="tabSettings">
+          <div className="tab-pane padding-25 " id="tabSettings">
             <TimeNodeSettings ref={this.settingsTab} />
+            <PoweredByEAC className="py-3" />
           </div>
-          <PoweredByEAC />
         </div>
 
         <ConfirmModal
