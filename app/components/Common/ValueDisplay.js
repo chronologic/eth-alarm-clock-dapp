@@ -9,7 +9,7 @@ const ETHER_UNITS_VALUES_MAPPING = {
 };
 
 @inject('web3Service')
-export class ValueDisplay extends Component {
+class ValueDisplay extends Component {
   render() {
     const { priceInWei } = this.props;
 
@@ -50,4 +50,4 @@ ValueDisplay.propTypes = {
   web3Service: PropTypes.any
 };
 
-export default ValueDisplay;
+export { ValueDisplay };

@@ -428,4 +428,4 @@ ScheduleWizard.propTypes = {
   isWeb3Usable: PropTypes.any
 };
 
-export default ScheduleWizard;
+export { ScheduleWizard };
