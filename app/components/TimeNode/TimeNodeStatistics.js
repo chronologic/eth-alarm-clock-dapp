@@ -403,7 +403,7 @@ class TimeNodeStatistics extends Component {
           </div>
         </div>
 
-        <div className="card no-border no-margin widget-loader-bar">
+        <div className="card no-border widget-loader-bar m-b-25">
           <div className="card-header">
             <div className="card-title">Details</div>
             <div className="card-controls">
