@@ -18,7 +18,7 @@ const Networks = {
     explorer: '127.0.0.1:7545'
   },
   [MAIN_NETWORK_ID]: {
-    id: [MAIN_NETWORK_ID],
+    id: MAIN_NETWORK_ID,
     name: 'Mainnet',
     endpoint:
       'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
@@ -88,9 +88,11 @@ const CUSTOM_PROVIDER_NET_ID = 9999;
 
 const TOKEN_ADDRESSES = {
   DAI: {
+    [MAIN_NETWORK_ID]: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
     [KOVAN_NETWORK_ID]: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
   },
   DAY: {
+    [MAIN_NETWORK_ID]: '0xE814aeE960a85208C3dB542C53E7D4a6C8D5f60F',
     [KOVAN_NETWORK_ID]: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
   }
 };

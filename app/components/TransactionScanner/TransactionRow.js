@@ -35,7 +35,7 @@ class TransactionsRow extends Component {
 
     const { isTimestamp } = this.state;
 
-    const status = await transactionStore.getTxStatus(transaction);
+    const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
     const asyncStateProps = {
       asyncPropsFetched: true,

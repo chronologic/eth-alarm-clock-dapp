@@ -5,6 +5,7 @@ import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
+import { Networks, CUSTOM_PROVIDER_NET_ID } from '../config/web3Config';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
@@ -22,6 +23,7 @@ class EacWorker {
   network = null;
   dayAccountAddress = null;
   keystore = null;
+  detectedNetId = null;
 
   async start(options) {
     const { customProviderUrl, network, dayAccountAddress } = options;
@@ -66,28 +68,15 @@ class EacWorker {
 
     this.timenode = new TimeNode(this.config);
 
-    this.updateStats();
-    this.getNetworkInfo();
-  }
+    await this._detectNetworkId();
 
-  async awaitTimeNodeInitialized() {
-    if (
-      !this.timenode ||
-      !this.timenode.startScanning ||
-      typeof this.timenode.startScanning !== 'function'
-    ) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitTimeNodeInitialized());
-        }, 500);
-      });
-    }
-    return true;
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.STARTED
+    });
   }
 
   async startScanning() {
-    await this.awaitTimeNodeInitialized();
-    this.timenode.startScanning();
+    await this.timenode.startScanning();
   }
 
   stopScanning() {
@@ -105,20 +94,26 @@ class EacWorker {
       this.config.web3.eth.getBlockNumber(callback)
     );
 
+    await this._detectNetworkId();
+
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
-      providerBlockNumber
+      providerBlockNumber,
+      netId: this.detectedNetId || this.network.id
     });
   }
 
   async getBalances() {
-    await this.awaitTimeNodeInitialized();
-
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
     const balanceETH = this.config.web3.fromWei(balance);
+    let network = this.network;
+
+    if (this.detectedNetId) {
+      network = Networks[this.detectedNetId];
+    }
 
     const { balanceDAY, mintingPower } = await getDAYBalance(
-      this.network,
+      network,
       this.config.web3,
       this.dayAccountAddress
     );
@@ -136,32 +131,61 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   async updateStats() {
-    await this.awaitTimeNodeInitialized();
+    const { statsDb, web3 } = this.config;
 
-    const bounties = this.config.statsDb.totalBounty(this.myAddress);
-    const costs = this.config.statsDb.totalCost(this.myAddress);
+    const bounties = statsDb.totalBounty(this.myAddress);
+    const costs = statsDb.totalCost(this.myAddress);
     const profit = bounties.minus(costs);
 
-    const executedTransactions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
-    let executedTransactionsTimestamps = [];
+    const discovered = statsDb.getDiscovered(this.myAddress);
 
-    executedTransactions.forEach(tx => {
-      executedTransactionsTimestamps.push({ timestamp: tx.timestamp });
-    });
+    const successfulClaims = statsDb.getSuccessfulClaims(this.myAddress);
+    const failedClaims = statsDb.getFailedClaims(this.myAddress);
 
-    const toEth = num => this.config.web3.fromWei(num, 'ether');
+    const successfulExecutions = statsDb.getSuccessfulExecutions(this.myAddress);
+    const failedExecutions = statsDb.getFailedExecutions(this.myAddress);
+
+    const toEth = num => web3.fromWei(num, 'ether');
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
       bounties: formatBN(toEth(bounties)),
       costs: formatBN(toEth(costs)),
       profit: formatBN(toEth(profit)),
-      executedTransactions: executedTransactionsTimestamps
+      successfulClaims: this._rawStatsArray(successfulClaims),
+      failedClaims: this._rawStatsArray(failedClaims),
+      successfulExecutions: this._rawStatsArray(successfulExecutions),
+      failedExecutions: this._rawStatsArray(failedExecutions),
+      discovered: discovered.length
     });
+  }
+
+  _rawStatsArray(array) {
+    let rawArray = [];
+
+    const toNumberIfBN = num => (typeof num === 'object' ? num.toNumber() : num);
+
+    // Convert BN objects to strings for sending
+    array.forEach(entry => {
+      rawArray.push({
+        txAddress: entry.txAddress,
+        from: entry.from,
+        timestamp: entry.timestamp,
+        bounty: toNumberIfBN(entry.bounty),
+        cost: toNumberIfBN(entry.cost),
+        result: entry.result,
+        action: entry.action
+      });
+    });
+
+    return rawArray;
   }
 
   clearStats() {
     this.config.statsDb.clearAll();
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
+    });
   }
 
   async getClaimedNotExecutedTransactions() {
@@ -169,6 +193,14 @@ class EacWorker {
       type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
       transactions: await this.timenode.getClaimedNotExecutedTransactions()
     });
+  }
+
+  async _detectNetworkId() {
+    if (this.network.id === CUSTOM_PROVIDER_NET_ID) {
+      this.detectedNetId = await Bb.fromCallback(callback =>
+        this.config.web3.version.getNetwork(callback)
+      );
+    }
   }
 }
 
@@ -180,11 +212,11 @@ onmessage = async function(event) {
   switch (type) {
     case EAC_WORKER_MESSAGE_TYPES.START:
       eacWorker = new EacWorker();
-      eacWorker.start(event.data.options);
+      await eacWorker.start(event.data.options);
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
-      eacWorker.startScanning();
+      await eacWorker.startScanning();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
@@ -197,6 +229,9 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
       await eacWorker.updateStats();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
       await eacWorker.getBalances();
       break;
 

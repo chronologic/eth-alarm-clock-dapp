@@ -8,7 +8,6 @@ const DEFAULT_NETWORK_ID = Networks[1].id; // Mainnet
 
 @inject('web3Service')
 @inject('timeNodeStore')
-@inject('storageService')
 @observer
 class NetworkChooser extends Component {
   constructor(props) {
@@ -20,25 +19,12 @@ class NetworkChooser extends Component {
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
       timeNodeNetworkId: this.checkSelectedProvider(),
-      currentPath: props.history.location.pathname,
+      onTimeNodeScreen: props.onTimeNodeScreen,
       selectedNetId: null // Used for communicating the selected network to the modal
     };
 
-    this.props.history.listen(location => {
-      if (location.pathname !== this.state.currentPath) {
-        this.setState({
-          currentPath: location.pathname
-        });
-      }
-    });
-
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
-    this.getCurrentTimeNodeBlock = this.getCurrentTimeNodeBlock.bind(this);
     this.changeProvider = this.changeProvider.bind(this);
-  }
-
-  isOnTimeNodeScreen() {
-    return this.state.currentPath === '/timenode';
   }
 
   async componentDidMount() {
@@ -52,14 +38,12 @@ class NetworkChooser extends Component {
       if (web3Service.network.id !== this.state.timeNodeNetworkId)
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
-
-    this.getCurrentTimeNodeBlock();
-    // Check every 10 seconds if the block number changed
-    this.interval = setInterval(this.getCurrentTimeNodeBlock, 10000);
   }
 
-  componentDidUpdate() {
-    this.getCurrentTimeNodeBlock();
+  static getDerivedStateFromProps(newProps) {
+    return {
+      onTimeNodeScreen: newProps.onTimeNodeScreen
+    };
   }
 
   /*
@@ -67,14 +51,13 @@ class NetworkChooser extends Component {
    * MetaMask provider.
    */
   checkSelectedProvider() {
-    const { storageService, timeNodeStore } = this.props;
+    const { timeNodeStore } = this.props;
 
-    const selectedProviderId = parseInt(storageService.load('selectedProviderId'));
-    const selectedProviderUrl = storageService.load('selectedProviderUrl');
+    const { id, endpoint } = timeNodeStore.getCustomProvider();
 
-    if (selectedProviderId && selectedProviderUrl) {
-      timeNodeStore.customProviderUrl = selectedProviderUrl;
-      return selectedProviderId;
+    if (id && endpoint) {
+      timeNodeStore.customProviderUrl = endpoint;
+      return id;
     }
 
     return DEFAULT_NETWORK_ID;
@@ -105,21 +88,13 @@ class NetworkChooser extends Component {
     // Retrieve the selected network id in the modal
     const { selectedNetId } = this.state;
 
-    const selectedProviderUrl = Networks[selectedNetId].endpoint;
-    this.props.timeNodeStore.setCustomProviderUrl(selectedNetId, selectedProviderUrl);
+    const selectedProviderEndpoint = Networks[selectedNetId].endpoint;
+    this.props.timeNodeStore.setCustomProvider(selectedNetId, selectedProviderEndpoint);
 
     // Once we read the new network ID, reset it
     this.setState({
       selectedNetId: null
     });
-  }
-
-  getCurrentTimeNodeBlock() {
-    // If the current screen is the TimeNode
-    if (this.isOnTimeNodeScreen()) {
-      // Get the block number from the eac-worker
-      this.props.timeNodeStore.getNetworkInfo();
-    }
   }
 
   componentWillUnmount() {
@@ -130,7 +105,7 @@ class NetworkChooser extends Component {
     const { timeNodeNetworkId, metaMaskNetworkId } = this.state;
     const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
-    if (!this.isOnTimeNodeScreen()) {
+    if (!this.state.onTimeNodeScreen) {
       return (
         <span>
           {Networks[metaMaskNetworkId].name}
@@ -179,7 +154,7 @@ NetworkChooser.propTypes = {
   storageService: PropTypes.any,
   web3Service: PropTypes.any,
   timeNodeStore: PropTypes.any,
-  history: PropTypes.object.isRequired
+  onTimeNodeScreen: PropTypes.bool
 };
 
 export default NetworkChooser;

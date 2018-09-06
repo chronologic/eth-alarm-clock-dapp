@@ -31,7 +31,6 @@ class TimeNodeUnlock extends Component {
 
     if (this.props.timeNodeStore.passwordMatchesKeystore(password)) {
       this.props.timeNodeStore.unlockTimeNode(password);
-      this.props.updateWalletUnlocked(true);
     }
   }
 
@@ -71,14 +70,14 @@ class TimeNodeUnlock extends Component {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-md-6 d-none d-md-block">
-            <PoweredByEAC className="col-md-2" />
+        <div className="row mt-5">
+          <div className="col-md-6 d-none d-md-block px-0">
+            <PoweredByEAC />
           </div>
           <div className="col-md-6">
             <button
               id="verifyPasswordBtn"
-              className="btn btn-primary pull-right mr-4 px-5"
+              className="btn btn-primary float-md-right mr-4 px-5"
               type="button"
               onClick={this.verifyPassword}
             >
@@ -86,19 +85,18 @@ class TimeNodeUnlock extends Component {
             </button>
           </div>
           <div className="d-sm-inline d-md-none">
-            <PoweredByEAC className="mt-5" />
+            <PoweredByEAC />
           </div>
         </div>
 
-        <TimeNodeDetachModal updateWalletUnlocked={this.props.updateWalletUnlocked} />
+        <TimeNodeDetachModal />
       </div>
     );
   }
 }
 
 TimeNodeUnlock.propTypes = {
-  timeNodeStore: PropTypes.any,
-  updateWalletUnlocked: PropTypes.any
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeUnlock;

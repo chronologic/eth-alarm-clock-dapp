@@ -9,6 +9,7 @@ import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from
 import { getDAYBalance } from '../lib/timenode-util';
 import { Config } from '@ethereum-alarm-clock/timenode-core';
 import { isRunningInElectron } from '../lib/electron-util';
+import { Networks } from '../config/web3Config';
 
 /*
  * TimeNode classification based on the number
@@ -46,6 +47,9 @@ export default class TimeNodeStore {
   claiming = false;
 
   @observable
+  unlocked = false;
+
+  @observable
   basicLogs = [];
   @observable
   detailedLogs = [];
@@ -58,11 +62,21 @@ export default class TimeNodeStore {
   }
 
   @observable
-  executedTransactions = [];
+  successfulExecutions = null;
+  @observable
+  failedExecutions = null;
+  @observable
+  successfulClaims = null;
+  @observable
+  failedClaims = null;
+  @observable
+  discovered = null;
+
   @observable
   balanceETH = null;
   @observable
   balanceDAY = null;
+  @observable
   isTimeMint = null;
 
   @computed
@@ -113,13 +127,26 @@ export default class TimeNodeStore {
   @observable
   providerBlockNumber = null;
 
+  netId = null;
+
+  get network() {
+    const customNetId = this.getCustomProvider().id;
+    const currentNetId = customNetId ? customNetId : this._web3Service.network.id;
+    if (!Networks[currentNetId]) {
+      return this.getCustomProvider();
+    }
+    return Networks[currentNetId];
+  }
+
   eacWorker = null;
 
   _keenStore = null;
-
+  _storageService = null;
   _timeNodeStatusCheckIntervalRef = null;
 
-  _storageService = null;
+  updateStatsInterval = null;
+  updateBalancesInterval = null;
+  getNetworkInfoInterval = null;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -132,19 +159,28 @@ export default class TimeNodeStore {
     if (this._storageService.load('tn') !== null)
       this.walletKeystore = this._storageService.load('tn');
     if (this._storageService.load('claiming')) this.claiming = true;
+
+    this.updateStats = this.updateStats.bind(this);
+    this.updateBalances = this.updateBalances.bind(this);
+    this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
-  unlockTimeNode(password) {
+  async unlockTimeNode(password) {
     if (this.walletKeystore && password) {
-      this.startClient(this.walletKeystore, password);
+      this.unlocked = true;
+      await this.startClient(this.walletKeystore, password);
+      if (localStorage.getItem('isTimenodeScanning')) {
+        await this.startScanning();
+      }
     } else {
+      this.unlocked = false;
       showNotification('Unable to unlock the TimeNode. Please try again');
     }
   }
 
   getWorkerOptions(keystore, keystorePassword) {
     return {
-      network: this._web3Service.network,
+      network: this.network,
       customProviderUrl: this.customProviderUrl,
       keystore: [this.decrypt(keystore)],
       keystorePassword,
@@ -161,57 +197,90 @@ export default class TimeNodeStore {
     };
   }
 
+  stopIntervals() {
+    clearInterval(this.updateStatsInterval);
+    clearInterval(this.updateBalancesInterval);
+    clearInterval(this.getNetworkInfoInterval);
+  }
+
+  startIntervals() {
+    this.updateStats();
+    this.updateStatsInterval = setInterval(this.updateStats, 5000);
+
+    this.updateBalances();
+    this.updateBalancesInterval = setInterval(this.updateBalances, 15000);
+
+    this.getNetworkInfo();
+    this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
+  }
+
   startWorker(options) {
-    this.eacWorker = new EacWorker();
+    return new Promise(resolve => {
+      this.eacWorker = new EacWorker();
 
-    this.eacWorker.onmessage = event => {
-      const { type, value } = event.data;
-      const getValuesIfInMessage = values => {
-        values.forEach(value => {
-          if (event.data[value] !== null) {
-            this[value] = event.data[value];
-          }
-        });
-      };
+      this.eacWorker.onmessage = async event => {
+        const { type, value } = event.data;
+        const getValuesIfInMessage = values => {
+          values.forEach(value => {
+            if (event.data[value] !== null) {
+              this[value] = event.data[value];
+            }
+          });
+        };
 
-      switch (type) {
-        case EAC_WORKER_MESSAGE_TYPES.LOG:
-          this.handleLogMessage(value);
-          break;
+        switch (type) {
+          case EAC_WORKER_MESSAGE_TYPES.STARTED:
+            this.stopIntervals();
+            this.startIntervals();
 
-        case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-          getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
-          break;
+            resolve();
+            break;
 
-        case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
-          getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
-          break;
+          case EAC_WORKER_MESSAGE_TYPES.LOG:
+            this.handleLogMessage(value);
+            break;
 
-        case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
-          if (event.data.clearedStats) {
+          case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+            getValuesIfInMessage([
+              'bounties',
+              'costs',
+              'profit',
+              'successfulClaims',
+              'failedClaims',
+              'successfulExecutions',
+              'failedExecutions',
+              'discovered'
+            ]);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+            getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
             showNotification('Cleared the stats.', 'success');
             this.updateStats();
-          } else {
-            showNotification('Unable to clear the stats.', 'danger', 3000);
-          }
-          break;
+            break;
 
-        case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-          getValuesIfInMessage(['providerBlockNumber']);
-          break;
+          case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+            getValuesIfInMessage(['providerBlockNumber', 'netId']);
+            if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
+              this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
+              await this._keenStore.refreshActiveTimeNodesCount();
+            }
+            break;
 
-        case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
-          this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
-          break;
-      }
-    };
+          case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+            this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
+            break;
+        }
+      };
 
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.START,
-      options
+      this.eacWorker.postMessage({
+        type: EAC_WORKER_MESSAGE_TYPES.START,
+        options
+      });
     });
-
-    this.updateStats();
   }
 
   async getClaimedNotExecutedTransactions() {
@@ -239,23 +308,9 @@ export default class TimeNodeStore {
   }
 
   sendActiveTimeNodeEvent() {
-    this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
-  }
-
-  async awaitScanReady() {
-    if (
-      !this.eacWorker ||
-      this.eacWorker === null ||
-      !this._keenStore ||
-      this._keenStore === null
-    ) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitScanReady());
-        }, 500);
-      });
+    if (this.scanningStarted) {
+      this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
     }
-    return true;
   }
 
   async startScanning() {
@@ -264,8 +319,6 @@ export default class TimeNodeStore {
     }
 
     this.scanningStarted = true;
-
-    await this.awaitScanReady();
 
     this.sendActiveTimeNodeEvent();
 
@@ -316,7 +369,7 @@ export default class TimeNodeStore {
   async startClient(keystore, password) {
     await this._web3Service.init();
 
-    this.startWorker(this.getWorkerOptions(keystore, password));
+    await this.startWorker(this.getWorkerOptions(keystore, password));
   }
 
   setKeyStore(keystore) {
@@ -324,10 +377,10 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
-  setCustomProviderUrl(netId, url) {
-    this.customProviderUrl = url;
-    this._storageService.save('selectedProviderId', netId);
-    this._storageService.save('selectedProviderUrl', url);
+  setCustomProvider(id, endpoint) {
+    this.customProviderUrl = endpoint;
+    this._storageService.save('selectedProviderId', id);
+    this._storageService.save('selectedProviderEndpoint', endpoint);
 
     this.stopScanning();
 
@@ -339,6 +392,13 @@ export default class TimeNodeStore {
     } else {
       window.location.reload();
     }
+  }
+
+  getCustomProvider() {
+    return {
+      id: parseInt(this._storageService.load('selectedProviderId')),
+      endpoint: this._storageService.load('selectedProviderEndpoint')
+    };
   }
 
   getMyAddress() {
@@ -381,6 +441,10 @@ export default class TimeNodeStore {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
   }
 
+  updateBalances() {
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES);
+  }
+
   clearStats() {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
     this.basicLogs = [];
@@ -402,8 +466,8 @@ export default class TimeNodeStore {
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
-        this._web3Service.network,
-        this._web3Service.web3,
+        this.network,
+        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
@@ -420,7 +484,11 @@ export default class TimeNodeStore {
         showNotification('Not enough DAY tokens. Current balance: ' + balanceDAY.toString());
       }
     } catch (error) {
-      showNotification(error);
+      if (error == `TypeError: Cannot read property 'dayTokenAddress' of undefined`) {
+        showNotification('Unsupported custom provider.');
+      } else {
+        showNotification(error);
+      }
     }
   }
 
@@ -454,19 +522,20 @@ export default class TimeNodeStore {
 
   async restart(password) {
     this.stopScanning();
+    this.stopIntervals();
     this.eacWorker = null;
-    this.startClient(this.walletKeystore, password);
+    await this.startClient(this.walletKeystore, password);
     await this.startScanning();
   }
 
-  resetWallet() {
+  detachWallet() {
     this._storageService.remove('tn');
     this._storageService.remove('attachedDAYAccount');
     this.attachedDAYAccount = '';
     this.walletKeystore = '';
     this.stopScanning();
     this.eacWorker = null;
-    showNotification('Your wallet has been reset.', 'success');
+    showNotification('Your wallet has been detached.', 'success');
   }
 
   passwordMatchesKeystore(password) {
