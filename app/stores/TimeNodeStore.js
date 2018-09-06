@@ -62,11 +62,21 @@ export default class TimeNodeStore {
   }
 
   @observable
-  executedTransactions = [];
+  successfulExecutions = null;
+  @observable
+  failedExecutions = null;
+  @observable
+  successfulClaims = null;
+  @observable
+  failedClaims = null;
+  @observable
+  discovered = null;
+
   @observable
   balanceETH = null;
   @observable
   balanceDAY = null;
+  @observable
   isTimeMint = null;
 
   @computed
@@ -231,7 +241,16 @@ export default class TimeNodeStore {
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-            getValuesIfInMessage(['bounties', 'costs', 'profit', 'executedTransactions']);
+            getValuesIfInMessage([
+              'bounties',
+              'costs',
+              'profit',
+              'successfulClaims',
+              'failedClaims',
+              'successfulExecutions',
+              'failedExecutions',
+              'discovered'
+            ]);
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
@@ -239,12 +258,8 @@ export default class TimeNodeStore {
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
-            if (event.data.clearedStats) {
-              showNotification('Cleared the stats.', 'success');
-              this.updateStats();
-            } else {
-              showNotification('Unable to clear the stats.', 'danger', 3000);
-            }
+            showNotification('Cleared the stats.', 'success');
+            this.updateStats();
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
