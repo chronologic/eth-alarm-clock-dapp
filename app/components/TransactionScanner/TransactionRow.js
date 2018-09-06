@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import moment from 'moment';
-import ValueDisplay from '../Common/ValueDisplay';
+import { ValueDisplay } from '../Common';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '../../lib/consts';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';

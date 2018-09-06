@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { ValueDisplay } from '../app/components/Common/ValueDisplay';
+import { ValueDisplay } from '../app/components/Common';
 import { Provider } from 'mobx-react';
 import Web3Service from '../app/services/web3';
 import BigNumber from 'bignumber.js';
@@ -26,7 +26,7 @@ describe('ValueDisplay', () => {
       let mockedRender = renderer.create(
         <Provider {...injectables}>
           <ValueDisplay priceInWei={new BigNumber(bignumber)} />
-        </Provider>,
+        </Provider>
       );
 
       let tree = mockedRender.toJSON();

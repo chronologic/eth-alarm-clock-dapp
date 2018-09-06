@@ -5,7 +5,7 @@ import NetworkUnsupported from '../Common/NetworkUnsupported';
 import PropTypes from 'prop-types';
 
 @inject('featuresService')
-export default class TransactionsScheduled extends Component {
+class TransactionsScheduled extends Component {
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
 
@@ -31,3 +31,5 @@ export default class TransactionsScheduled extends Component {
 TransactionsScheduled.propTypes = {
   featuresService: PropTypes.any
 };
+
+export default TransactionsScheduled;
