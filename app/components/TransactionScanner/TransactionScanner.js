@@ -130,9 +130,7 @@ class TransactionScanner extends Component {
             ownerAddress={this.props.ownerAddress}
           />
         </div>
-        <div className="row">
-          <PoweredByEAC className="col-md-2 mt-2" />
-        </div>
+        <PoweredByEAC className="mx-2 my-4" />
       </div>
     );
   }

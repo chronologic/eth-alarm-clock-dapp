@@ -131,26 +131,54 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   async updateStats() {
-    const bounties = this.config.statsDb.totalBounty(this.myAddress);
-    const costs = this.config.statsDb.totalCost(this.myAddress);
+    const { statsDb, web3 } = this.config;
+
+    const bounties = statsDb.totalBounty(this.myAddress);
+    const costs = statsDb.totalCost(this.myAddress);
     const profit = bounties.minus(costs);
 
-    const executedTransactions = this.config.statsDb.getSuccessfulExecutions(this.myAddress);
-    let executedTransactionsTimestamps = [];
+    const discovered = statsDb.getDiscovered(this.myAddress);
 
-    executedTransactions.forEach(tx => {
-      executedTransactionsTimestamps.push({ timestamp: tx.timestamp });
-    });
+    const successfulClaims = statsDb.getSuccessfulClaims(this.myAddress);
+    const failedClaims = statsDb.getFailedClaims(this.myAddress);
 
-    const toEth = num => this.config.web3.fromWei(num, 'ether');
+    const successfulExecutions = statsDb.getSuccessfulExecutions(this.myAddress);
+    const failedExecutions = statsDb.getFailedExecutions(this.myAddress);
+
+    const toEth = num => web3.fromWei(num, 'ether');
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
       bounties: formatBN(toEth(bounties)),
       costs: formatBN(toEth(costs)),
       profit: formatBN(toEth(profit)),
-      executedTransactions: executedTransactionsTimestamps
+      successfulClaims: this._rawStatsArray(successfulClaims),
+      failedClaims: this._rawStatsArray(failedClaims),
+      successfulExecutions: this._rawStatsArray(successfulExecutions),
+      failedExecutions: this._rawStatsArray(failedExecutions),
+      discovered: discovered.length
     });
+  }
+
+  _rawStatsArray(array) {
+    let rawArray = [];
+
+    const toNumberIfBN = num => (typeof num === 'object' ? num.toNumber() : num);
+
+    // Convert BN objects to strings for sending
+    array.forEach(entry => {
+      rawArray.push({
+        txAddress: entry.txAddress,
+        from: entry.from,
+        timestamp: entry.timestamp,
+        bounty: toNumberIfBN(entry.bounty),
+        cost: toNumberIfBN(entry.cost),
+        result: entry.result,
+        action: entry.action
+      });
+    });
+
+    return rawArray;
   }
 
   clearStats() {
