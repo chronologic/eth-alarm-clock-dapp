@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import NetworkUnsupported from '../Common/NetworkUnsupported';
 
 @inject('featuresService')
-export default class TransactionsOwner extends PureComponent {
+class TransactionsOwner extends PureComponent {
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
     const ownerAddress = this.props.match.params.ownerAddress;
@@ -15,17 +15,14 @@ export default class TransactionsOwner extends PureComponent {
         <h1 className="view-title">Transactions by {ownerAddress}</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
-            <TransactionScanner
-              showStatus
-              ownerAddress={ownerAddress}
-            />
+            <TransactionScanner showStatus ownerAddress={ownerAddress} />
           ) : (
-              <div className="tab-content p-1 pl-4 pt-4">
-                <div className="tab-pane active">
-                  <NetworkUnsupported />
-                </div>
+            <div className="tab-content p-1 pl-4 pt-4">
+              <div className="tab-pane active">
+                <NetworkUnsupported />
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -37,3 +34,5 @@ TransactionsOwner.propTypes = {
   location: PropTypes.any,
   match: PropTypes.any
 };
+
+export default TransactionsOwner;
