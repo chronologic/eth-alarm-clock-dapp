@@ -170,10 +170,6 @@ export default class Web3Service {
     return this._w3Util.getWeb3FromProviderUrl(url);
   }
 
-  isOnMainnet() {
-    return this.network === Networks[MAIN_NETWORK_ID];
-  }
-
   /**
    * Since there are problems with using filter for events
    * with array as an address parameter in MetaMask,
