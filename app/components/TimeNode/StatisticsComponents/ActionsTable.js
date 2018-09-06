@@ -34,17 +34,17 @@ class ActionsTable extends Component {
 
     const { currentPage } = this.state;
 
-    const concatActions = actionArrays => {
-      let concatedActions = [];
+    const combineActions = actionArrays => {
+      const combined = [];
       actionArrays.forEach(actions => {
         if (actions !== null) {
-          actions.forEach(action => concatedActions.push(action));
+          actions.forEach(action => combined.push(action));
         }
       });
-      return concatedActions.sort((a, b) => b.timestamp - a.timestamp);
+      return combined.sort((a, b) => b.timestamp - a.timestamp);
     };
 
-    const allActions = concatActions([
+    const allActions = combineActions([
       successfulClaims,
       failedClaims,
       successfulExecutions,
