@@ -58,11 +58,13 @@ class ActionsTable extends Component {
 
     return (
       <div id="actionsTable">
-        <div className="font-montserrat m-r-25 m-b-10" style={{ textAlign: 'right' }}>
-          Showing actions: {pagination.from}-
-          {pagination.to > allActions.length ? allActions.length : pagination.to}/
-          {allActions.length}
-        </div>
+        {allActions.length > 0 && (
+          <div className="font-montserrat m-r-25 m-b-10 text-right">
+            Showing actions: {pagination.from + 1}-
+            {pagination.to > allActions.length ? allActions.length : pagination.to}/
+            {allActions.length}
+          </div>
+        )}
         <div className="auto-overflow" style={{ height: '250px' }}>
           <table className="table table-condensed header-fixed">
             <thead>
