@@ -414,15 +414,6 @@ class TimeNodeStatistics extends Component {
           </div>
 
           <ActionsTable />
-
-          <div className="padding-25">
-            <p className="small no-margin">
-              <a href="#">
-                <i className="fa fs-16 fa-arrow-circle-o-down text-success m-r-10" />
-              </a>
-              <span className="hint-text ">For more details, see the LOGS tab.</span>
-            </p>
-          </div>
         </div>
 
         <div

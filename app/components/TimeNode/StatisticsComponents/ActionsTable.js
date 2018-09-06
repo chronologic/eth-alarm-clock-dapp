@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import ReactPaginate from 'react-paginate';
 
 const PAGE_SIZE = 100;
 
@@ -19,7 +20,7 @@ class ActionsTable extends Component {
 
   changePage(page) {
     this.setState({
-      currentPage: page
+      currentPage: page.selected + 1
     });
   }
 
@@ -110,14 +111,36 @@ class ActionsTable extends Component {
             </tbody>
           </table>
         </div>
-        {Array.from(Array(numPages).keys()).map(i => {
-          const page = i + 1;
-          return (
-            <span key={i} className="px-3" onClick={() => this.changePage(page)}>
-              {page}
-            </span>
-          );
-        })}
+        <div className="row my-4">
+          <div className="col-md-6">
+            <div className="mx-4">
+              <p className="small no-margin">
+                <a href="#">
+                  <i className="fa fs-16 fa-arrow-circle-o-down text-success m-r-10" />
+                </a>
+                <span className="hint-text ">For more details, see the LOGS tab.</span>
+              </p>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="float-md-right">
+              <ReactPaginate
+                previousClassName={'hide'}
+                nextClassName={'hide'}
+                breakLabel={<a href="">...</a>}
+                breakClassName={'break-me'}
+                pageCount={numPages}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={this.changePage}
+                containerClassName={'pagination btn-group mx-4'}
+                pageClassName={'btn p-0'}
+                pageLinkClassName={'actions-pages'}
+                activeClassName={'btn-success'}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

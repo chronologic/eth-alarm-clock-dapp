@@ -38,7 +38,8 @@
     ]
   },
   "dependencies": {
-    "electron-is-dev": "0.3.0"
+    "electron-is-dev": "0.3.0",
+    "react-paginate": "^5.2.4"
   },
   "devDependencies": {
     "acorn5-object-spread": "5.1.2",

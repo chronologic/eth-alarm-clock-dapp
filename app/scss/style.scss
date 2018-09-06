@@ -1,7 +1,6 @@
 $primary-color: #21FFFF;
 $warning-color: gold;
 
-
 /* PAGES TEMPLATE OVERRIDES */
 
 #root, .app-container {
@@ -324,6 +323,16 @@ hr {
 
 .pagination-entry, .pagination-arrow {
   cursor: pointer;
+}
+
+.pagination {
+  & .actions-pages {
+    padding: 10px;
+    color: grey;
+  }
+  & .btn-success .actions-pages {
+    color: white;
+  }
 }
 
 #bountyEstimator .progress {
