@@ -69,26 +69,14 @@ class EacWorker {
     this.timenode = new TimeNode(this.config);
 
     await this._detectNetworkId();
-  }
 
-  async awaitTimeNodeInitialized() {
-    if (
-      !this.timenode ||
-      !this.timenode.startScanning ||
-      typeof this.timenode.startScanning !== 'function'
-    ) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitTimeNodeInitialized());
-        }, 500);
-      });
-    }
-    return true;
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.STARTED
+    });
   }
 
   async startScanning() {
-    await this.awaitTimeNodeInitialized();
-    this.timenode.startScanning();
+    await this.timenode.startScanning();
   }
 
   stopScanning() {
@@ -116,8 +104,6 @@ class EacWorker {
   }
 
   async getBalances() {
-    await this.awaitTimeNodeInitialized();
-
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
     const balanceETH = this.config.web3.fromWei(balance);
     let network = this.network;
@@ -145,8 +131,6 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   async updateStats() {
-    await this.awaitTimeNodeInitialized();
-
     const bounties = this.config.statsDb.totalBounty(this.myAddress);
     const costs = this.config.statsDb.totalCost(this.myAddress);
     const profit = bounties.minus(costs);
@@ -197,11 +181,11 @@ onmessage = async function(event) {
   switch (type) {
     case EAC_WORKER_MESSAGE_TYPES.START:
       eacWorker = new EacWorker();
-      eacWorker.start(event.data.options);
+      await eacWorker.start(event.data.options);
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
-      eacWorker.startScanning();
+      await eacWorker.startScanning();
       break;
 
     case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
@@ -214,6 +198,9 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
       await eacWorker.updateStats();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
       await eacWorker.getBalances();
       break;
 
