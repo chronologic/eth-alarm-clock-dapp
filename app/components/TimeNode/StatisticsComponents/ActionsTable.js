@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
+import { Link } from 'react-router-dom';
+import { isRunningInElectron } from '../../../lib/electron-util';
 
 const PAGE_SIZE = 100;
 
@@ -100,7 +101,17 @@ class ActionsTable extends Component {
                     <td>{moment(action.timestamp).format('DD/MM/YYYY HH:mm:ss')}</td>
                     <td className="font-montserrat all-caps">{action.action}</td>
                     <td className="hint-text small">
-                      <Link to={`/transactions/${action.txAddress}`}>{action.txAddress}</Link>
+                      {isRunningInElectron() ? (
+                        <a
+                          href={`https://app.chronologic.network/transactions/${action.txAddress}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {action.txAddress}
+                        </a>
+                      ) : (
+                        <Link to={`/transactions/${action.txAddress}`}>{action.txAddress}</Link>
+                      )}
                     </td>
                     <td className="">{action.bounty} wei</td>
                     <td className="">{action.cost} wei</td>
