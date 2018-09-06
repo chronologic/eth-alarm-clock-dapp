@@ -321,14 +321,20 @@ class TimeNodeStatistics extends Component {
               </div>
 
               <div className="auto-overflow">
-                <table className="table table-condensed">
+                <table className="table table-condensed" style={{ tableLayout: 'fixed' }}>
                   <thead>
                     <tr>
-                      <th />
-                      <th className="font-montserrat all-caps text-warning">
+                      <th style={{ width: '50%' }} />
+                      <th
+                        style={{ width: '25%' }}
+                        className="font-montserrat all-caps text-warning"
+                      >
                         <i className="fas fa-exclamation-triangle" title="Failed execution." />
                       </th>
-                      <th className="font-montserrat all-caps text-success">
+                      <th
+                        style={{ width: '25%' }}
+                        className="font-montserrat all-caps text-success"
+                      >
                         <i className="fa fa-check" title="Successful execution." />
                       </th>
                     </tr>
@@ -336,17 +342,15 @@ class TimeNodeStatistics extends Component {
 
                   <tbody>
                     <tr>
-                      <td style={{ width: '50%' }} className="all-caps">
-                        Executions
-                      </td>
-                      <td style={{ width: '25%' }} className="b-r b-dashed b-grey hint-text small">
+                      <td className="all-caps">Executions</td>
+                      <td className="b-r b-dashed b-grey hint-text small">
                         {this.showLoaderIfNull({
                           value: failedExecutions,
                           loaderSize: 6,
                           array: true
                         })}
                       </td>
-                      <td style={{ width: '25%' }} className="font-montserrat">
+                      <td className="font-montserrat">
                         {this.showLoaderIfNull({
                           value: successfulExecutions,
                           loaderSize: 6,
@@ -399,7 +403,7 @@ class TimeNodeStatistics extends Component {
           </div>
         </div>
 
-        <div className="card no-border no-margin widget-loader-bar">
+        <div className="card no-border widget-loader-bar m-b-25">
           <div className="card-header">
             <div className="card-title">Details</div>
             <div className="card-controls">

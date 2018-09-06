@@ -58,11 +58,13 @@ class ActionsTable extends Component {
 
     return (
       <div id="actionsTable">
-        <div className="font-montserrat m-r-25 m-b-10" style={{ textAlign: 'right' }}>
-          Showing actions: {pagination.from}-
-          {pagination.to > allActions.length ? allActions.length : pagination.to}/
-          {allActions.length}
-        </div>
+        {allActions.length > 0 && (
+          <div className="font-montserrat m-r-25 m-b-10 text-right">
+            Showing actions: {pagination.from + 1}-
+            {pagination.to > allActions.length ? allActions.length : pagination.to}/
+            {allActions.length}
+          </div>
+        )}
         <div className="auto-overflow" style={{ height: '250px' }}>
           <table className="table table-condensed header-fixed">
             <thead>
@@ -127,11 +129,15 @@ class ActionsTable extends Component {
               <ReactPaginate
                 previousClassName={'hide'}
                 nextClassName={'hide'}
-                breakLabel={<a href="">...</a>}
-                breakClassName={'break-me'}
+                breakLabel={
+                  <a href className="actions-pages">
+                    ...
+                  </a>
+                }
+                breakClassName={'btn p-0'}
                 pageCount={numPages}
                 marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
+                pageRangeDisplayed={3}
                 onPageChange={this.changePage}
                 containerClassName={'pagination btn-group mx-4'}
                 pageClassName={'btn p-0'}

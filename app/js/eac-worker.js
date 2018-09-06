@@ -183,6 +183,9 @@ class EacWorker {
 
   clearStats() {
     this.config.statsDb.clearAll();
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
+    });
   }
 
   async getClaimedNotExecutedTransactions() {
