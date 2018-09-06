@@ -321,7 +321,7 @@ class TimeNodeStatistics extends Component {
               </div>
 
               <div className="auto-overflow">
-                <table className="table table-condensed" style={{ 'table-layout': 'fixed' }}>
+                <table className="table table-condensed" style={{ tableLayout: 'fixed' }}>
                   <thead>
                     <tr>
                       <th style={{ width: '50%' }} />

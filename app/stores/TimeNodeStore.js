@@ -257,12 +257,8 @@ export default class TimeNodeStore {
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
-            if (event.data.clearedStats) {
-              showNotification('Cleared the stats.', 'success');
-              this.updateStats();
-            } else {
-              showNotification('Unable to clear the stats.', 'danger', 3000);
-            }
+            showNotification('Cleared the stats.', 'success');
+            this.updateStats();
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
