@@ -15,6 +15,7 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { TRANSACTION_ROW_TEST_ATTRS } from '../app/components/TransactionScanner/TransactionRow';
 import { TRANSACTIONS_TABLE_TEST_ATTRS } from '../app/components/TransactionScanner/TransactionsTable';
 import { TRANSACTION_SCANNER_LIMIT } from '../app/components/TransactionScanner/TransactionScanner';
+import TransactionHelper from '../app/services/transaction-helper';
 
 momentDurationFormatSetup(moment);
 
@@ -106,7 +107,8 @@ describe('TransactionScanner', () => {
     };
 
     const storageService = {
-      load() {}
+      load() {},
+      waitForInitialization: () => Promise.resolve()
     };
 
     const TRANSACTIONS_LENGTH = 20;
@@ -155,15 +157,18 @@ describe('TransactionScanner', () => {
       isCurrentNetworkSupported: true
     };
     const transactionCache = new TransactionCache(storageService);
+    const transactionHelper = new TransactionHelper(transactionCache);
+
+    transactionHelper.isTransactionMissed = () => false;
+
     const transactionStore = new TransactionStore(
       eacService,
       web3Service,
       fetcher,
       transactionCache,
-      featuresService
+      featuresService,
+      transactionHelper
     );
-
-    transactionStore.isTransactionMissed = () => false;
 
     const injectables = {
       eacService,

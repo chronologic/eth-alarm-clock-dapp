@@ -13,7 +13,7 @@ export default class DateTimeValidator {
   }
 
   parse(date, time, tz) {
-    return moment.tz(date+' '+time, this.dateTimeFormat, tz);
+    return moment.tz(date + ' ' + time, this.dateTimeFormat, tz);
   }
 
   isValid(date, time, tz) {
@@ -26,6 +26,10 @@ export default class DateTimeValidator {
 
   date(dateTime) {
     return moment(dateTime).format(this.dateFormat);
+  }
+
+  dateTime(dateTime) {
+    return moment(dateTime).format(this.dateTimeFormat);
   }
 
   ts(date, time, tz) {

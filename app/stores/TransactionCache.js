@@ -7,13 +7,16 @@ const REQUEST_LOGS_END_BLOCK_CACHE_KEY = 'TransactionCache-request-logs-end-bloc
 const ADDRESSES_EVENTS_CACHE_KEY = 'TransactionCache-addresses-events';
 
 export default class TransactionCache {
-  @observable transactions = [];
+  @observable
+  transactions = [];
 
-  @observable requestCreatedLogs = [];
+  @observable
+  requestCreatedLogs = [];
 
-  @observable requestCreatedLogsLastBlockFetched;
+  @observable
+  requestCreatedLogsLastBlockFetched;
 
-  @observable addressesEvents = {};
+  addressesEvents = {};
 
   _storage;
 
@@ -23,9 +26,13 @@ export default class TransactionCache {
     }
 
     this._storage = storageService;
+    this.loadEvents();
+  }
 
-    this.loadRequestCreatedLogsFromStorage();
-    this.loadAddressesEventsFromStorage();
+  async loadEvents() {
+    await this.waitForInitialization();
+
+    await this.loadRequestCreatedLogsFromStorage();
   }
 
   loadRequestCreatedLogsFromStorage() {
@@ -51,7 +58,9 @@ export default class TransactionCache {
     );
   }
 
-  loadAddressesEventsFromStorage() {
+  async loadAddressesEventsFromStorage() {
+    await this._storage.waitForInitialization();
+
     let storedData = this._storage.load(ADDRESSES_EVENTS_CACHE_KEY);
 
     if (!storedData) {
@@ -127,5 +136,9 @@ export default class TransactionCache {
     }
 
     this._storage.save(ADDRESSES_EVENTS_CACHE_KEY, JSON.stringify(newCachedEvents));
+  }
+
+  async waitForInitialization() {
+    return this._storage.waitForInitialization();
   }
 }

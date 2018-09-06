@@ -1,8 +1,6 @@
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-import { CONFIG } from '../lib/consts';
-import { TRANSACTION_EVENT } from '../services/eac';
 
 const requestFactoryStartBlocks = {
   1: 6204104,
@@ -52,14 +50,21 @@ export class TransactionStore {
 
   _requestFactory;
 
-  constructor(eac, web3, fetcher, cache, featuresService) {
+  _helper;
+
+  constructor(eac, web3, fetcher, cache, featuresService, helper) {
     this._web3 = web3;
     this._eac = eac;
     this._fetcher = fetcher;
     this._cache = cache;
     this._features = featuresService;
+    this._helper = helper;
 
     this.init();
+  }
+
+  get lastBlock() {
+    return this._fetcher && this._fetcher.lastBlock;
   }
 
   // Returns an array of only the addresses of all transactions
@@ -117,12 +122,17 @@ export class TransactionStore {
 
   async getAllTransactions(cached) {
     const transactions = await this._fetcher.getAllTransactions(cached);
+    const currentTimestamp = moment().unix();
 
-    for (let transaction of transactions) {
-      transaction.status = await this.getTxStatus(transaction);
+    for (const transaction of transactions) {
+      transaction.status = this.getTxStatus(transaction, currentTimestamp, this.lastBlock);
     }
 
     return transactions;
+  }
+
+  getTxStatus(transaction, currentTimestamp) {
+    return this._helper.getTxStatus(transaction, currentTimestamp, this.lastBlock);
   }
 
   async getAllTransactionAddresses() {
@@ -186,8 +196,14 @@ export class TransactionStore {
       buckets = await this.getBucketsForLastHours(pastHours);
     }
 
+    const currentTimestamp = moment().unix();
+
     for (const transaction of transactions) {
-      let isResolved = this.isTransactionResolved(transaction);
+      let isResolved = this._helper.isTransactionResolved(
+        transaction,
+        currentTimestamp,
+        this.lastBlock
+      );
       let includeTransaction = false;
 
       if ((isResolved && resolved) || (!isResolved && unresolved)) {
@@ -208,7 +224,9 @@ export class TransactionStore {
       const transactionsToExclude = [];
 
       for (const transaction of processed) {
-        if (this.isTransactionAfterWindowStart(transaction)) {
+        if (
+          this._helper.isTransactionAfterWindowStart(transaction, currentTimestamp, this.lastBlock)
+        ) {
           transactionsToCheck.push(transaction);
         }
       }
@@ -217,7 +235,7 @@ export class TransactionStore {
         await this._fetcher.fillUpTransactions(transactions);
 
         for (const transaction of transactionsToCheck) {
-          if (this.isTransactionResolved(transaction)) {
+          if (this._helper.isTransactionResolved(transaction, currentTimestamp, this.lastBlock)) {
             transactionsToExclude.push(transaction);
           }
         }
@@ -231,13 +249,19 @@ export class TransactionStore {
     transactions = processed;
 
     if (sortByTimestampAscending) {
-      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(
-        this._fetcher.lastBlock
-      );
+      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(this.lastBlock);
 
       transactions = transactions.sort((a, b) => {
-        const aTimestamp = this.getTxTimestampEstimation(a, currentBlockTimestamp);
-        const bTimestamp = this.getTxTimestampEstimation(b, currentBlockTimestamp);
+        const aTimestamp = this._helper.getTxTimestampEstimation(
+          a,
+          currentBlockTimestamp,
+          this.lastBlock
+        );
+        const bTimestamp = this._helper.getTxTimestampEstimation(
+          b,
+          currentBlockTimestamp,
+          this.lastBlock
+        );
 
         if (aTimestamp > bTimestamp) {
           return 1;
@@ -327,86 +351,10 @@ export class TransactionStore {
     };
   }
 
-  getTxTimestampEstimation(transaction, currentBlockTimestamp) {
-    const isTimestamp = this.isTxUnitTimestamp(transaction);
-
-    const windowStart = transaction.windowStart.toNumber
-      ? transaction.windowStart.toNumber()
-      : transaction.windowStart;
-
-    if (isTimestamp) {
-      return windowStart;
-    }
-
-    let time;
-
-    if (this._fetcher.lastBlock > windowStart) {
-      time = windowStart;
-    } else {
-      const difference = windowStart - this._fetcher.lastBlock;
-
-      time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
-    }
-
-    return time;
-  }
-
-  async getTxStatus(transaction) {
-    let status = TRANSACTION_STATUS.SCHEDULED;
-
-    if (transaction.wasCalled) {
-      status = transaction.data.meta.wasSuccessful
-        ? TRANSACTION_STATUS.EXECUTED
-        : TRANSACTION_STATUS.FAILED;
-    }
-
-    if (transaction.isCancelled) {
-      status = TRANSACTION_STATUS.CANCELLED;
-    }
-
-    if (this.isTransactionMissed(transaction)) {
-      status = TRANSACTION_STATUS.MISSED;
-    }
-
-    return status;
-  }
-
   async getTransactionByAddress(address) {
     await this._web3.init();
 
     return await this._eac.transactionRequest(address, this._web3);
-  }
-
-  isTransactionResolved(transaction) {
-    const isMissed = this.isTransactionMissed(transaction);
-
-    if (isMissed || transaction.wasCalled || transaction.isCancelled) {
-      return true;
-    }
-
-    const TX_EVENTS_MAP = this._cache.addressesEvents || {};
-
-    const txEvent = TX_EVENTS_MAP[transaction.address];
-
-    return [TRANSACTION_EVENT.EXECUTED, TRANSACTION_EVENT.CANCELLED].indexOf(txEvent) !== -1;
-  }
-
-  isTransactionMissed(transaction) {
-    let afterExecutionWindow;
-
-    if (this.isTxUnitTimestamp(transaction)) {
-      afterExecutionWindow = transaction.executionWindowEnd.lessThan(moment().unix());
-    } else {
-      afterExecutionWindow = transaction.executionWindowEnd.lessThan(this._fetcher.lastBlock);
-    }
-
-    return Boolean(afterExecutionWindow && !transaction.wasCalled);
-  }
-
-  isTransactionAfterWindowStart(transaction) {
-    return transaction.windowStart.lessThan(
-      this.isTxUnitTimestamp(transaction) ? moment().unix() : this._fetcher.lastBlock
-    );
   }
 
   async isTransactionFrozen(transaction) {
@@ -414,17 +362,7 @@ export class TransactionStore {
   }
 
   isTxUnitTimestamp(transaction) {
-    if (!transaction || !transaction.temporalUnit) {
-      return false;
-    }
-
-    let temporalUnit = transaction.temporalUnit;
-
-    if (transaction.temporalUnit.toNumber) {
-      temporalUnit = transaction.temporalUnit.toNumber();
-    }
-
-    return temporalUnit === TEMPORAL_UNIT.TIMESTAMP;
+    return this._helper.isTxUnitTimestamp(transaction);
   }
 
   async cancel(transaction, txParameters) {

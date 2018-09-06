@@ -35,7 +35,7 @@ class TimeNodeProve extends Component {
   }
 
   resetVerify() {
-    this.props.timeNodeStore.resetWallet();
+    this.props.timeNodeStore.detachWallet();
   }
 
   toClipboard() {
