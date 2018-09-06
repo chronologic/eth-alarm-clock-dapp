@@ -11,7 +11,7 @@ const INITIAL_STATE = {
 
 @inject('web3Service')
 @inject('eacService')
-export class BlockOrTimeDisplay extends Component {
+class BlockOrTimeDisplay extends Component {
   state = INITIAL_STATE;
 
   _isMounted = false;
@@ -116,4 +116,4 @@ BlockOrTimeDisplay.propTypes = {
   web3Service: PropTypes.any
 };
 
-export default BlockOrTimeDisplay;
+export { BlockOrTimeDisplay };

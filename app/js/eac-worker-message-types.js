@@ -1,6 +1,7 @@
 export const EAC_WORKER_MESSAGE_TYPES = {
   LOG: 'log',
   START: 'start',
+  STARTED: 'started',
   START_SCANNING: 'start-scanning',
   STOP_SCANNING: 'stop-scanning',
   GET_NETWORK_INFO: 'get-network-info',

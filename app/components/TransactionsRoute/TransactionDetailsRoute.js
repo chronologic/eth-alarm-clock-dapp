@@ -66,7 +66,7 @@ class TransactionDetailsRoute extends Component {
         </h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           <div className="tab-content p-4">{content}</div>
-          <PoweredByEAC className="mb-4 ml-4" />
+          <PoweredByEAC className="m-4" />
         </div>
       </div>
     );
