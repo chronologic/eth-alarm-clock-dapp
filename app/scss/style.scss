@@ -330,8 +330,8 @@ hr {
     padding: 10px;
     color: grey;
   }
-  & .btn-success .actions-pages {
-    color: white;
+  & .btn-primary .actions-pages {
+    color: $primary-color;
   }
 }
 
