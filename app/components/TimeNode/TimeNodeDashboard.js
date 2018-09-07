@@ -12,7 +12,7 @@ import moment from 'moment';
 @inject('transactionStore')
 @inject('dateTimeValidatorStore')
 @observer
-class TimeNodeStatistics extends Component {
+class TimeNodeDashboard extends Component {
   constructor(props) {
     super(props);
 
@@ -192,7 +192,7 @@ class TimeNodeStatistics extends Component {
       );
 
     return (
-      <div id="timeNodeStatistics">
+      <div id="timeNodeDashboard">
         {nodeStatus !== LOADING && this.getDAYBalanceNotification(timeNodeDisabled)}
         {balanceETH !== null && this.getBalanceNotification()}
         {this.getClaimingNotification()}
@@ -472,10 +472,10 @@ class TimeNodeStatistics extends Component {
   }
 }
 
-TimeNodeStatistics.propTypes = {
+TimeNodeDashboard.propTypes = {
   timeNodeStore: PropTypes.any,
   keenStore: PropTypes.any,
   dateTimeValidatorStore: PropTypes.any
 };
 
-export default TimeNodeStatistics;
+export { TimeNodeDashboard };

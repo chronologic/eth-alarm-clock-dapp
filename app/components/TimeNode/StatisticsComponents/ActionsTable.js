@@ -137,24 +137,26 @@ class ActionsTable extends Component {
           </div>
           <div className="col-md-6">
             <div className="float-md-right">
-              <ReactPaginate
-                previousClassName={'hide'}
-                nextClassName={'hide'}
-                breakLabel={
-                  <a href className="actions-pages">
-                    ...
-                  </a>
-                }
-                breakClassName={'btn p-0'}
-                pageCount={numPages}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={3}
-                onPageChange={this.changePage}
-                containerClassName={'pagination btn-group mx-4'}
-                pageClassName={'btn p-0'}
-                pageLinkClassName={'actions-pages'}
-                activeClassName={'btn-success'}
-              />
+              {numPages > 1 && (
+                <ReactPaginate
+                  previousClassName={'hide'}
+                  nextClassName={'hide'}
+                  breakLabel={
+                    <a href className="actions-pages">
+                      ...
+                    </a>
+                  }
+                  breakClassName={'btn p-0'}
+                  pageCount={numPages}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={3}
+                  onPageChange={this.changePage}
+                  containerClassName={'pagination btn-group mx-4'}
+                  pageClassName={'btn p-0'}
+                  pageLinkClassName={'actions-pages'}
+                  activeClassName={'btn-primary'}
+                />
+              )}
             </div>
           </div>
         </div>
