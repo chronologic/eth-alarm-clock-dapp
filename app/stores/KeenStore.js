@@ -91,7 +91,7 @@ export class KeenStore {
       nodeType: 'dapp',
       status: 'active'
     };
-    this.trackingClient.addEvent(COLLECTIONS.TIMENODES, event);
+    this.trackingClient.recordEvent(COLLECTIONS.TIMENODES, event);
   }
 
   setTimeNodeSpecificProviderNetId(netId) {
