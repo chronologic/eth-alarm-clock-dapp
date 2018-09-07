@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import TimeNodeMain from './TimeNodeMain';
+import { TimeNodeMain } from './TimeNodeMain';
 import TimeNodeWallet from './TimeNodeWallet';
 import TimeNodeProve from './TimeNodeProve';
 import TimeNodeUnlock from './TimeNodeUnlock';

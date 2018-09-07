@@ -39,7 +39,7 @@ class TimeNodeLogs extends Component {
               data-log-type={LOG_TYPE.DETAILED}
               onClick={this.updateType.bind(this)}
             >
-              <input type="radio" name="options" checked="" />
+              <input type="radio" name="options" />
               Detailed
             </label>
           </div>

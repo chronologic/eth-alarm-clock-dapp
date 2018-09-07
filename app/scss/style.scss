@@ -1,7 +1,6 @@
 $primary-color: #21FFFF;
 $warning-color: gold;
 
-
 /* PAGES TEMPLATE OVERRIDES */
 
 #root, .app-container {
@@ -35,41 +34,52 @@ $warning-color: gold;
 }
 
 .pages-sidebar {
-	background-color: #1D252A;
+  background-color: #1D252A;
+
+  & .sidebar-header {
+    background-color: #181E21;
+  }
+  & .icon-thumbnail.active {
+    background: $primary-color;
+    color: inherit;
+  }
 }
 
-.pages-sidebar .sidebar-header {
-	background-color: #181E21;
+.datepicker {
+  & thead tr .prev::before {
+    content: "<";
+  }
+  & thead tr .next::before {
+    content: ">";
+  }
 }
 
-.page-sidebar .icon-thumbnail.active {
-	background: $primary-color;
-	color: inherit;
+.header {
+  & .search-link {
+    color: #fff;
+    font-size: 15px;
+    margin-left: 30px;
+    -webkit-transition: ease-in 0.3s; /* Safari */
+    transition: ease-in 0.3s;
+    cursor: pointer;
+
+    &:hover, &:visited {
+      color: #fff;
+    }
+  }
 }
 
-.datepicker thead tr .prev::before {
-  content: "<";
-}
-.datepicker thead tr .next::before {
-  content: ">";
+
+[data-toggle=buttons] {
+
+  & > .btn input[type=radio],
+  & > .btn-group > .btn input[type=radio] {
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+      pointer-events: none;
+  }
 }
 
-.header .search-link {
-  color: #fff;
-  font-size: 15px;
-  margin-left: 30px;
-}
-
-.header .search-link:hover, .header .search-link:visited {
-  color: #fff;
-}
-
-[data-toggle=buttons] > .btn input[type=radio],
-[data-toggle=buttons] > .btn-group > .btn input[type=radio] {
-    position: absolute;
-    clip: rect(0, 0, 0, 0);
-    pointer-events: none;
-}
 
 .input-group {
   flex-wrap: nowrap;
@@ -94,27 +104,23 @@ $warning-color: gold;
   cursor: pointer
 }
 
-.search-link {
-  -webkit-transition: ease-in 0.3s; /* Safari */
-  transition: ease-in 0.3s;
-  cursor: pointer;
-}
-
 .nav-tabs-simple > li > a::after {
   background-color: $primary-color;
 }
 
-.page-sidebar .sidebar-menu .menu-items li > a {
-  width: 100%;
+.page-sidebar .sidebar-menu .menu-items li {
+  & > a {
+    width: 100%;
+  } 
+  & > a.sub-title {
+    width: inherit;
+  }
+  
+  & > a:hover > .icon-thumbnail {
+    color: #fff;
+  }
 }
 
-.page-sidebar .sidebar-menu .menu-items li > a.sub-title {
-  width: inherit;
-}
-
-.page-sidebar .sidebar-menu .menu-items li > a:hover > .icon-thumbnail {
-  color: #fff;
-}
 
 $titleColor: #fff;
 
@@ -174,14 +180,14 @@ hr {
   height: 200px;
   position: relative;
   text-align: center;
-}
-
-.absolute-center span {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  
+  & span {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .loader{
@@ -195,15 +201,10 @@ hr {
 
 .subsection {
   height: 100%;
-}
 
-.subsection .tab-content {
-  padding: 40px;
-}
-
-
-.subsection .tab-pane.active {
-	margin-bottom: 80px;
+  & .tab-content {
+    padding: 40px;
+  }
 }
 
 #scheduleWizard .footer-buttons, .subsection .footer-buttons{
@@ -219,53 +220,63 @@ hr {
   overflow: hidden;
 }
 
-.table tbody tr td {
-  padding: 0.75rem;
+#timeNodeDashboard.table {
+  & tbody tr td {
+    padding: 0.75rem;
+    border-top: 1px solid #dee2e6;
+  }
+
+  & th {
+    border-top: none;
+  }
 }
 
 .flex-stretch {
   flex-grow: 1;
 }
 
-#scheduleWizard .nav li a {
-  font-size: 15px;
-  color: transparentize($color: #fff, $amount: 0.5);
+#scheduleWizard {
+  & .nav li a {
+    font-size: 15px;
+    color: transparentize($color: #fff, $amount: 0.5);
+
+    &.active {
+      color: #fff;
+    }
+  }
+  
+  & .row.nav-tabs-linetriangle {
+    margin: 0;
+  }
+  
+  & .nav-tabs-linetriangle > li {
+    padding-left: 0px;
+    padding-right: 0px;
+
+    & > a::after {
+      border-color: #fff;
+      width: inherit;
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 50px;
+      height: 20px;
+      background-color: #fff;
+      z-index: 121;
+      border-left: 0px;
+    }
+
+    & > a.active::after {
+      margin-left: 0px;
+      border-color: #fff;
+      clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
+    }
+  }
 }
 
-#scheduleWizard .nav li a.active {
-  color: #fff;
-}
-
-#scheduleWizard .row.nav-tabs-linetriangle {
-  margin: 0;
-}
-
-#scheduleWizard .nav-tabs-linetriangle > li {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-#scheduleWizard .nav-tabs-linetriangle > li > a::after {
-  border-color: #fff;
-  width: inherit;
-  content: "";
-  display: block;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 50px;
-  height: 20px;
-  background-color: #fff;
-  z-index: 121;
-  border-left: 0px;
-}
-
-#scheduleWizard .nav-tabs-linetriangle > li > a.active::after {
-  margin-left: 0px;
-  border-color: #fff;
-  clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
-}
 
 .active-timenodes {
   color: $primary-color;
@@ -273,13 +284,14 @@ hr {
 
 .timenode-count {
   color: #fff;
-}
-  .timenode-count > div {
+
+  & > div {
     display: inline;
   }
-  .timenode-count .analytics-info {
+  & .analytics-info {
     color: $warning-color;
   }
+}
 
 #timenodeLogsField {
   height: 330px;
@@ -311,6 +323,16 @@ hr {
 
 .pagination-entry, .pagination-arrow {
   cursor: pointer;
+}
+
+.pagination {
+  & .actions-pages {
+    padding: 10px;
+    color: grey;
+  }
+  & .btn-primary .actions-pages {
+    color: $primary-color;
+  }
 }
 
 #bountyEstimator .progress {
@@ -351,3 +373,4 @@ hr {
   max-width: 75%;
   min-width: 140px;
 }
+

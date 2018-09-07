@@ -7,6 +7,7 @@ import Alert from '../Common/Alert';
 import { TOKEN_ADDRESSES, PREDEFINED_TOKENS_FOR_NETWORK } from '../../config/web3Config';
 import Select from '../Common/Select';
 
+@inject('tokenHelper')
 @inject('scheduleStore')
 @inject('web3Service')
 @observer
@@ -87,9 +88,9 @@ class InfoSettings extends AbstractSetting {
 
   async calculateTokenTransferMinimumGasandData() {
     const {
-      web3Service,
       web3Service: { web3 },
-      scheduleStore
+      scheduleStore,
+      tokenHelper
     } = this.props;
     const isAddress = this.ethereumAddressValidator().validator;
     const minEstimate = 21000;
@@ -100,13 +101,13 @@ class InfoSettings extends AbstractSetting {
       isAddress(scheduleStore.receiverAddress, web3) == 0
     ) {
       try {
-        estimate = await web3Service.estimateTokenTransfer(
+        estimate = await tokenHelper.estimateTokenTransfer(
           scheduleStore.toAddress,
           scheduleStore.receiverAddress,
           scheduleStore.tokenToSend * 10 ** this.state.token.decimals
         );
         estimate = estimate + 20000;
-        scheduleStore.tokenData = await web3Service.getTokenTransferData(
+        scheduleStore.tokenData = await tokenHelper.getTokenTransferData(
           scheduleStore.toAddress,
           scheduleStore.receiverAddress,
           scheduleStore.tokenToSend * 10 ** this.state.token.decimals
@@ -147,13 +148,13 @@ class InfoSettings extends AbstractSetting {
   }
 
   async getTokenDetails(onlyBalance = false) {
-    const { web3Service, scheduleStore } = this.props;
+    const { scheduleStore, tokenHelper } = this.props;
     if (!onlyBalance) {
-      const tokenDetails = await web3Service.fetchTokenDetails(scheduleStore.toAddress);
+      const tokenDetails = await tokenHelper.fetchTokenDetails(scheduleStore.toAddress);
       this.setState({ token: tokenDetails });
       scheduleStore.tokenSymbol = tokenDetails.symbol;
     }
-    let _balance = await web3Service.fetchTokenBalance(scheduleStore.toAddress);
+    let _balance = await tokenHelper.fetchTokenBalance(scheduleStore.toAddress);
     _balance = _balance == '-' ? _balance : Number(_balance / 10 ** this.state.token.decimals);
     const balance = new RegExp('^\\d+\\.?\\d{8,}$').test(_balance) ? _balance.toFixed(8) : _balance;
     this.setState({ token: Object.assign(this.state.token, { balance }) });
