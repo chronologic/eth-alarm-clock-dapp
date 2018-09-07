@@ -220,7 +220,7 @@ hr {
   overflow: hidden;
 }
 
-#timeNodeStatistics.table {
+#timeNodeDashboard.table {
   & tbody tr td {
     padding: 0.75rem;
     border-top: 1px solid #dee2e6;
@@ -330,8 +330,8 @@ hr {
     padding: 10px;
     color: grey;
   }
-  & .btn-success .actions-pages {
-    color: white;
+  & .btn-primary .actions-pages {
+    color: $primary-color;
   }
 }
 
@@ -373,3 +373,4 @@ hr {
   max-width: 75%;
   min-width: 140px;
 }
+
