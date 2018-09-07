@@ -153,7 +153,7 @@ class ActionsTable extends Component {
                 containerClassName={'pagination btn-group mx-4'}
                 pageClassName={'btn p-0'}
                 pageLinkClassName={'actions-pages'}
-                activeClassName={'btn-success'}
+                activeClassName={'btn-primary'}
               />
             </div>
           </div>
