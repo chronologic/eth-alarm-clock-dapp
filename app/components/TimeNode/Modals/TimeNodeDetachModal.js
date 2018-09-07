@@ -11,8 +11,8 @@ class TimeNodeDetachModal extends Component {
 
   detachWallet() {
     const { timeNodeStore } = this.props;
-    timeNodeStore.detachWallet();
     timeNodeStore.clearStats();
+    timeNodeStore.detachWallet();
     timeNodeStore.unlocked = false;
   }
 

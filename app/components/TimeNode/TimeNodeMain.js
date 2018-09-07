@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TimeNodeStatistics from './TimeNodeStatistics';
+import { TimeNodeDashboard } from './TimeNodeDashboard';
 import TimeNodeLogs from './TimeNodeLogs';
 import TimeNodeSettings from './TimeNodeSettings';
 import PoweredByEAC from '../Common/PoweredByEAC';
@@ -108,7 +108,7 @@ class TimeNodeMain extends Component {
             id="tabStatistics"
             style={{ backgroundColor: 'rgb(245, 245, 245)' }}
           >
-            <TimeNodeStatistics />
+            <TimeNodeDashboard />
             <PoweredByEAC className="py-3" style={{ backgroundColor: 'rgb(245, 245, 245)' }} />
           </div>
           <div className="tab-pane padding-25 " id="tabLogs">
@@ -133,4 +133,4 @@ class TimeNodeMain extends Component {
   }
 }
 
-export default TimeNodeMain;
+export { TimeNodeMain };
