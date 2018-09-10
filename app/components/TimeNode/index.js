@@ -1,6 +1,6 @@
 export { TimeNodeRoute } from './TimeNodeRoute';
-export { TimeNodeMain } from './TimeNodeStatistics';
-export { TimeNodeStatistics } from './TimeNodeStatistics';
+export { TimeNodeMain } from './TimeNodeMain';
+export { TimeNodeDashboard } from './TimeNodeDashboard';
 export { TimeNodeLogs } from './TimeNodeLogs';
 export { TimeNodeWallet } from './TimeNodeWallet';
 export { TimeNodeProve } from './TimeNodeProve';
