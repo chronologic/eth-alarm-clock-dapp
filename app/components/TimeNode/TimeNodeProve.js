@@ -10,6 +10,7 @@ class TimeNodeProve extends Component {
     super(props);
     this.verifyDayTokens = this.verifyDayTokens.bind(this);
     this.resetVerify = this.resetVerify.bind(this);
+    this.toClipboard = this.toClipboard.bind(this);
   }
 
   _handleEnterPress = event => {
@@ -39,8 +40,7 @@ class TimeNodeProve extends Component {
   }
 
   toClipboard() {
-    var copyText = document.getElementById('copyAddress');
-    copyText.select();
+    this.copyMessageRef.select();
     document.execCommand('Copy');
   }
 
@@ -50,7 +50,7 @@ class TimeNodeProve extends Component {
         <div className="tab-pane active show">
           <h2>Sign to prove DAY ownership</h2>
 
-          <div className="row">
+          <div className="row m-b-25">
             <div className="col-md-6">
               <p>
                 The TimeNode functionality requires the proof of ownership of DAY tokens. By
@@ -75,8 +75,22 @@ class TimeNodeProve extends Component {
                   </a>
                 </li>
                 <li>
-                  Sign a message using your wallet. MyCrypto requires you to use a nickname in the
-                  signed message.
+                  Sign a message using your wallet. Use the following message:
+                  <div className="input-group">
+                    <input
+                      id="copyMessage"
+                      ref={el => (this.copyMessageRef = el)}
+                      type="text"
+                      className="form-control"
+                      value={`TimeNode:${this.props.timeNodeStore.getMyAddress()}`}
+                      readOnly
+                    />
+                    <div className="input-group-append">
+                      <button className="btn btn-primary" onClick={this.toClipboard}>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
                 </li>
                 <li>Copy the generated signature.</li>
                 <li>Paste the whole generated signature into the Signature field.</li>
