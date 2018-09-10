@@ -78,7 +78,14 @@ class TimeNodeWallet extends Component {
               </p>
               <p>
                 To find out more about TimeNodes and how to properly use them, please see the{' '}
-                <a href="#">tutorial on how to set up a TimeNode</a>.
+                <a
+                  href="https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  tutorial on how to run up a TimeNode
+                </a>
+                .
               </p>
               {!isRunningInElectron() && (
                 <p>
@@ -86,7 +93,13 @@ class TimeNodeWallet extends Component {
                     <strong>Note:</strong> We strongly advise that you run the TimeNode using our
                     desktop apps instead of the browser TimeNode. You can find the link to the
                     latest desktop releases{' '}
-                    <a href="https://github.com/chronologic/eth-alarm-clock-dapp/releases">here.</a>
+                    <a
+                      href="https://github.com/chronologic/eth-alarm-clock-dapp/releases"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      here.
+                    </a>
                   </i>
                 </p>
               )}
