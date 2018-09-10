@@ -101,7 +101,7 @@
     "mini-css-extract-plugin": "0.4.1",
     "mobx": "5.1.0",
     "mobx-react": "5.2.6",
-    "mobx-react-router": "4.0.4",
+    "mobx-react-router": "4.0.5",
     "moment": "2.22.2",
     "moment-duration-format": "2.2.2",
     "moment-timezone": "0.5.21",
