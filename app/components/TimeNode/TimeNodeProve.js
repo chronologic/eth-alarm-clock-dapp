@@ -86,7 +86,7 @@ class TimeNodeProve extends Component {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Watch Tutorial
+                Watch the Tutorial
               </a>
             </div>
 
