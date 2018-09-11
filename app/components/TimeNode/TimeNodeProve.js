@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import { BeatLoader } from 'react-spinners';
 
 @inject('timeNodeStore')
 @observer
 class TimeNodeProve extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      checkOngoing: false
+    };
     this.verifyDayTokens = this.verifyDayTokens.bind(this);
     this.resetVerify = this.resetVerify.bind(this);
     this.toClipboard = this.toClipboard.bind(this);
@@ -28,11 +32,14 @@ class TimeNodeProve extends Component {
   }
 
   async verifyDayTokens() {
+    this.setState({ checkOngoing: true });
     const signature = this.signatureRef.value;
 
     if (signature) {
       await this.props.timeNodeStore.attachDayAccount(signature);
     }
+
+    this.setState({ checkOngoing: false });
   }
 
   resetVerify() {
@@ -45,6 +52,8 @@ class TimeNodeProve extends Component {
   }
 
   render() {
+    const { checkOngoing } = this.state;
+
     return (
       <div id="timeNodeProve" className="tab-content">
         <div className="tab-pane active show">
@@ -128,7 +137,7 @@ class TimeNodeProve extends Component {
               type="button"
               onClick={this.verifyDayTokens}
             >
-              Verify
+              {checkOngoing ? <BeatLoader size={8} color={'#fff'} /> : 'Verify'}
             </button>
             <button
               className="btn btn-light pull-right mr-4 px-5"
