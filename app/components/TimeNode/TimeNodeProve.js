@@ -57,7 +57,7 @@ class TimeNodeProve extends Component {
     return (
       <div id="timeNodeProve" className="tab-content">
         <div className="tab-pane active show">
-          <h2>Sign to prove DAY ownership</h2>
+          <h3>Step 2. Sign to prove DAY ownership</h3>
 
           <div className="row m-b-25">
             <div className="col-md-6">
