@@ -139,6 +139,12 @@ function createWindow() {
     e.preventDefault();
     shell.openExternal(url);
   });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url !== 'file:///index.html') {
+      event.preventDefault();
+    }
+  });
 }
 
 // This method will be called when Electron has finished
