@@ -460,8 +460,11 @@ export default class TimeNodeStore {
     try {
       const signature = parseSig(sigObject);
 
+      const timeNodeAddr = this.getMyAddress();
+
       // First check using default sig check - if doesn't work use MyCrypto's
-      const validSig = isSignatureValid(signature) ? true : isMyCryptoSigValid(signature);
+      const validSig =
+        isSignatureValid(signature, timeNodeAddr) || isMyCryptoSigValid(signature, timeNodeAddr);
 
       if (!validSig) throw SIGNATURE_ERRORS.INVALID_SIG;
 
