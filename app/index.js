@@ -21,6 +21,12 @@ const setElectron = () => {
 
 window.setElectron = setElectron;
 
+// ESLint will warn about any use of eval(), even this one
+// eslint-disable-next-line
+window.eval = global.eval = () => {
+  throw new Error(`Sorry, this app does not support window.eval().`);
+};
+
 render(
   <Provider {...injectables}>
     <Router history={history}>
