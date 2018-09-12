@@ -1,11 +1,17 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell } = require('electron');
+const { app, BrowserWindow, Menu, shell, globalShortcut } = require('electron');
 const path = require('path');
 const urlLib = require('url');
 
 const packageJson = require('./package.json');
 
 const isDev = require('electron-is-dev');
+
+const MAIN_URL = urlLib.format({
+  protocol: 'file',
+  slashes: true,
+  pathname: path.join(__dirname, 'index.html')
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,19 +23,13 @@ function createWindow() {
     width: 1024,
     height: 768,
     webPreferences: {
-      contextIsolation: true
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  // Formats the URL to match different OSes
-  let url = urlLib.format({
-    protocol: 'file',
-    slashes: true,
-    pathname: path.join(__dirname, 'index.html')
-  });
-
   // Load the index.html of the app.
-  mainWindow.loadURL(url);
+  mainWindow.loadURL(MAIN_URL);
 
   // mainWindow.toggleDevTools();
 
@@ -103,10 +103,17 @@ function createWindow() {
   });
 
   mainWindow.webContents.on('will-navigate', (event, url) => {
-    if (url !== 'file:///index.html') {
+    if (url !== MAIN_URL) {
       event.preventDefault();
     }
   });
+
+  mainWindow.reload = () => {
+    mainWindow.loadURL(MAIN_URL);
+  };
+
+  globalShortcut.register('F5', mainWindow.reload);
+  globalShortcut.register('CommandOrControl+R', mainWindow.reload);
 }
 
 // This method will be called when Electron has finished

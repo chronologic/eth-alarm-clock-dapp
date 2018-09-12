@@ -16,15 +16,8 @@ const injectables = Object.assign({}, stores, services);
 
 const rootEl = document.getElementById('root');
 
-const routeProps = {
-  component: App,
-  path: '/'
-};
-
 if (isRunningInElectron()) {
-  routeProps.location = {
-    pathname: '/timenode'
-  };
+  history.push('/timenode?mode=electron');
 }
 
 // ESLint will warn about any use of eval(), even this one
@@ -36,7 +29,7 @@ window.eval = global.eval = () => {
 render(
   <Provider {...injectables}>
     <Router history={history}>
-      <Route {...routeProps} />
+      <Route component={App} path="/" />
     </Router>
   </Provider>,
   rootEl
