@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, protocol, shell } = require('electron');
+const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
-const os = require('os');
+const urlLib = require('url');
 
 const packageJson = require('./package.json');
 
@@ -21,55 +21,17 @@ function createWindow() {
     }
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html');
-
-  const PROTOCOL = 'file';
-
-  // mainWindow.toggleDevTools();
-
-  const prepareElectron = () => {
-    mainWindow.webContents.once('dom-ready', async () => {
-      await mainWindow.webContents.executeJavaScript('setElectron();');
-    });
-  };
-
-  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    // Strip protocol
-    let url = request.url.substr(PROTOCOL.length + 1);
-
-    let packagePath = __dirname;
-    const windows = os.platform() === 'win32';
-
-    if (windows) {
-      packagePath = packagePath.replace(/\\/g, '/');
-
-      if (url.indexOf('///') === 0) {
-        url = url.slice(3, url.length);
-      }
-    }
-
-    if (url.indexOf(packagePath) === -1) {
-      // Build complete path for node require function for file paths
-      if (windows) {
-        url = path.join(packagePath, url.slice(3, url.length));
-
-        // Replace backslashes by forward slashes (windows)
-        url = url.replace(/\\/g, '/');
-      } else {
-        url = path.join(packagePath, url);
-      }
-
-      url = path.normalize(url);
-    }
-
-    callback({ path: url });
-
-    if (url.indexOf('index.html') > -1) prepareElectron();
+  // Formats the URL to match different OSes
+  let url = urlLib.format({
+    protocol: 'file',
+    slashes: true,
+    pathname: path.join(__dirname, 'index.html')
   });
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  // Load the index.html of the app.
+  mainWindow.loadURL(url);
+
+  // mainWindow.toggleDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
