@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import removeXSS from 'xss';
 
 const AVAILABLE_TYPES = ['danger', 'info', 'success', 'warning'];
 
@@ -20,6 +21,8 @@ export function showNotification(
   if (typeof timeout === 'undefined') {
     timeout = type === 'success' ? 5000 : 0;
   }
+
+  message = removeXSS(message);
 
   $('body')
     .pgNotification({
