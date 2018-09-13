@@ -114,6 +114,8 @@ function createWindow() {
 
   globalShortcut.register('F5', mainWindow.reload);
   globalShortcut.register('CommandOrControl+R', mainWindow.reload);
+
+  mainWindow.getDirName = () => __dirname;
 }
 
 // This method will be called when Electron has finished
