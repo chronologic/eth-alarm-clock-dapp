@@ -1,7 +1,9 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, shell, protocol, globalShortcut } = require('electron');
+
 const path = require('path');
 const urlLib = require('url');
+const os = require('os');
 
 const packageJson = require('./package.json');
 
@@ -9,7 +11,7 @@ const isDev = require('electron-is-dev');
 
 const PROTOCOL = 'file';
 
-const MAIN_URL = urlLib.format({
+let MAIN_URL = urlLib.format({
   protocol: PROTOCOL,
   slashes: true,
   pathname: path.join(__dirname, 'index.html')
@@ -20,15 +22,29 @@ const MAIN_URL = urlLib.format({
 let mainWindow;
 
 function createWindow() {
-  // mainWindow.toggleDevTools();
-
   // Handle files that do not have the correct paths set (assets, worker file, etc.)
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
     let url = request.url.substr(PROTOCOL.length + 1);
+    let packagePath = __dirname;
 
-    if (request.url.indexOf(__dirname) < 0) {
-      const filename = request.url.split(PROTOCOL + '://')[1];
-      url = `/${__dirname}${filename}`;
+    const windows = os.platform() === 'win32';
+    if (windows) {
+      packagePath = packagePath.replace(/\\/g, '/');
+      if (url.indexOf('///') === 0) {
+        url = url.slice(3, url.length);
+      }
+    }
+
+    if (url.indexOf(packagePath) === -1) {
+      // Build complete path for node require function for file paths
+      if (windows) {
+        url = path.join(packagePath, url.slice(3, url.length));
+        // Replace backslashes by forward slashes (windows)
+        url = url.replace(/\\/g, '/');
+      } else {
+        url = path.join(packagePath, url);
+      }
+      url = path.normalize(url);
     }
 
     callback({ path: url });
@@ -43,6 +59,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   });
+
+  mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
