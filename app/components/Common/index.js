@@ -4,3 +4,4 @@ export { AwaitingMining } from './AwaitingMining';
 export { Faucet } from './Faucet';
 export { URLNotFound } from './URLNotFound';
 export { ValueDisplay } from './ValueDisplay';
+export { Image } from './Image';

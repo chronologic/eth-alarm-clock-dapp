@@ -4,6 +4,7 @@ import { observer, inject } from 'mobx-react';
 import NetworkChooser from './NetworkChooser';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import { Image } from '../Common';
 
 @inject('web3Service')
 @inject('eacService')
@@ -105,7 +106,7 @@ class Header extends Component {
         />
         <div>
           <div className="brand inline">
-            <img src="img/logo-white.png" alt="logo" data-src="img/logo-white.png" height="36" />
+            <Image src="img/logo-white.png" alt="logo" height="36" />
           </div>
         </div>
         <div className="d-flex align-items-center">

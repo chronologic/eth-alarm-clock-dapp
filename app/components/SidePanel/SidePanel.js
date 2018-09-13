@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import { Image } from '../Common';
 
 @inject('web3Service')
 @inject('keenStore')
@@ -102,13 +103,7 @@ class SidePanel extends Component {
     return (
       <nav className="page-sidebar" data-pages="sidebar">
         <div className="sidebar-header">
-          <img
-            src="img/logo-white.png"
-            alt="logo"
-            className="brand"
-            data-src="img/logo-white.png"
-            height="36"
-          />
+          <Image src="img/logo-white.png" alt="logo" className="brand" height="36" />
           <div className="sidebar-header-controls">
             <button
               type="button"
