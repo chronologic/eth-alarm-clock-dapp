@@ -10,7 +10,6 @@ exports[`SidePanel is correctly rendered 1`] = `
   >
     <img
       alt="logo"
-      className="brand"
       data-src="img/logo-white.png"
       height="36"
       src="img/logo-white.png"
