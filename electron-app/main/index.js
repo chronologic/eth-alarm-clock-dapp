@@ -30,6 +30,7 @@ function createWindow() {
     const windows = os.platform() === 'win32';
     if (windows) {
       packagePath = packagePath.replace(/\\/g, '/');
+
       if (url.indexOf('///') === 0) {
         url = url.slice(3, url.length);
       }
@@ -39,11 +40,13 @@ function createWindow() {
       // Build complete path for node require function for file paths
       if (windows) {
         url = path.join(packagePath, url.slice(3, url.length));
+
         // Replace backslashes by forward slashes (windows)
         url = url.replace(/\\/g, '/');
       } else {
         url = path.join(packagePath, url);
       }
+
       url = path.normalize(url);
     }
 
