@@ -9,7 +9,8 @@ exports[`SidePanel is correctly rendered 1`] = `
     className="sidebar-header"
   >
     <img
-      alt="logo"
+      alt="Chronologic"
+      className="brand"
       data-src="img/logo-white.png"
       height="36"
       src="img/logo-white.png"
