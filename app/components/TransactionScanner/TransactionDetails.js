@@ -10,11 +10,11 @@ import moment from 'moment';
 
 const INITIAL_STATE = {
   callData: '',
-  isTimestamp: false,
   status: '',
   executedAt: '',
   token: {},
-  isTokenTransfer: false
+  isTokenTransfer: false,
+  isFrozen: ''
 };
 
 @inject('tokenHelper')
@@ -207,9 +207,7 @@ class TransactionDetails extends Component {
 
     this.setState({
       callData: await transaction.callData(),
-      isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
       status,
-      isFrozen: ''
     });
 
     await this.getFrozenStatus();
@@ -352,7 +350,7 @@ class TransactionDetails extends Component {
 
   render() {
     const { transaction } = this.props;
-    const { callData, executedAt, isTimestamp, status } = this.state;
+    const { callData, executedAt, status } = this.state;
     const {
       bounty,
       callGas,
@@ -364,6 +362,7 @@ class TransactionDetails extends Component {
       windowStart,
       windowSize
     } = transaction;
+    const isTimestamp = transaction.temporalUnit === 2;
 
     return (
       <div className="tab-pane slide active show">
