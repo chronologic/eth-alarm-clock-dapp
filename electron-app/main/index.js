@@ -63,7 +63,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.toggleDevTools();
+  // mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
