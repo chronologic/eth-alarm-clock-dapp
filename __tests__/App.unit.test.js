@@ -226,10 +226,10 @@ describe('App', () => {
     ).toBe('Loading');
     expect(
       mockedRender
-        .find('.tab-pane.active h2')
+        .find('.tab-pane.active h3')
         .text()
         .trim()
-    ).toBe('Select Your Wallet File');
+    ).toBe('Step 1. Select Your Wallet File');
     expect(
       mockedRender
         .find('#verifyWalletBtn')

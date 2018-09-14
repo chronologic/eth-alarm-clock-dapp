@@ -10,11 +10,11 @@ import moment from 'moment';
 
 const INITIAL_STATE = {
   callData: '',
-  isTimestamp: false,
   status: '',
   executedAt: '',
   token: {},
-  isTokenTransfer: false
+  isTokenTransfer: false,
+  isFrozen: ''
 };
 
 @inject('tokenHelper')
@@ -35,12 +35,27 @@ class TransactionDetails extends Component {
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
   }
 
-  getExecutedEvents(requestLib) {
+  getExecutedEvents(requestLib, fromBlock = 0) {
     return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
         resolve(events);
       });
     });
+  }
+
+  async executedAt(transaction, status, transactionStore) {
+    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
+    let executedAt = '';
+
+    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
+      const events = await this.getExecutedEvents(requestLib, transactionStore.requestFactoryStartBlock);
+
+      if (events.length > 0) {
+        executedAt = events[0].transactionHash;
+      }
+    }
+
+    this.setState({ executedAt });
   }
 
   async testToken() {
@@ -188,26 +203,16 @@ class TransactionDetails extends Component {
   async setupDetails() {
     const { transaction, transactionStore } = this.props;
 
-    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
-
-    const events = await this.getExecutedEvents(requestLib);
-
-    let executedAt = '';
-
-    if (events.length > 0) {
-      executedAt = events[0].transactionHash;
-    }
+    const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
     this.setState({
       callData: await transaction.callData(),
-      isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
-      status: await transactionStore.getTxStatus(transaction, moment().unix()),
-      executedAt,
-      isFrozen: ''
+      status,
     });
 
     await this.getFrozenStatus();
     await this.testToken();
+    await this.executedAt(transaction, status, transactionStore);
   }
 
   getCancelSection() {
@@ -345,7 +350,7 @@ class TransactionDetails extends Component {
 
   render() {
     const { transaction } = this.props;
-    const { callData, executedAt, isTimestamp, status } = this.state;
+    const { callData, executedAt, status } = this.state;
     const {
       bounty,
       callGas,
@@ -357,6 +362,7 @@ class TransactionDetails extends Component {
       windowStart,
       windowSize
     } = transaction;
+    const isTimestamp = transaction.temporalUnit === 2;
 
     return (
       <div className="tab-pane slide active show">

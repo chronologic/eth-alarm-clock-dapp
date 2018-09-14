@@ -1,43 +1,33 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, protocol, shell } = require('electron');
+const { app, BrowserWindow, Menu, shell, protocol, globalShortcut } = require('electron');
+
 const path = require('path');
+const urlLib = require('url');
 const os = require('os');
 
 const packageJson = require('./package.json');
 
 const isDev = require('electron-is-dev');
 
+const PROTOCOL = 'file';
+
+let MAIN_URL = urlLib.format({
+  protocol: PROTOCOL,
+  slashes: true,
+  pathname: path.join(__dirname, 'index.html')
+});
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768
-  });
-
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html');
-
-  const PROTOCOL = 'file';
-
-  // mainWindow.toggleDevTools();
-
-  const prepareElectron = () => {
-    mainWindow.webContents.once('dom-ready', async () => {
-      await mainWindow.webContents.executeJavaScript('setElectron();');
-    });
-  };
-
+  // Handle files that do not have the correct paths set (assets, worker file, etc.)
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    // Strip protocol
     let url = request.url.substr(PROTOCOL.length + 1);
-
     let packagePath = __dirname;
-    const windows = os.platform() === 'win32';
 
+    const windows = os.platform() === 'win32';
     if (windows) {
       packagePath = packagePath.replace(/\\/g, '/');
 
@@ -61,15 +51,25 @@ function createWindow() {
     }
 
     callback({ path: url });
-
-    if (url.indexOf('index.html') > -1) prepareElectron();
   });
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 768,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  mainWindow.toggleDevTools();
+
+  // Load the index.html of the app.
+  mainWindow.loadURL(MAIN_URL);
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
+  mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -136,6 +136,19 @@ function createWindow() {
     e.preventDefault();
     shell.openExternal(url);
   });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url !== MAIN_URL) {
+      event.preventDefault();
+    }
+  });
+
+  mainWindow.reload = () => {
+    mainWindow.loadURL(MAIN_URL);
+  };
+
+  globalShortcut.register('F5', mainWindow.reload);
+  globalShortcut.register('CommandOrControl+R', mainWindow.reload);
 }
 
 // This method will be called when Electron has finished
@@ -144,7 +157,7 @@ function createWindow() {
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
@@ -152,7 +165,7 @@ app.on('window-all-closed', function() {
   }
 });
 
-app.on('activate', function() {
+app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {

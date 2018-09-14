@@ -104,9 +104,9 @@ class SidePanel extends Component {
         <div className="sidebar-header">
           <img
             src="img/logo-white.png"
-            alt="logo"
-            className="brand"
             data-src="img/logo-white.png"
+            alt="Chronologic"
+            className="brand"
             height="36"
           />
           <div className="sidebar-header-controls">
@@ -213,7 +213,10 @@ class SidePanel extends Component {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span className="title">Help</span>
+                <span className="title">
+                  Help&nbsp;
+                  {isElectron && <i className="fa fa-external-link-alt" />}
+                </span>
                 <span className="icon-thumbnail">
                   <i className="far fa-question-circle" />
                 </span>

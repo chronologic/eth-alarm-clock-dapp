@@ -2,6 +2,7 @@
 <html>
   <head>
     <%= htmlWebpackPlugin.options.gtmScript %>
+    <meta http-equiv="Content-Security-Policy" content="<%= htmlWebpackPlugin.options.metaCsp %>" >
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8" />
     <title>Chronos - Ethereum Alarm Clock DApp</title>
