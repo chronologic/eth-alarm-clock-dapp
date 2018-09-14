@@ -104,9 +104,9 @@ class SidePanel extends Component {
         <div className="sidebar-header">
           <img
             src="img/logo-white.png"
-            alt="logo"
-            className="brand"
             data-src="img/logo-white.png"
+            alt="Chronologic"
+            className="brand"
             height="36"
           />
           <div className="sidebar-header-controls">
