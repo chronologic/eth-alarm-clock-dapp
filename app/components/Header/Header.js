@@ -105,7 +105,12 @@ class Header extends Component {
         />
         <div>
           <div className="brand inline">
-            <img src="img/logo-white.png" alt="logo" data-src="img/logo-white.png" height="36" />
+            <img
+              src="img/logo-white.png"
+              data-src="img/logo-white.png"
+              alt="ChronoLogic"
+              height="36"
+            />
           </div>
         </div>
         <div className="d-flex align-items-center">
