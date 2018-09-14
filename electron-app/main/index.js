@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell, protocol, globalShortcut } = require('electron');
+const { app, BrowserWindow, Menu, shell, protocol } = require('electron');
 
 const path = require('path');
 const urlLib = require('url');
@@ -76,6 +76,10 @@ function createWindow() {
     mainWindow = null;
   });
 
+  mainWindow.reload = () => {
+    mainWindow.loadURL(MAIN_URL);
+  };
+
   const HELP_MENU = {
     role: 'help',
     submenu: [
@@ -105,6 +109,10 @@ function createWindow() {
         { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
         { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
       ]
+    },
+    {
+      label: 'Window',
+      submenu: [{ label: 'Reload', accelerator: 'CmdOrCtrl+R', click: mainWindow.reload }]
     },
     HELP_MENU
   ];
@@ -142,13 +150,6 @@ function createWindow() {
       event.preventDefault();
     }
   });
-
-  mainWindow.reload = () => {
-    mainWindow.loadURL(MAIN_URL);
-  };
-
-  globalShortcut.register('F5', mainWindow.reload);
-  globalShortcut.register('CommandOrControl+R', mainWindow.reload);
 }
 
 // This method will be called when Electron has finished
