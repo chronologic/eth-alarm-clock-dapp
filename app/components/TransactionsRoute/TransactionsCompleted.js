@@ -11,7 +11,7 @@ class TransactionsCompleted extends Component {
 
     return (
       <div className="container-fluid container-fixed-lg">
-        <h1 className="view-title">Transaction Scanner - Completed</h1>
+        <h1 className="view-title">Transaction Scanner - Completed - Past 24h</h1>
         <div className="widget-12 card no-border widget-loader-circle no-margin">
           {isCurrentNetworkSupported !== false ? (
             <TransactionScanner showStatus includeResolved pastHours={24} />
