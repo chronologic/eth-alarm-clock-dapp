@@ -46,9 +46,7 @@ export default class TransactionHelper {
 
     if (transaction.isCancelled) {
       status = TRANSACTION_STATUS.CANCELLED;
-    }
-
-    if (this.isTransactionMissed(transaction, currentTimestamp, currentBlock)) {
+    } else if (this.isTransactionMissed(transaction, currentTimestamp, currentBlock)) {
       status = TRANSACTION_STATUS.MISSED;
     }
 
