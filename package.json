@@ -11,7 +11,7 @@
     "build:electron:prod": "webpack --config webpack/electron.prod.config.js",
     "dev-docker": "node_modules/.bin/webpack-dev-server --config webpack/docker.dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check",
-    "dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron tools/electron.js\"",
+    "dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron electron-app/main/index.js\"",
     "prod": "node_modules/.bin/webpack-dev-server --config webpack/prod.config.js --host 0.0.0.0 --disable-host-check --hot",
     "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
