@@ -41,7 +41,7 @@
     "electron-is-dev": "0.3.0"
   },
   "devDependencies": {
-    "@ethereum-alarm-clock/timenode-core": "5.2.0",
+    "@ethereum-alarm-clock/timenode-core": "5.2.1",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
     "babel-core": "6.26.3",
