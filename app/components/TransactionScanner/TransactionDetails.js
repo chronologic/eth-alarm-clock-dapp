@@ -35,12 +35,27 @@ class TransactionDetails extends Component {
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
   }
 
-  getExecutedEvents(requestLib) {
+  getExecutedEvents(requestLib, fromBlock = 0) {
     return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
         resolve(events);
       });
     });
+  }
+
+  async executedAt(transaction, status, transactionStore) {
+    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
+    let executedAt = '';
+
+    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
+      const events = await this.getExecutedEvents(requestLib, transactionStore.requestFactoryStartBlock);
+
+      if (events.length > 0) {
+        executedAt = events[0].transactionHash;
+      }
+    }
+
+    this.setState({ executedAt });
   }
 
   async testToken() {
@@ -188,26 +203,18 @@ class TransactionDetails extends Component {
   async setupDetails() {
     const { transaction, transactionStore } = this.props;
 
-    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
-
-    const events = await this.getExecutedEvents(requestLib);
-
-    let executedAt = '';
-
-    if (events.length > 0) {
-      executedAt = events[0].transactionHash;
-    }
+    const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
     this.setState({
       callData: await transaction.callData(),
       isTimestamp: transactionStore.isTxUnitTimestamp(transaction),
-      status: await transactionStore.getTxStatus(transaction, moment().unix()),
-      executedAt,
+      status,
       isFrozen: ''
     });
 
     await this.getFrozenStatus();
     await this.testToken();
+    await this.executedAt(transaction, status, transactionStore);
   }
 
   getCancelSection() {
