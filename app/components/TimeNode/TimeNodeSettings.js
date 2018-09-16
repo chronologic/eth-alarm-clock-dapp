@@ -127,7 +127,7 @@ class TimeNodeSettings extends Component {
       maxGasSubsidy: this.isPercentageOrEmpty(maxGasSubsidy)
     };
 
-    const saveButtonDisabled = !Object.keys(validation).every(k => validation[k]);
+    const allFieldsValid = Object.keys(validation).every(k => validation[k]);
 
     return (
       <div id="timeNodeSettings">
@@ -275,7 +275,7 @@ class TimeNodeSettings extends Component {
               className="btn btn-primary px-5 btn-block pull-right"
               data-toggle="modal"
               data-target="#confirmClaimingModal"
-              disabled={saveButtonDisabled}
+              disabled={!allFieldsValid}
             >
               Save
             </button>
@@ -334,6 +334,7 @@ class TimeNodeSettings extends Component {
         <TimeNodeDetachModal />
         <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
+          valid={allFieldsValid}
           claiming={this.state.claiming}
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}
