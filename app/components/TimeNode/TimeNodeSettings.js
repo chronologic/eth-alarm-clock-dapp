@@ -102,7 +102,33 @@ class TimeNodeSettings extends Component {
     this.setState({});
   }
 
+  isPositiveFloatOrEmpty(str) {
+    if (str === '') {
+      return true;
+    }
+    return parseFloat(str) >= 0;
+  }
+
+  isPercentageOrEmpty(str) {
+    if (str === '') {
+      return true;
+    }
+    const percentage = parseInt(str);
+    return percentage >= 0 && percentage <= 100;
+  }
+
   render() {
+    const { maxDeposit, minProfitability, minBalance, maxGasSubsidy } = this.state;
+
+    const validation = {
+      maxDeposit: this.isPositiveFloatOrEmpty(maxDeposit),
+      minProfitability: this.isPositiveFloatOrEmpty(minProfitability),
+      minBalance: this.isPositiveFloatOrEmpty(minBalance),
+      maxGasSubsidy: this.isPercentageOrEmpty(maxGasSubsidy)
+    };
+
+    const saveButtonDisabled = !Object.keys(validation).every(k => validation[k]);
+
     return (
       <div id="timeNodeSettings">
         <div className="card card-transparent">
@@ -160,6 +186,9 @@ class TimeNodeSettings extends Component {
                       value={this.state.maxDeposit}
                       onChange={this.handleChange}
                     />
+                    <div className={`invalid-feedback ${!validation.maxDeposit ? 'd-block' : ''}`}>
+                      Please provide a valid deposit.
+                    </div>
                   </div>
                 </div>
 
@@ -174,6 +203,13 @@ class TimeNodeSettings extends Component {
                       value={this.state.minProfitability}
                       onChange={this.handleChange}
                     />
+                    <div
+                      className={`invalid-feedback ${
+                        !validation.minProfitability ? 'd-block' : ''
+                      }`}
+                    >
+                      Please provide a valid profitability.
+                    </div>
                   </div>
                 </div>
 
@@ -188,6 +224,9 @@ class TimeNodeSettings extends Component {
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
+                    <div className={`invalid-feedback ${!validation.minBalance ? 'd-block' : ''}`}>
+                      Please provide a valid balance.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -236,6 +275,7 @@ class TimeNodeSettings extends Component {
               className="btn btn-primary px-5 btn-block pull-right"
               data-toggle="modal"
               data-target="#confirmClaimingModal"
+              disabled={saveButtonDisabled}
             >
               Save
             </button>
