@@ -128,10 +128,8 @@ class ActionsTable extends Component {
           <div className="col-md-6">
             <div className="mx-4">
               <p className="small no-margin">
-                <a href="#">
-                  <i className="fa fs-16 fa-arrow-circle-o-down text-success m-r-10" />
-                </a>
-                <span className="hint-text ">For more details, see the LOGS tab.</span>
+                <i className="fa fa-info-circle text-primary" />
+                <span className="hint-text ">&nbsp;For more details, see the LOGS tab above.</span>
               </p>
             </div>
           </div>
