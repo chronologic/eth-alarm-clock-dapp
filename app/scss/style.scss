@@ -33,11 +33,9 @@ $warning-color: gold;
   margin-left: 10px;
 }
 
-.pages-sidebar {
-  background-color: #1D252A;
-
+.page-sidebar {
   & .sidebar-header {
-    background-color: #181E21;
+    background-color: #1D252A;
   }
   & .icon-thumbnail.active {
     background: $primary-color;

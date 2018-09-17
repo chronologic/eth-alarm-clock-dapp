@@ -14,7 +14,7 @@ exports[`Header displays current block number 1`] = `
       className="brand inline"
     >
       <img
-        alt="logo"
+        alt="ChronoLogic"
         data-src="img/logo-white.png"
         height="36"
         src="img/logo-white.png"

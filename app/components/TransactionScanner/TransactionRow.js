@@ -154,7 +154,7 @@ class TransactionsRow extends Component {
         </td>
         {showStatus && (
           <td className="v-align-middle">
-            <a href="#">{status}</a>
+            {status}
           </td>
         )}
       </tr>

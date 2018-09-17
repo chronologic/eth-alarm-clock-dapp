@@ -36,8 +36,6 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
   InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
 };
 
-const SCHEDULING_GAS_LIMIT = 1500000;
-
 export class TransactionStore {
   _eac;
   _web3;
@@ -504,7 +502,6 @@ export class TransactionStore {
 
     await this._eacScheduler.initSender({
       from: this._web3.eth.defaultAccount,
-      gas: SCHEDULING_GAS_LIMIT,
       value: endowment
     });
 
