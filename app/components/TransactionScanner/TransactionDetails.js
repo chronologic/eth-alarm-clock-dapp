@@ -48,7 +48,10 @@ class TransactionDetails extends Component {
     let executedAt = '';
 
     if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
-      const events = await this.getExecutedEvents(requestLib, transactionStore.requestFactoryStartBlock);
+      const events = await this.getExecutedEvents(
+        requestLib,
+        transactionStore.requestFactoryStartBlock
+      );
 
       if (events.length > 0) {
         executedAt = events[0].transactionHash;
@@ -207,12 +210,24 @@ class TransactionDetails extends Component {
 
     this.setState({
       callData: await transaction.callData(),
-      status,
+      status
     });
 
     await this.getFrozenStatus();
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
+  }
+
+  getTransactionPropertyTimeDisplay(transaction, property) {
+    let display = '';
+
+    if (transaction[property] && transaction[property].toString) {
+      const parsedUnixTime = moment.unix(transaction[property].toString());
+
+      display = parsedUnixTime.format('YYYY/MM/DD HH:mm:ss');
+    }
+
+    return display;
   }
 
   getCancelSection() {
@@ -221,12 +236,32 @@ class TransactionDetails extends Component {
 
     const isOwner = this.isOwner(transaction);
 
-    if (isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
-      return (
-        <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
+    const cancelButtonEnabled = isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED;
+
+    return (
+      <div className="alert alert-info">
+        In order to cancel this transaction please switch to account {transaction.owner}{' '}
+        (transaction owner).
+        <br />
+        <br />
+        Note that transaction can be cancelled:
+        <br />
+        <ol className="list-normalized">
+          <li>
+            before {this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}{' '}
+            (claiming window start)
+          </li>
+          <li>
+            when wasn&#39;t executed by any TimeNode after{' '}
+            {this.getTransactionPropertyTimeDisplay(transaction, 'executionWindowEnd')} (execution
+            window end)
+          </li>
+          <li>hasn&#39;t been already cancelled</li>
+        </ol>
+        <div className="mt-3">
           <button
             className="btn btn-danger btn-cons"
-            disabled={isFrozen}
+            disabled={!cancelButtonEnabled}
             onClick={this.cancelTransaction}
             type="button"
             ref={el => (this.cancelBtn = el)}
@@ -234,10 +269,8 @@ class TransactionDetails extends Component {
             <span>Cancel</span>
           </button>
         </div>
-      );
-    }
-
-    return <div className="col-6" />;
+      </div>
+    );
   }
 
   getApproveSection() {
@@ -480,11 +513,13 @@ class TransactionDetails extends Component {
           <div className="col-10 col-sm-8 col-md-6 col-lg-4">
             <div className="row">
               {this.getApproveSection()}
-              {this.getCancelSection()}
               {this.getRefundSection()}
             </div>
           </div>
           <div className="col-12">{this.getInfoMessage()}</div>
+        </div>
+        <div className="row mt-4">
+          <div className="col">{this.getCancelSection()}</div>
         </div>
       </div>
     );
