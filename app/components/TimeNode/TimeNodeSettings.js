@@ -274,7 +274,7 @@ class TimeNodeSettings extends Component {
                   />
                 </div>
                 <div className={`invalid-feedback ${!validation.maxGasSubsidy ? 'd-block' : ''}`}>
-                  Please provide a valid percentage.
+                  Please provide a valid percentage between 0 and 100.
                 </div>
               </div>
             </div>
