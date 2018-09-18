@@ -240,23 +240,28 @@ class TransactionDetails extends Component {
 
     return (
       <div className="alert alert-info">
-        In order to cancel this transaction please switch to account {transaction.owner}{' '}
-        (transaction owner).
-        <br />
-        <br />
+        {!isOwner && (
+          <React.Fragment>
+            In order to cancel this transaction please switch to account <b>{transaction.owner}</b>{' '}
+            (transaction owner).
+            <br />
+            <br />
+          </React.Fragment>
+        )}
         Note that transaction can be cancelled:
         <br />
         <ol className="list-normalized">
           <li>
-            before {this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}{' '}
+            Before <b>{this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}</b>{' '}
             (claiming window start)
           </li>
           <li>
-            when wasn&#39;t executed by any TimeNode after{' '}
-            {this.getTransactionPropertyTimeDisplay(transaction, 'executionWindowEnd')} (execution
-            window end)
+            When wasn&#39;t executed by any TimeNode after{' '}
+            <b>{this.getTransactionPropertyTimeDisplay(transaction, 'executionWindowEnd')}</b>{' '}
+            (execution window end)
           </li>
-          <li>hasn&#39;t been already cancelled</li>
+          <li>When it hasn&#39;t been already cancelled</li>
+          <li>Only by its owner</li>
         </ol>
         <div className="mt-3">
           <button
