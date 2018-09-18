@@ -215,30 +215,33 @@ exports[`TransactionDetails correctly renders 1`] = `
       <div
         className="alert alert-info"
       >
-        In order to cancel this transaction please switch to account 
-         
-        (transaction owner).
-        <br />
-        <br />
         Note that transaction can be cancelled:
         <br />
         <ol
           className="list-normalized"
         >
           <li>
-            before 
-            
+            Before 
+            <b>
+              
+            </b>
              
             (claiming window start)
           </li>
           <li>
-            when wasn't executed by any TimeNode after
+            When wasn't executed by any TimeNode after
              
-            
-             (execution window end)
+            <b>
+              
+            </b>
+             
+            (execution window end)
           </li>
           <li>
-            hasn't been already cancelled
+            When it hasn't been already cancelled
+          </li>
+          <li>
+            Only by its owner
           </li>
         </ol>
         <div
