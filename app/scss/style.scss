@@ -109,11 +109,11 @@ $warning-color: gold;
 .page-sidebar .sidebar-menu .menu-items li {
   & > a {
     width: 100%;
-  } 
+  }
   & > a.sub-title {
     width: inherit;
   }
-  
+
   & > a:hover > .icon-thumbnail {
     color: #fff;
   }
@@ -178,7 +178,7 @@ hr {
   height: 200px;
   position: relative;
   text-align: center;
-  
+
   & span {
     margin: 0;
     position: absolute;
@@ -242,11 +242,11 @@ hr {
       color: #fff;
     }
   }
-  
+
   & .row.nav-tabs-linetriangle {
     margin: 0;
   }
-  
+
   & .nav-tabs-linetriangle > li {
     padding-left: 0px;
     padding-right: 0px;
@@ -375,4 +375,9 @@ hr {
 #copyMessage {
   color: dimgrey;
   background-color: #fff;
+}
+
+.list-normalized {
+  margin-top: 5px;
+  padding-left: 14px;
 }
