@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
-import { ActionsTable, ExecutedGraph } from './StatisticsComponents';
+import { ActionsTable, ExecutedGraph } from './Dashboard';
 import { BeatLoader } from 'react-spinners';
 import moment from 'moment';
 

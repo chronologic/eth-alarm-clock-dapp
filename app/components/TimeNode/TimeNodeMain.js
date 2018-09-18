@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TimeNodeDashboard } from './TimeNodeDashboard';
 import TimeNodeLogs from './TimeNodeLogs';
 import TimeNodeSettings from './TimeNodeSettings';
+import TimeNodeNetwork from './TimeNodeNetwork';
 import PoweredByEAC from '../Common/PoweredByEAC';
 import ConfirmModal from '../Common/ConfirmModal';
 
@@ -86,6 +87,11 @@ class TimeNodeMain extends Component {
             </a>
           </li>
           <li className="nav-item">
+            <a name="logs" className="px-4 py-3" href="#tabNetwork" data-toggle="tab" role="tab">
+              Network
+            </a>
+          </li>
+          <li className="nav-item">
             <a name="logs" className="px-4 py-3" href="#tabLogs" data-toggle="tab" role="tab">
               Logs
             </a>
@@ -110,6 +116,10 @@ class TimeNodeMain extends Component {
           >
             <TimeNodeDashboard />
             <PoweredByEAC className="py-3" style={{ backgroundColor: 'rgb(245, 245, 245)' }} />
+          </div>
+          <div className="tab-pane padding-25 " id="tabNetwork">
+            <TimeNodeNetwork />
+            <PoweredByEAC className="py-3" />
           </div>
           <div className="tab-pane padding-25 " id="tabLogs">
             <TimeNodeLogs />
