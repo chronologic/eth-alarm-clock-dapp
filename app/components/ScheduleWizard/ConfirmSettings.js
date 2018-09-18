@@ -106,7 +106,7 @@ class ConfirmSettings extends Component {
       time: ' DATE & TIME',
       bounty: ' BOUNTY',
       block: ' DATE & TIME'
-    }
+    };
     const { scheduleStore } = this.props;
     const emptyFieldSign = '-';
     let errMsg = [];
@@ -117,7 +117,7 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-        {errMsg.length > 0 && <Alert {...{ msg: `- Please check: " ${ errMsg.map(err => Tabs(err)).join(",") } tab(s) for correct input values`, close: false }} />}
+        {errMsg.length > 0 && <Alert {...{ msg: `- Please check:  ${ errMsg.map(err => Tabs(err)).join(',') } tab(s) for correct input values`, close: false }} />}
         {scheduleStore.isTokenTransfer && (
           <Alert
             {...{
