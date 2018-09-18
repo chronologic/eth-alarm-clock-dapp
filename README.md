@@ -1,6 +1,6 @@
 [<img src="https://s3.amazonaws.com/chronologic.network/ChronoLogic_logo.svg" width="128px">](https://github.com/chronologic)
 
-_Note: This DApp is operational on the Kovan and Ropsten testnets. Mainnet release coming soon._ 
+_Update: This DApp is operational on the Mainnet as well as on the Kovan and Ropsten testnets._ 
 
 # Ethereum Alarm Clock DApp
 
