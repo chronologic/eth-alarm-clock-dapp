@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { action } from "mobx";
-import { inject, observer } from "mobx-react";
-import Alert from "../Common/Alert";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { action } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import Alert from '../Common/Alert';
 
-@inject("scheduleStore")
-@inject("eacService")
-@inject("web3Service")
+@inject('scheduleStore')
+@inject('eacService')
+@inject('web3Service')
 @observer
 class ConfirmSettings extends Component {
   constructor(props) {
@@ -24,14 +24,14 @@ class ConfirmSettings extends Component {
     } = this.props;
     let { gasAmount, amountToSend, gasPrice, fee, timeBounty } = scheduleStore;
 
-    amountToSend = web3.toWei(amountToSend, "ether");
-    gasPrice = web3.toWei(gasPrice, "gwei");
-    fee = web3.toWei(fee, "ether");
-    timeBounty = web3.toWei(timeBounty, "ether");
+    amountToSend = web3.toWei(amountToSend, 'ether');
+    gasPrice = web3.toWei(gasPrice, 'gwei');
+    fee = web3.toWei(fee, 'ether');
+    timeBounty = web3.toWei(timeBounty, 'ether');
 
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
-    return Number(web3.fromWei(endowment, "ether")); // Only for display purposes
+    return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
   }
 
   get executionWindow() {
@@ -47,31 +47,31 @@ class ConfirmSettings extends Component {
     if (scheduleStore.isUsingTime) {
       return scheduleStore.transactionTzTime;
     }
-    return scheduleStore.blockNumber ? scheduleStore.blockNumber : "-";
+    return scheduleStore.blockNumber ? scheduleStore.blockNumber : '-';
   }
 
   web3Error() {
     return !this.props.isWeb3Usable ? (
-      <Alert {...{ msg: "You need Metamask installed and accounts Unlocked to continue" }} />
+      <Alert {...{ msg: 'You need Metamask installed and accounts Unlocked to continue' }} />
     ) : null;
   }
 
   infoSettingsValidations() {
-    return !this.props.infoTabValidator ? "info" : null;
+    return !this.props.infoTabValidator ? 'info' : null;
   }
 
   bountySettingsValidations() {
-    return !this.props.bountyTabValidator ? "bounty" : null;
+    return !this.props.bountyTabValidator ? 'bounty' : null;
   }
 
   timeSettingsValidations() {
     const { scheduleStore } = this.props;
-    return scheduleStore.isUsingTime && !this.props.timeTabValidator ? "time" : null;
+    return scheduleStore.isUsingTime && !this.props.timeTabValidator ? 'time' : null;
   }
 
   blockComponentValidations() {
     const { scheduleStore } = this.props;
-    return !scheduleStore.isUsingTime && !this.props.blockTabValidator ? "block" : null;
+    return !scheduleStore.isUsingTime && !this.props.blockTabValidator ? 'block' : null;
   }
 
   @action
@@ -102,13 +102,13 @@ class ConfirmSettings extends Component {
 
   render() {
     const Tabs = {
-      info: " INFORMATION",
-      time: " DATE & TIME",
-      bounty: " BOUNTY",
-      block: " DATE & TIME"
+      info: ' INFORMATION',
+      time: ' DATE & TIME',
+      bounty: ' BOUNTY',
+      block: ' DATE & TIME'
     }
     const { scheduleStore } = this.props;
-    const emptyFieldSign = "-";
+    const emptyFieldSign = '-';
     let errMsg = [];
     Object.keys(this.state.errors).map(section => {
       this.state.errors[section] ? errMsg.push(section) : null;
@@ -121,10 +121,10 @@ class ConfirmSettings extends Component {
         {scheduleStore.isTokenTransfer && (
           <Alert
             {...{
-              type: "info",
+              type: 'info',
               close: false,
               msg:
-                ": Please note that you will be prompted to send additional transaction to set token allowance required to complete tokens transfer scheduling, after successful deployment"
+                ': Please note that you will be prompted to send additional transaction to set token allowance required to complete tokens transfer scheduling, after successful deployment'
             }}
           />
         )}
@@ -140,14 +140,14 @@ class ConfirmSettings extends Component {
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4">
                     <strong>
-                      {!scheduleStore.isTokenTransfer ? "To Address" : "Token Address"}
+                      {!scheduleStore.isTokenTransfer ? 'To Address' : 'Token Address'}
                     </strong>
                   </td>
                   <td className="d-inline-block col-6 col-sm-6 col-lg-8">
                     {scheduleStore.toAddress ? (
                       <a
                         href={
-                          this.props.web3Service.explorer + "address/" + scheduleStore.toAddress
+                          this.props.web3Service.explorer + 'address/' + scheduleStore.toAddress
                         }
                         target="_blank"
                         rel="noopener noreferrer"
@@ -166,7 +166,7 @@ class ConfirmSettings extends Component {
                       <a
                         href={
                           this.props.web3Service.explorer +
-                          "address/" +
+                          'address/' +
                           scheduleStore.receiverAddress
                         }
                         target="_blank"
@@ -184,14 +184,14 @@ class ConfirmSettings extends Component {
                   {!scheduleStore.isTokenTransfer && (
                     <td className="d-inline-block col-6 col-lg-8">
                       {scheduleStore.amountToSend
-                        ? scheduleStore.amountToSend + " ETH"
+                        ? scheduleStore.amountToSend + ' ETH'
                         : emptyFieldSign}
                     </td>
                   )}
                   {scheduleStore.isTokenTransfer && (
                     <td className="d-inline-block col-6 col-lg-8">
                       {scheduleStore.tokenToSend
-                        ? scheduleStore.tokenToSend + " " + scheduleStore.tokenSymbol
+                        ? scheduleStore.tokenToSend + ' ' + scheduleStore.tokenSymbol
                         : emptyFieldSign}
                     </td>
                   )}
@@ -214,7 +214,7 @@ class ConfirmSettings extends Component {
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6 col-lg-4">
-                    {scheduleStore.isUsingTime ? "Time" : "Block Number"}
+                    {scheduleStore.isUsingTime ? 'Time' : 'Block Number'}
                   </td>
                   <td className="d-inline-block col-6 col-lg-8">{this.blockOrTime()}</td>
                 </tr>
@@ -245,7 +245,7 @@ class ConfirmSettings extends Component {
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Gas Price</td>
                   <td className="d-inline-block col-6">
-                    {scheduleStore.gasPrice ? scheduleStore.gasPrice + " Gwei" : emptyFieldSign}
+                    {scheduleStore.gasPrice ? scheduleStore.gasPrice + ' Gwei' : emptyFieldSign}
                   </td>
                 </tr>
                 <tr className="row m-0">
@@ -257,13 +257,13 @@ class ConfirmSettings extends Component {
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Time Bounty</td>
                   <td className="d-inline-block col-6">
-                    {scheduleStore.timeBounty ? scheduleStore.timeBounty + " ETH" : emptyFieldSign}
+                    {scheduleStore.timeBounty ? scheduleStore.timeBounty + ' ETH' : emptyFieldSign}
                   </td>
                 </tr>
                 <tr className="row m-0">
                   <td className="d-inline-block col-6">Deposit</td>
                   <td className="d-inline-block col-6">
-                    {scheduleStore.deposit ? scheduleStore.deposit + " ETH" : emptyFieldSign}
+                    {scheduleStore.deposit ? scheduleStore.deposit + ' ETH' : emptyFieldSign}
                   </td>
                 </tr>
               </tbody>
