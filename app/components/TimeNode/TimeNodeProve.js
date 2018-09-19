@@ -7,6 +7,8 @@ import { BeatLoader } from 'react-spinners';
 @inject('timeNodeStore')
 @observer
 class TimeNodeProve extends Component {
+  _mounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,10 +26,12 @@ class TimeNodeProve extends Component {
   };
 
   componentDidMount() {
+    this._mounted = true;
     this.signatureRef.addEventListener('keyup', this._handleEnterPress);
   }
 
   componentWillUnmount() {
+    this._mounted = false;
     this.signatureRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
@@ -39,7 +43,9 @@ class TimeNodeProve extends Component {
       await this.props.timeNodeStore.attachDayAccount(signature);
     }
 
-    this.setState({ checkOngoing: false });
+    if (this._mounted) {
+      this.setState({ checkOngoing: false });
+    }
   }
 
   resetVerify() {
