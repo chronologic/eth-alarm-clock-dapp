@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 import Alert from '../Common/Alert';
-import { ValueDisplay } from '../Common';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 import { showNotification } from '../../services/notification';
 import moment from 'moment';
+import { ValueDisplay } from '../Common/ValueDisplay';
 
 const INITIAL_STATE = {
   callData: '',

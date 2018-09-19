@@ -1,9 +1,9 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { ValueDisplay } from '../app/components/Common';
 import { Provider } from 'mobx-react';
 import Web3Service from '../app/services/web3';
 import BigNumber from 'bignumber.js';
+import { ValueDisplay } from '../app/components/Common/ValueDisplay';
 
 describe('ValueDisplay', () => {
   it('correctly displays prices', () => {
