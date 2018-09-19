@@ -24,5 +24,10 @@
         "quotes": ["error", "single", { "allowTemplateLiterals": true }],
         "jsx-quotes": ["error", "prefer-double"]
     },
-    "plugins": ["jest"]
+    "plugins": ["jest"],
+    "settings": {
+      "react": {
+        "version": "16.5.2"
+      }
+    }
 }
