@@ -1,6 +1,7 @@
 import KeenAnalysis from 'keen-analysis';
 import KeenTracking from 'keen-tracking';
 import { observable } from 'mobx';
+import moment from 'moment';
 
 const COLLECTIONS = {
   PAGEVIEWS: 'pageviews',
@@ -27,6 +28,9 @@ export class KeenStore {
   isBlacklisted = false;
 
   _web3Service = null;
+
+  @observable
+  historyActiveTimeNodes = [];
 
   constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
     this.projectId = projectId;
@@ -100,6 +104,11 @@ export class KeenStore {
 
   async refreshActiveTimeNodesCount() {
     this.activeTimeNodes = await this.getActiveTimeNodesCount(this.networkId);
+
+    this.historyActiveTimeNodes.push({
+      amount: this.activeTimeNodes,
+      timestamp: moment().unix()
+    });
 
     if (this.timeNodeSpecificProviderNetId === this.networkId) {
       this.activeTimeNodesTimeNodeSpecificProvider = this.activeTimeNodes;

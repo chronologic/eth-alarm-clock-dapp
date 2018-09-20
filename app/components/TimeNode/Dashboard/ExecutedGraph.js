@@ -60,7 +60,7 @@ class ExecutedGraph extends Component {
     // Sort the time intervals by hour
     timeIntervals.sort(this.compareDates);
 
-    const ctx = this.chartRef.getContext('2d');
+    const ctx = this.executedGraph.getContext('2d');
 
     const dataLabels = timeIntervals.map(interval => interval.datetime.getHours() + ':00');
     const dataExecuted = timeIntervals.map(interval => interval.executed);
@@ -92,10 +92,10 @@ class ExecutedGraph extends Component {
             ctx.textAlign = 'left';
             ctx.textBaseline = 'bottom';
 
-            this.data.datasets.forEach(function(dataset, i) {
+            this.data.datasets.forEach((dataset, i) => {
               const meta = chartInstance.controller.getDatasetMeta(i);
-              meta.data.forEach(function(bar, index) {
-                var data = dataset.data[index];
+              meta.data.forEach((bar, index) => {
+                const data = dataset.data[index];
                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
               });
             });
@@ -142,7 +142,7 @@ class ExecutedGraph extends Component {
   }
 
   render() {
-    return <canvas ref={el => (this.chartRef = el)} />;
+    return <canvas id="executedGraph" ref={el => (this.executedGraph = el)} />;
   }
 }
 
