@@ -8,10 +8,18 @@ import { ActiveTimeNodesGraph } from './Network';
 class TimeNodeNetwork extends Component {
   render() {
     const { historyActiveTimeNodes } = this.props.keenStore;
+
     const activeTnsGraph =
       historyActiveTimeNodes.length > 0 ? <ActiveTimeNodesGraph /> : <p>No data yet.</p>;
 
-    return <div id="timeNodeNetwork">{activeTnsGraph}</div>;
+    return (
+      <div id="timeNodeNetwork">
+        <div className="row">
+          <div className="col-md-6">{activeTnsGraph}</div>
+          <div className="col-md-6">Next</div>
+        </div>
+      </div>
+    );
   }
 }
 

@@ -62,7 +62,7 @@ class ActiveTimeNodesGraph extends Component {
     const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
 
     const dataLabels = timeIntervals.map(interval => interval.datetime.getHours() + ':00');
-    const dataActiveTns = timeIntervals.map(interval => average(interval.amounts));
+    const dataActiveTns = timeIntervals.map(interval => Math.floor(average(interval.amounts)));
 
     new Chart(ctx, {
       type: 'bar',

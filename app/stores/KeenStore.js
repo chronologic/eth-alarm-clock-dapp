@@ -105,11 +105,6 @@ export class KeenStore {
   async refreshActiveTimeNodesCount() {
     this.activeTimeNodes = await this.getActiveTimeNodesCount(this.networkId);
 
-    this.historyActiveTimeNodes.push({
-      amount: this.activeTimeNodes,
-      timestamp: moment().unix()
-    });
-
     if (this.timeNodeSpecificProviderNetId === this.networkId) {
       this.activeTimeNodesTimeNodeSpecificProvider = this.activeTimeNodes;
     } else if (this.timeNodeSpecificProviderNetId === null) {
@@ -118,6 +113,13 @@ export class KeenStore {
       this.activeTimeNodesTimeNodeSpecificProvider = await this.getActiveTimeNodesCount(
         this.timeNodeSpecificProviderNetId
       );
+    }
+
+    if (this.activeTimeNodesTimeNodeSpecificProvider !== null) {
+      this.historyActiveTimeNodes.push({
+        amount: this.activeTimeNodesTimeNodeSpecificProvider,
+        timestamp: moment().unix()
+      });
     }
 
     this.isBlacklisted = this.activeTimeNodes === null;
