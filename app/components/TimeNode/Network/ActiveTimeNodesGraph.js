@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
+import moment from 'moment';
 
 @inject('keenStore')
 @observer
@@ -22,48 +23,40 @@ class ActiveTimeNodesGraph extends Component {
     clearInterval(this.interval);
   }
 
-  refreshChart() {
-    const { historyActiveTimeNodes } = this.props.keenStore;
+  async refreshChart() {
+    await this.props.keenStore.refreshActiveTimeNodesCount();
 
-    const lastValidTime = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
+    const { latestActiveTimeNodes, historyActiveTimeNodes } = this.props.keenStore;
 
-    let timeIntervals = [];
+    // Deep copy the history
+    const timeIntervals = JSON.parse(JSON.stringify(historyActiveTimeNodes));
 
-    for (let activeTns of historyActiveTimeNodes) {
-      // If in the last 24h
-      if (activeTns.timestamp > lastValidTime) {
-        const activeTnsDate = new Date(activeTns.timestamp);
-        activeTnsDate.setHours(activeTnsDate.getHours(), 0, 0, 0);
+    const currentHour = this.props.keenStore.hourFromTimestamp(moment().unix());
 
-        let timeIntervalExists = false;
+    // Add all current hour counters to the history
+    const average = arr =>
+      arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
+    timeIntervals[currentHour] = Math.floor(
+      average(latestActiveTimeNodes.map(counter => counter.amount))
+    );
 
-        // Check if that time interval already exists in the array
-        for (let i = 0; i < timeIntervals.length; i++) {
-          // If so, add to that array
-          if (timeIntervals[i].datetime.getTime() === activeTnsDate.getTime()) {
-            timeIntervals[i].amounts.push(activeTns.amount);
-            timeIntervalExists = true;
-          }
-        }
+    // Sort the time intervals and values
+    const sortedIntervals = {};
+    Object.keys(timeIntervals)
+      .sort()
+      .forEach(key => (sortedIntervals[key] = timeIntervals[key]));
+    const sortedValues = Object.values(sortedIntervals);
 
-        // If the time interval doesn't exist already
-        if (!timeIntervalExists) {
-          // Create the time interval and bump the executed flag
-          timeIntervals.push({ datetime: activeTnsDate, amounts: [activeTns.amount] });
-        }
-      }
-    }
-
-    // Sort the time intervals by hour
-    timeIntervals.sort(this.compareDates);
+    // Format the values to be displayed on the graph
+    const dataLabels = Object.keys(sortedIntervals).map(
+      timestamp =>
+        moment(parseInt(timestamp))
+          .toDate()
+          .getHours() + ':00'
+    );
+    const dataActiveTns = sortedValues;
 
     const ctx = this.activeTnsGraph.getContext('2d');
-
-    const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
-
-    const dataLabels = timeIntervals.map(interval => interval.datetime.getHours() + ':00');
-    const dataActiveTns = timeIntervals.map(interval => Math.floor(average(interval.amounts)));
-
     new Chart(ctx, {
       type: 'bar',
       data: {

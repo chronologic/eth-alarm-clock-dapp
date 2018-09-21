@@ -10,17 +10,19 @@ const REFRESH_INTERVAL = 120 * 1000;
 @observer
 class TimeNodeNetwork extends Component {
   render() {
-    const { historyActiveTimeNodes } = this.props.keenStore;
+    const { historyActiveTimeNodes, latestActiveTimeNodes } = this.props.keenStore;
 
-    const activeTnsGraph =
-      historyActiveTimeNodes.length > 0 ? (
-        <ActiveTimeNodesGraph
-          onRef={ref => (this.activeTnsGraph = ref)}
-          refreshInterval={REFRESH_INTERVAL}
-        />
-      ) : (
-        <p>No data yet.</p>
-      );
+    const shouldShowActiveTnsGraph =
+      latestActiveTimeNodes.length > 0 || Object.keys(historyActiveTimeNodes).length > 0;
+
+    const activeTnsGraph = shouldShowActiveTnsGraph ? (
+      <ActiveTimeNodesGraph
+        onRef={ref => (this.activeTnsGraph = ref)}
+        refreshInterval={REFRESH_INTERVAL}
+      />
+    ) : (
+      <p>No data yet.</p>
+    );
 
     return (
       <div id="timeNodeNetwork">
@@ -29,19 +31,21 @@ class TimeNodeNetwork extends Component {
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Amount of Active TimeNodes (last 24h)</div>
-                <div className="card-controls">
-                  <ul>
-                    <li>
-                      <a
-                        data-toggle="refresh"
-                        className="card-refresh"
-                        onClick={() => this.activeTnsGraph.refreshChart()}
-                      >
-                        <i className="card-icon card-icon-refresh" />
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                {shouldShowActiveTnsGraph && (
+                  <div className="card-controls">
+                    <ul>
+                      <li>
+                        <a
+                          data-toggle="refresh"
+                          className="card-refresh"
+                          onClick={() => this.activeTnsGraph.refreshChart()}
+                        >
+                          <i className="card-icon card-icon-refresh" />
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
               <div className="card-body">{activeTnsGraph}</div>
             </div>
