@@ -102,7 +102,33 @@ class TimeNodeSettings extends Component {
     this.setState({});
   }
 
+  isPositiveFloatOrEmpty(str) {
+    if (str === '') {
+      return true;
+    }
+    return parseFloat(str) >= 0;
+  }
+
+  isPercentageOrEmpty(str) {
+    if (str === '') {
+      return true;
+    }
+    const percentage = parseInt(str);
+    return percentage >= 0 && percentage <= 100;
+  }
+
   render() {
+    const { maxDeposit, minProfitability, minBalance, maxGasSubsidy } = this.state;
+
+    const validation = {
+      maxDeposit: this.isPositiveFloatOrEmpty(maxDeposit),
+      minProfitability: this.isPositiveFloatOrEmpty(minProfitability),
+      minBalance: this.isPositiveFloatOrEmpty(minBalance),
+      maxGasSubsidy: this.isPercentageOrEmpty(maxGasSubsidy)
+    };
+
+    const allFieldsValid = Object.keys(validation).every(k => validation[k]);
+
     return (
       <div id="timeNodeSettings">
         <div className="card card-transparent">
@@ -150,7 +176,11 @@ class TimeNodeSettings extends Component {
 
               <div className="row vertical-align">
                 <div className="col-md-4">
-                  <div className="form-group form-group-default">
+                  <div
+                    className={`form-group form-group-default ${
+                      !validation.maxDeposit ? 'has-error' : ''
+                    }`}
+                  >
                     <label>Require a deposit lower than</label>
                     <input
                       id="maxDeposit"
@@ -161,10 +191,17 @@ class TimeNodeSettings extends Component {
                       onChange={this.handleChange}
                     />
                   </div>
+                  <div className={`invalid-feedback ${!validation.maxDeposit ? 'd-block' : ''}`}>
+                    Please provide a valid deposit.
+                  </div>
                 </div>
 
                 <div className="col-md-4">
-                  <div className="form-group form-group-default">
+                  <div
+                    className={`form-group form-group-default ${
+                      !validation.minProfitability ? 'has-error' : ''
+                    }`}
+                  >
                     <label>Bring a profit higher than</label>
                     <input
                       id="minProfitability"
@@ -175,10 +212,19 @@ class TimeNodeSettings extends Component {
                       onChange={this.handleChange}
                     />
                   </div>
+                  <div
+                    className={`invalid-feedback ${!validation.minProfitability ? 'd-block' : ''}`}
+                  >
+                    Please provide a valid profitability.
+                  </div>
                 </div>
 
                 <div className="col-md-4">
-                  <div className="form-group form-group-default">
+                  <div
+                    className={`form-group form-group-default ${
+                      !validation.minBalance ? 'has-error' : ''
+                    }`}
+                  >
                     <label>My balance is higher than</label>
                     <input
                       id="minBalance"
@@ -188,6 +234,9 @@ class TimeNodeSettings extends Component {
                       value={this.state.minBalance}
                       onChange={this.handleChange}
                     />
+                  </div>
+                  <div className={`invalid-feedback ${!validation.minBalance ? 'd-block' : ''}`}>
+                    Please provide a valid balance.
                   </div>
                 </div>
               </div>
@@ -209,7 +258,11 @@ class TimeNodeSettings extends Component {
 
             <div className="row vertical-align">
               <div className="col-md-4">
-                <div className="form-group form-group-default">
+                <div
+                  className={`form-group form-group-default ${
+                    !validation.maxGasSubsidy ? 'has-error' : ''
+                  }`}
+                >
                   <label>Maximum Gas Subsidy</label>
                   <input
                     id="maxGasSubsidy"
@@ -219,6 +272,9 @@ class TimeNodeSettings extends Component {
                     value={this.state.maxGasSubsidy}
                     onChange={this.handleChange}
                   />
+                </div>
+                <div className={`invalid-feedback ${!validation.maxGasSubsidy ? 'd-block' : ''}`}>
+                  Please provide a valid percentage between 0 and 100.
                 </div>
               </div>
             </div>
@@ -236,6 +292,7 @@ class TimeNodeSettings extends Component {
               className="btn btn-primary px-5 btn-block pull-right"
               data-toggle="modal"
               data-target="#confirmClaimingModal"
+              disabled={!allFieldsValid}
             >
               Save
             </button>
@@ -294,6 +351,7 @@ class TimeNodeSettings extends Component {
         <TimeNodeDetachModal />
         <TimeNodeResetStatsModal />
         <ConfirmEconomicStrategyModal
+          valid={allFieldsValid}
           claiming={this.state.claiming}
           maxDeposit={this.state.maxDeposit}
           minProfitability={this.state.minProfitability}

@@ -35,9 +35,9 @@ module.exports = merge(baseConfig, {
       path: '.env.prod'
     }),
     new webpack.DefinePlugin({
-     'process.env':{
-       'NODE_ENV': JSON.stringify('production')
-     }
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
     })
   ],
 
@@ -72,8 +72,6 @@ module.exports = merge(baseConfig, {
       new webpack.optimize.AggressiveMergingPlugin(),
       new webpack.optimize.OccurrenceOrderPlugin(),
       new CompressionPlugin({
-        asset: '[path].gz[query]',
-        algorithm: 'gzip',
         test: /\.js$|\.css$|\.html$/,
         threshold: 10240,
         minRatio: 0

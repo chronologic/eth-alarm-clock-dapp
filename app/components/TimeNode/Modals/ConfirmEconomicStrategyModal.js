@@ -13,6 +13,7 @@ class ConfirmClaimingModal extends Component {
   async saveClaimingChange() {
     const password = this.passwdRef.value;
     const {
+      valid,
       claiming,
       maxDeposit,
       minBalance,
@@ -21,7 +22,7 @@ class ConfirmClaimingModal extends Component {
       timeNodeStore
     } = this.props;
 
-    if (timeNodeStore.passwordMatchesKeystore(password)) {
+    if (timeNodeStore.passwordMatchesKeystore(password) && valid) {
       timeNodeStore.claiming = claiming;
       timeNodeStore.saveClaimingStrategy({
         maxDeposit,
@@ -95,6 +96,7 @@ class ConfirmClaimingModal extends Component {
 }
 
 ConfirmClaimingModal.propTypes = {
+  valid: PropTypes.any,
   timeNodeStore: PropTypes.any,
   claiming: PropTypes.bool,
   maxDeposit: PropTypes.string,
