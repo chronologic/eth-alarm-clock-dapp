@@ -12,13 +12,13 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   componentDidMount() {
+    this.props.onRef(this);
     this.refreshChart();
-    // Refreshes the graph every 2 min
-    const twoMin = 120 * 1000;
-    this.interval = setInterval(this.refreshChart, twoMin);
+    this.interval = setInterval(this.refreshChart, this.props.refreshInterval);
   }
 
   componentWillUnmount() {
+    this.props.onRef(undefined);
     clearInterval(this.interval);
   }
 
@@ -84,7 +84,12 @@ class ActiveTimeNodesGraph extends Component {
             {
               ticks: {
                 min: 0,
-                stepSize: 1
+                beginAtZero: true,
+                callback: value => {
+                  if (Math.floor(value) === value) {
+                    return value;
+                  }
+                }
               }
             }
           ]
@@ -105,7 +110,9 @@ class ActiveTimeNodesGraph extends Component {
 }
 
 ActiveTimeNodesGraph.propTypes = {
-  keenStore: PropTypes.any
+  onRef: PropTypes.any,
+  keenStore: PropTypes.any,
+  refreshInterval: PropTypes.number
 };
 
 export { ActiveTimeNodesGraph };
