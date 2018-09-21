@@ -6,6 +6,7 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
+import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 
 let instance = null;
 
@@ -167,7 +168,7 @@ export default class Web3Service {
   }
 
   getWeb3FromProviderUrl(url) {
-    return this._w3Util.getWeb3FromProviderUrl(url);
+    return W3Util.getWeb3FromProviderUrl(url);
   }
 
   /**
