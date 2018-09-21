@@ -47,7 +47,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/preset-react": "7.0.0",
     "@babel/runtime": "7.0.0",
-    "@ethereum-alarm-clock/timenode-core": "5.2.1",
+    "@ethereum-alarm-clock/timenode-core": "5.2.2",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
     "babel-core": "7.0.0-bridge.0",
