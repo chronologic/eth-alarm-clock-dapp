@@ -33,7 +33,7 @@ class ActiveTimeNodesGraph extends Component {
 
     const { latestActiveTimeNodes, historyActiveTimeNodes } = this.props.keenStore;
 
-    // Deep copy the history
+    // Deep copy the history of the last 24h
     const timeIntervals = JSON.parse(JSON.stringify(historyActiveTimeNodes));
 
     const currentHour = this.props.keenStore.hourFromTimestamp(moment().unix());

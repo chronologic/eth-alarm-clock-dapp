@@ -173,6 +173,16 @@ export class KeenStore {
     const average = arr =>
       arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
     this.historyActiveTimeNodes[hour] = average(countersToArchive);
+
+    // Clean up any history entries older than 24h
+    const lastValidTime = new Date().getTime() - 24 * 60 * 60 * 1000; // NOW - 24h
+    const historyHours = Object.keys(this.historyActiveTimeNodes);
+
+    for (let historyHour of historyHours) {
+      if (historyHour < lastValidTime) {
+        delete this.historyActiveTimeNodes[historyHour];
+      }
+    }
   }
 
   async getActiveTimeNodesCount(networkId) {
