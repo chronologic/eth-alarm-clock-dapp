@@ -60,11 +60,23 @@ export default class TransactionHelper {
       return true;
     }
 
+    return this.isTransactionExecuted(transaction) || this.isTransactionCancelled(transaction);
+  }
+
+  isTransactionExecuted(transaction) {
     const TX_EVENTS_MAP = this._cache.addressesEvents || {};
 
     const txEvent = TX_EVENTS_MAP[transaction.address];
 
-    return [TRANSACTION_EVENT.EXECUTED, TRANSACTION_EVENT.CANCELLED].indexOf(txEvent) !== -1;
+    return txEvent === TRANSACTION_EVENT.EXECUTED;
+  }
+
+  isTransactionCancelled(transaction) {
+    const TX_EVENTS_MAP = this._cache.addressesEvents || {};
+
+    const txEvent = TX_EVENTS_MAP[transaction.address];
+
+    return txEvent === TRANSACTION_EVENT.CANCELLED;
   }
 
   isTransactionAfterWindowStart(transaction, currentTimestamp, currentBlock) {
