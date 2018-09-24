@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "main.js",
   "description": "",
   "scripts": {
@@ -47,7 +47,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/preset-react": "7.0.0",
     "@babel/runtime": "7.0.0",
-    "@ethereum-alarm-clock/timenode-core": "5.2.1",
+    "@ethereum-alarm-clock/timenode-core": "5.2.2",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
     "babel-core": "7.0.0-bridge.0",
@@ -69,7 +69,7 @@
     "css-loader": "1.0.0",
     "debug": "3.1.0",
     "dotenv-webpack": "1.5.7",
-    "eac.js-lib": "2.4.3",
+    "eac.js-lib": "2.4.4",
     "electron": "2.0.9",
     "electron-builder": "20.28.4",
     "electron-packager": "12.1.1",
@@ -133,7 +133,7 @@
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.1.8",
     "webpack-merge": "4.1.4",
-    "websocket": "1.0.26",
+    "websocket": "1.0.28",
     "worker-loader": "2.0.0",
     "xss": "1.0.3"
   },
