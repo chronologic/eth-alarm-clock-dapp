@@ -7,7 +7,7 @@ import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
-import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { Config, W3Util } from '@ethereum-alarm-clock/timenode-core';
 import { isRunningInElectron } from '../lib/electron-util';
 import { Networks } from '../config/web3Config';
 
@@ -377,7 +377,11 @@ export default class TimeNodeStore {
     this._storageService.save('tn', keystore);
   }
 
-  setCustomProvider(id, endpoint) {
+  async testCustomProvider(endpoint) {
+    return W3Util.testProvider(endpoint);
+  }
+
+  async setCustomProvider(id, endpoint) {
     this.customProviderUrl = endpoint;
     this._storageService.save('selectedProviderId', id);
     this._storageService.save('selectedProviderEndpoint', endpoint);

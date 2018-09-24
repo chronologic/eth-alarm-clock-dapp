@@ -17,17 +17,30 @@ class CustomProviderModal extends Component {
     this._validateProviderUrl = this._validateProviderUrl.bind(this);
   }
 
-  setCustomProvider() {
+  async setCustomProvider() {
     const url = this.providerInputField.value;
 
-    if (this._validateProviderUrl()) {
+    if (this.validateProviderUrl() && await this.testProviderUrl()) {
       this.props.timeNodeStore.setCustomProvider(CUSTOM_PROVIDER_NET_ID, url);
     }
   }
 
-  _validateProviderUrl() {
+  async testProviderUrl() {
     const url = this.providerInputField.value;
-    if (isUrl(url)) {
+    const isOk = await this.props.timeNodeStore.testCustomProvider(url);
+
+    return this.validate(isOk, 'Your provider does not support eth_getFilter method, please provide compatible web3 provider.');
+  }
+
+  validateProviderUrl() {
+    const url = this.providerInputField.value;
+    const isUrl = isUrl(url);
+
+    return this.validate(isUrl, 'Please enter a valid provider URL.');
+  }
+
+  validate(condition, error) {
+    if (condition) {
       if (this.state.error) {
         this.setState({
           error: null,
@@ -39,7 +52,7 @@ class CustomProviderModal extends Component {
 
     if (!this.state.error) {
       this.setState({
-        error: 'Please enter a valid provider URL.',
+        error,
         disabled: true
       });
     }
