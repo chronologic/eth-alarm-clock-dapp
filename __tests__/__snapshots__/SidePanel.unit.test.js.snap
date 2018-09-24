@@ -276,7 +276,7 @@ exports[`SidePanel is correctly rendered 1`] = `
             className="row p-l-20 p-r-15"
           >
             <div
-              className="col-8 px-0"
+              className="col-7 px-0"
             >
               <span
                 className="active-timenodes"
@@ -285,11 +285,69 @@ exports[`SidePanel is correctly rendered 1`] = `
               </span>
             </div>
             <div
+              className="col-5 px-0 text-right"
+            >
+              <span
+                className="timenode-count"
+              />
+            </div>
+          </div>
+        </div>
+      </li>
+      <li
+        className="d-md-block d-lg-none"
+      >
+        <div
+          className="container py-2"
+        >
+          <div
+            className="row p-l-20 p-r-15"
+          >
+            <div
+              className="col-8 px-0"
+            >
+              <span
+                className="active-timenodes"
+              >
+                Upcoming Transactions
+              </span>
+            </div>
+            <div
               className="col-4 px-0 text-right"
             >
               <span
                 className="timenode-count col-6"
               />
+            </div>
+          </div>
+        </div>
+      </li>
+      <li
+        className="d-md-block d-lg-none"
+      >
+        <div
+          className="container py-2"
+        >
+          <div
+            className="row p-l-20 p-r-15"
+          >
+            <div
+              className="col-8 px-0"
+            >
+              <span
+                className="active-timenodes"
+              >
+                Efficiency
+              </span>
+            </div>
+            <div
+              className="col-4 px-0 text-right"
+            >
+              <span
+                className="timenode-count col-6"
+              >
+                undefined%
+              </span>
             </div>
           </div>
         </div>

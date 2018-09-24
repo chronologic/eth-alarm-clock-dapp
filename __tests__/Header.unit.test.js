@@ -1,5 +1,6 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import { Provider } from 'mobx-react';
 import Web3Service from '../app/services/web3';
 import Header from '../app/components/Header/Header';
@@ -9,14 +10,20 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import LocalStorageService from '../app/services/storage';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
 import TimeNodeStore from '../app/stores/TimeNodeStore';
+import { KOVAN_NETWORK_ID } from '../app/config/web3Config';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
+Enzyme.configure({ adapter: new Adapter() });
+
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
+const waitForNextTick = () => new Promise(resolve => setTimeout(resolve, 0));
+const dataTest = name => `[data-test="${name}"]`;
+
 describe('Header', () => {
-  it('displays current block number', () => {
+  it('displays current block number', async () => {
     const CURRENT_BLOCK = 5361200;
 
     const web3Service = new Web3Service({
@@ -24,6 +31,11 @@ describe('Header', () => {
         eth: {
           getBlockNumber(callback) {
             callback(null, CURRENT_BLOCK);
+          }
+        },
+        version: {
+          getNetwork(callback) {
+            callback(null, KOVAN_NETWORK_ID);
           }
         }
       }
@@ -39,6 +51,7 @@ describe('Header', () => {
 
     const storageService = new LocalStorageService(new LocalStorageMock());
     const timeNodeStore = new TimeNodeStore({}, web3Service, {}, storageService);
+    const transactionStatistics = {};
 
     const injectables = {
       featuresService,
@@ -46,14 +59,15 @@ describe('Header', () => {
       storageService,
       web3Service,
       eacService,
-      timeNodeStore
+      timeNodeStore,
+      transactionStatistics
     };
 
     const props = {
       history
     };
 
-    let mockedRender = renderer.create(
+    let mockedRender = mount(
       <Provider {...injectables}>
         <Router history={history}>
           <Header {...props} />
@@ -61,16 +75,19 @@ describe('Header', () => {
       </Provider>
     );
 
-    let tree = mockedRender.toJSON();
-    expect(tree).toMatchSnapshot();
+    await web3Service.fetchBlockNumber();
 
-    const blockNumberDisplay = tree.children
-      .find(el => el.props.className === 'd-flex align-items-center')
-      .children.find(
-        el => el.props.className === 'pull-left p-r-10 fs-14 font-heading d-lg-block d-none'
-      )
-      .children.find(el => el.props.className === 'timenode-count');
+    await waitForNextTick();
 
-    expect(blockNumberDisplay).toMatchSnapshot();
+    mockedRender.update();
+
+    expect(
+      mockedRender
+        .find(dataTest('network-display'))
+        .html()
+        .trim()
+    ).toBe(
+      `<div data-test="network-display"><span class="active-timenodes"><i class="fa fa-th-large"></i>&nbsp;Network:&nbsp;</span><span class="timenode-count"><span>Kovan at #${CURRENT_BLOCK}</span></span></div>`
+    );
   });
 });

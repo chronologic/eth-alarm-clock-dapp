@@ -178,6 +178,8 @@ describe('App', () => {
 
     const tokenHelper = new TokenHelper(web3Service);
 
+    const transactionStatistics = {};
+
     const injectables = {
       dateTimeValidatorStore,
       eacService,
@@ -186,6 +188,7 @@ describe('App', () => {
       scheduleStore,
       storageService,
       tokenHelper,
+      transactionStatistics,
       transactionStore,
       timeNodeStore,
       web3Service

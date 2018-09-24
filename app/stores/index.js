@@ -10,6 +10,7 @@ import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
 import TransactionHelper from '../services/transaction-helper';
 import BucketHelper from '../services/bucket-helper';
+import { TransactionStatistics } from './TransactionStatistics';
 
 const {
   eacService,
@@ -61,6 +62,8 @@ export const transactionStore = new TransactionStore(
 );
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
 
+export const transactionStatistics = new TransactionStatistics(transactionHelper, transactionStore);
+
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
 export const stores = {
@@ -71,5 +74,6 @@ export const stores = {
   timeNodeStore,
   transactionCache,
   transactionHelper,
+  transactionStatistics,
   transactionStore
 };
