@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { Route, Redirect, Switch } from 'react-router';
@@ -15,11 +15,11 @@ class TransactionsRoute extends MetamaskComponent {
     return (
       <div id="transactionScanner" className="padding-25 sm-padding-10 subsection">
         <Switch location={location}>
-          <Redirect exact path="/transactions" to="/transactions/completed"/>
-          <Route path="/transactions/completed" component={TransactionsCompleted}/>
+          <Redirect exact path="/transactions" to="/transactions/completed" />
+          <Route path="/transactions/completed" component={TransactionsCompleted} />
           <Route path="/transactions/scheduled" component={TransactionsScheduled} />
           <Route path="/transactions/owner/:ownerAddress" component={TransactionsOwner} />
-          <Route path="/transactions/:txAddress" component={TransactionDetailsRoute}/>
+          <Route path="/transactions/:txAddress" component={TransactionDetailsRoute} />
         </Switch>
       </div>
     );
