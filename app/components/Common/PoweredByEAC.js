@@ -5,7 +5,7 @@ class PoweredByEAC extends React.Component {
   render() {
     return (
       <div className={this.props.className}>
-        <a href="http://www.ethereum-alarm-clock.com/ " target="_blank" rel="noopener noreferrer">
+        <a href="https://www.ethereum-alarm-clock.com/ " target="_blank" rel="noopener noreferrer">
           <img
             src="img/powered-by-eac.svg"
             data="img/powered-by-eac.svg"
