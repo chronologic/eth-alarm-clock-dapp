@@ -32,10 +32,24 @@ class InfoSettings extends AbstractSetting {
   validators = {
     toAddress: this.ethereumAddressValidator(),
     gasAmount: '',
-    amountToSend: this.decimalValidator(),
+    amountToSend: {
+      validator: (value) => {
+        const min = 0;
+        const { scheduleStore } = this.props;
+        if (!scheduleStore.useData && !new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
+        if (!scheduleStore.useData && ((min && Number(value) < Number(min)) || Number(value) <= 0)) {
+          return 2;
+        }
+        return 0;
+      },
+      errors: [
+        'Please enter valid value/amount',
+        'Either Add Data or set Value to greater or equal to 0.0000000000000000001'
+      ]
+    },
     gasPrice: this.integerValidator(),
     yourData: {
-      validator: value => (typeof value === 'string' ? 0 : 1),
+      validator: value => (typeof value === 'string' && value.length > 0 ? 0 : 1),
       errors: ['Please provide valid input data']
     },
     receiverAddress: this.ethereumAddressValidator(),

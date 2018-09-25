@@ -150,9 +150,9 @@ class ScheduleWizard extends Component {
       !scheduleStore.isTokenTransfer ||
       (Boolean(scheduleStore.receiverAddress) && this._validations.InfoSettings.receiverAddress);
     const _amountToSend =
-      !scheduleStore.isTokenTransfer &&
-      Boolean(scheduleStore.amountToSend) &&
-      this._validations.InfoSettings.amountToSend;
+      !scheduleStore.isTokenTransfer && (scheduleStore.useData ||
+      (Boolean(scheduleStore.amountToSend) &&
+      this._validations.InfoSettings.amountToSend));
     const _tokenToSend =
       scheduleStore.isTokenTransfer &&
       Boolean(scheduleStore.tokenToSend) &&
@@ -160,8 +160,8 @@ class ScheduleWizard extends Component {
     const _gasAmount = Boolean(scheduleStore.gasAmount) && this._validations.InfoSettings.gasAmount;
     const _gasPrice = Boolean(scheduleStore.gasPrice) && this._validations.InfoSettings.gasPrice;
     const _yourData =
-      (!scheduleStore.useData && !scheduleStore.isTokenTransfer) ||
-      (Boolean(scheduleStore.yourData) && this._validations.yourData);
+      !scheduleStore.useData ||
+      (Boolean(scheduleStore.yourData) && this._validations.InfoSettings.yourData);
     const _tokenData = scheduleStore.isTokenTransfer && Boolean(scheduleStore.tokenData);
     return (
       _addr &&
