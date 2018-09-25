@@ -132,7 +132,10 @@ export default class Web3Service {
     }
 
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
-    this._keyModifier.setNetworkId(netId);
+
+    if (this._keyModifier) {
+      this._keyModifier.setNetworkId(netId);
+    }
 
     this.network = Networks[netId];
     this.explorer = this.network.explorer;

@@ -5,6 +5,7 @@ import NetworkChooser from './NetworkChooser';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
 
+@inject('transactionStatistics')
 @inject('web3Service')
 @inject('eacService')
 @inject('keenStore')
@@ -75,7 +76,7 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service, keenStore, timeNodeStore } = this.props;
+    const { web3Service, keenStore, timeNodeStore, transactionStatistics } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
@@ -96,6 +97,8 @@ class Header extends Component {
       ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
       : whichCounter;
 
+    const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
+
     return (
       <div className="header">
         <a
@@ -113,15 +116,41 @@ class Header extends Component {
             />
           </div>
         </div>
-        <div className="d-flex align-items-center">
-          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+        <div className="header-items">
+          <div>
             <span className="active-timenodes">
               <i className="fa fa-sitemap" />
               <span className="mx-2">Active TimeNodes:</span>
             </span>
             <span className="timenode-count">{displayActiveTimenodes}</span>
           </div>
-          <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
+          <div className="header-separator" />
+          <div>
+            &nbsp;
+            <span className="active-timenodes">
+              <i className="fa fa-chart-bar" />
+              <span className="mx-2" title="Amount of transactions scheduled in next 24 hours">
+                Upcoming transactions:
+              </span>
+            </span>
+            <span className="timenode-count">{transactionsScheduledInNextHoursAmount}</span>
+          </div>
+          <div className="header-separator" />
+          <div>
+            &nbsp;
+            <span className="active-timenodes">
+              <i className="fa fa-check-square" />
+              <span
+                className="mx-2"
+                title="% of available transaction executed over the last 24 hours"
+              >
+                Efficiency:
+              </span>
+            </span>
+            <span className="timenode-count">{efficiency !== null && `${efficiency}%`}</span>
+          </div>
+          <div className="header-separator" />
+          <div data-test="network-display">
             <span className="active-timenodes">
               <i className="fa fa-th-large" />
               &nbsp;Network:&nbsp;
@@ -130,8 +159,9 @@ class Header extends Component {
               <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
             </span>
           </div>
-          <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
-            <span className="active-timenodes" data-toggle="dropdown">
+          <div className="header-separator" />
+          <div>
+            <span className="active-timenodes" data-toggle="dropdown" title="Contracts">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />
               &nbsp;
             </span>
@@ -262,6 +292,7 @@ Header.propTypes = {
   eacService: PropTypes.any,
   keenStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
+  transactionStatistics: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 
