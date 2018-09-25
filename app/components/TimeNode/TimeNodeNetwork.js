@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { ActiveTimeNodesGraph } from './Network';
+import { ActiveTimeNodesGraph, TimeBountiesGraph } from './Network';
 
 // 2 min
 const REFRESH_INTERVAL = 120 * 1000;
@@ -18,6 +18,17 @@ class TimeNodeNetwork extends Component {
     const activeTnsGraph = shouldShowActiveTnsGraph ? (
       <ActiveTimeNodesGraph
         onRef={ref => (this.activeTnsGraph = ref)}
+        refreshInterval={REFRESH_INTERVAL}
+      />
+    ) : (
+      <p>No data yet.</p>
+    );
+
+    const shouldShowTimeBountiesGraph = true;
+
+    const timeBountiesGraph = shouldShowTimeBountiesGraph ? (
+      <TimeBountiesGraph
+        onRef={ref => (this.timeBountiesGraph = ref)}
         refreshInterval={REFRESH_INTERVAL}
       />
     ) : (
@@ -48,6 +59,30 @@ class TimeNodeNetwork extends Component {
                 )}
               </div>
               <div className="card-body">{activeTnsGraph}</div>
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div data-pages="card" className="card card-default">
+              <div className="card-header">
+                <div className="card-title">TimeBounties paid (last 24h)</div>
+                {shouldShowTimeBountiesGraph && (
+                  <div className="card-controls">
+                    <ul>
+                      <li>
+                        <a
+                          data-toggle="refresh"
+                          className="card-refresh"
+                          onClick={() => this.timeBountiesGraph.refreshChart()}
+                        >
+                          <i className="card-icon card-icon-refresh" />
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="card-body">{timeBountiesGraph}</div>
             </div>
           </div>
         </div>
