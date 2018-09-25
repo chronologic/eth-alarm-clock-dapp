@@ -402,3 +402,19 @@ hr {
   margin-top: 5px;
   padding-left: 14px;
 }
+
+.sidebar-additional-item {
+  display: none !important;
+
+  @media screen and (max-width: 991px) {
+    .sidebar-open & {
+      display: block !important;
+    }
+  }
+
+  @media screen and (min-width: 992px) and (max-width: 1199px) {
+    .sidebar-visible & {
+      display: block !important;
+    }
+  }
+}
