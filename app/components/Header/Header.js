@@ -124,6 +124,7 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{displayActiveTimenodes}</span>
           </div>
+          <div className="header-separator" />
           <div>
             &nbsp;
             <span className="active-timenodes">
@@ -134,6 +135,7 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{transactionsScheduledInNextHoursAmount}</span>
           </div>
+          <div className="header-separator" />
           <div>
             &nbsp;
             <span className="active-timenodes">
@@ -147,6 +149,7 @@ class Header extends Component {
             </span>
             <span className="timenode-count">{efficiency !== null && `${efficiency}%`}</span>
           </div>
+          <div className="header-separator" />
           <div data-test="network-display">
             <span className="active-timenodes">
               <i className="fa fa-th-large" />
@@ -156,6 +159,7 @@ class Header extends Component {
               <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
             </span>
           </div>
+          <div className="header-separator" />
           <div>
             <span className="active-timenodes" data-toggle="dropdown" title="Contracts">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />

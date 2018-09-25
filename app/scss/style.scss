@@ -34,11 +34,18 @@ $warning-color: gold;
     }
   }
 
+  &-separator {
+    width: 1px;
+    height: 21px;
+    background: gray;
+  }
+
   &-items {
     font-size: 12px;
     align-items: center;
     justify-content: space-evenly;
     width: calc(100% - 500px);
+    max-width: 920px;
     display: none;
 
     @media screen and (min-width: 1200px) {
