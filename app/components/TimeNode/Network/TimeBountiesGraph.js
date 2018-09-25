@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
+import moment from 'moment';
+import { BeatLoader } from 'react-spinners';
 
+@inject('transactionStore')
 @observer
 class TimeBountiesGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chart: null
+      chart: null,
+      loadingBounties: false
     };
     this.setChart = this.setChart.bind(this);
     this.updateChart = this.updateChart.bind(this);
@@ -27,15 +31,41 @@ class TimeBountiesGraph extends Component {
   }
 
   async refreshChart() {
-    const data = {
-      labels: ['label1', 'label2', 'label3'],
-      values: [1, 2, 3]
-    };
+    if (!this.state.loadingBounties) {
+      this.setState({ loadingBounties: true });
 
-    if (this.state.chart !== null) {
-      this.updateChart(data);
-    } else {
-      this.setChart(this.timeBountiesGraph.getContext('2d'), data);
+      const { transactionStore } = this.props;
+      const labels = [];
+      const values = [];
+
+      const currentTime = moment().unix();
+
+      const average = arr =>
+        arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
+
+      for (let i = 24; i > 0; i--) {
+        const bucket = currentTime - 3600 * i;
+
+        let bounties = await transactionStore.getBountiesForBucket(bucket, true);
+        bounties = bounties.map(bn => bn.toNumber());
+        const averageBounty = bounties.length > 0 ? average(bounties) : 0.0;
+
+        labels.push(`${moment.unix(bucket).hour()}:00`);
+        values.push(averageBounty);
+      }
+
+      const data = {
+        labels,
+        values
+      };
+
+      if (this.state.chart !== null) {
+        this.updateChart(data);
+      } else {
+        this.setChart(this.timeBountiesGraph.getContext('2d'), data);
+      }
+
+      this.setState({ loadingBounties: false });
     }
   }
 
@@ -95,12 +125,18 @@ class TimeBountiesGraph extends Component {
   }
 
   render() {
-    return <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />;
+    return (
+      <div id="timeBountiesGraphWrapper" className="horizontal-center">
+        {this.state.loadingBounties && <BeatLoader />}
+        <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />
+      </div>
+    );
   }
 }
 
 TimeBountiesGraph.propTypes = {
   onRef: PropTypes.any,
+  transactionStore: PropTypes.any,
   refreshInterval: PropTypes.number
 };
 

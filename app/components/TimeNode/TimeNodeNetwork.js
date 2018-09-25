@@ -4,7 +4,8 @@ import { inject, observer } from 'mobx-react';
 import { ActiveTimeNodesGraph, TimeBountiesGraph } from './Network';
 
 // 2 min
-const REFRESH_INTERVAL = 120 * 1000;
+const TWO_MIN = 120 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
 
 @inject('keenStore')
 @observer
@@ -16,21 +17,7 @@ class TimeNodeNetwork extends Component {
       latestActiveTimeNodes.length > 0 || Object.keys(historyActiveTimeNodes).length > 0;
 
     const activeTnsGraph = shouldShowActiveTnsGraph ? (
-      <ActiveTimeNodesGraph
-        onRef={ref => (this.activeTnsGraph = ref)}
-        refreshInterval={REFRESH_INTERVAL}
-      />
-    ) : (
-      <p>No data yet.</p>
-    );
-
-    const shouldShowTimeBountiesGraph = true;
-
-    const timeBountiesGraph = shouldShowTimeBountiesGraph ? (
-      <TimeBountiesGraph
-        onRef={ref => (this.timeBountiesGraph = ref)}
-        refreshInterval={REFRESH_INTERVAL}
-      />
+      <ActiveTimeNodesGraph onRef={ref => (this.activeTnsGraph = ref)} refreshInterval={TWO_MIN} />
     ) : (
       <p>No data yet.</p>
     );
@@ -66,23 +53,26 @@ class TimeNodeNetwork extends Component {
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Average TimeBounty in ETH (last 24h)</div>
-                {shouldShowTimeBountiesGraph && (
-                  <div className="card-controls">
-                    <ul>
-                      <li>
-                        <a
-                          data-toggle="refresh"
-                          className="card-refresh"
-                          onClick={() => this.timeBountiesGraph.refreshChart()}
-                        >
-                          <i className="card-icon card-icon-refresh" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                <div className="card-controls">
+                  <ul>
+                    <li>
+                      <a
+                        data-toggle="refresh"
+                        className="card-refresh"
+                        onClick={() => this.timeBountiesGraph.refreshChart()}
+                      >
+                        <i className="card-icon card-icon-refresh" />
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="card-body">{timeBountiesGraph}</div>
+              <div className="card-body">
+                <TimeBountiesGraph
+                  onRef={ref => (this.timeBountiesGraph = ref)}
+                  refreshInterval={TEN_MIN}
+                />
+              </div>
             </div>
           </div>
         </div>
