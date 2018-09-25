@@ -42,16 +42,17 @@ class TimeBountiesGraph extends Component {
   setChart(ctx, data) {
     this.setState({
       chart: new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: data.labels,
           datasets: [
             {
               label: 'TimeBounty',
               data: data.values,
-              backgroundColor: 'rgba(33, 255, 255, 0.2)',
               borderColor: 'rgba(33, 255, 255, 1)',
-              borderWidth: 1
+              borderWidth: 3,
+              fill: false,
+              steppedLine: true
             }
           ]
         },
@@ -61,12 +62,7 @@ class TimeBountiesGraph extends Component {
               {
                 ticks: {
                   min: 0,
-                  beginAtZero: true,
-                  callback: value => {
-                    if (Math.floor(value) === value) {
-                      return value;
-                    }
-                  }
+                  beginAtZero: true
                 }
               }
             ]
