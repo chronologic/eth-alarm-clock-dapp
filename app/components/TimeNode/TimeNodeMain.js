@@ -72,7 +72,7 @@ class TimeNodeMain extends Component {
   }
 
   render() {
-    const greyBg = 'rgb(245, 245, 245)';
+    const greyBg = { backgroundColor: 'rgb(245, 245, 245)' };
 
     return (
       <div id="timeNodeMain">
@@ -111,17 +111,13 @@ class TimeNodeMain extends Component {
           </li>
         </ul>
         <div className="tab-content padding-0">
-          <div
-            className="tab-pane padding-25 active"
-            id="tabStatistics"
-            style={{ backgroundColor: greyBg }}
-          >
+          <div className="tab-pane padding-25 active" id="tabStatistics" style={greyBg}>
             <TimeNodeDashboard />
-            <PoweredByEAC className="py-3" style={{ backgroundColor: greyBg }} />
+            <PoweredByEAC className="py-3" style={greyBg} />
           </div>
-          <div className="tab-pane padding-25 " id="tabNetwork" style={{ backgroundColor: greyBg }}>
+          <div className="tab-pane padding-25 " id="tabNetwork" style={greyBg}>
             <TimeNodeNetwork />
-            <PoweredByEAC className="py-3" style={{ backgroundColor: greyBg }} />
+            <PoweredByEAC className="py-3" style={greyBg} />
           </div>
           <div className="tab-pane padding-25 " id="tabLogs">
             <TimeNodeLogs />
