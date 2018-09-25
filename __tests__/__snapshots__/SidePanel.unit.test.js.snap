@@ -227,7 +227,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         id="sidebar-separator"
       />
       <li
-        className="d-md-block d-lg-none"
+        className="sidebar-additional-item"
       >
         <div
           className="container py-2"
@@ -267,7 +267,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         </div>
       </li>
       <li
-        className="d-md-block d-lg-none"
+        className="sidebar-additional-item"
       >
         <div
           className="container py-2"
@@ -295,7 +295,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         </div>
       </li>
       <li
-        className="d-md-block d-lg-none"
+        className="sidebar-additional-item"
       >
         <div
           className="container py-2"
@@ -323,7 +323,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         </div>
       </li>
       <li
-        className="d-md-block d-lg-none"
+        className="sidebar-additional-item"
       >
         <div
           className="container py-2"

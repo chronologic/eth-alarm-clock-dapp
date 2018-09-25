@@ -228,7 +228,7 @@ class SidePanel extends Component {
 
             <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
@@ -241,7 +241,7 @@ class SidePanel extends Component {
               </div>
             </li>
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-7 px-0">
@@ -256,7 +256,7 @@ class SidePanel extends Component {
               </div>
             </li>
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
@@ -271,7 +271,7 @@ class SidePanel extends Component {
               </div>
             </li>
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
