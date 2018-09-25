@@ -103,6 +103,9 @@ class ActiveTimeNodesGraph extends Component {
                 }
               }
             ]
+          },
+          legend: {
+            display: false
           }
         }
       })
