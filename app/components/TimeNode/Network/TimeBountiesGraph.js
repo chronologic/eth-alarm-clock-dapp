@@ -47,7 +47,7 @@ class TimeBountiesGraph extends Component {
           labels: data.labels,
           datasets: [
             {
-              label: 'TimeBounty',
+              label: 'Average TimeBounty',
               data: data.values,
               borderColor: 'rgba(33, 255, 255, 1)',
               borderWidth: 3,
@@ -66,6 +66,9 @@ class TimeBountiesGraph extends Component {
                 }
               }
             ]
+          },
+          legend: {
+            display: false
           }
         }
       })
