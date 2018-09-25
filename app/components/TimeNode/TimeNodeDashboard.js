@@ -183,7 +183,7 @@ class TimeNodeDashboard extends Component {
     const graph =
       successfulExecutions !== null ? (
         successfulExecutions.length > 0 ? (
-          <ExecutedGraph />
+          <ExecutedGraph onRef={ref => (this.executedGraph = ref)} />
         ) : (
           <p className="my-5 text-center">No data yet.</p>
         )
@@ -390,7 +390,7 @@ class TimeNodeDashboard extends Component {
                       <a
                         data-toggle="refresh"
                         className="card-refresh"
-                        onClick={() => this.refreshStats()}
+                        onClick={() => this.executedGraph.refreshChart()}
                       >
                         <i className="card-icon card-icon-refresh" />
                       </a>

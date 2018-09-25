@@ -8,21 +8,28 @@ import { Chart } from 'chart.js';
 class ExecutedGraph extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      chart: null
+    };
+    this.setChart = this.setChart.bind(this);
+    this.updateChart = this.updateChart.bind(this);
     this.refreshChart = this.refreshChart.bind(this);
   }
 
   componentDidMount() {
+    this.props.onRef(this);
     this.refreshChart();
     // Refreshes the graph every 5 seconds
     this.interval = setInterval(this.refreshChart, 5000);
   }
 
   componentWillUnmount() {
+    this.props.onRef(undefined);
     clearInterval(this.interval);
   }
 
   refreshChart() {
-    const data = this.props.timeNodeStore.successfulExecutions;
+    const successfulExecutions = this.props.timeNodeStore.successfulExecutions;
 
     // We will not be taking any transactions before this date into consideration
     // Equals: NOW - 24h
@@ -32,7 +39,7 @@ class ExecutedGraph extends Component {
 
     // This section sorts the executed transactions by hour into an array.
     // Note: It discards transactions older than 24h.
-    for (let transaction of data) {
+    for (let transaction of successfulExecutions) {
       // If the transaction was made in the last 24h
       if (transaction.timestamp > lastValidTime) {
         const transactionDate = new Date(transaction.timestamp);
@@ -60,18 +67,26 @@ class ExecutedGraph extends Component {
     // Sort the time intervals by hour
     timeIntervals.sort(this.compareDates);
 
-    const ctx = this.executedGraph.getContext('2d');
+    const data = {
+      labels: timeIntervals.map(interval => interval.datetime.getHours() + ':00'),
+      values: timeIntervals.map(interval => interval.executed)
+    };
 
-    const dataLabels = timeIntervals.map(interval => interval.datetime.getHours() + ':00');
-    const dataExecuted = timeIntervals.map(interval => interval.executed);
+    if (this.state.chart !== null) {
+      this.updateChart(data);
+    } else {
+      this.setChart(this.executedGraph.getContext('2d'), data);
+    }
+  }
 
-    new Chart(ctx, {
+  setChart(ctx, data) {
+    const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: dataLabels,
+        labels: data.labels,
         datasets: [
           {
-            data: dataExecuted,
+            data: data.values,
             backgroundColor: 'rgba(33, 255, 255, 0.2)',
             borderColor: 'rgba(33, 255, 255, 1)',
             borderWidth: 2,
@@ -133,6 +148,15 @@ class ExecutedGraph extends Component {
         maintainAspectRatio: false
       }
     });
+
+    this.setState({ chart });
+  }
+
+  updateChart(data) {
+    const { chart } = this.state;
+    chart.data.labels = data.labels;
+    chart.data.datasets[0].data = data.values;
+    chart.update();
   }
 
   compareDates(a, b) {
@@ -147,6 +171,7 @@ class ExecutedGraph extends Component {
 }
 
 ExecutedGraph.propTypes = {
+  onRef: PropTypes.any,
   timeNodeStore: PropTypes.any
 };
 

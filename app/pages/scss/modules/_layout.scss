@@ -418,7 +418,8 @@ body {
                             float: right;
                             display: inline;
                             font-size: 16px;
-                            font-family: FontAwesome;
+                            font-family: Font Awesome\ 5 Free;
+                            font-weight: 900;
                             height: auto;
                             content: "\f104";
                             font-weight: 300;
@@ -495,7 +496,8 @@ body {
                                         margin-right: 20px;
                                         display: inline;
                                         font-size: 16px;
-                                        font-family: FontAwesome;
+                                        font-family: Font Awesome\ 5 Free;
+                                        font-weight: 900;
                                         height: auto;
                                         content: "\f104";
                                         font-weight: 300;
@@ -508,7 +510,8 @@ body {
                                             margin-top: 1px;
                                             margin-right: 18px;
                                             display: inline;
-                                            font-family: FontAwesome;
+                                            font-family: Font Awesome\ 5 Free;
+                                            font-weight: 900;
                                             height: auto;
                                             font-size: 16px;
                                             @include rotate(-90deg);
@@ -705,10 +708,10 @@ $sidebar-background-color : mix($_sidebar-background-color , #000, 80%);
                             float: right;
                             display: inline;
                             font-size: 16px;
-                            font-family: FontAwesome;
+                            font-family: Font Awesome\ 5 Free;
+                            font-weight: 900;
                             height: auto;
                             content: "\f104";
-                            font-weight: 300;
                             text-shadow: none;
                             @include transition(all 0.12s ease);
                         }
@@ -954,10 +957,10 @@ $sidebar-background-color : mix($_sidebar-background-color , #000, 80%);
                     width: 23px;
                     &:before{
                         font-size: 16px;
-                        font-family: FontAwesome;
+                        font-family: Font Awesome\ 5 Free;
                         height: auto;
                         content: "\f104";
-                        font-weight: 300;
+                        font-weight: 900;
                         text-shadow: none;
                         position: relative;
                         top: 2px;
@@ -1715,10 +1718,10 @@ $sidebar-background-color : mix($_sidebar-background-color , #000, 80%);
                 &:before {
                     padding: 0 5px;
                     color: #515050;
-                    font-family: FontAwesome;
+                    font-family: Font Awesome\ 5 Free;
                     content: "\f105";
                     font-size: 12px;
-                    font-weight:bold;
+                    font-weight: 900;
                 }
             }
             &.active{

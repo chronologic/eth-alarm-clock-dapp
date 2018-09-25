@@ -68,9 +68,9 @@ class TimeNodeProve extends Component {
           <div className="row m-b-25">
             <div className="col-md-6">
               <p>
-                The TimeNode functionality requires the proof of ownership of DAY tokens. By
-                providing the signature from your DAY token account, you help us determine your DAY
-                token balance.
+                The TimeNode functionality requires the proof of ownership of{' '}
+                <strong>333 DAY</strong> tokens. By providing the signature from your DAY token
+                account, you help us determine your DAY token balance.
               </p>
               <p>
                 <i>Note:</i> Please note that the signing process <strong>will not</strong> give us

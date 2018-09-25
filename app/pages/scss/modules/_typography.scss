@@ -25,14 +25,14 @@ body{
     -webkit-font-feature-settings: "kern" 1;
     -moz-font-feature-settings: "kern" 1;
 }
-/* Headings 
+/* Headings
 ------------------------------------
 */
-h1, 
-h2, 
-h3, 
-h4, 
-h5, 
+h1,
+h2,
+h3,
+h4,
+h5,
 h6 {
     margin: 10px 0;
     font-family: "Segoe UI","Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -63,16 +63,16 @@ h5{
     font-size: 18px;
     line-height: 25.88px;
 }
-h3 small, 
-h4 small, 
+h3 small,
+h4 small,
 h5 small {
     font-weight: 300;
 }
-h1.block, 
-h2.block, 
-h3.block, 
-h4.block, 
-h5.block, 
+h1.block,
+h2.block,
+h3.block,
+h4.block,
+h5.block,
 h6.block {
     padding-bottom: 10px;
 }
@@ -115,7 +115,7 @@ p {
     font-style: normal;
     white-space: normal;
 }
-small, 
+small,
 .small{
     line-height: 18px;
     font-size: 85%;
@@ -158,10 +158,11 @@ blockquote {
     border-left:0;
     &:before{
         content: '';
-        font-family: FontAwesome;
+        font-family: Font Awesome\ 5 Free;
         content: "\f10d";
         margin-right: 13px;
         float: left;
+        font-weight: 900;
     }
     p {
         font-size: 16px;
@@ -179,10 +180,11 @@ blockquote {
         &:before{
             float: right;
             content: '';
-            font-family: FontAwesome;
+            font-family: Font Awesome\ 5 Free;
             content: "\f10d";
             margin-left: 13px;
             margin-right: 0;
+            font-weight: 900;
         }
         small {
             padding-right: 30px;
@@ -202,7 +204,7 @@ hr{
   }
 }
 
-/* Font Sizes 
+/* Font Sizes
 ------------------------------------
 */
 
@@ -234,7 +236,7 @@ hr{
 }
 
 
-/* Misc 
+/* Misc
 ------------------------------------
 */
 
@@ -302,7 +304,7 @@ hr{
     background-color: $color-primary-lighter;
 }
 
-/* Complete 
+/* Complete
 ------------------------------------
 */
 .bg-complete {
@@ -321,7 +323,7 @@ hr{
     background-color: $color-complete-lighter;
 }
 
-/* Success 
+/* Success
 ------------------------------------
 */
 .bg-success {
@@ -359,7 +361,7 @@ hr{
     background-color: $color-info-lighter;
 }
 
-/* Danger 
+/* Danger
 ------------------------------------
 */
 .bg-danger {
@@ -401,7 +403,7 @@ hr{
 ------------------------------------
 */
 
-/* Menu 
+/* Menu
 ------------------------------------
 */
 .bg-menu-dark{
@@ -651,7 +653,7 @@ hr{
 ------------------------------------
 */
 
-@media (max-width: 1400px) { 
+@media (max-width: 1400px) {
 
     body, p{
         font-size: 13px;
@@ -688,11 +690,11 @@ hr{
 }
 
 
-/* For Windows : Fixes 
+/* For Windows : Fixes
 ------------------------------------
 */
 .windows {
-    body, 
+    body,
     p{
         font-size: 13px;
         letter-spacing: normal;
@@ -710,10 +712,10 @@ hr{
         line-height: 28px;
         font-weight: normal;
     }
-    h1, 
-    h2, 
-    h3, 
-    h4, 
+    h1,
+    h2,
+    h3,
+    h4,
     h5{
         font-weight: 300;
         letter-spacing: normal;
@@ -726,7 +728,7 @@ hr{
             font-size: 85%;
         }
     }
-    small, 
+    small,
     .small{
         font-size: 89%;
     }
