@@ -89,5 +89,7 @@ describe('Header', () => {
     ).toBe(
       `<div data-test="network-display"><span class="active-timenodes"><i class="fa fa-th-large"></i>&nbsp;Network:&nbsp;</span><span class="timenode-count"><span>Kovan at #${CURRENT_BLOCK}</span></span></div>`
     );
+
+    mockedRender.unmount();
   });
 });
