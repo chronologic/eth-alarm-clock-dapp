@@ -34,17 +34,15 @@ class InfoSettings extends AbstractSetting {
     gasAmount: '',
     amountToSend: {
       validator: (value) => {
-        const min = 0;
-        const { scheduleStore } = this.props;
-        if (!scheduleStore.useData && !new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
-        if (!scheduleStore.useData && ((min && Number(value) < Number(min)) || Number(value) <= 0)) {
+        if (value && !new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
+        if (value && Number(value) < 0) {
           return 2;
         }
         return 0;
       },
       errors: [
         'Please enter valid value/amount',
-        'Either Add Data or set Value to greater or equal to 0.0000000000000000001'
+        'Value must be greater or equal to 0'
       ]
     },
     gasPrice: this.integerValidator(),

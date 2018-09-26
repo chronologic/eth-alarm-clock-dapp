@@ -150,9 +150,8 @@ class ScheduleWizard extends Component {
       !scheduleStore.isTokenTransfer ||
       (Boolean(scheduleStore.receiverAddress) && this._validations.InfoSettings.receiverAddress);
     const _amountToSend =
-      !scheduleStore.isTokenTransfer && (scheduleStore.useData ||
-      (Boolean(scheduleStore.amountToSend) &&
-      this._validations.InfoSettings.amountToSend));
+      !scheduleStore.isTokenTransfer && Number(scheduleStore.amountToSend) >= 0 &&
+      this._validations.InfoSettings.amountToSend;
     const _tokenToSend =
       scheduleStore.isTokenTransfer &&
       Boolean(scheduleStore.tokenToSend) &&

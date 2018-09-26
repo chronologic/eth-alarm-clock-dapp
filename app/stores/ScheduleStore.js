@@ -70,7 +70,7 @@ export default class ScheduleStore {
     this.amountToSend = '';
     this.gasPrice = '';
     this.useData = false;
-    this.yourData = '0x';
+    this.yourData = '';
 
     this.receiverAddress = '';
     this.tokenToSend = '';
