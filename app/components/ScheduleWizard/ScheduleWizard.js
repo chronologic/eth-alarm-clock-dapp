@@ -188,7 +188,7 @@ class ScheduleWizard extends Component {
     );
   }
 
-  get isZeroValueandData () {
+  get isZeroValueAndNoData () {
     const { scheduleStore } = this.props;
     return !scheduleStore.isTokenTransfer && Number(scheduleStore.amountToSend) === 0 && !scheduleStore.yourData;
   }
@@ -391,7 +391,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  { !this.isZeroValueandData &&
+                  { !this.isZeroValueAndNoData &&
                     <button
                       className="btn btn-primary btn-cons pull-right"
                       type="button"
@@ -401,7 +401,7 @@ class ScheduleWizard extends Component {
                       Schedule
                     </button>
                   }
-                  { this.isZeroValueandData &&
+                  { this.isZeroValueAndNoData &&
                     <button
                       className="btn btn-primary btn-cons pull-right"
                       type="button"

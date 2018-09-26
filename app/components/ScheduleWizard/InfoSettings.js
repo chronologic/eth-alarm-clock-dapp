@@ -42,7 +42,7 @@ class InfoSettings extends AbstractSetting {
       },
       errors: [
         'Please enter valid value/amount',
-        'Value must be greater or equal to 0'
+        'Value must be greater than or equal to 0'
       ]
     },
     gasPrice: this.integerValidator(),

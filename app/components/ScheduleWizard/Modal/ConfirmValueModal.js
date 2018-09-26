@@ -29,7 +29,7 @@ class ConfirmValueModal extends Component {
             <div className="modal-body">
               <hr />
               <p>You are about to schedule a transaction with <b>{Number(scheduleStore.amountToSend)} value</b> and <b>No Data</b>.<br />
-              Continue ?</p>
+              Are you sure you want Continue ?</p>
             </div>
             <div className="modal-footer">
               <div className="row">
