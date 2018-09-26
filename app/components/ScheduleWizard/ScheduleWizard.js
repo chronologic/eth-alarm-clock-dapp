@@ -6,6 +6,7 @@ import InfoSettings from './InfoSettings';
 import BountySettings from './BountySettings';
 import ConfirmSettings from './ConfirmSettings';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import ConfirmValueModal from './Modal/ConfirmValueModal';
 import { showNotification } from '../../services/notification';
 
 @inject('web3Service')
@@ -185,6 +186,11 @@ class ScheduleWizard extends Component {
         this.blockComponentValidations
       )
     );
+  }
+
+  get isZeroValueandData () {
+    const { scheduleStore } = this.props;
+    return !scheduleStore.isTokenTransfer && Number(scheduleStore.amountToSend) === 0 && !scheduleStore.yourData;
   }
 
   async scheduleTransaction() {
@@ -385,15 +391,28 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  <button
-                    className="btn btn-primary btn-cons pull-right"
-                    type="button"
-                    ref={el => (this.scheduleBtn = el)}
-                    onClick={this.scheduleTransaction}
-                    disabled={this.scheduleDisabled}
-                  >
-                    Schedule
-                  </button>
+                  { !this.isZeroValueandData &&
+                    <button
+                      className="btn btn-primary btn-cons pull-right"
+                      type="button"
+                      ref={el => (this.scheduleBtn = el)}
+                      onClick={this.scheduleTransaction}
+                    >
+                      Schedule
+                    </button>
+                  }
+                  { this.isZeroValueandData &&
+                    <button
+                      className="btn btn-primary btn-cons pull-right"
+                      type="button"
+                      data-toggle="modal"
+                      data-target="#confirmValueModal"
+                      ref={el => (this.scheduleBtn = el)}
+                      disabled={this.scheduleDisabled}
+                    >
+                      Schedule
+                    </button>
+                  }
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" type="button">
@@ -413,6 +432,10 @@ class ScheduleWizard extends Component {
             <PoweredByEAC className="col-md-2 footer-buttons mt-5" />
           </div>
         </div>
+        <ConfirmValueModal
+          scheduleTransaction={this.scheduleTransaction}
+        />
+
       </div>
     );
   }
