@@ -1,5 +1,8 @@
+/* eslint-disable no-console */
+
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell, protocol } = require('electron');
+const { app, BrowserWindow, dialog, Menu, shell, protocol } = require('electron');
+const { autoUpdater } = require('electron-updater');
 
 const path = require('path');
 const urlLib = require('url');
@@ -9,6 +12,7 @@ const packageJson = require('./package.json');
 
 const isDev = require('electron-is-dev');
 
+const APP_NAME = 'TimeNode';
 const PROTOCOL = 'file';
 
 let MAIN_URL = urlLib.format({
@@ -20,6 +24,9 @@ let MAIN_URL = urlLib.format({
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+autoUpdater.autoDownload = false;
+let shouldShowUpToDate = false;
 
 function createWindow() {
   // Handle files that do not have the correct paths set (assets, worker file, etc.)
@@ -63,7 +70,7 @@ function createWindow() {
     }
   });
 
-  // mainWindow.toggleDevTools();
+  mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
@@ -89,7 +96,7 @@ function createWindow() {
       },
       { type: 'separator' },
       {
-        label: 'Report a Bug',
+        label: 'Report an Issue',
         click() {
           shell.openExternal(`${packageJson.repository.url}/issues/new`);
         }
@@ -118,12 +125,19 @@ function createWindow() {
   ];
 
   if (process.platform === 'darwin') {
-    app.getName = () => 'TimeNode';
+    app.getName = () => APP_NAME;
 
     template.unshift({
-      label: 'TimeNode',
+      label: APP_NAME,
       submenu: [
         { role: 'about' },
+        {
+          label: 'Check for Updates...',
+          click() {
+            shouldShowUpToDate = true;
+            autoUpdater.checkForUpdates();
+          }
+        },
         { type: 'separator' },
         { role: 'services', submenu: [] },
         { type: 'separator' },
@@ -155,7 +169,10 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  autoUpdater.checkForUpdates();
+  createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -174,5 +191,49 @@ app.on('activate', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+autoUpdater.on('update-available', () => {
+  dialog.showMessageBox(
+    {
+      title: `New ${APP_NAME} version available!`,
+      message: 'Do you want update now?',
+      buttons: ['Yes', 'No']
+    },
+    buttonIndex => {
+      if (buttonIndex === 0) {
+        autoUpdater.downloadUpdate();
+      }
+    }
+  );
+});
+
+autoUpdater.on('update-not-available', () => {
+  if (shouldShowUpToDate) {
+    dialog.showMessageBox({
+      title: 'No Updates',
+      message: 'Current version is up-to-date.'
+    });
+  }
+});
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox(
+    {
+      title: 'Install Updates',
+      message: 'Updates downloaded. The application will now quit to perform the update...'
+    },
+    () => {
+      setImmediate(() => autoUpdater.quitAndInstall());
+    }
+  );
+});
+
+autoUpdater.on('download-progress', progressObj => {
+  const { bytesPerSecond, percent, transferred, total } = progressObj;
+  console.log(
+    `Download speed: ${bytesPerSecond} - Downloaded ${percent}% (${transferred}/${total})`
+  );
+});
+
+autoUpdater.on('error', error => {
+  dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString());
+});
