@@ -70,7 +70,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.toggleDevTools();
+  // mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
@@ -191,11 +191,13 @@ app.on('activate', () => {
   }
 });
 
-autoUpdater.on('update-available', () => {
+autoUpdater.on('update-available', info => {
   dialog.showMessageBox(
     {
-      title: `New ${APP_NAME} version available!`,
-      message: 'Do you want update now?',
+      type: 'info',
+      title: `New version available!`,
+      message: `${APP_NAME} update available!`,
+      detail: `Do you want update to the latest version ${info.version} now?`,
       buttons: ['Yes', 'No']
     },
     buttonIndex => {
@@ -209,29 +211,44 @@ autoUpdater.on('update-available', () => {
 autoUpdater.on('update-not-available', () => {
   if (shouldShowUpToDate) {
     dialog.showMessageBox({
+      type: 'info',
       title: 'No Updates',
-      message: 'Current version is up-to-date.'
+      message: 'No Updates.',
+      detail: 'Current version is up-to-date.'
     });
   }
 });
 
+// DOWNLOAD SECTION
 autoUpdater.on('update-downloaded', () => {
   dialog.showMessageBox(
     {
+      type: 'info',
       title: 'Install Updates',
-      message: 'Updates downloaded. The application will now quit to perform the update...'
+      message: 'Install Updates',
+      detail: 'Updates downloaded. The application will now quit to perform the update...'
     },
-    () => {
-      setImmediate(() => autoUpdater.quitAndInstall());
-    }
+    () => setImmediate(() => autoUpdater.quitAndInstall())
   );
 });
 
+let shownDownloadInProgressScreen = false;
 autoUpdater.on('download-progress', progressObj => {
-  const { bytesPerSecond, percent, transferred, total } = progressObj;
-  console.log(
-    `Download speed: ${bytesPerSecond} - Downloaded ${percent}% (${transferred}/${total})`
-  );
+  const { percent, transferred, total } = progressObj;
+  mainWindow.setProgressBar(percent / 100);
+  console.log(`Downloading updates... Downloaded ${percent.toFixed(2)}% (${transferred}/${total})`);
+
+  if (!shownDownloadInProgressScreen) {
+    dialog.showMessageBox(
+      {
+        type: 'info',
+        title: 'Downloading...',
+        message: 'Downloading...',
+        detail: `Check the progress bar on the ${APP_NAME} icon.`
+      },
+      () => (shownDownloadInProgressScreen = true)
+    );
+  }
 });
 
 autoUpdater.on('error', error => {
