@@ -71,7 +71,7 @@ function createWindow() {
     }
   });
 
-  // mainWindow.toggleDevTools();
+  mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
@@ -211,7 +211,9 @@ autoUpdater.on('update-available', info => {
       type: 'info',
       title: `New version available!`,
       message: `${APP_NAME} update available!`,
-      detail: `Do you want update to version ${info.version} now?`,
+      detail: `Do you want update to version ${
+        info.version
+      } now?\nWe highly recommend using the latest version of ${APP_NAME}.`,
       buttons: ['Yes', 'No']
     },
     buttonIndex => {
@@ -263,7 +265,7 @@ autoUpdater.on('download-progress', progressObj => {
     dialog.showMessageBox(
       {
         type: 'info',
-        title: 'Downloading...',
+        title: 'The update is starting...',
         message: 'The update is starting...',
         detail: `Check the progress bar on the ${APP_NAME} icon.`
       },

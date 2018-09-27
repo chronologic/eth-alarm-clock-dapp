@@ -55,7 +55,7 @@ class ReleaseNotesModal extends Component {
 
     return (
       <div
-        className="modal fade stick-up"
+        className="modal fade slide-right"
         id="releaseNotesModal"
         tabIndex="-1"
         role="dialog"
@@ -64,24 +64,24 @@ class ReleaseNotesModal extends Component {
       >
         <div className="modal-dialog">
           <div className="modal-content">
-            <div className="modal-header clearfix text-center separator">
-              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">
-                <i className="pg-close fs-14" />
-              </button>
-              <h3 className="timenode-modal-title m-0 ">
-                <strong>Release Notes</strong>
-              </h3>
-            </div>
-            <div className="modal-body">{allReleaseNotes}</div>
-            <div className="modal-footer">
+            <div className="modal-header clearfix separator">
               <button
-                className="btn btn-primary btn-block"
                 type="button"
+                className="close"
                 data-dismiss="modal"
+                aria-hidden="true"
                 onClick={() => this.props.storageService.save('changelogSeen', true)}
               >
-                Ok
+                <i className="pg-close fs-14" />
               </button>
+            </div>
+            <div className="modal-body">
+              <div className="text-center">
+                <h1>
+                  <strong>Release Notes</strong>
+                </h1>
+              </div>
+              {allReleaseNotes}
             </div>
           </div>
         </div>
