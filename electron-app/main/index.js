@@ -137,13 +137,16 @@ function createWindow() {
           click() {
             shouldShowUpToDate = true;
             if (updateInProgress) {
-              dialog.showMessageBox({
-                type: 'info',
-                title: 'Update in progress...',
-                message: 'Update in progress...',
-                detail:
-                  'There is another update in progress. Please wait for it to finish before checking for new updates.'
-              });
+              dialog.showMessageBox(
+                {
+                  type: 'info',
+                  title: 'Update in progress...',
+                  message: 'Update in progress...',
+                  detail:
+                    'There is another update in progress. Please wait for it to finish before checking for new updates.'
+                },
+                () => console.log('Blocked checking for updates.')
+              );
             } else {
               autoUpdater.checkForUpdates();
             }
@@ -256,12 +259,15 @@ autoUpdater.on('download-progress', progressObj => {
 
   if (!shownDownloadInProgressScreen) {
     shownDownloadInProgressScreen = true;
-    dialog.showMessageBox({
-      type: 'info',
-      title: 'Downloading...',
-      message: 'The update is starting...',
-      detail: `Check the progress bar on the ${APP_NAME} icon.`
-    });
+    dialog.showMessageBox(
+      {
+        type: 'info',
+        title: 'Downloading...',
+        message: 'The update is starting...',
+        detail: `Check the progress bar on the ${APP_NAME} icon.`
+      },
+      () => console.log('Shown download screen.')
+    );
   }
 });
 

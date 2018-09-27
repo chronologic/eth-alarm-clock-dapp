@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "1.0.3",
+  "version": "1.0.2",
   "main": "main.js",
   "description": "",
   "scripts": {
@@ -39,7 +39,9 @@
   },
   "dependencies": {
     "electron-is-dev": "0.3.0",
-    "electron-updater": "3.1.2"
+    "electron-updater": "3.1.2",
+    "github-api": "3.0.0",
+    "showdown": "1.8.6"
   },
   "devDependencies": {
     "@babel/core": "7.1.0",
