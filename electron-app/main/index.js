@@ -27,6 +27,7 @@ let mainWindow;
 
 autoUpdater.autoDownload = false;
 let shouldShowUpToDate = false;
+let updateInProgress = false;
 
 function createWindow() {
   // Handle files that do not have the correct paths set (assets, worker file, etc.)
@@ -135,7 +136,17 @@ function createWindow() {
           label: 'Check for Updates...',
           click() {
             shouldShowUpToDate = true;
-            autoUpdater.checkForUpdates();
+            if (updateInProgress) {
+              dialog.showMessageBox({
+                type: 'info',
+                title: 'Update in progress...',
+                message: 'Update in progress...',
+                detail:
+                  'There is another update in progress. Please wait for it to finish before checking for new updates.'
+              });
+            } else {
+              autoUpdater.checkForUpdates();
+            }
           }
         },
         { type: 'separator' },
@@ -197,7 +208,7 @@ autoUpdater.on('update-available', info => {
       type: 'info',
       title: `New version available!`,
       message: `${APP_NAME} update available!`,
-      detail: `Do you want update to the latest version ${info.version} now?`,
+      detail: `Do you want update to version ${info.version} now?`,
       buttons: ['Yes', 'No']
     },
     buttonIndex => {
@@ -228,26 +239,29 @@ autoUpdater.on('update-downloaded', () => {
       message: 'Install Updates',
       detail: 'Updates downloaded. The application will now quit to perform the update...'
     },
-    () => setImmediate(() => autoUpdater.quitAndInstall())
+    () => {
+      updateInProgress = false;
+      setImmediate(() => autoUpdater.quitAndInstall());
+    }
   );
 });
 
 let shownDownloadInProgressScreen = false;
 autoUpdater.on('download-progress', progressObj => {
+  updateInProgress = true;
+
   const { percent, transferred, total } = progressObj;
   mainWindow.setProgressBar(percent / 100);
   console.log(`Downloading updates... Downloaded ${percent.toFixed(2)}% (${transferred}/${total})`);
 
   if (!shownDownloadInProgressScreen) {
-    dialog.showMessageBox(
-      {
-        type: 'info',
-        title: 'Downloading...',
-        message: 'Downloading...',
-        detail: `Check the progress bar on the ${APP_NAME} icon.`
-      },
-      () => (shownDownloadInProgressScreen = true)
-    );
+    shownDownloadInProgressScreen = true;
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Downloading...',
+      message: 'The update is starting...',
+      detail: `Check the progress bar on the ${APP_NAME} icon.`
+    });
   }
 });
 
