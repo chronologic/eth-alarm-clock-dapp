@@ -244,6 +244,7 @@ autoUpdater.on('update-downloaded', () => {
     },
     () => {
       updateInProgress = false;
+      mainWindow.webContents.executeJavaScript(`localStorage.removeItem('changelogSeen')`);
       setImmediate(() => autoUpdater.quitAndInstall());
     }
   );
