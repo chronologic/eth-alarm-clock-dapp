@@ -49,7 +49,7 @@ class EacWorker {
     }
 
     this.config = new Config({
-      providerUrl,
+      providerUrls: [providerUrl],
       claiming: options.claiming,
       scanSpread: options.scan,
       logfile: options.logfile,
