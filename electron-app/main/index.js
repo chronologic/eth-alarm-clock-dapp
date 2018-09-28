@@ -247,9 +247,10 @@ autoUpdater.on('update-downloaded', () => {
   dialog.showMessageBox(
     {
       type: 'info',
-      title: 'Install Updates',
-      message: 'Install Updates',
-      detail: 'Updates downloaded. The application will now quit to perform the update...'
+      title: 'Updates downloaded',
+      message: 'Updates downloaded',
+      detail: 'The application will now restart to perform the update.',
+      buttons: ['Restart']
     },
     () => {
       updateInProgress = false;
