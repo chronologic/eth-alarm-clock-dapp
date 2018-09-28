@@ -27,9 +27,11 @@ describe('SidePanel', () => {
     });
 
     const keenStore = {};
+    const transactionStatistics = {};
 
     const injectables = {
       keenStore,
+      transactionStatistics,
       web3Service
     };
 
@@ -45,7 +47,7 @@ describe('SidePanel', () => {
         <Router history={history}>
           <SidePanel {...props} />
         </Router>
-      </Provider>,
+      </Provider>
     );
 
     let tree = mockedRender.toJSON();
