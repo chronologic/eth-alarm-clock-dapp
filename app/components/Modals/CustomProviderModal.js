@@ -34,9 +34,9 @@ class CustomProviderModal extends Component {
 
   validateProviderUrl() {
     const url = this.providerInputField.value;
-    const isUrl = isUrl(url);
+    const isValid = isUrl(url);
 
-    return this.validate(isUrl, 'Please enter a valid provider URL.');
+    return this.validate(isValid, 'Please enter a valid provider URL.');
   }
 
   validate(condition, error) {
