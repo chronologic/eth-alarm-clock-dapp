@@ -71,7 +71,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.toggleDevTools();
+  // mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
@@ -105,6 +105,27 @@ function createWindow() {
     ]
   };
 
+  const checkForUpdates = {
+    label: 'Check for Updates...',
+    click() {
+      shouldShowUpToDate = true;
+      if (updateInProgress) {
+        dialog.showMessageBox(
+          {
+            type: 'info',
+            title: 'Update in progress...',
+            message: 'Update in progress...',
+            detail:
+              'There is another update in progress. Please wait for it to finish before checking for new updates.'
+          },
+          () => console.log('Blocked checking for updates.')
+        );
+      } else {
+        autoUpdater.checkForUpdates();
+      }
+    }
+  };
+
   const template = [
     {
       label: 'Edit',
@@ -132,26 +153,7 @@ function createWindow() {
       label: APP_NAME,
       submenu: [
         { role: 'about' },
-        {
-          label: 'Check for Updates...',
-          click() {
-            shouldShowUpToDate = true;
-            if (updateInProgress) {
-              dialog.showMessageBox(
-                {
-                  type: 'info',
-                  title: 'Update in progress...',
-                  message: 'Update in progress...',
-                  detail:
-                    'There is another update in progress. Please wait for it to finish before checking for new updates.'
-                },
-                () => console.log('Blocked checking for updates.')
-              );
-            } else {
-              autoUpdater.checkForUpdates();
-            }
-          }
-        },
+        checkForUpdates,
         { type: 'separator' },
         { role: 'services', submenu: [] },
         { type: 'separator' },
@@ -161,6 +163,11 @@ function createWindow() {
         { type: 'separator' },
         { role: 'quit' }
       ]
+    });
+  } else {
+    template.unshift({
+      label: 'File',
+      submenu: [checkForUpdates, { type: 'separator' }, { role: 'quit' }]
     });
   }
 
