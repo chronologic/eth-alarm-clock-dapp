@@ -18,7 +18,6 @@ class CustomProviderModal extends Component {
   }
 
   async setCustomProvider() {
-    debugger;
     const url = this.providerInputField.value;
 
     if (this.validateProviderUrl() && await this.testProviderUrl()) {
