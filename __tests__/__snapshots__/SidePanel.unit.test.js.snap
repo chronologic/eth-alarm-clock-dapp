@@ -250,7 +250,9 @@ exports[`SidePanel is correctly rendered 1`] = `
               <span
                 className="timenode-count col-6"
               >
-                <div>
+                <div
+                  className=""
+                >
                   <div
                     className="css-1ncsqv2"
                   />
