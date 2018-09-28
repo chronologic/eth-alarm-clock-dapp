@@ -14,7 +14,7 @@ class CustomProviderModal extends Component {
       error: null
     };
     this.setCustomProvider = this.setCustomProvider.bind(this);
-    this._validateProviderUrl = this._validateProviderUrl.bind(this);
+    this.validateProviderUrl = this.validateProviderUrl.bind(this);
   }
 
   async setCustomProvider() {
