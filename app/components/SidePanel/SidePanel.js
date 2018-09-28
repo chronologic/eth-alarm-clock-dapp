@@ -5,6 +5,7 @@ import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
 
+@inject('transactionStatistics')
 @inject('web3Service')
 @inject('keenStore')
 @observer
@@ -77,7 +78,7 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
-    const { keenStore, web3Service } = this.props;
+    const { keenStore, transactionStatistics, web3Service } = this.props;
 
     const activeTimenodes = keenStore.activeTimeNodes ? (
       keenStore.activeTimeNodes
@@ -98,6 +99,8 @@ class SidePanel extends Component {
     );
 
     const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
+
+    const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 
     return (
       <nav className="page-sidebar" data-pages="sidebar">
@@ -225,7 +228,7 @@ class SidePanel extends Component {
 
             <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
@@ -238,15 +241,45 @@ class SidePanel extends Component {
               </div>
             </li>
 
-            <li className="d-md-block d-lg-none">
+            <li className="sidebar-additional-item">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-7 px-0">
+                    <span className="active-timenodes">Current Block</span>
+                  </div>
+                  <div className="col-5 px-0 text-right">
+                    <span className="timenode-count">
+                      {this.props.web3Service.latestBlockNumber}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li className="sidebar-additional-item">
               <div className="container py-2">
                 <div className="row p-l-20 p-r-15">
                   <div className="col-8 px-0">
-                    <span className="active-timenodes">Current Block</span>
+                    <span className="active-timenodes">Upcoming Transactions</span>
                   </div>
                   <div className="col-4 px-0 text-right">
                     <span className="timenode-count col-6">
-                      {this.props.web3Service.latestBlockNumber}
+                      {transactionsScheduledInNextHoursAmount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li className="sidebar-additional-item">
+              <div className="container py-2">
+                <div className="row p-l-20 p-r-15">
+                  <div className="col-8 px-0">
+                    <span className="active-timenodes">Efficiency</span>
+                  </div>
+                  <div className="col-4 px-0 text-right">
+                    <span className="timenode-count col-6">
+                      {efficiency !== null && `${efficiency}%`}
                     </span>
                   </div>
                 </div>
@@ -263,7 +296,8 @@ class SidePanel extends Component {
 SidePanel.propTypes = {
   web3Service: PropTypes.any,
   keenStore: PropTypes.any,
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  transactionStatistics: PropTypes.any
 };
 
 export default SidePanel;

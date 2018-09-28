@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import Alert from '../Common/Alert';
 import { TIMENODE_STATUS } from '../../stores/TimeNodeStore';
-import { ActionsTable, ExecutedGraph } from './StatisticsComponents';
+import { ActionsTable, ExecutedGraph } from './Dashboard';
 import { BeatLoader } from 'react-spinners';
 import moment from 'moment';
 
@@ -183,7 +183,7 @@ class TimeNodeDashboard extends Component {
     const graph =
       successfulExecutions !== null ? (
         successfulExecutions.length > 0 ? (
-          <ExecutedGraph />
+          <ExecutedGraph onRef={ref => (this.executedGraph = ref)} />
         ) : (
           <p className="my-5 text-center">No data yet.</p>
         )
@@ -390,7 +390,7 @@ class TimeNodeDashboard extends Component {
                       <a
                         data-toggle="refresh"
                         className="card-refresh"
-                        onClick={() => this.refreshStats()}
+                        onClick={() => this.executedGraph.refreshChart()}
                       >
                         <i className="card-icon card-icon-refresh" />
                       </a>

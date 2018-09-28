@@ -109,7 +109,7 @@
   }
 }
 
-/* Tabs : Simple 
+/* Tabs : Simple
 ------------------------------------
 */
 
@@ -344,7 +344,7 @@
   }
 }
 
-/* Tabs : Fill-up 
+/* Tabs : Fill-up
 ------------------------------------
 */
 
@@ -524,9 +524,9 @@
       width: 100%;
       position: relative;
       bottom: 3px;
-      z-index: 120;    
+      z-index: 120;
       content: "";
-      clear: both;    
+      clear: both;
     }
     &  ~ .tab-content{
       position: relative;
@@ -593,12 +593,13 @@
           }
         }
         &:after {
-          font-family: 'FontAwesome';
+          font-family: 'Font Awesome\ 5 Free';
           content: "\f056";
           position: absolute;
           right:13px;
           top: 36%;
           color: $color-master;
+          font-weight: 900;
         }
         &.collapsed {
           color: fade($color-master,

@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 import { TRANSACTION_EVENT } from '../services/eac';
+import RequestFactoryABI from '../abi/RequestFactory';
 
 export const ABORTED_TOPIC = '0xc008bc849b42227c61d5063a1313ce509a6e99211bfd59e827e417be6c65c81b';
 export const CANCELLED_TOPIC = '0xa761582a460180d55522f9f5fdc076390a1f48a7a62a8afbd45c1bb797948edb';
@@ -198,20 +199,45 @@ export default class TransactionFetcher {
   /**
    * @param {Number[]} buckets - This is an array of buckets.
    */
-  async getTransactionsInBuckets(buckets) {
+  async getTransactionsInBuckets(buckets, fillData = true) {
     await this.awaitRunning();
 
-    let transactions = await this._requestFactory.getRequestsByBucket(buckets);
+    const requestFactory = this._web3._web3AlternativeToMetaMask.eth
+      .contract(RequestFactoryABI)
+      .at(this._requestFactory.address);
+
+    let transactions = await new Promise(resolve => {
+      requestFactory
+        .RequestCreated(
+          {
+            bucket: buckets
+          },
+          {
+            fromBlock: this.requestFactoryStartBlock,
+            toBlock: 'latest'
+          }
+        )
+        .get((error, events) => {
+          resolve(
+            events.map(log => ({
+              address: log.args.request,
+              params: log.args.params
+            }))
+          );
+        });
+    });
 
     transactions.reverse(); // Switch to most recent block first
 
-    transactions = transactions.map(({ address, params }) => {
-      const request = this._eac.transactionRequest(address);
+    if (fillData) {
+      transactions = transactions.map(({ address, params }) => {
+        const request = this._eac.transactionRequest(address);
 
-      request.data = this.getDataForRequestParams(params, request);
+        request.data = this.getDataForRequestParams(params, request);
 
-      return request;
-    });
+        return request;
+      });
+    }
 
     return transactions;
   }
