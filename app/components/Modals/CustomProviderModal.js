@@ -18,6 +18,7 @@ class CustomProviderModal extends Component {
   }
 
   async setCustomProvider() {
+    debugger;
     const url = this.providerInputField.value;
 
     if (this.validateProviderUrl() && await this.testProviderUrl()) {
@@ -89,7 +90,7 @@ class CustomProviderModal extends Component {
                   placeholder="http://localhost:8545"
                   className="form-control"
                   ref={el => (this.providerInputField = el)}
-                  onChange={this._validateProviderUrl}
+                  onChange={this.validateProviderUrl}
                   autoFocus
                 />
               </div>
