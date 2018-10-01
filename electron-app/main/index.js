@@ -25,6 +25,8 @@ let MAIN_URL = urlLib.format({
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+const isMacOS = process.platform === 'darwin';
+
 autoUpdater.autoDownload = false;
 let shouldShowUpToDate = false;
 let updateInProgress = false;
@@ -109,7 +111,10 @@ function createWindow() {
     label: 'Check for Updates...',
     click() {
       shouldShowUpToDate = true;
-      if (updateInProgress) {
+
+      if (isMacOS) {
+        shell.openExternal(`${packageJson.repository.url}/releases`);
+      } else if (updateInProgress) {
         dialog.showMessageBox(
           {
             type: 'info',
@@ -146,7 +151,7 @@ function createWindow() {
     HELP_MENU
   ];
 
-  if (process.platform === 'darwin') {
+  if (isMacOS) {
     app.getName = () => APP_NAME;
 
     template.unshift({
@@ -191,7 +196,9 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  autoUpdater.checkForUpdates();
+  if (!isMacOS) {
+    autoUpdater.checkForUpdates();
+  }
   createWindow();
 });
 
