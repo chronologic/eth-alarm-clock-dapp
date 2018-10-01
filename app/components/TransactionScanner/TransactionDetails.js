@@ -236,7 +236,7 @@ class TransactionDetails extends Component {
 
     const isOwner = this.isOwner(transaction);
 
-    const cancelButtonEnabled = isOwner && !isFrozen && status === TRANSACTION_STATUS.SCHEDULED;
+    const cancelButtonEnabled = isOwner && !isFrozen && (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED);
 
     return (
       <div className="alert alert-info">
