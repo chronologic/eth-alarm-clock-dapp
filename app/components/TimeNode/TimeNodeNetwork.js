@@ -52,7 +52,7 @@ class TimeNodeNetwork extends Component {
           <div className="col-md-6">
             <div data-pages="card" className="card card-default">
               <div className="card-header">
-                <div className="card-title">Average TimeBounty in ETH (last 24h)</div>
+                <div className="card-title">Average TimeBounty (last 24h)</div>
                 <div className="card-controls">
                   <ul>
                     <li>

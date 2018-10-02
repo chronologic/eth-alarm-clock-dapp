@@ -5,14 +5,18 @@ import { Chart } from 'chart.js';
 import moment from 'moment';
 import { BeatLoader } from 'react-spinners';
 
+const INITAL_CURRENCY_DENOMINATION = 'ETH';
+
 @inject('transactionStore')
+@inject('web3Service')
 @observer
 class TimeBountiesGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
       chart: null,
-      loadingBounties: false
+      loadingBounties: false,
+      currencyDenomination: INITAL_CURRENCY_DENOMINATION
     };
     this.setChart = this.setChart.bind(this);
     this.updateChart = this.updateChart.bind(this);
@@ -34,7 +38,7 @@ class TimeBountiesGraph extends Component {
     if (!this.state.loadingBounties) {
       this.setState({ loadingBounties: true });
 
-      const { transactionStore } = this.props;
+      const { transactionStore, web3Service } = this.props;
       const labels = [];
       const values = [];
 
@@ -52,6 +56,18 @@ class TimeBountiesGraph extends Component {
 
         labels.push(`${moment.unix(bucket).hour()}:00`);
         values.push(averageBounty);
+      }
+
+      // Chart.js has issues if all numbers are lower than 0.00001
+      // If that is the case, convert the number representation to GWei
+      if (values.every(value => value < 1e-5)) {
+        values.forEach((o, i, arr) => {
+          const wei = web3Service.web3.toWei(arr[i], 'ether');
+          arr[i] = web3Service.web3.fromWei(wei, 'gwei');
+        });
+        this.setState({ currencyDenomination: 'Gwei' });
+      } else if (this.state.currencyDenomination !== INITAL_CURRENCY_DENOMINATION) {
+        this.setState({ currencyDenomination: INITAL_CURRENCY_DENOMINATION });
       }
 
       const data = {
@@ -93,6 +109,10 @@ class TimeBountiesGraph extends Component {
                 ticks: {
                   min: 0,
                   beginAtZero: true
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: this.state.currencyDenomination
                 }
               }
             ]
