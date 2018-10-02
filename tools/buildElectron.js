@@ -25,13 +25,16 @@ async function buildElectron() {
     fs.unlinkSync(path.join(jsBuildDir, 'package.json'));
   }
 
+  const copyToAppDir = (sourceUrl, destinationFilename) => {
+    fs.copyFileSync(sourceUrl, path.join(jsBuildDir, destinationFilename));
+  };
+
   // Builder requires package.json be in the app directory, so copy it in
-  fs.copyFileSync(path.join(paths.root, 'package.json'), path.join(jsBuildDir, 'package.json'));
-  fs.copyFileSync(path.join(paths.electron, 'main/index.js'), path.join(jsBuildDir, 'main.js'));
-  fs.copyFileSync(
-    path.join(paths.electron, 'main/preload.js'),
-    path.join(jsBuildDir, 'preload.js')
-  );
+  copyToAppDir(path.join(paths.root, 'package.json'), 'package.json');
+  copyToAppDir(path.join(paths.electron, 'main/index.js'), 'main.js');
+  copyToAppDir(path.join(paths.electron, 'main/preload.js'), 'preload.js');
+
+  const productName = 'TimeNode';
 
   console.log('Building...');
   try {
@@ -43,7 +46,7 @@ async function buildElectron() {
       ia32: false,
       config: {
         appId: 'com.github.chronologic.timenode',
-        productName: 'TimeNode',
+        productName,
         artifactName: '${productName}-${version}-${arch}.${ext}',
         directories: {
           app: jsBuildDir,
