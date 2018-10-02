@@ -5,7 +5,7 @@ import { Chart } from 'chart.js';
 import moment from 'moment';
 import { BeatLoader } from 'react-spinners';
 
-const INITAL_CURRENCY_DENOMINATION = 'ETH';
+const INITIAL_CURRENCY_DENOMINATION = 'ETH';
 
 @inject('transactionStore')
 @inject('web3Service')
@@ -16,7 +16,7 @@ class TimeBountiesGraph extends Component {
     this.state = {
       chart: null,
       loadingBounties: false,
-      currencyDenomination: INITAL_CURRENCY_DENOMINATION
+      currencyDenomination: INITIAL_CURRENCY_DENOMINATION
     };
     this.setChart = this.setChart.bind(this);
     this.updateChart = this.updateChart.bind(this);
@@ -66,8 +66,8 @@ class TimeBountiesGraph extends Component {
           arr[i] = web3Service.web3.fromWei(wei, 'gwei');
         });
         this.setState({ currencyDenomination: 'Gwei' });
-      } else if (this.state.currencyDenomination !== INITAL_CURRENCY_DENOMINATION) {
-        this.setState({ currencyDenomination: INITAL_CURRENCY_DENOMINATION });
+      } else if (this.state.currencyDenomination !== INITIAL_CURRENCY_DENOMINATION) {
+        this.setState({ currencyDenomination: INITIAL_CURRENCY_DENOMINATION });
       }
 
       const data = {
