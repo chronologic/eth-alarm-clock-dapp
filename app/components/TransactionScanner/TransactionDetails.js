@@ -10,11 +10,12 @@ import { ValueDisplay } from '../Common/ValueDisplay';
 
 const INITIAL_STATE = {
   callData: '',
-  status: '',
   executedAt: '',
-  token: {},
   isTokenTransfer: false,
-  isFrozen: ''
+  isFrozen: '',
+  status: '',
+  token: {},
+  tokenTransferEvents: []
 };
 
 @inject('tokenHelper')
@@ -216,6 +217,22 @@ class TransactionDetails extends Component {
     await this.getFrozenStatus();
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
+    await this.fetchTokenTransferEvents();
+  }
+
+  async fetchTokenTransferEvents() {
+    const { transaction, web3Service } = this.props;
+
+    const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
+    const fromBlock = 0;
+
+    if (afterExecutionWindow) {
+      const tokenTransferEvents = await web3Service.getTokenTransfers(
+        transaction.address,
+        fromBlock
+      );
+      this.setState(tokenTransferEvents);
+    }
   }
 
   getTransactionPropertyTimeDisplay(transaction, property) {
@@ -236,7 +253,10 @@ class TransactionDetails extends Component {
 
     const isOwner = this.isOwner(transaction);
 
-    const cancelButtonEnabled = isOwner && !isFrozen && (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED);
+    const cancelButtonEnabled =
+      isOwner &&
+      !isFrozen &&
+      (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED);
 
     return (
       <div className="alert alert-info">
@@ -306,6 +326,78 @@ class TransactionDetails extends Component {
     return <div className="col-6" />;
   }
 
+  getInfoMessage() {
+    const { status, isFrozen } = this.state;
+    const { transaction } = this.props;
+
+    const isOwner = this.isOwner(transaction);
+
+    let messages = [];
+    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
+      messages.push('The transaction has been frozen.');
+    }
+    return (
+      <div>
+        {messages.map(msg => (
+          <div key={msg}>{msg}</div>
+        ))}
+      </div>
+    );
+  }
+
+  getProxySection() {
+    // const { status, balance } = this.state;
+    const { transaction, web3Service } = this.props;
+
+    const isOwner = this.isOwner(transaction);
+    const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
+
+    const fromBlock = transaction.temporalUnit === 1 ? transaction.windowStart : null;
+    // TODO get the block # from timestamp
+
+    const tokenTransfers = web3Service.filter({
+      fromBlock,
+      toBlock: 'latest',
+      topics: [
+        '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+        null, // from
+        '0x' + '0'.repeat(24) + transaction.address.slice(2) // to
+      ]
+    });
+
+    if (isOwner && afterExecutionWindow) {
+      return (
+        <div>
+          Token Transfers = {JSON.stringify(tokenTransfers)}
+          <table className="table d-block">
+            <tbody className="d-block">
+              <tr className="row">
+                <td className="d-inline-block col-3 col-md-3">Sample Token</td>
+                <td className="d-inline-block col-3 col-md-3">S-TKN</td>
+                <td className="d-inline-block col-3 col-md-3">BALANCE</td>
+                <td className="d-inline-block col-3 col-md-3">
+                  <button className="btn btn-white btn-cons pull-right">Send!</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          General Proxy:
+          <input type="text" placeholder="Data to Proxy" value="" className="form-control" />
+          <button className="btn btn-white btn-cons pull-right" type="button">
+            Submit
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="alert alert-warning">
+        Only the owner of this transaction can call proxy. Owner? {isOwner.toString()} ... After
+        Execution Window? {afterExecutionWindow.toString()}
+      </div>
+    );
+  }
+
   getRefundSection() {
     const { status, balance } = this.state;
     const { transaction } = this.props;
@@ -365,25 +457,6 @@ class TransactionDetails extends Component {
       );
     }
     return null;
-  }
-
-  getInfoMessage() {
-    const { status, isFrozen } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-
-    let messages = [];
-    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
-      messages.push('The transaction has been frozen.');
-    }
-    return (
-      <div>
-        {messages.map(msg => (
-          <div key={msg}>{msg}</div>
-        ))}
-      </div>
-    );
   }
 
   render() {
@@ -525,6 +598,9 @@ class TransactionDetails extends Component {
         </div>
         <div className="row mt-4">
           <div className="col">{this.getCancelSection()}</div>
+        </div>
+        <div className="row mt-4">
+          <div className="col">{this.getProxySection()}</div>
         </div>
       </div>
     );
