@@ -36,9 +36,11 @@ class TransactionDetails extends Component {
     super();
 
     this.state = INITIAL_STATE;
-    this.refundBalance = this.refundBalance.bind(this);
-    this.cancelTransaction = this.cancelTransaction.bind(this);
+
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
+    this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.refundBalance = this.refundBalance.bind(this);
+    this.sendTokensToOwner = this.sendTokensToOwner.bind(this);
   }
 
   getExecutedEvents(requestLib, fromBlock = 0) {
@@ -47,6 +49,14 @@ class TransactionDetails extends Component {
         resolve(events);
       });
     });
+  }
+
+  async sendTokensToOwner(token, amount) {
+    const { tokenHelper, transaction } = this.props;
+    const { owner } = transaction;
+
+    const data = await tokenHelper.sendTokensData(token, owner, amount);
+    await transaction.proxy(token, data);
   }
 
   async executedAt(transaction, status, transactionStore) {
@@ -245,7 +255,13 @@ class TransactionDetails extends Component {
     if (afterExecutionWindow) {
       const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
       const tokenTransferDetails = await Promise.all(
-        tokenTransferEvents.map(event => tokenHelper.fetchTokenDetails(event.address))
+        tokenTransferEvents.map(async event => {
+          const details = await tokenHelper.fetchTokenDetails(event.address);
+
+          return Object.assign(details, {
+            balance: await tokenHelper.getTokenBalanceOf(event.address, address)
+          });
+        })
       );
       this.setState({
         afterExecutionWindow,
@@ -571,7 +587,7 @@ class TransactionDetails extends Component {
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
           isOwner={isOwner}
-          transaction={transaction}
+          sendTokensToOwner={this.sendTokensToOwner}
           tokenTransferDetails={this.state.tokenTransferDetails}
         />
       </div>

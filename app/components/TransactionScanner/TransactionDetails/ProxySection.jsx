@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { inject } from 'mobx-react';
 
 const ProxySection = props => {
-  const { afterExecutionWindow, isOwner, tokenTransferDetails, transaction } = props;
+  const { afterExecutionWindow, isOwner, sendTokensToOwner, tokenTransferDetails } = props;
 
   const tableRows = tokenTransferDetails.map(details => {
     return (
       <tr className="row">
-        <td className="d-inline-block col-3 col-md-3">{details.name}</td>
-        <td className="d-inline-block col-3 col-md-3">{details.symbol}</td>
-        <td className="d-inline-block col-3 col-md-3">{details.decimals}</td>
-        <button className="btn btn-white btn-cons pull-right">Send!</button>
+        <td className="d-inline-block col-4 col-md-4">{details.name}</td>
+        <td className="d-inline-block col-4 col-md-4">{Number(details.balance) / 10 ** details.decimals + ' ' + details.symbol}</td>
+        <button 
+          className="btn btn-white btn-cons pull-right"
+          onClick={() => sendTokensToOwner(details.address, details.balance)}
+        >
+          Send!
+        </button>
       </tr>
     )
   })
-
-  // const tableRows = 'hi!';
 
   if (isOwner && afterExecutionWindow) {
     return (
@@ -27,8 +28,14 @@ const ProxySection = props => {
             {tableRows}
             </tbody>
           </table>
-          Proxy Call:
-          <input type="text" placeholder="Data to Proxy" value="" className="form-control" />
+          <label>Proxy Call:</label>
+          <input
+            type="text" 
+            placeholder="Proxy Data" 
+            value=""
+            // onBlur={validate('proxyData')}
+            // onChange={onChangeCheck('proxyData')}
+            className="form-control" />
           <button className="btn btn-white btn-cons pull-right" type="button">
             Submit
           </button>
@@ -42,6 +49,12 @@ const ProxySection = props => {
   }
 
   return <div>didn't match</div>
+}
+
+ProxySection.propTypes = {
+  afterExecutionWindow: PropTypes.bool,
+  isOwner: PropTypes.bool,
+  tokenTransferDetails: PropTypes.array
 }
 
 export default ProxySection;
