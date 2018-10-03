@@ -272,7 +272,11 @@ class EacWorker {
     this._transactionFetcher.requestFactoryStartBlock =
       requestFactoryStartBlocks[this.network.id] || 0;
     this._transactionFetcher.startLazy();
-    const transactions = await this._transactionFetcher.getTransactionsInBuckets([bucket]);
+    const transactions = await this._transactionFetcher.getTransactionsInBuckets(
+      [bucket],
+      true,
+      false
+    );
 
     const bounties = [];
     let bounty, bountyInEth;
