@@ -28,17 +28,17 @@ const ProxySection = props => {
             {tableRows}
             </tbody>
           </table>
-          <label>Proxy Call:</label>
+          {/* <label>Proxy Call:</label>
           <input
             type="text" 
             placeholder="Proxy Data" 
             value=""
-            // onBlur={validate('proxyData')}
-            // onChange={onChangeCheck('proxyData')}
+            onBlur={validate('proxyData')}
+            onChange={onChangeCheck('proxyData')}
             className="form-control" />
           <button className="btn btn-white btn-cons pull-right" type="button">
             Submit
-          </button>
+          </button> */}
         </div>
       </div>
     );
