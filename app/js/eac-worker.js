@@ -98,8 +98,8 @@ class EacWorker {
     this._transactionFetcher = new TransactionFetcher(
       this.config.eac,
       new TransactionCache(networkAwareStorageService),
-      new FeaturesService(web3Service),
-      web3Service
+      web3Service,
+      new FeaturesService(web3Service)
     );
 
     postMessage({

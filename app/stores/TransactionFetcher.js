@@ -26,7 +26,7 @@ export default class TransactionFetcher {
   _requestFactory;
   _features;
 
-  constructor(eac, cache, features, web3) {
+  constructor(eac, cache, web3, features) {
     this._eac = eac;
     this._cache = cache;
     this._web3 = web3;
