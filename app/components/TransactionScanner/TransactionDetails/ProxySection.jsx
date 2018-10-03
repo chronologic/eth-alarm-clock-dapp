@@ -1,6 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+const CustomProxyData = _ => {
+  let checked;
+
+  return (
+    <div className="checkbox check-primary">
+      <input
+        type="checkbox"
+        id="checkboxProxyData"
+        onChange={() => checked = !checked}
+        checked={checked}
+      />
+      <label htmlFor="checkboxProxyData">Custom Proxy Data</label>
+    </div>
+  )
+}
+
 const ProxySection = props => {
   const { afterExecutionWindow, isOwner, sendTokensToOwner, tokenTransferDetails } = props;
 
@@ -28,6 +44,7 @@ const ProxySection = props => {
             {tableRows}
             </tbody>
           </table>
+          <CustomProxyData />
           {/* <label>Proxy Call:</label>
           <input
             type="text" 

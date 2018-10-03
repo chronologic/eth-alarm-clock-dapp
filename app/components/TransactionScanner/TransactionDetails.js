@@ -11,8 +11,6 @@ import { ValueDisplay } from '../Common/ValueDisplay';
 import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
 
-/* eslint:disable */
-
 const INITIAL_STATE = {
   callData: '',
   executedAt: '',
@@ -21,7 +19,6 @@ const INITIAL_STATE = {
   status: '',
   token: {},
   tokenTransferDetails: []
-  // tokenTransferEvents: []
 };
 
 @inject('tokenHelper')

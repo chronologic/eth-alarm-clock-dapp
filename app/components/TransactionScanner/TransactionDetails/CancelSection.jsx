@@ -27,7 +27,7 @@ const CancelSection = props => {
             </li>
             <li>
               When wasn&#39;t executed by any TimeNode after{' '}
-              <b>{executionWindowEnd}</b>
+              <b>{executionWindowEnd}</b>{' '}
               (Execution Window End)
             </li>
             <li>When it hasn&#39;t been already cancelled</li>
