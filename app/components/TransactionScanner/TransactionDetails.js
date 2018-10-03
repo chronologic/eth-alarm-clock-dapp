@@ -8,6 +8,8 @@ import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 
+/* eslint:disable */
+
 const INITIAL_STATE = {
   callData: '',
   executedAt: '',
@@ -15,6 +17,7 @@ const INITIAL_STATE = {
   isFrozen: '',
   status: '',
   token: {},
+  tokenTransferDetails: {},
   tokenTransferEvents: []
 };
 
@@ -222,12 +225,14 @@ class TransactionDetails extends Component {
 
   async fetchTokenTransferEvents() {
     const {
+      tokenHelper,
       transaction: { address, executionWindowEnd, temporalUnit },
       web3Service
     } = this.props;
 
     // TODO error handling?
     const fromBlock = await web3Service.getBlockNumberFromTxHash(this.state.executedAt);
+    // console.log(fromBlock);
     // if (!fromBlock) { console.error('error in getting fromBlock'); }
 
     let afterExecutionWindow;
@@ -239,7 +244,11 @@ class TransactionDetails extends Component {
 
     if (afterExecutionWindow) {
       const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
-      this.setState({ tokenTransferEvents });
+      // this.setState({ tokenTransferEvents });
+      const tokenTransferDetails = await Promise.all(
+        tokenTransferEvents.map(event => tokenHelper.fetchTokenDetails(event.address))
+      );
+      this.setState({ tokenTransferDetails, tokenTransferEvents });
     }
   }
 
@@ -361,20 +370,35 @@ class TransactionDetails extends Component {
     // TODO blocks
     const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
 
+    let tableRows = 'hi!';
+    const getTableRows = () => {
+      if (this.state.tokenTransferDetails) {
+        tableRows = this.state.tokenTransferDetails.map(details => {
+          return (
+            <tr className="row" key={2}>
+              {/* <td className="d-inline-block col-3 col-md-3">{details.name}</td> */}
+              <td className="d-inline-block col-3 col-md-3">{details.symbol}</td>
+              <td className="d-inline-block col-3 col-md-3">{details.decimals}</td>
+              <td className="d-inline-block col-3 col-md-3">
+                <button className="btn btn-white btn-cons pull-right">Send!</button>
+              </td>
+            </tr>
+          );
+        });
+      } else {
+        setTimeout(() => getTableRows(), 3000);
+      }
+    };
+    setTimeout(() => getTableRows(), 3000);
+
     if (isOwner && afterExecutionWindow) {
       return (
         <div>
           Token Transfers = {JSON.stringify(this.state.tokenTransferEvents)}
           <table className="table d-block">
             <tbody className="d-block">
-              <tr className="row">
-                <td className="d-inline-block col-3 col-md-3">Sample Token</td>
-                <td className="d-inline-block col-3 col-md-3">S-TKN</td>
-                <td className="d-inline-block col-3 col-md-3">BALANCE</td>
-                <td className="d-inline-block col-3 col-md-3">
-                  <button className="btn btn-white btn-cons pull-right">Send!</button>
-                </td>
-              </tr>
+              {tableRows}
+              {this.state.tokenTransferDetails}
             </tbody>
           </table>
           General Proxy:

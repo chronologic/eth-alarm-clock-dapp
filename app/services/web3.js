@@ -79,7 +79,7 @@ export default class Web3Service {
   }
 
   getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.filter({
+    const filter = this.web3.eth.filter({
       fromBlock,
       toBlock: 'latest',
       topics: [
