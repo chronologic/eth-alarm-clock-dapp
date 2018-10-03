@@ -223,8 +223,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         </a>
       </li>
       <hr
-        className="d-md-block d-lg-none mx-4"
-        id="sidebar-separator"
+        className="sidebar-separator mx-4"
       />
       <li
         className="sidebar-additional-item"
@@ -265,7 +264,6 @@ exports[`SidePanel is correctly rendered 1`] = `
         >
           <span>
             Mainnet
-            
           </span>
         </div>
       </li>

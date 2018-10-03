@@ -85,6 +85,7 @@ class NetworkChooser extends Component {
   }
 
   render() {
+    const { showBlockNumber } = this.props;
     const { timeNodeNetworkId, metaMaskNetworkId } = this.state;
     const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
@@ -92,7 +93,7 @@ class NetworkChooser extends Component {
       return (
         <span>
           {Networks[metaMaskNetworkId].name}
-          {blockNumberString(this.props.web3Service.latestBlockNumber)}
+          {showBlockNumber && blockNumberString(this.props.web3Service.latestBlockNumber)}
         </span>
       );
     }
@@ -120,13 +121,14 @@ class NetworkChooser extends Component {
             </option>
           </select>
         </span>
-        {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
+        {showBlockNumber && blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
       </span>
     );
   }
 }
 
 NetworkChooser.propTypes = {
+  showBlockNumber: PropTypes.bool,
   location: PropTypes.any,
   storageService: PropTypes.any,
   web3Service: PropTypes.any,

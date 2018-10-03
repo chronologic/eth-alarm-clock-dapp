@@ -227,7 +227,7 @@ class SidePanel extends Component {
               </a>
             </li>
 
-            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
+            <hr className="sidebar-separator mx-4" />
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Active TimeNodes</div>

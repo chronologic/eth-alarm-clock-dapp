@@ -317,10 +317,6 @@ hr {
   overflow-y: auto;
 }
 
-#sidebar-separator {
-  border-color: #1D1F27;
-}
-
 #signatureCheck {
   height: 250px;
 }
@@ -407,6 +403,11 @@ hr {
   padding-left: 14px;
 }
 
+.sidebar-separator {
+  border-color: #1D1F27;
+  display: none;
+}
+
 .sidebar-additional-item {
   display: none !important;
 
@@ -430,6 +431,12 @@ hr {
     }
   }
 
+  @media screen and (min-width: 768px) {
+    .sidebar-visible & {
+      padding: 0 32px !important;
+    }
+  }
+
   &--label {
     flex-grow: 1;
     color: #21ffff;
@@ -439,5 +446,21 @@ hr {
     flex-grow: 1;
     text-align: right;
     color: white;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .sidebar-open {
+    .sidebar-separator {
+      display: block;
+    }
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .sidebar-visible {
+    .sidebar-separator {
+      display: block;
+    }
   }
 }

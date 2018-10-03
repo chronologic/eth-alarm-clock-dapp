@@ -149,7 +149,7 @@ class Header extends Component {
               &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser />
+              <NetworkChooser showBlockNumber={true} />
             </span>
           </div>
           <div className="header-separator" />
