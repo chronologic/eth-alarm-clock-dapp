@@ -8,6 +8,8 @@ import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 
+import ProxySection from './TransactionDetails/ProxySection';
+
 /* eslint:disable */
 
 const INITIAL_STATE = {
@@ -17,8 +19,8 @@ const INITIAL_STATE = {
   isFrozen: '',
   status: '',
   token: {},
-  tokenTransferDetails: {},
-  tokenTransferEvents: []
+  tokenTransferDetails: []
+  // tokenTransferEvents: []
 };
 
 @inject('tokenHelper')
@@ -232,8 +234,6 @@ class TransactionDetails extends Component {
 
     // TODO error handling?
     const fromBlock = await web3Service.getBlockNumberFromTxHash(this.state.executedAt);
-    // console.log(fromBlock);
-    // if (!fromBlock) { console.error('error in getting fromBlock'); }
 
     let afterExecutionWindow;
     if (temporalUnit === 1) {
@@ -244,11 +244,14 @@ class TransactionDetails extends Component {
 
     if (afterExecutionWindow) {
       const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
-      // this.setState({ tokenTransferEvents });
       const tokenTransferDetails = await Promise.all(
         tokenTransferEvents.map(event => tokenHelper.fetchTokenDetails(event.address))
       );
-      this.setState({ tokenTransferDetails, tokenTransferEvents });
+      this.setState({
+        afterExecutionWindow,
+        tokenTransferDetails
+        // tokenTransferEvents
+      });
     }
   }
 
@@ -362,62 +365,6 @@ class TransactionDetails extends Component {
     );
   }
 
-  getProxySection() {
-    // const { status, balance } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-    // TODO blocks
-    const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
-
-    let tableRows = 'hi!';
-    const getTableRows = () => {
-      if (this.state.tokenTransferDetails) {
-        tableRows = this.state.tokenTransferDetails.map(details => {
-          return (
-            <tr className="row" key={2}>
-              {/* <td className="d-inline-block col-3 col-md-3">{details.name}</td> */}
-              <td className="d-inline-block col-3 col-md-3">{details.symbol}</td>
-              <td className="d-inline-block col-3 col-md-3">{details.decimals}</td>
-              <td className="d-inline-block col-3 col-md-3">
-                <button className="btn btn-white btn-cons pull-right">Send!</button>
-              </td>
-            </tr>
-          );
-        });
-      } else {
-        setTimeout(() => getTableRows(), 3000);
-      }
-    };
-    setTimeout(() => getTableRows(), 3000);
-
-    if (isOwner && afterExecutionWindow) {
-      return (
-        <div>
-          Token Transfers = {JSON.stringify(this.state.tokenTransferEvents)}
-          <table className="table d-block">
-            <tbody className="d-block">
-              {tableRows}
-              {this.state.tokenTransferDetails}
-            </tbody>
-          </table>
-          General Proxy:
-          <input type="text" placeholder="Data to Proxy" value="" className="form-control" />
-          <button className="btn btn-white btn-cons pull-right" type="button">
-            Submit
-          </button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="alert alert-warning">
-        Only the owner of this transaction can call proxy. Owner? {isOwner.toString()} ... After
-        Execution Window? {afterExecutionWindow.toString()}
-      </div>
-    );
-  }
-
   getRefundSection() {
     const { status, balance } = this.state;
     const { transaction } = this.props;
@@ -494,6 +441,8 @@ class TransactionDetails extends Component {
       windowSize
     } = transaction;
     const isTimestamp = transaction.temporalUnit === 2;
+
+    const isOwner = this.isOwner(transaction);
 
     return (
       <div className="tab-pane slide active show">
@@ -619,9 +568,12 @@ class TransactionDetails extends Component {
         <div className="row mt-4">
           <div className="col">{this.getCancelSection()}</div>
         </div>
-        <div className="row mt-4">
-          <div className="col">{this.getProxySection()}</div>
-        </div>
+        <ProxySection
+          afterExecutionWindow={this.state.afterExecutionWindow}
+          isOwner={isOwner}
+          transaction={transaction}
+          tokenTransferDetails={this.state.tokenTransferDetails}
+        />
       </div>
     );
   }
