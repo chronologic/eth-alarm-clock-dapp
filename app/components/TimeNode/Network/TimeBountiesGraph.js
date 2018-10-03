@@ -128,12 +128,6 @@ class TimeBountiesGraph extends Component {
     chart.update();
   }
 
-  compareDates(a, b) {
-    if (a.datetime < b.datetime) return -1;
-    if (a.datetime > b.datetime) return 1;
-    return 0;
-  }
-
   render() {
     return (
       <div id="timeBountiesGraphWrapper" className="horizontal-center">
