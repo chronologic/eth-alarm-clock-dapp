@@ -79,6 +79,9 @@ export default class TimeNodeStore {
   @observable
   isTimeMint = null;
 
+  @observable
+  proposedNewNetId = null;
+
   @computed
   get nodeStatus() {
     const { MASTER_CHRONONODE, CHRONONODE, TIMENODE, DISABLED, LOADING } = TIMENODE_STATUS;
