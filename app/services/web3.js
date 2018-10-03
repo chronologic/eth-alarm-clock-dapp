@@ -52,6 +52,14 @@ export default class Web3Service {
     return this.web3.fromWei(wei);
   }
 
+  async getBlockNumberFromTxHash(txHash) {
+    return new Promise(resolve => {
+      this.web3.eth.getTransaction(txHash, (_, res) => {
+        resolve(res.blockNumber);
+      });
+    });
+  }
+
   async fetchReceipt(hash) {
     return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
   }

@@ -221,17 +221,25 @@ class TransactionDetails extends Component {
   }
 
   async fetchTokenTransferEvents() {
-    const { transaction, web3Service } = this.props;
+    const {
+      transaction: { address, executionWindowEnd, temporalUnit },
+      web3Service
+    } = this.props;
 
-    const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
-    const fromBlock = 0;
+    // TODO error handling?
+    const fromBlock = await web3Service.getBlockNumberFromTxHash(this.state.executedAt);
+    // if (!fromBlock) { console.error('error in getting fromBlock'); }
+
+    let afterExecutionWindow;
+    if (temporalUnit === 1) {
+      afterExecutionWindow = (await web3Service.fetchBlockNumber()) >= executionWindowEnd;
+    } else if (temporalUnit === 2) {
+      afterExecutionWindow = Date.now() >= executionWindowEnd;
+    }
 
     if (afterExecutionWindow) {
-      const tokenTransferEvents = await web3Service.getTokenTransfers(
-        transaction.address,
-        fromBlock
-      );
-      this.setState(tokenTransferEvents);
+      const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
+      this.setState({ tokenTransferEvents });
     }
   }
 
@@ -347,28 +355,16 @@ class TransactionDetails extends Component {
 
   getProxySection() {
     // const { status, balance } = this.state;
-    const { transaction, web3Service } = this.props;
+    const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
+    // TODO blocks
     const afterExecutionWindow = Date.now() >= transaction.executionWindowEnd;
-
-    const fromBlock = transaction.temporalUnit === 1 ? transaction.windowStart : null;
-    // TODO get the block # from timestamp
-
-    const tokenTransfers = web3Service.filter({
-      fromBlock,
-      toBlock: 'latest',
-      topics: [
-        '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-        null, // from
-        '0x' + '0'.repeat(24) + transaction.address.slice(2) // to
-      ]
-    });
 
     if (isOwner && afterExecutionWindow) {
       return (
         <div>
-          Token Transfers = {JSON.stringify(tokenTransfers)}
+          Token Transfers = {JSON.stringify(this.state.tokenTransferEvents)}
           <table className="table d-block">
             <tbody className="d-block">
               <tr className="row">
