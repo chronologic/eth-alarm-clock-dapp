@@ -46,15 +46,19 @@ class TimeBountiesGraph extends Component {
 
     if (this.props.data) {
       const { web3Service } = this.props;
-      const { labels, values } = this.props.data;
+      let { labels, values } = this.props.data;
 
       // Chart.js has issues if all numbers are lower than 0.00001
       // If that is the case, convert the number representation to GWei
       if (values.every(value => value < 1e-5)) {
-        values.forEach((o, i, arr) => {
-          const wei = web3Service.web3.toWei(arr[i], 'ether');
-          arr[i] = web3Service.web3.fromWei(wei, 'gwei');
+        const valuesInGwei = [];
+
+        values.forEach(value => {
+          const wei = web3Service.web3.toWei(value, 'ether');
+          valuesInGwei.push(web3Service.web3.fromWei(wei, 'gwei'));
         });
+        values = valuesInGwei;
+
         this.setState({ currencyDenomination: 'Gwei' });
       } else if (this.state.currencyDenomination !== INITIAL_CURRENCY_DENOMINATION) {
         this.setState({ currencyDenomination: INITIAL_CURRENCY_DENOMINATION });

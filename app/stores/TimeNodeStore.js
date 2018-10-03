@@ -217,7 +217,7 @@ export default class TimeNodeStore {
     this.updateBalancesInterval = setInterval(this.updateBalances, 15000);
 
     this.updateBountiesGraph();
-    this.updateBountiesGraphInterval = setInterval(this.updateBountiesGraph, 300000);
+    this.updateBountiesGraphInterval = setInterval(this.updateBountiesGraph, 15000);
 
     this.getNetworkInfo();
     this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
