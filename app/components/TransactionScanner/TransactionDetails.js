@@ -8,6 +8,7 @@ import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 
+import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
 
 /* eslint:disable */
@@ -283,57 +284,6 @@ class TransactionDetails extends Component {
     return display;
   }
 
-  getCancelSection() {
-    const { isFrozen, status } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-
-    const cancelButtonEnabled =
-      isOwner &&
-      !isFrozen &&
-      (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED);
-
-    return (
-      <div className="alert alert-info">
-        {!isOwner && (
-          <React.Fragment>
-            In order to cancel this transaction please switch to account <b>{transaction.owner}</b>{' '}
-            (transaction owner).
-            <br />
-            <br />
-          </React.Fragment>
-        )}
-        Note that transaction can be cancelled:
-        <br />
-        <ol className="list-normalized">
-          <li>
-            Before <b>{this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}</b>{' '}
-            (claiming window start)
-          </li>
-          <li>
-            When wasn&#39;t executed by any TimeNode after{' '}
-            <b>{this.getTransactionPropertyTimeDisplay(transaction, 'executionWindowEnd')}</b>{' '}
-            (execution window end)
-          </li>
-          <li>When it hasn&#39;t been already cancelled</li>
-          <li>Only by its owner</li>
-        </ol>
-        <div className="mt-3">
-          <button
-            className="btn btn-danger btn-cons"
-            disabled={!cancelButtonEnabled}
-            onClick={this.cancelTransaction}
-            type="button"
-            ref={el => (this.cancelBtn = el)}
-          >
-            <span>Cancel</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   getApproveSection() {
     const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
     const { transaction } = this.props;
@@ -444,21 +394,22 @@ class TransactionDetails extends Component {
 
   render() {
     const { transaction } = this.props;
-    const { callData, executedAt, status } = this.state;
+    const { callData, executedAt, isFrozen, status } = this.state;
     const {
       bounty,
       callGas,
       callValue,
       fee,
       gasPrice,
+      owner,
       requiredDeposit,
       toAddress,
       windowStart,
       windowSize
     } = transaction;
-    const isTimestamp = transaction.temporalUnit === 2;
 
     const isOwner = this.isOwner(transaction);
+    const isTimestamp = transaction.temporalUnit === 2;
 
     return (
       <div className="tab-pane slide active show">
@@ -581,9 +532,22 @@ class TransactionDetails extends Component {
           </div>
           <div className="col-12">{this.getInfoMessage()}</div>
         </div>
-        <div className="row mt-4">
-          <div className="col">{this.getCancelSection()}</div>
-        </div>
+        <CancelSection
+          cancelButtonEnabled={
+            isOwner &&
+            !isFrozen &&
+            (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED)
+          }
+          cancelBtnRef={el => (this.cancelBtn = el)}
+          cancelTransaction={this.cancelTransaction}
+          claimWindowStart={this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}
+          executionWindowEnd={this.getTransactionPropertyTimeDisplay(
+            transaction,
+            'executionWindowEnd'
+          )}
+          isOwner={isOwner}
+          owner={owner}
+        />
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
           isOwner={isOwner}
