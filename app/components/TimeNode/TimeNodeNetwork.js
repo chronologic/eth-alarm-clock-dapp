@@ -8,6 +8,7 @@ const TWO_MIN = 120 * 1000;
 const TEN_MIN = 10 * 60 * 1000;
 
 @inject('keenStore')
+@inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
   render() {
@@ -70,6 +71,7 @@ class TimeNodeNetwork extends Component {
               <div className="card-body">
                 <TimeBountiesGraph
                   onRef={ref => (this.timeBountiesGraph = ref)}
+                  data={this.props.timeNodeStore.bountiesGraphData}
                   refreshInterval={TEN_MIN}
                 />
               </div>
@@ -82,7 +84,8 @@ class TimeNodeNetwork extends Component {
 }
 
 TimeNodeNetwork.propTypes = {
-  keenStore: PropTypes.any
+  keenStore: PropTypes.any,
+  timeNodeStore: PropTypes.any
 };
 
 export default TimeNodeNetwork;

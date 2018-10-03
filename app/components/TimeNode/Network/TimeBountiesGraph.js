@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
-import moment from 'moment';
 import { BeatLoader } from 'react-spinners';
 
 const INITIAL_CURRENCY_DENOMINATION = 'ETH';
 
-@inject('transactionStore')
+@inject('timeNodeStore')
 @inject('web3Service')
 @observer
 class TimeBountiesGraph extends Component {
@@ -34,29 +33,20 @@ class TimeBountiesGraph extends Component {
     clearInterval(this.interval);
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) {
+      this.refreshChart();
+    }
+  }
+
   async refreshChart() {
     if (!this.state.loadingBounties) {
       this.setState({ loadingBounties: true });
+    }
 
-      const { transactionStore, web3Service } = this.props;
-      const labels = [];
-      const values = [];
-
-      const currentTime = moment().unix();
-
-      const average = arr =>
-        arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
-
-      for (let i = 24; i > 0; i--) {
-        const bucket = currentTime - 3600 * i;
-
-        let bounties = await transactionStore.getBountiesForBucket(bucket, true);
-        bounties = bounties.map(bn => bn.toNumber());
-        const averageBounty = bounties.length > 0 ? average(bounties) : 0.0;
-
-        labels.push(`${moment.unix(bucket).hour()}:00`);
-        values.push(averageBounty);
-      }
+    if (this.props.data) {
+      const { web3Service } = this.props;
+      const { labels, values } = this.props.data;
 
       // Chart.js has issues if all numbers are lower than 0.00001
       // If that is the case, convert the number representation to GWei
@@ -80,9 +70,9 @@ class TimeBountiesGraph extends Component {
       } else {
         this.setChart(this.timeBountiesGraph.getContext('2d'), data);
       }
-
-      this.setState({ loadingBounties: false });
     }
+
+    this.setState({ loadingBounties: false });
   }
 
   setChart(ctx, data) {
@@ -147,7 +137,7 @@ class TimeBountiesGraph extends Component {
   render() {
     return (
       <div id="timeBountiesGraphWrapper" className="horizontal-center">
-        {this.state.loadingBounties && <BeatLoader />}
+        {(this.state.loadingBounties || !this.props.data) && <BeatLoader />}
         <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />
       </div>
     );
@@ -156,7 +146,8 @@ class TimeBountiesGraph extends Component {
 
 TimeBountiesGraph.propTypes = {
   onRef: PropTypes.any,
-  transactionStore: PropTypes.any,
+  data: PropTypes.any,
+  web3Service: PropTypes.any,
   refreshInterval: PropTypes.number
 };
 

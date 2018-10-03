@@ -26,7 +26,7 @@ export default class TransactionFetcher {
   _requestFactory;
   _features;
 
-  constructor(eac, cache, web3, features) {
+  constructor(eac, cache, features, web3) {
     this._eac = eac;
     this._cache = cache;
     this._web3 = web3;
@@ -202,7 +202,7 @@ export default class TransactionFetcher {
   async getTransactionsInBuckets(buckets, fillData = true) {
     await this.awaitRunning();
 
-    const requestFactory = this._web3._web3AlternativeToMetaMask.eth
+    const requestFactory = this._web3.web3.eth
       .contract(RequestFactoryABI)
       .at(this._requestFactory.address);
 

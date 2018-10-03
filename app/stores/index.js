@@ -48,8 +48,8 @@ const bucketHelper = new BucketHelper();
 export const transactionFetcher = new TransactionFetcher(
   eacService,
   transactionCache,
-  web3Service,
-  featuresService
+  featuresService,
+  web3Service
 );
 export const transactionStore = new TransactionStore(
   eacService,
