@@ -102,6 +102,13 @@ class EacWorker {
       new FeaturesService(web3Service)
     );
 
+    this._transactionFetcher.requestFactoryStartBlock =
+      requestFactoryStartBlocks[this.network.id] || 0;
+
+    this.bucketHelper = new BucketHelper();
+    const requestFactory = await this.config.eac.requestFactory();
+    this.bucketHelper.setRequestFactory(requestFactory);
+
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STARTED
     });
@@ -236,20 +243,20 @@ class EacWorker {
   }
 
   async getBountiesGraphData() {
-    const labels = [];
-    const values = [];
+    const labels = [],
+      values = [],
+      promises = [];
 
     const currentTime = moment().unix();
 
     const average = arr =>
       arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
 
-    const promises = [];
     for (let i = 24; i > 0; i--) {
       const bucket = currentTime - 3600 * i;
       labels.push(`${moment.unix(bucket).hour()}:00`);
 
-      let promise = this._getBountiesForBucket(bucket, true);
+      let promise = this._getBountiesForTimestampBucket(bucket);
       promises.push(promise);
     }
 
@@ -267,16 +274,9 @@ class EacWorker {
     });
   }
 
-  async _getBountiesForBucket(windowStart, isUsingTime) {
-    const requestFactory = await this.config.eac.requestFactory();
-    const bucketHelper = new BucketHelper();
-    bucketHelper.setRequestFactory(requestFactory);
-    const bucket = isUsingTime
-      ? await bucketHelper.calcBucketForTimestamp(windowStart)
-      : await bucketHelper.calcBucketForBlock(windowStart);
+  async _getBountiesForTimestampBucket(windowStart) {
+    const bucket = await this.bucketHelper.calcBucketForTimestamp(windowStart);
 
-    this._transactionFetcher.requestFactoryStartBlock =
-      requestFactoryStartBlocks[this.network.id] || 0;
     this._transactionFetcher.startLazy();
     const transactions = await this._transactionFetcher.getTransactionsInBuckets(
       [bucket],
@@ -294,6 +294,33 @@ class EacWorker {
     });
 
     return bounties;
+  }
+
+  async getProcessedTxs() {
+    const labels = [],
+      values = [],
+      promises = [];
+
+    const currentTime = moment().unix();
+
+    for (let i = 24; i > 0; i--) {
+      const bucketTime = currentTime - 3600 * i;
+      const bucket = await this.bucketHelper.calcBucketForTimestamp(bucketTime);
+      labels.push(`${moment.unix(bucket).hour()}:00`);
+
+      let promise = this._transactionFetcher.getTransactionsInBuckets([bucket], false, false);
+      promises.push(promise);
+    }
+
+    const processedTxsArrays = await Promise.all(promises);
+
+    processedTxsArrays.forEach(processedTxs => {
+      values.push(processedTxs.length);
+    });
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS,
+      processedTxs: { labels, values }
+    });
   }
 }
 
@@ -338,6 +365,10 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
       await eacWorker.getBountiesGraphData();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+      await eacWorker.getProcessedTxs();
       break;
   }
 };
