@@ -155,6 +155,9 @@ export default class TimeNodeStore {
   updateBountiesGraphInterval = null;
   getNetworkInfoInterval = null;
 
+  @observable
+  updatingBountiesGraphInProgress = false;
+
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
@@ -287,6 +290,7 @@ export default class TimeNodeStore {
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+            this.updatingBountiesGraphInProgress = false;
             getValuesIfInMessage(['bountiesGraphData']);
             break;
         }
@@ -464,6 +468,7 @@ export default class TimeNodeStore {
   }
 
   updateBountiesGraph() {
+    this.updatingBountiesGraphInProgress = true;
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
   }
 

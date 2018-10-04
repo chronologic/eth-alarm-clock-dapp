@@ -2,26 +2,24 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { ActiveTimeNodesGraph, TimeBountiesGraph } from './Network';
-
-// 2 min
-const TWO_MIN = 120 * 1000;
-const TEN_MIN = 10 * 60 * 1000;
+import { BeatLoader } from 'react-spinners';
 
 @inject('keenStore')
 @inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
+  deepCopy(array) {
+    return JSON.parse(JSON.stringify(array));
+  }
+
   render() {
-    const { historyActiveTimeNodes, latestActiveTimeNodes } = this.props.keenStore;
+    const { bountiesGraphData, updatingBountiesGraphInProgress } = this.props.timeNodeStore;
+    const { historyActiveTimeNodes, gettingActiveTimeNodesHistory } = this.props.keenStore;
 
-    const shouldShowActiveTnsGraph =
-      latestActiveTimeNodes.length > 0 || Object.keys(historyActiveTimeNodes).length > 0;
-
-    const activeTnsGraph = shouldShowActiveTnsGraph ? (
-      <ActiveTimeNodesGraph onRef={ref => (this.activeTnsGraph = ref)} refreshInterval={TWO_MIN} />
-    ) : (
-      <p>No data yet.</p>
-    );
+    const shouldShowActiveTimeNodesGraph =
+      historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory;
+    const shouldShowTimeBountiesGraph =
+      bountiesGraphData !== null && !updatingBountiesGraphInProgress;
 
     return (
       <div id="timeNodeNetwork">
@@ -30,23 +28,29 @@ class TimeNodeNetwork extends Component {
             <div data-pages="card" className="card card-default">
               <div className="card-header">
                 <div className="card-title">Active TimeNodes (last 24h)</div>
-                {shouldShowActiveTnsGraph && (
-                  <div className="card-controls">
-                    <ul>
-                      <li>
+                <div className="card-controls">
+                  <ul>
+                    <li>
+                      {shouldShowActiveTimeNodesGraph ? (
                         <a
                           data-toggle="refresh"
                           className="card-refresh"
-                          onClick={() => this.activeTnsGraph.refreshChart()}
+                          onClick={async () =>
+                            await this.props.keenStore.refreshActiveTimeNodesHistory()
+                          }
                         >
                           <i className="card-icon card-icon-refresh" />
                         </a>
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                      ) : (
+                        <BeatLoader size={6} />
+                      )}
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="card-body">{activeTnsGraph}</div>
+              <div className="card-body horizontal-center">
+                <ActiveTimeNodesGraph data={this.deepCopy(historyActiveTimeNodes)} />
+              </div>
             </div>
           </div>
 
@@ -57,23 +61,24 @@ class TimeNodeNetwork extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      <a
-                        data-toggle="refresh"
-                        className="card-refresh"
-                        onClick={() => this.timeBountiesGraph.refreshChart()}
-                      >
-                        <i className="card-icon card-icon-refresh" />
-                      </a>
+                      {shouldShowTimeBountiesGraph ? (
+                        <a
+                          data-toggle="refresh"
+                          className="card-refresh"
+                          onClick={() => this.props.timeNodeStore.updateBountiesGraph()}
+                        >
+                          {' '}
+                          <i className="card-icon card-icon-refresh" />{' '}
+                        </a>
+                      ) : (
+                        <BeatLoader size={6} />
+                      )}
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className="card-body">
-                <TimeBountiesGraph
-                  onRef={ref => (this.timeBountiesGraph = ref)}
-                  data={this.props.timeNodeStore.bountiesGraphData}
-                  refreshInterval={TEN_MIN}
-                />
+              <div className="card-body horizontal-center">
+                <TimeBountiesGraph data={this.deepCopy(bountiesGraphData)} />
               </div>
             </div>
           </div>

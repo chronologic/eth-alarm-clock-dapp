@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
-import { BeatLoader } from 'react-spinners';
 
 const INITIAL_CURRENCY_DENOMINATION = 'ETH';
 
@@ -14,7 +13,6 @@ class TimeBountiesGraph extends Component {
     super(props);
     this.state = {
       chart: null,
-      loadingBounties: false,
       currencyDenomination: INITIAL_CURRENCY_DENOMINATION
     };
     this.setChart = this.setChart.bind(this);
@@ -23,14 +21,7 @@ class TimeBountiesGraph extends Component {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
     this.refreshChart();
-    this.interval = setInterval(this.refreshChart, this.props.refreshInterval);
-  }
-
-  componentWillUnmount() {
-    this.props.onRef(undefined);
-    clearInterval(this.interval);
   }
 
   componentDidUpdate(prevProps) {
@@ -39,11 +30,7 @@ class TimeBountiesGraph extends Component {
     }
   }
 
-  async refreshChart() {
-    if (!this.state.loadingBounties) {
-      this.setState({ loadingBounties: true });
-    }
-
+  refreshChart() {
     if (this.props.data) {
       const { web3Service } = this.props;
       let { labels, values } = this.props.data;
@@ -75,8 +62,6 @@ class TimeBountiesGraph extends Component {
         this.setChart(this.timeBountiesGraph.getContext('2d'), data);
       }
     }
-
-    this.setState({ loadingBounties: false });
   }
 
   setChart(ctx, data) {
@@ -121,9 +106,9 @@ class TimeBountiesGraph extends Component {
 
   updateChart(data) {
     const { chart } = this.state;
-    chart.data.labels.pop();
+    chart.data.labels = [];
     chart.data.datasets.forEach(dataset => {
-      dataset.data.pop();
+      dataset.data = [];
     });
 
     chart.data.labels = data.labels;
@@ -133,20 +118,13 @@ class TimeBountiesGraph extends Component {
   }
 
   render() {
-    return (
-      <div id="timeBountiesGraphWrapper" className="horizontal-center">
-        {(this.state.loadingBounties || !this.props.data) && <BeatLoader />}
-        <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />
-      </div>
-    );
+    return <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />;
   }
 }
 
 TimeBountiesGraph.propTypes = {
-  onRef: PropTypes.any,
   data: PropTypes.any,
-  web3Service: PropTypes.any,
-  refreshInterval: PropTypes.number
+  web3Service: PropTypes.any
 };
 
 export { TimeBountiesGraph };
