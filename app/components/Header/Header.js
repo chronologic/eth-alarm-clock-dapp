@@ -4,7 +4,9 @@ import { observer, inject } from 'mobx-react';
 import NetworkChooser from './NetworkChooser';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import { withRouter } from 'react-router-dom';
 
+@withRouter
 @inject('transactionStatistics')
 @inject('web3Service')
 @inject('eacService')
@@ -16,17 +18,8 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPath: props.history.location.pathname,
       eacContracts: {}
     };
-
-    this.props.history.listen(location => {
-      if (location.pathname !== this.state.currentPath) {
-        this.setState({
-          currentPath: location.pathname
-        });
-      }
-    });
   }
 
   async componentDidMount() {
@@ -57,10 +50,6 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
-  isOnTimeNodeScreen() {
-    return this.state.currentPath === '/timenode';
-  }
-
   getInfoButton(message) {
     return (
       <span
@@ -73,6 +62,10 @@ class Header extends Component {
         <i className="fa fa-info-circle" />
       </span>
     );
+  }
+
+  isOnTimeNodeScreen() {
+    return this.props.location.pathname === '/timenode';
   }
 
   render() {
@@ -156,7 +149,7 @@ class Header extends Component {
               &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
+              <NetworkChooser showBlockNumber={true} />
             </span>
           </div>
           <div className="header-separator" />
@@ -286,6 +279,7 @@ class Header extends Component {
 }
 
 Header.propTypes = {
+  location: PropTypes.any,
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,

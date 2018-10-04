@@ -80,6 +80,9 @@ export default class TimeNodeStore {
   isTimeMint = null;
 
   @observable
+  proposedNewNetId = null;
+
+  @observable
   bountiesGraphData = null;
 
   @computed
