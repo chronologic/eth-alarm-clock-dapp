@@ -16,6 +16,7 @@ const INITIAL_STATE = {
   executedAt: '',
   isTokenTransfer: false,
   isFrozen: '',
+  proxyDataCheckBox: false,
   status: '',
   token: {},
   tokenTransferDetails: []
@@ -37,6 +38,7 @@ class TransactionDetails extends Component {
 
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
     this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.handleProxyDataClick = this.handleProxyDataClick.bind(this);
     this.refundBalance = this.refundBalance.bind(this);
     this.sendTokensToOwner = this.sendTokensToOwner.bind(this);
   }
@@ -46,6 +48,12 @@ class TransactionDetails extends Component {
       requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
         resolve(events);
       });
+    });
+  }
+
+  handleProxyDataClick() {
+    this.setState({
+      proxyDataCheckBox: !this.state.proxyDataCheckBox
     });
   }
 
@@ -547,7 +555,9 @@ class TransactionDetails extends Component {
         />
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
+          handleProxyDataClick={this.handleProxyDataClick}
           isOwner={isOwner}
+          proxyDataCheckBox={this.state.proxyDataCheckBox}
           sendTokensToOwner={this.sendTokensToOwner}
           tokenTransferDetails={this.state.tokenTransferDetails}
         />

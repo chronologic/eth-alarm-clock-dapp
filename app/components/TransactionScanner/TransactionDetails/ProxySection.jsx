@@ -1,24 +1,45 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-const CustomProxyData = _ => {
-  let checked;
+const CustomProxyData = props => {
+  const { handleProxyDataClick, proxyDataCheckBox } = props;
+
+  const customProxyCall = () => {}
 
   return (
-    <div className="checkbox check-primary">
-      <input
-        type="checkbox"
-        id="checkboxProxyData"
-        onChange={() => checked = !checked}
-        checked={checked}
-      />
-      <label htmlFor="checkboxProxyData">Custom Proxy Data</label>
-    </div>
+    <div>
+      <div className="checkbox check-primary">
+        <input
+          type="checkbox"
+          id="checkboxProxyData"
+          defaultChecked={proxyDataCheckBox}
+          onClick={handleProxyDataClick}
+        />
+        <label htmlFor="checkboxProxyData">Custom Proxy Data</label>
+      </div>
+      {
+        proxyDataCheckBox &&
+        <div className="form-group form-group-default required">
+          <label>Your Data</label>
+          <input
+            type="text"
+            placeholder="address _destination, bytes _data"
+            className="form-control"
+          />
+          <button 
+            className="btn btn-white btn-cons pull-right"
+            onClick={customProxyCall}
+          >
+            Proxy!
+          </button>
+        </div>
+      }
+    </div> 
   )
 }
 
 const ProxySection = props => {
-  const { afterExecutionWindow, isOwner, sendTokensToOwner, tokenTransferDetails } = props;
+  const { afterExecutionWindow, handleProxyDataClick, isOwner, proxyDataCheckBox, sendTokensToOwner, tokenTransferDetails } = props;
 
   const tableRows = tokenTransferDetails.map(details => {
     return (
@@ -44,18 +65,10 @@ const ProxySection = props => {
             {tableRows}
             </tbody>
           </table>
-          <CustomProxyData />
-          {/* <label>Proxy Call:</label>
-          <input
-            type="text" 
-            placeholder="Proxy Data" 
-            value=""
-            onBlur={validate('proxyData')}
-            onChange={onChangeCheck('proxyData')}
-            className="form-control" />
-          <button className="btn btn-white btn-cons pull-right" type="button">
-            Submit
-          </button> */}
+          <CustomProxyData
+            handleProxyDataClick={handleProxyDataClick}
+            proxyDataCheckBox={proxyDataCheckBox}
+          />
         </div>
       </div>
     );
