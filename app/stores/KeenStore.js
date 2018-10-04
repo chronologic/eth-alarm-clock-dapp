@@ -123,23 +123,21 @@ export class KeenStore {
   async refreshActiveTimeNodesHistory() {
     this.gettingActiveTimeNodesHistory = true;
 
-    const history = [];
+    const promises = [];
+
     for (let i = 24; i > 0; i--) {
-      const timeIntervalValue = await this.getActiveTimeNodesCount(
-        this.timeNodeSpecificProviderNetId,
-        {
-          start: moment()
-            .subtract(i, 'hours')
-            .toISOString(),
-          end: moment()
-            .subtract(i - 1, 'hours')
-            .toISOString()
-        }
-      );
-      history.push(timeIntervalValue);
+      const promise = this.getActiveTimeNodesCount(this.timeNodeSpecificProviderNetId, {
+        start: moment()
+          .subtract(i, 'hours')
+          .toISOString(),
+        end: moment()
+          .subtract(i - 1, 'hours')
+          .toISOString()
+      });
+      promises.push(promise);
     }
 
-    this.historyActiveTimeNodes = history;
+    this.historyActiveTimeNodes = await Promise.all(promises);
     this.gettingActiveTimeNodesHistory = false;
   }
 
