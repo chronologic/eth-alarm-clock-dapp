@@ -7,6 +7,7 @@ import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
+import * as ethUtil from 'ethereumjs-util';
 
 import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
@@ -39,7 +40,9 @@ class TransactionDetails extends Component {
 
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
     this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.customProxySend = this.customProxySend.bind(this);
     this.handleProxyDataClick = this.handleProxyDataClick.bind(this);
+    this.proxyInputOnChange = this.proxyInputOnChange.bind(this);
     this.refundBalance = this.refundBalance.bind(this);
     this.sendTokensToOwner = this.sendTokensToOwner.bind(this);
   }
@@ -71,11 +74,14 @@ class TransactionDetails extends Component {
       if (split.length !== 2) {
         throw new Error('Provide the two arguments separated by a comma!');
       }
-      // TODO validate split[0] is valid address
-      // and TODO validate split[1] is valid hex bytes
+      if (!ethUtil.isValidAddress(split[0])) {
+        throw new Error('First argument provided is not a valid Ethereum address!');
+      }
+
+      // TODO validate split[1] is valid hex bytes
       return {
         destination: split[0],
-        data: split[1]
+        data: split[1].slice(1)
       };
     };
 
@@ -583,7 +589,7 @@ class TransactionDetails extends Component {
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
           customProxyData={this.state.customProxyData}
-          customProxySend={this.proxyDataSend}
+          customProxySend={this.customProxySend}
           handleProxyDataClick={this.handleProxyDataClick}
           isOwner={isOwner}
           proxyDataCheckBox={this.state.proxyDataCheckBox}
