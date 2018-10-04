@@ -10,6 +10,8 @@ const COLLECTIONS = {
 
 // 2 minutes in milliseconds
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
+const FIVE_SEC = 5000;
 
 export class KeenStore {
   @observable
@@ -33,6 +35,7 @@ export class KeenStore {
   historyActiveTimeNodes = [];
   @observable
   gettingActiveTimeNodesHistory = false;
+  historyPollingInterval = FIVE_SEC;
 
   constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
     this.projectId = projectId;
@@ -120,9 +123,33 @@ export class KeenStore {
     this.isBlacklisted = this.activeTimeNodes === null;
   }
 
+  async intervalActiveTimeNodesHistory() {
+    await this.refreshActiveTimeNodesHistory();
+    setTimeout(() => this.intervalActiveTimeNodesHistory(), this.historyPollingInterval);
+  }
+
   async refreshActiveTimeNodesHistory() {
     this.gettingActiveTimeNodesHistory = true;
 
+    const isAllZeroes = array => array.every(counter => counter === 0);
+
+    const history = await this._getActiveTimeNodesHistory();
+
+    /*
+      Keen sometimes returns all zeroes instead of the real value.
+      We keep getting the values from Keen every 5 seconds until we get the proper values.
+      After that we switch to a longer time interval.
+      NOTE: This check can be remove if Keen fixes sending incorrect values
+    */
+    if (!isAllZeroes(history)) {
+      this.historyPollingInterval = TEN_MIN; // Set a longer polling interval
+      this.historyActiveTimeNodes = history;
+    }
+
+    this.gettingActiveTimeNodesHistory = false;
+  }
+
+  async _getActiveTimeNodesHistory() {
     const promises = [];
 
     for (let i = 24; i > 0; i--) {
@@ -137,14 +164,7 @@ export class KeenStore {
       promises.push(promise);
     }
 
-    this.historyActiveTimeNodes = await Promise.all(promises);
-    this.gettingActiveTimeNodesHistory = false;
-  }
-
-  hourFromTimestamp(timestamp) {
-    const date = moment.unix(timestamp).toDate();
-    date.setHours(date.getHours(), 0, 0, 0);
-    return date.getTime();
+    return Promise.all(promises);
   }
 
   async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
@@ -187,7 +207,6 @@ export class KeenStore {
     await this.refreshActiveTimeNodesCount();
     setInterval(() => this.refreshActiveTimeNodesCount(), ACTIVE_TIMENODES_POLLING_INTERVAL);
 
-    await this.refreshActiveTimeNodesHistory();
-    setInterval(() => this.refreshActiveTimeNodesHistory(), ACTIVE_TIMENODES_POLLING_INTERVAL * 5); // 10 min
+    await this.intervalActiveTimeNodesHistory();
   }
 }

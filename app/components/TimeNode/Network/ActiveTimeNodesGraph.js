@@ -18,14 +18,7 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
     this.refreshChart();
-    this.interval = setInterval(this.refreshChart, this.props.refreshInterval);
-  }
-
-  componentWillUnmount() {
-    this.props.onRef(undefined);
-    clearInterval(this.interval);
   }
 
   componentDidUpdate(prevProps) {
@@ -35,7 +28,9 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   refreshChart() {
-    if (this.props.data.length >= 24) {
+    const { data } = this.props;
+
+    if (data.length > 0) {
       const labels = [];
       for (let i = 24; i > 0; i--) {
         labels.push(
@@ -45,15 +40,15 @@ class ActiveTimeNodesGraph extends Component {
         );
       }
 
-      const data = {
+      const graphData = {
         labels,
-        values: JSON.parse(JSON.stringify(this.props.data)) // deep copy the array
+        values: data
       };
 
       if (this.state.chart !== null) {
-        this.updateChart(data);
+        this.updateChart(graphData);
       } else {
-        this.setChart(this.activeTnsGraph.getContext('2d'), data);
+        this.setChart(this.activeTnsGraph.getContext('2d'), graphData);
       }
     }
   }
@@ -117,10 +112,7 @@ class ActiveTimeNodesGraph extends Component {
 }
 
 ActiveTimeNodesGraph.propTypes = {
-  onRef: PropTypes.any,
-  data: PropTypes.any,
-  keenStore: PropTypes.any,
-  refreshInterval: PropTypes.number
+  data: PropTypes.array
 };
 
 export { ActiveTimeNodesGraph };

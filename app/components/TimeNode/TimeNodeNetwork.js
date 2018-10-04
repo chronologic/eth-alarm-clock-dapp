@@ -4,18 +4,20 @@ import { inject, observer } from 'mobx-react';
 import { ActiveTimeNodesGraph, TimeBountiesGraph } from './Network';
 import { BeatLoader } from 'react-spinners';
 
-const TEN_MIN = 10 * 60 * 1000;
-
 @inject('keenStore')
 @inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
+  deepCopy(array) {
+    return JSON.parse(JSON.stringify(array));
+  }
+
   render() {
     const { bountiesGraphData, updatingBountiesGraphInProgress } = this.props.timeNodeStore;
     const { historyActiveTimeNodes, gettingActiveTimeNodesHistory } = this.props.keenStore;
 
     const shouldShowActiveTimeNodesGraph =
-      historyActiveTimeNodes.length >= 24 && !gettingActiveTimeNodesHistory;
+      historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory;
     const shouldShowTimeBountiesGraph =
       bountiesGraphData !== null && !updatingBountiesGraphInProgress;
 
@@ -47,11 +49,7 @@ class TimeNodeNetwork extends Component {
                 </div>
               </div>
               <div className="card-body horizontal-center">
-                <ActiveTimeNodesGraph
-                  data={historyActiveTimeNodes}
-                  onRef={ref => (this.activeTnsGraph = ref)}
-                  refreshInterval={TEN_MIN}
-                />
+                <ActiveTimeNodesGraph data={this.deepCopy(historyActiveTimeNodes)} />
               </div>
             </div>
           </div>
@@ -80,11 +78,7 @@ class TimeNodeNetwork extends Component {
                 </div>
               </div>
               <div className="card-body horizontal-center">
-                <TimeBountiesGraph
-                  onRef={ref => (this.timeBountiesGraph = ref)}
-                  data={bountiesGraphData}
-                  refreshInterval={TEN_MIN}
-                />
+                <TimeBountiesGraph data={this.deepCopy(bountiesGraphData)} />
               </div>
             </div>
           </div>

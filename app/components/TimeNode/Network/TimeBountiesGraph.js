@@ -21,14 +21,7 @@ class TimeBountiesGraph extends Component {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
     this.refreshChart();
-    this.interval = setInterval(this.refreshChart, this.props.refreshInterval);
-  }
-
-  componentWillUnmount() {
-    this.props.onRef(undefined);
-    clearInterval(this.interval);
   }
 
   componentDidUpdate(prevProps) {
@@ -60,7 +53,7 @@ class TimeBountiesGraph extends Component {
 
       const data = {
         labels,
-        values: JSON.parse(JSON.stringify(values)) // deep copy the array
+        values
       };
 
       if (this.state.chart !== null) {
@@ -130,10 +123,8 @@ class TimeBountiesGraph extends Component {
 }
 
 TimeBountiesGraph.propTypes = {
-  onRef: PropTypes.any,
   data: PropTypes.any,
-  web3Service: PropTypes.any,
-  refreshInterval: PropTypes.number
+  web3Service: PropTypes.any
 };
 
 export { TimeBountiesGraph };
