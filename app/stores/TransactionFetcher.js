@@ -202,7 +202,10 @@ export default class TransactionFetcher {
   async getTransactionsInBuckets(buckets, fillData = true, useAlternativeWeb3 = true) {
     await this.awaitRunning();
 
-    const web3 = useAlternativeWeb3 ? this._web3._web3AlternativeToMetaMask : this._web3.web3;
+    const web3 =
+      useAlternativeWeb3 && this._web3._web3AlternativeToMetaMask
+        ? this._web3._web3AlternativeToMetaMask
+        : this._web3.web3;
 
     const requestFactory = web3.eth.contract(RequestFactoryABI).at(this._requestFactory.address);
 
