@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import { Networks, CUSTOM_PROVIDER_NET_ID } from '../../config/web3Config';
-import ConfirmModal from '../Common/ConfirmModal';
+import { Networks, CUSTOM_PROVIDER_NET_ID, MAIN_NETWORK_ID } from '../../config/web3Config';
+import { withRouter } from 'react-router-dom';
 
-const DEFAULT_NETWORK_ID = Networks[1].id; // Mainnet
+const DEFAULT_NETWORK_ID = Networks[MAIN_NETWORK_ID].id;
 
+@withRouter
 @inject('web3Service')
 @inject('timeNodeStore')
 @observer
@@ -18,13 +19,10 @@ class NetworkChooser extends Component {
     // 2. Separate provider for TimeNodes if selected - This can be changed on platforms without MetaMask
     this.state = {
       metaMaskNetworkId: DEFAULT_NETWORK_ID,
-      timeNodeNetworkId: this.checkSelectedProvider(),
-      onTimeNodeScreen: props.onTimeNodeScreen,
-      selectedNetId: null // Used for communicating the selected network to the modal
+      timeNodeNetworkId: this.checkSelectedProvider()
     };
 
     this._handleSelectedNetworkChange = this._handleSelectedNetworkChange.bind(this);
-    this.changeProvider = this.changeProvider.bind(this);
   }
 
   async componentDidMount() {
@@ -38,12 +36,6 @@ class NetworkChooser extends Component {
       if (web3Service.network.id !== this.state.timeNodeNetworkId)
         this.setState({ timeNodeNetworkId: web3Service.network.id });
     }
-  }
-
-  static getDerivedStateFromProps(newProps) {
-    return {
-      onTimeNodeScreen: newProps.onTimeNodeScreen
-    };
   }
 
   /*
@@ -76,7 +68,7 @@ class NetworkChooser extends Component {
     const isCustomSelected = selectedNetId === CUSTOM_PROVIDER_NET_ID;
     const modalToShow = isCustomSelected ? '#customProviderModal' : '#confirmProviderChangeModal';
 
-    this.setState({ selectedNetId }); // Let the modal know which network was selected
+    this.props.timeNodeStore.proposedNewNetId = selectedNetId;
 
     $(modalToShow).modal({
       show: true,
@@ -84,40 +76,32 @@ class NetworkChooser extends Component {
     });
   }
 
-  changeProvider() {
-    // Retrieve the selected network id in the modal
-    const { selectedNetId } = this.state;
-
-    const selectedProviderEndpoint = Networks[selectedNetId].endpoint;
-    this.props.timeNodeStore.setCustomProvider(selectedNetId, selectedProviderEndpoint);
-
-    // Once we read the new network ID, reset it
-    this.setState({
-      selectedNetId: null
-    });
-  }
-
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
+  isOnTimeNodeScreen() {
+    return this.props.location.pathname === '/timenode';
+  }
+
   render() {
+    const { showBlockNumber } = this.props;
     const { timeNodeNetworkId, metaMaskNetworkId } = this.state;
     const blockNumberString = blockNumber => (blockNumber ? ' at #' + blockNumber : '');
 
-    if (!this.state.onTimeNodeScreen) {
+    if (!this.isOnTimeNodeScreen()) {
       return (
         <span>
           {Networks[metaMaskNetworkId].name}
-          {blockNumberString(this.props.web3Service.latestBlockNumber)}
+          {showBlockNumber && blockNumberString(this.props.web3Service.latestBlockNumber)}
         </span>
       );
     }
 
     // Return this only if the user enters the TimeNode screen.
     return (
-      <span id="networkChooser">
-        <span id="networkChooserSelect">
+      <span className="networkChooser">
+        <span className="networkChooserSelect">
           <select
             className="form-control d-inline"
             value={timeNodeNetworkId}
@@ -137,24 +121,18 @@ class NetworkChooser extends Component {
             </option>
           </select>
         </span>
-        {blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
-
-        <ConfirmModal
-          modalName="confirmProviderChange"
-          modalTitle="You are about to change your TimeNode provider."
-          modalBody="Are you sure you want to change it? Your TimeNode will be stopped."
-          onConfirm={this.changeProvider}
-        />
+        {showBlockNumber && blockNumberString(this.props.timeNodeStore.providerBlockNumber)}
       </span>
     );
   }
 }
 
 NetworkChooser.propTypes = {
+  showBlockNumber: PropTypes.bool,
+  location: PropTypes.any,
   storageService: PropTypes.any,
   web3Service: PropTypes.any,
-  timeNodeStore: PropTypes.any,
-  onTimeNodeScreen: PropTypes.bool
+  timeNodeStore: PropTypes.any
 };
 
 export default NetworkChooser;

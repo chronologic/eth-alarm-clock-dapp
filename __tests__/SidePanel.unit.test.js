@@ -6,6 +6,9 @@ import SidePanel from '../app/components/SidePanel/index';
 import { Router } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import TimeNodeStore from '../app/stores/TimeNodeStore';
+import LocalStorageMock from '../__mocks__/LocalStorageMock';
+import LocalStorageService from '../app/services/storage';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
@@ -29,8 +32,13 @@ describe('SidePanel', () => {
     const keenStore = {};
     const transactionStatistics = {};
 
+    const localStorageMock = new LocalStorageMock();
+    const storageService = new LocalStorageService(localStorageMock);
+    const timeNodeStore = new TimeNodeStore({}, {}, {}, storageService);
+
     const injectables = {
       keenStore,
+      timeNodeStore,
       transactionStatistics,
       web3Service
     };

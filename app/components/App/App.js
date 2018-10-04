@@ -13,6 +13,7 @@ import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 import { inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
+import NetworkChooserModal from '../Header/NetworkChooserModal';
 
 @withRouter
 @inject('web3Service')
@@ -96,6 +97,7 @@ class App extends Component {
 
         <CustomProviderModal />
         <ReleaseNotesModal />
+        <NetworkChooserModal />
       </div>
     );
   }
