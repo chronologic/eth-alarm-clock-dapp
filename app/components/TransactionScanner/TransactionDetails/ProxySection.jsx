@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 const CustomProxyData = props => {
-  const { handleProxyDataClick, proxyDataCheckBox } = props;
-
-  const customProxyCall = () => {}
+  const { customProxySend, handleProxyDataClick, proxyDataCheckBox, proxyInputOnChange } = props;
 
   return (
     <div>
@@ -25,10 +23,11 @@ const CustomProxyData = props => {
             type="text"
             placeholder="address _destination, bytes _data"
             className="form-control"
+            onChange={proxyInputOnChange}
           />
           <button 
             className="btn btn-white btn-cons pull-right"
-            onClick={customProxyCall}
+            onClick={customProxySend}
           >
             Proxy!
           </button>
@@ -39,7 +38,7 @@ const CustomProxyData = props => {
 }
 
 const ProxySection = props => {
-  const { afterExecutionWindow, handleProxyDataClick, isOwner, proxyDataCheckBox, sendTokensToOwner, tokenTransferDetails } = props;
+  const { afterExecutionWindow, customProxyData, customProxySend, handleProxyDataClick, isOwner, proxyDataCheckBox, proxyInputOnChange, sendTokensToOwner, tokenTransferDetails } = props;
 
   const tableRows = tokenTransferDetails.map(details => {
     return (
@@ -66,8 +65,11 @@ const ProxySection = props => {
             </tbody>
           </table>
           <CustomProxyData
+            customProxyData={customProxyData}
+            customProxySend={customProxySend}
             handleProxyDataClick={handleProxyDataClick}
             proxyDataCheckBox={proxyDataCheckBox}
+            proxyInputOnChange={proxyInputOnChange}
           />
         </div>
       </div>

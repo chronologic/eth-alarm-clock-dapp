@@ -13,6 +13,7 @@ import ProxySection from './TransactionDetails/ProxySection';
 
 const INITIAL_STATE = {
   callData: '',
+  customProxyData: '',
   executedAt: '',
   isTokenTransfer: false,
   isFrozen: '',
@@ -55,6 +56,32 @@ class TransactionDetails extends Component {
     this.setState({
       proxyDataCheckBox: !this.state.proxyDataCheckBox
     });
+  }
+
+  proxyInputOnChange(e) {
+    this.setState({ customProxyData: e.target.value });
+  }
+
+  async customProxySend() {
+    const { transaction } = this.props;
+    const { customProxyData } = this.state;
+
+    const validate = proxyCallData => {
+      const split = proxyCallData.split(',');
+      if (split.length !== 2) {
+        throw new Error('Provide the two arguments separated by a comma!');
+      }
+      // TODO validate split[0] is valid address
+      // and TODO validate split[1] is valid hex bytes
+      return {
+        destination: split[0],
+        data: split[1]
+      };
+    };
+
+    const { destination, data } = validate(customProxyData);
+
+    await transaction.proxy(destination, data);
   }
 
   async sendTokensToOwner(token, amount) {
@@ -555,9 +582,12 @@ class TransactionDetails extends Component {
         />
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
+          customProxyData={this.state.customProxyData}
+          customProxySend={this.proxyDataSend}
           handleProxyDataClick={this.handleProxyDataClick}
           isOwner={isOwner}
           proxyDataCheckBox={this.state.proxyDataCheckBox}
+          proxyInputOnChange={this.proxyInputOnChange}
           sendTokensToOwner={this.sendTokensToOwner}
           tokenTransferDetails={this.state.tokenTransferDetails}
         />
