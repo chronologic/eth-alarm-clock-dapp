@@ -244,16 +244,22 @@ class EacWorker {
     const average = arr =>
       arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
 
+    const promises = [];
     for (let i = 24; i > 0; i--) {
       const bucket = currentTime - 3600 * i;
+      labels.push(`${moment.unix(bucket).hour()}:00`);
 
-      let bounties = await this._getBountiesForBucket(bucket, true);
+      let promise = this._getBountiesForBucket(bucket, true);
+      promises.push(promise);
+    }
+
+    const bountyArrays = await Promise.all(promises);
+
+    bountyArrays.forEach(bounties => {
       bounties = bounties.map(bn => bn.toNumber());
       const averageBounty = bounties.length > 0 ? average(bounties) : 0.0;
-
-      labels.push(`${moment.unix(bucket).hour()}:00`);
       values.push(averageBounty);
-    }
+    });
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA,
