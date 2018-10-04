@@ -16,7 +16,8 @@ class TimeNodeNetwork extends Component {
     const {
       bountiesGraphData,
       updatingBountiesGraphInProgress,
-      processedTxs
+      processedTxs,
+      updatingProcessedTxsGraphInProgress
     } = this.props.timeNodeStore;
     const { historyActiveTimeNodes, gettingActiveTimeNodesHistory } = this.props.keenStore;
 
@@ -26,7 +27,8 @@ class TimeNodeNetwork extends Component {
     const shouldShowTimeBountiesGraph =
       bountiesGraphData !== null && !updatingBountiesGraphInProgress;
 
-    const shouldShowProcessedTxsGraph = processedTxs !== null;
+    const shouldShowProcessedTxsGraph =
+      processedTxs !== null && !updatingProcessedTxsGraphInProgress;
 
     return (
       <div id="timeNodeNetwork">

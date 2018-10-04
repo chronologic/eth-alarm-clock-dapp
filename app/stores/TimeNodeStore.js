@@ -160,6 +160,8 @@ export default class TimeNodeStore {
 
   @observable
   updatingBountiesGraphInProgress = false;
+  @observable
+  updatingProcessedTxsGraphInProgress = false;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -302,6 +304,7 @@ export default class TimeNodeStore {
 
           case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
             getValuesIfInMessage(['processedTxs']);
+            this.updatingProcessedTxsGraphInProgress = false;
             break;
         }
       };
@@ -483,6 +486,7 @@ export default class TimeNodeStore {
   }
 
   updateProcessedTxsGraph() {
+    this.updatingProcessedTxsGraphInProgress = true;
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS);
   }
 
