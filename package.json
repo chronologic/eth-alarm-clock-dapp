@@ -48,7 +48,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/preset-react": "7.0.0",
     "@babel/runtime": "7.1.2",
-    "@ethereum-alarm-clock/timenode-core": "5.3.1",
+    "@ethereum-alarm-clock/timenode-core": "5.3.2",
     "@fortawesome/fontawesome-free": "5.3.1",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
