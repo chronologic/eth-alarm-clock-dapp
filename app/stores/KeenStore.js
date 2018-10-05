@@ -10,6 +10,8 @@ const COLLECTIONS = {
 
 // 2 minutes in milliseconds
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
+const FIVE_SEC = 5000;
 
 export class KeenStore {
   @observable
@@ -30,9 +32,10 @@ export class KeenStore {
   _web3Service = null;
 
   @observable
-  historyActiveTimeNodes = {};
+  historyActiveTimeNodes = [];
   @observable
-  latestActiveTimeNodes = [];
+  gettingActiveTimeNodesHistory = false;
+  historyPollingInterval = FIVE_SEC;
 
   constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
     this.projectId = projectId;
@@ -117,81 +120,61 @@ export class KeenStore {
       );
     }
 
-    if (this.activeTimeNodesTimeNodeSpecificProvider !== null) {
-      // Push the Active TimeNodes count to the array
-      // that holds the last 1h of active TimeNodes counters
-      this.latestActiveTimeNodes.push({
-        amount: this.activeTimeNodesTimeNodeSpecificProvider,
-        timestamp: moment().unix()
-      });
-
-      // If there are some old counters that are in the 'latest' array
-      if (
-        this.latestActiveTimeNodes.some(counter => !this._timestampIsInThisHour(counter.timestamp))
-      ) {
-        // Archive them
-        this._archiveActiveTimeNodeCounters();
-      }
-    }
-
     this.isBlacklisted = this.activeTimeNodes === null;
   }
 
-  hourFromTimestamp(timestamp) {
-    const date = moment.unix(timestamp).toDate();
-    date.setHours(date.getHours(), 0, 0, 0);
-    return date.getTime();
+  async intervalActiveTimeNodesHistory() {
+    await this.refreshActiveTimeNodesHistory();
+    setTimeout(() => this.intervalActiveTimeNodesHistory(), this.historyPollingInterval);
   }
 
-  _timestampIsInThisHour(timestamp) {
-    const hour = this.hourFromTimestamp(timestamp);
-    const currentHour = this.hourFromTimestamp(moment().unix());
-    return hour === currentHour;
+  async refreshActiveTimeNodesHistory() {
+    this.gettingActiveTimeNodesHistory = true;
+
+    const isAllZeroes = array => array.every(counter => counter === 0);
+
+    const history = await this._getActiveTimeNodesHistory();
+
+    /*
+      Keen sometimes returns all zeroes instead of the real value.
+      We keep getting the values from Keen every 5 seconds until we get the proper values.
+      After that we switch to a longer time interval.
+      NOTE: This check can be remove if Keen fixes sending incorrect values
+    */
+    if (!isAllZeroes(history)) {
+      this.historyPollingInterval = TEN_MIN; // Set a longer polling interval
+      this.historyActiveTimeNodes = history;
+    }
+
+    this.gettingActiveTimeNodesHistory = false;
   }
 
-  _archiveActiveTimeNodeCounters() {
-    const countersToArchive = [];
-    let hour;
+  async _getActiveTimeNodesHistory() {
+    const promises = [];
 
-    for (let counter of this.latestActiveTimeNodes) {
-      if (!this._timestampIsInThisHour(counter.timestamp)) {
-        // Determine the hour under which the timestamps will be saved
-        hour = this.hourFromTimestamp(counter.timestamp);
-        countersToArchive.push(counter.amount);
-
-        // Remove the counter from the 'latest' list
-        const counterIndex = this.latestActiveTimeNodes.indexOf(counter);
-        this.latestActiveTimeNodes.splice(counterIndex, 1);
-      }
+    for (let i = 24; i > 0; i--) {
+      const promise = this.getActiveTimeNodesCount(this.timeNodeSpecificProviderNetId, {
+        start: moment()
+          .subtract(i, 'hours')
+          .toISOString(),
+        end: moment()
+          .subtract(i - 1, 'hours')
+          .toISOString()
+      });
+      promises.push(promise);
     }
 
-    if (!this.historyActiveTimeNodes[hour]) {
-      this.historyActiveTimeNodes[hour] = [];
-    }
-
-    // Push the counter to the history
-    const average = arr =>
-      arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
-    this.historyActiveTimeNodes[hour] = average(countersToArchive);
-
-    // Clean up any history entries older than 24h
-    const lastValidTime = new Date().getTime() - 24 * 60 * 60 * 1000; // NOW - 24h
-    const historyHours = Object.keys(this.historyActiveTimeNodes);
-
-    for (let historyHour of historyHours) {
-      if (historyHour < lastValidTime) {
-        delete this.historyActiveTimeNodes[historyHour];
-      }
-    }
+    return Promise.all(promises);
   }
 
-  async getActiveTimeNodesCount(networkId) {
+  async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
     await this.awaitKeenInitialized();
 
     const count = new KeenAnalysis.Query('count', {
       event_collection: COLLECTIONS.TIMENODES,
       target_property: 'nodeAddress',
-      timeframe: 'previous_2_minutes',
+      timeframe,
+      group_by: 'nodeAddress',
       filters: [
         {
           property_name: 'networkId',
@@ -217,12 +200,13 @@ export class KeenStore {
       return null;
     }
 
-    return response.result;
+    return response.result.length;
   }
 
   async _pollActiveTimeNodesCount() {
     await this.refreshActiveTimeNodesCount();
-
     setInterval(() => this.refreshActiveTimeNodesCount(), ACTIVE_TIMENODES_POLLING_INTERVAL);
+
+    await this.intervalActiveTimeNodesHistory();
   }
 }

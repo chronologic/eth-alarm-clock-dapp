@@ -79,6 +79,12 @@ export default class TimeNodeStore {
   @observable
   isTimeMint = null;
 
+  @observable
+  proposedNewNetId = null;
+
+  @observable
+  bountiesGraphData = null;
+
   @computed
   get nodeStatus() {
     const { MASTER_CHRONONODE, CHRONONODE, TIMENODE, DISABLED, LOADING } = TIMENODE_STATUS;
@@ -146,7 +152,11 @@ export default class TimeNodeStore {
 
   updateStatsInterval = null;
   updateBalancesInterval = null;
+  updateBountiesGraphInterval = null;
   getNetworkInfoInterval = null;
+
+  @observable
+  updatingBountiesGraphInProgress = false;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -162,6 +172,7 @@ export default class TimeNodeStore {
 
     this.updateStats = this.updateStats.bind(this);
     this.updateBalances = this.updateBalances.bind(this);
+    this.updateBountiesGraph = this.updateBountiesGraph.bind(this);
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
   }
 
@@ -200,6 +211,7 @@ export default class TimeNodeStore {
   stopIntervals() {
     clearInterval(this.updateStatsInterval);
     clearInterval(this.updateBalancesInterval);
+    clearInterval(this.updateBountiesGraphInterval);
     clearInterval(this.getNetworkInfoInterval);
   }
 
@@ -209,6 +221,9 @@ export default class TimeNodeStore {
 
     this.updateBalances();
     this.updateBalancesInterval = setInterval(this.updateBalances, 15000);
+
+    this.updateBountiesGraph();
+    this.updateBountiesGraphInterval = setInterval(this.updateBountiesGraph, 300000);
 
     this.getNetworkInfo();
     this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
@@ -272,6 +287,11 @@ export default class TimeNodeStore {
 
           case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
             this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+            this.updatingBountiesGraphInProgress = false;
+            getValuesIfInMessage(['bountiesGraphData']);
             break;
         }
       };
@@ -445,6 +465,11 @@ export default class TimeNodeStore {
 
   updateBalances() {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES);
+  }
+
+  updateBountiesGraph() {
+    this.updatingBountiesGraphInProgress = true;
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
   }
 
   clearStats() {

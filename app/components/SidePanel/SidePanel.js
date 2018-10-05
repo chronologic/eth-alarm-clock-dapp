@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import NetworkChooser from '../Header/NetworkChooser';
 
 @inject('transactionStatistics')
 @inject('web3Service')
@@ -226,63 +227,38 @@ class SidePanel extends Component {
               </a>
             </li>
 
-            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
+            <hr className="sidebar-separator mx-4" />
 
             <li className="sidebar-additional-item">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
-                    <span className="active-timenodes">Active TimeNodes</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{displayActiveTimenodes}</span>
-                  </div>
-                </div>
+              <div className="sidebar-additional-item--label">Active TimeNodes</div>
+              <div className="sidebar-additional-item--display">{displayActiveTimenodes}</div>
+            </li>
+
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Network</div>
+              <div className="sidebar-additional-item--display">
+                <NetworkChooser />
               </div>
             </li>
 
             <li className="sidebar-additional-item">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-7 px-0">
-                    <span className="active-timenodes">Current Block</span>
-                  </div>
-                  <div className="col-5 px-0 text-right">
-                    <span className="timenode-count">
-                      {this.props.web3Service.latestBlockNumber}
-                    </span>
-                  </div>
-                </div>
+              <div className="sidebar-additional-item--label">Current Block</div>
+              <div className="sidebar-additional-item--display">
+                {this.props.web3Service.latestBlockNumber}
               </div>
             </li>
 
             <li className="sidebar-additional-item">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
-                    <span className="active-timenodes">Upcoming Transactions</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">
-                      {transactionsScheduledInNextHoursAmount}
-                    </span>
-                  </div>
-                </div>
+              <div className="sidebar-additional-item--label">Upcoming Transactions</div>
+              <div className="sidebar-additional-item--display">
+                {transactionsScheduledInNextHoursAmount}
               </div>
             </li>
 
             <li className="sidebar-additional-item">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
-                    <span className="active-timenodes">Efficiency</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">
-                      {efficiency !== null && `${efficiency}%`}
-                    </span>
-                  </div>
-                </div>
+              <div className="sidebar-additional-item--label">Efficiency</div>
+              <div className="sidebar-additional-item--display">
+                {efficiency !== null && `${efficiency}%`}
               </div>
             </li>
           </ul>

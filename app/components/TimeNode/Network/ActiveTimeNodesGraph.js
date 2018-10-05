@@ -18,57 +18,38 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   componentDidMount() {
-    this.props.onRef(this);
     this.refreshChart();
-    this.interval = setInterval(this.refreshChart, this.props.refreshInterval);
   }
 
-  componentWillUnmount() {
-    this.props.onRef(undefined);
-    clearInterval(this.interval);
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) {
+      this.refreshChart();
+    }
   }
 
-  async refreshChart() {
-    await this.props.keenStore.refreshActiveTimeNodesCount();
+  refreshChart() {
+    const { data } = this.props;
 
-    const { latestActiveTimeNodes, historyActiveTimeNodes } = this.props.keenStore;
+    if (data.length > 0) {
+      const labels = [];
+      for (let i = 24; i > 0; i--) {
+        labels.push(
+          moment()
+            .subtract(i, 'hours')
+            .hour() + ':00'
+        );
+      }
 
-    // Deep copy the history of the last 24h
-    const timeIntervals = JSON.parse(JSON.stringify(historyActiveTimeNodes));
+      const graphData = {
+        labels,
+        values: data
+      };
 
-    const currentHour = this.props.keenStore.hourFromTimestamp(moment().unix());
-
-    // Add all current hour counters to the history
-    const average = arr =>
-      arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
-    timeIntervals[currentHour] = Math.floor(
-      average(latestActiveTimeNodes.map(counter => counter.amount))
-    );
-
-    // Sort the time intervals and values
-    const sortedIntervals = {};
-    Object.keys(timeIntervals)
-      .sort()
-      .forEach(key => (sortedIntervals[key] = timeIntervals[key]));
-    const sortedValues = Object.values(sortedIntervals);
-
-    // Format the values to be displayed on the graph
-    const labels = Object.keys(sortedIntervals).map(
-      timestamp =>
-        moment(parseInt(timestamp))
-          .toDate()
-          .getHours() + ':00'
-    );
-
-    const data = {
-      labels,
-      values: sortedValues
-    };
-
-    if (this.state.chart !== null) {
-      this.updateChart(data);
-    } else {
-      this.setChart(this.activeTnsGraph.getContext('2d'), data);
+      if (this.state.chart !== null) {
+        this.updateChart(graphData);
+      } else {
+        this.setChart(this.activeTnsGraph.getContext('2d'), graphData);
+      }
     }
   }
 
@@ -114,9 +95,9 @@ class ActiveTimeNodesGraph extends Component {
 
   updateChart(data) {
     const { chart } = this.state;
-    chart.data.labels.pop();
+    chart.data.labels = [];
     chart.data.datasets.forEach(dataset => {
-      dataset.data.pop();
+      dataset.data = [];
     });
 
     chart.data.labels = data.labels;
@@ -125,21 +106,13 @@ class ActiveTimeNodesGraph extends Component {
     chart.update();
   }
 
-  compareDates(a, b) {
-    if (a.datetime < b.datetime) return -1;
-    if (a.datetime > b.datetime) return 1;
-    return 0;
-  }
-
   render() {
     return <canvas id="activeTnsGraph" ref={el => (this.activeTnsGraph = el)} />;
   }
 }
 
 ActiveTimeNodesGraph.propTypes = {
-  onRef: PropTypes.any,
-  keenStore: PropTypes.any,
-  refreshInterval: PropTypes.number
+  data: PropTypes.array
 };
 
 export { ActiveTimeNodesGraph };
