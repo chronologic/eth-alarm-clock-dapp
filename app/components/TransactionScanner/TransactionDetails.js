@@ -123,10 +123,10 @@ class TransactionDetails extends Component {
       if (split.length !== 2) {
         throw new Error('Provide the two arguments separated by a comma!');
       }
-      // Remove quotations if they are there
+      // Remove quotations if they are there. Using template string quotes bc eslint.
       if (
-        (split[0][0] === '"' && split[0][split[0].length - 1] === '"') ||
-        (split[0][0] === "'" && split[0][split[0].length - 1] === "'")
+        (split[0][0] === `"` && split[0][split[0].length - 1] === `"`) ||
+        (split[0][0] === `'` && split[0][split[0].length - 1] === `'`)
       ) {
         split[0] = split[0].slice(1, split[0].length - 1);
       }
@@ -138,10 +138,10 @@ class TransactionDetails extends Component {
       if (split[1].startsWith(' ')) {
         split[1] = split[1].slice(1);
       }
-      // Remove quotations if they are there
+      // Remove quotations if they are there. Using template string quotes bc eslint.
       if (
-        (split[1][0] === '"' && split[1][split[1].length - 1] === '"') ||
-        (split[1][0] === "'" && split[1][split[1].length - 1] === "'")
+        (split[1][0] === `"` && split[1][split[1].length - 1] === `"`) ||
+        (split[1][0] === `'` && split[1][split[1].length - 1] === `'`)
       ) {
         split[1] = split[1].slice(1, split[1].length - 1);
       }
