@@ -7,14 +7,21 @@ import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
 import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
+import * as ethUtil from 'ethereumjs-util';
+
+import CancelSection from './TransactionDetails/CancelSection';
+import ProxySection from './TransactionDetails/ProxySection';
 
 const INITIAL_STATE = {
   callData: '',
-  status: '',
+  customProxyData: '',
   executedAt: '',
-  token: {},
   isTokenTransfer: false,
-  isFrozen: ''
+  isFrozen: '',
+  proxyDataCheckBox: false,
+  status: '',
+  token: {},
+  tokenTransferDetails: []
 };
 
 @inject('tokenHelper')
@@ -30,130 +37,24 @@ class TransactionDetails extends Component {
     super();
 
     this.state = INITIAL_STATE;
-    this.refundBalance = this.refundBalance.bind(this);
-    this.cancelTransaction = this.cancelTransaction.bind(this);
+
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
+    this.cancelTransaction = this.cancelTransaction.bind(this);
+    this.customProxySend = this.customProxySend.bind(this);
+    this.handleProxyDataClick = this.handleProxyDataClick.bind(this);
+    this.proxyInputOnChange = this.proxyInputOnChange.bind(this);
+    this.refundBalance = this.refundBalance.bind(this);
+    this.sendTokensToOwner = this.sendTokensToOwner.bind(this);
   }
 
-  getExecutedEvents(requestLib, fromBlock = 0) {
-    return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
-        resolve(events);
-      });
-    });
+  async componentDidMount() {
+    this._isMounted = true;
+
+    await this.setupDetails();
   }
 
-  async executedAt(transaction, status, transactionStore) {
-    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
-    let executedAt = '';
-
-    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
-      const events = await this.getExecutedEvents(
-        requestLib,
-        transactionStore.requestFactoryStartBlock
-      );
-
-      if (events.length > 0) {
-        executedAt = events[0].transactionHash;
-      }
-    }
-
-    this.setState({ executedAt });
-  }
-
-  async testToken() {
-    const { tokenHelper, transaction } = this.props;
-    const { address, toAddress } = transaction;
-
-    let tokenTransferApproved;
-    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
-
-    if (isTokenTransfer) {
-      await this.fetchTokenTransferInfo();
-
-      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
-      this.setState({ token: Object.assign(this.state.token, { info }) });
-
-      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
-        toAddress,
-        address,
-        this.state.token.info.value
-      );
-    }
-    this.setState({ isTokenTransfer, tokenTransferApproved });
-  }
-
-  async fetchTokenTransferInfo() {
-    const { tokenHelper, transaction } = this.props;
-    const { toAddress } = transaction;
-    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
-
-    this.setState({ token: tokenDetails });
-  }
-
-  async getFrozenStatus() {
-    const { transaction, transactionStore } = this.props;
-
-    if (!transaction || !transaction.inFreezePeriod) {
-      return;
-    }
-
-    const isFrozen = await transactionStore.isTransactionFrozen(transaction);
-    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
-  }
-
-  async checkContractBalance() {
-    const {
-      transaction: { address },
-      web3Service
-    } = this.props;
-    const balance = await web3Service.getAddressBalance(address);
-    this.setState({ balance });
-  }
-
-  async cancelTransaction() {
-    const { transaction, transactionStore } = this.props;
-
-    const originalBodyCss = document.body.className;
-    document.body.className += ' fade-me';
-    this.cancelBtn.innerHTML = 'Canceling...';
-
-    try {
-      const success = await transactionStore.cancel(transaction);
-      if (success) {
-        this.setState({
-          status: TRANSACTION_STATUS.CANCELLED
-        });
-        this.checkContractBalance();
-      }
-    } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
-      this.cancelBtn.innerHTML = 'Cancel';
-    }
-    document.body.className = originalBodyCss;
-  }
-
-  async refundBalance(event) {
-    const { target } = event;
-    const { transaction, transactionStore } = this.props;
-
-    const originalBodyCss = document.body.className;
-
-    document.body.className += ' fade-me';
-    target.innerHTML = 'Refunding...';
-
-    try {
-      const success = await transactionStore.refund(transaction);
-      if (success) {
-        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
-        this.setState({ balance: 0 });
-        this.checkContractBalance();
-      }
-    } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
-    }
-    target.innerHTML = 'Refund Balance';
-    document.body.className = originalBodyCss;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   async approveTokenTransfer(event) {
@@ -182,6 +83,181 @@ class TransactionDetails extends Component {
     document.body.className = originalBodyCss;
   }
 
+  async cancelTransaction() {
+    const { transaction, transactionStore } = this.props;
+
+    const originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+    this.cancelBtn.innerHTML = 'Canceling...';
+
+    try {
+      const success = await transactionStore.cancel(transaction);
+      if (success) {
+        this.setState({
+          status: TRANSACTION_STATUS.CANCELLED
+        });
+        this.checkContractBalance();
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+      this.cancelBtn.innerHTML = 'Cancel';
+    }
+    document.body.className = originalBodyCss;
+  }
+
+  async checkContractBalance() {
+    const {
+      transaction: { address },
+      web3Service
+    } = this.props;
+    const balance = await web3Service.getAddressBalance(address);
+    this.setState({ balance });
+  }
+
+  async customProxySend() {
+    const { transaction } = this.props;
+    const { customProxyData } = this.state;
+
+    const validate = proxyCallData => {
+      const split = proxyCallData.split(',');
+      if (split.length !== 2) {
+        throw new Error('Provide the two arguments separated by a comma!');
+      }
+      // Remove quotations if they are there. Using template string quotes bc eslint.
+      if (
+        (split[0][0] === `"` && split[0][split[0].length - 1] === `"`) ||
+        (split[0][0] === `'` && split[0][split[0].length - 1] === `'`)
+      ) {
+        split[0] = split[0].slice(1, split[0].length - 1);
+      }
+      if (!ethUtil.isValidAddress(split[0])) {
+        throw new Error(
+          `First argument provided is not a valid Ethereum address! Got: ${split[0]}`
+        );
+      }
+      if (split[1].startsWith(' ')) {
+        split[1] = split[1].slice(1);
+      }
+      // Remove quotations if they are there. Using template string quotes bc eslint.
+      if (
+        (split[1][0] === `"` && split[1][split[1].length - 1] === `"`) ||
+        (split[1][0] === `'` && split[1][split[1].length - 1] === `'`)
+      ) {
+        split[1] = split[1].slice(1, split[1].length - 1);
+      }
+      if (!split[1].startsWith('0x')) {
+        throw new Error(`Please pass a valid hex string as the second argument! Got: ${split[1]}`);
+      }
+
+      return {
+        destination: split[0],
+        data: split[1]
+      };
+    };
+
+    const { destination, data } = validate(customProxyData);
+
+    await transaction.proxy(destination, data);
+  }
+
+  async executedAt(transaction, status, transactionStore) {
+    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
+    let executedAt = '';
+
+    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
+      const events = await this.getExecutedEvents(
+        requestLib,
+        transactionStore.requestFactoryStartBlock
+      );
+
+      if (events.length > 0) {
+        executedAt = events[0].transactionHash;
+      }
+    }
+
+    this.setState({ executedAt });
+  }
+
+  async fetchTokenTransferEvents() {
+    const {
+      tokenHelper,
+      transaction: { address, executionWindowEnd, temporalUnit },
+      web3Service
+    } = this.props;
+
+    // TODO error handling?
+    const fromBlock = await web3Service.getBlockNumberFromTxHash(this.state.executedAt);
+
+    let afterExecutionWindow;
+    if (temporalUnit === 1) {
+      afterExecutionWindow = (await web3Service.fetchBlockNumber()) >= executionWindowEnd;
+    } else if (temporalUnit === 2) {
+      afterExecutionWindow = Date.now() >= executionWindowEnd;
+    }
+
+    if (afterExecutionWindow) {
+      const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
+      const tokenTransferDetails = await Promise.all(
+        tokenTransferEvents.map(async event => {
+          const details = await tokenHelper.fetchTokenDetails(event.address);
+
+          return Object.assign(details, {
+            balance: await tokenHelper.getTokenBalanceOf(event.address, address)
+          });
+        })
+      );
+      this.setState({
+        afterExecutionWindow,
+        tokenTransferDetails
+      });
+    }
+  }
+
+  async fetchTokenTransferInfo() {
+    const { tokenHelper, transaction } = this.props;
+    const { toAddress } = transaction;
+    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
+
+    this.setState({ token: tokenDetails });
+  }
+
+  getExecutedEvents(requestLib, fromBlock = 0) {
+    return new Promise(resolve => {
+      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
+        resolve(events);
+      });
+    });
+  }
+
+  async getFrozenStatus() {
+    const { transaction, transactionStore } = this.props;
+
+    if (!transaction || !transaction.inFreezePeriod) {
+      return;
+    }
+
+    const isFrozen = await transactionStore.isTransactionFrozen(transaction);
+    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
+  }
+
+  getTransactionPropertyTimeDisplay(transaction, property) {
+    let display = '';
+
+    if (transaction[property] && transaction[property].toString) {
+      const parsedUnixTime = moment.unix(transaction[property].toString());
+
+      display = parsedUnixTime.format('YYYY/MM/DD HH:mm:ss');
+    }
+
+    return display;
+  }
+
+  handleProxyDataClick() {
+    this.setState({
+      proxyDataCheckBox: !this.state.proxyDataCheckBox
+    });
+  }
+
   isOwner(transaction) {
     const { owner } = transaction;
     const {
@@ -193,14 +269,39 @@ class TransactionDetails extends Component {
     return accounts[0] == owner;
   }
 
-  async componentDidMount() {
-    this._isMounted = true;
-
-    await this.setupDetails();
+  proxyInputOnChange(e) {
+    this.setState({ customProxyData: e.target.value });
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
+  async refundBalance(event) {
+    const { target } = event;
+    const { transaction, transactionStore } = this.props;
+
+    const originalBodyCss = document.body.className;
+
+    document.body.className += ' fade-me';
+    target.innerHTML = 'Refunding...';
+
+    try {
+      const success = await transactionStore.refund(transaction);
+      if (success) {
+        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
+        this.setState({ balance: 0 });
+        this.checkContractBalance();
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+    }
+    target.innerHTML = 'Refund Balance';
+    document.body.className = originalBodyCss;
+  }
+
+  async sendTokensToOwner(token, amount) {
+    const { tokenHelper, transaction } = this.props;
+    const { owner } = transaction;
+
+    const data = await tokenHelper.sendTokensData(token, owner, amount);
+    await transaction.proxy(token, data);
   }
 
   async setupDetails() {
@@ -216,67 +317,33 @@ class TransactionDetails extends Component {
     await this.getFrozenStatus();
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
+    await this.fetchTokenTransferEvents();
   }
 
-  getTransactionPropertyTimeDisplay(transaction, property) {
-    let display = '';
+  async testToken() {
+    const { tokenHelper, transaction } = this.props;
+    const { address, toAddress } = transaction;
 
-    if (transaction[property] && transaction[property].toString) {
-      const parsedUnixTime = moment.unix(transaction[property].toString());
+    let tokenTransferApproved;
+    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
 
-      display = parsedUnixTime.format('YYYY/MM/DD HH:mm:ss');
+    if (isTokenTransfer) {
+      await this.fetchTokenTransferInfo();
+
+      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
+      this.setState({ token: Object.assign(this.state.token, { info }) });
+
+      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
+        toAddress,
+        address,
+        this.state.token.info.value
+      );
     }
-
-    return display;
+    this.setState({ isTokenTransfer, tokenTransferApproved });
   }
 
-  getCancelSection() {
-    const { isFrozen, status } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-
-    const cancelButtonEnabled = isOwner && !isFrozen && (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED);
-
-    return (
-      <div className="alert alert-info">
-        {!isOwner && (
-          <React.Fragment>
-            In order to cancel this transaction please switch to account <b>{transaction.owner}</b>{' '}
-            (transaction owner).
-            <br />
-            <br />
-          </React.Fragment>
-        )}
-        Note that transaction can be cancelled:
-        <br />
-        <ol className="list-normalized">
-          <li>
-            Before <b>{this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}</b>{' '}
-            (claiming window start)
-          </li>
-          <li>
-            When wasn&#39;t executed by any TimeNode after{' '}
-            <b>{this.getTransactionPropertyTimeDisplay(transaction, 'executionWindowEnd')}</b>{' '}
-            (execution window end)
-          </li>
-          <li>When it hasn&#39;t been already cancelled</li>
-          <li>Only by its owner</li>
-        </ol>
-        <div className="mt-3">
-          <button
-            className="btn btn-danger btn-cons"
-            disabled={!cancelButtonEnabled}
-            onClick={this.cancelTransaction}
-            type="button"
-            ref={el => (this.cancelBtn = el)}
-          >
-            <span>Cancel</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
+  /** TODO: These `get*Section()` function can be refactored into stateless components
+   and moved to individual files in the TransactionDetails folder. Note for future work. */
 
   getApproveSection() {
     const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
@@ -304,6 +371,25 @@ class TransactionDetails extends Component {
     }
 
     return <div className="col-6" />;
+  }
+
+  getInfoMessage() {
+    const { status, isFrozen } = this.state;
+    const { transaction } = this.props;
+
+    const isOwner = this.isOwner(transaction);
+
+    let messages = [];
+    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
+      messages.push('The transaction has been frozen.');
+    }
+    return (
+      <div>
+        {messages.map(msg => (
+          <div key={msg}>{msg}</div>
+        ))}
+      </div>
+    );
   }
 
   getRefundSection() {
@@ -367,39 +453,23 @@ class TransactionDetails extends Component {
     return null;
   }
 
-  getInfoMessage() {
-    const { status, isFrozen } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-
-    let messages = [];
-    if (isOwner && isFrozen && status === TRANSACTION_STATUS.SCHEDULED) {
-      messages.push('The transaction has been frozen.');
-    }
-    return (
-      <div>
-        {messages.map(msg => (
-          <div key={msg}>{msg}</div>
-        ))}
-      </div>
-    );
-  }
-
   render() {
     const { transaction } = this.props;
-    const { callData, executedAt, status } = this.state;
+    const { callData, executedAt, isFrozen, status } = this.state;
     const {
       bounty,
       callGas,
       callValue,
       fee,
       gasPrice,
+      owner,
       requiredDeposit,
       toAddress,
       windowStart,
       windowSize
     } = transaction;
+
+    const isOwner = this.isOwner(transaction);
     const isTimestamp = transaction.temporalUnit === 2;
 
     return (
@@ -523,9 +593,33 @@ class TransactionDetails extends Component {
           </div>
           <div className="col-12">{this.getInfoMessage()}</div>
         </div>
-        <div className="row mt-4">
-          <div className="col">{this.getCancelSection()}</div>
-        </div>
+        <CancelSection
+          cancelButtonEnabled={
+            isOwner &&
+            !isFrozen &&
+            (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED)
+          }
+          cancelBtnRef={el => (this.cancelBtn = el)}
+          cancelTransaction={this.cancelTransaction}
+          claimWindowStart={this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}
+          executionWindowEnd={this.getTransactionPropertyTimeDisplay(
+            transaction,
+            'executionWindowEnd'
+          )}
+          isOwner={isOwner}
+          owner={owner}
+        />
+        <ProxySection
+          afterExecutionWindow={this.state.afterExecutionWindow}
+          customProxyData={this.state.customProxyData}
+          customProxySend={this.customProxySend}
+          handleProxyDataClick={this.handleProxyDataClick}
+          isOwner={isOwner}
+          proxyDataCheckBox={this.state.proxyDataCheckBox}
+          proxyInputOnChange={this.proxyInputOnChange}
+          sendTokensToOwner={this.sendTokensToOwner}
+          tokenTransferDetails={this.state.tokenTransferDetails}
+        />
       </div>
     );
   }
