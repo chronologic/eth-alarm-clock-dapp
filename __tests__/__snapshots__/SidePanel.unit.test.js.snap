@@ -223,48 +223,31 @@ exports[`SidePanel is correctly rendered 1`] = `
         </a>
       </li>
       <hr
-        className="d-md-block d-lg-none mx-4"
-        id="sidebar-separator"
+        className="sidebar-separator mx-4"
       />
       <li
         className="sidebar-additional-item"
       >
         <div
-          className="container py-2"
+          className="sidebar-additional-item--label"
+        >
+          Active TimeNodes
+        </div>
+        <div
+          className="sidebar-additional-item--display"
         >
           <div
-            className="row p-l-20 p-r-15"
+            className=""
           >
             <div
-              className="col-8 px-0"
-            >
-              <span
-                className="active-timenodes"
-              >
-                Active TimeNodes
-              </span>
-            </div>
+              className="css-1ncsqv2"
+            />
             <div
-              className="col-4 px-0 text-right"
-            >
-              <span
-                className="timenode-count col-6"
-              >
-                <div
-                  className=""
-                >
-                  <div
-                    className="css-1ncsqv2"
-                  />
-                  <div
-                    className="css-o7y5po"
-                  />
-                  <div
-                    className="css-1ncsqv2"
-                  />
-                </div>
-              </span>
-            </div>
+              className="css-o7y5po"
+            />
+            <div
+              className="css-1ncsqv2"
+            />
           </div>
         </div>
       </li>
@@ -272,56 +255,54 @@ exports[`SidePanel is correctly rendered 1`] = `
         className="sidebar-additional-item"
       >
         <div
-          className="container py-2"
+          className="sidebar-additional-item--label"
         >
-          <div
-            className="row p-l-20 p-r-15"
-          >
-            <div
-              className="col-7 px-0"
-            >
-              <span
-                className="active-timenodes"
-              >
-                Current Block
-              </span>
-            </div>
-            <div
-              className="col-5 px-0 text-right"
-            >
-              <span
-                className="timenode-count"
-              />
-            </div>
-          </div>
+          Network
+        </div>
+        <div
+          className="sidebar-additional-item--display"
+        >
+          <span>
+            Mainnet
+          </span>
         </div>
       </li>
       <li
         className="sidebar-additional-item"
       >
         <div
-          className="container py-2"
+          className="sidebar-additional-item--label"
         >
-          <div
-            className="row p-l-20 p-r-15"
-          >
-            <div
-              className="col-8 px-0"
-            >
-              <span
-                className="active-timenodes"
-              >
-                Upcoming Transactions
-              </span>
-            </div>
-            <div
-              className="col-4 px-0 text-right"
-            >
-              <span
-                className="timenode-count col-6"
-              />
-            </div>
-          </div>
+          Current Block
+        </div>
+        <div
+          className="sidebar-additional-item--display"
+        />
+      </li>
+      <li
+        className="sidebar-additional-item"
+      >
+        <div
+          className="sidebar-additional-item--label"
+        >
+          Upcoming Transactions
+        </div>
+        <div
+          className="sidebar-additional-item--display"
+        />
+      </li>
+      <li
+        className="sidebar-additional-item"
+      >
+        <div
+          className="sidebar-additional-item--label"
+        >
+          Efficiency
+        </div>
+        <div
+          className="sidebar-additional-item--display"
+        >
+          undefined%
         </div>
       </li>
       <li

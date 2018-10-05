@@ -52,6 +52,14 @@ export default class Web3Service {
     return this.web3.fromWei(wei);
   }
 
+  async getBlockNumberFromTxHash(txHash) {
+    return new Promise(resolve => {
+      this.web3.eth.getTransaction(txHash, (_, res) => {
+        resolve(res.blockNumber);
+      });
+    });
+  }
+
   async fetchReceipt(hash) {
     return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
   }
@@ -68,6 +76,24 @@ export default class Web3Service {
     });
 
     return Log;
+  }
+
+  getTokenTransfers(address, fromBlock = 0) {
+    const filter = this.web3.eth.filter({
+      fromBlock,
+      toBlock: 'latest',
+      topics: [
+        '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+        null, // from
+        '0x' + '0'.repeat(24) + address.slice(2) // to
+      ]
+    });
+
+    return new Promise(resolve => {
+      filter.get((_, res) => {
+        resolve(res);
+      });
+    });
   }
 
   async trackTransaction(hash) {

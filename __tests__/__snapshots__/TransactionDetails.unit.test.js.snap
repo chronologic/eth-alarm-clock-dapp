@@ -215,7 +215,7 @@ exports[`TransactionDetails correctly renders 1`] = `
       <div
         className="alert alert-info"
       >
-        Note that transaction can be cancelled:
+        The transaction can be cancelled:
         <br />
         <ol
           className="list-normalized"
@@ -226,7 +226,7 @@ exports[`TransactionDetails correctly renders 1`] = `
               
             </b>
              
-            (claiming window start)
+            (Claim Window Start)
           </li>
           <li>
             When wasn't executed by any TimeNode after
@@ -235,7 +235,7 @@ exports[`TransactionDetails correctly renders 1`] = `
               
             </b>
              
-            (execution window end)
+            (Execution Window End)
           </li>
           <li>
             When it hasn't been already cancelled
@@ -260,6 +260,9 @@ exports[`TransactionDetails correctly renders 1`] = `
         </div>
       </div>
     </div>
+  </div>
+  <div>
+    You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable.
   </div>
 </div>
 `;

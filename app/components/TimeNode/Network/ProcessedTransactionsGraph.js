@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
-import moment from 'moment';
 
-@inject('keenStore')
+@inject('timeNodeStore')
 @observer
-class ActiveTimeNodesGraph extends Component {
+class ProcessedTransactionsGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,27 +27,18 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   refreshChart() {
-    const { data } = this.props;
+    if (this.props.data) {
+      let { labels, values } = this.props.data;
 
-    if (data.length > 0) {
-      const labels = [];
-      for (let i = 24; i > 0; i--) {
-        labels.push(
-          moment()
-            .subtract(i, 'hours')
-            .hour() + ':00'
-        );
-      }
-
-      const graphData = {
+      const data = {
         labels,
-        values: data
+        values
       };
 
       if (this.state.chart !== null) {
-        this.updateChart(graphData);
+        this.updateChart(data);
       } else {
-        this.setChart(this.activeTnsGraph.getContext('2d'), graphData);
+        this.setChart(this.processedTransactionsGraph.getContext('2d'), data);
       }
     }
   }
@@ -61,7 +51,7 @@ class ActiveTimeNodesGraph extends Component {
           labels: data.labels,
           datasets: [
             {
-              label: '# of Active TimeNodes',
+              label: 'Processed Transactions',
               data: data.values,
               backgroundColor: 'rgba(33, 255, 255, 0.2)',
               borderColor: 'rgba(33, 255, 255, 1)',
@@ -75,12 +65,7 @@ class ActiveTimeNodesGraph extends Component {
               {
                 ticks: {
                   min: 0,
-                  beginAtZero: true,
-                  callback: value => {
-                    if (Math.floor(value) === value) {
-                      return value;
-                    }
-                  }
+                  beginAtZero: true
                 }
               }
             ]
@@ -107,12 +92,14 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   render() {
-    return <canvas id="activeTnsGraph" ref={el => (this.activeTnsGraph = el)} />;
+    return (
+      <canvas id="processedTransactionsGraph" ref={el => (this.processedTransactionsGraph = el)} />
+    );
   }
 }
 
-ActiveTimeNodesGraph.propTypes = {
-  data: PropTypes.array
+ProcessedTransactionsGraph.propTypes = {
+  data: PropTypes.any
 };
 
-export { ActiveTimeNodesGraph };
+export { ProcessedTransactionsGraph };
