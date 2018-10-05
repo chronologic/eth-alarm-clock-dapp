@@ -8,6 +8,40 @@ import { BeatLoader } from 'react-spinners';
 @inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      historyPollingInterval: props.keenStore.historyPollingInterval
+    };
+  }
+
+  componentDidMount() {
+    this.activeTimeNodesFetchInterval = setInterval(
+      () => this.props.keenStore.refreshActiveTimeNodesHistory(),
+      this.props.keenStore.historyPollingInterval
+    );
+  }
+
+  componentWillUnmount() {
+    if (this.activeTimeNodesFetchInterval) {
+      clearInterval(this.activeTimeNodesFetchInterval);
+    }
+  }
+
+  componentDidUpdate() {
+    const newInterval = this.props.keenStore.historyPollingInterval;
+    const { historyPollingInterval } = this.state;
+
+    if (historyPollingInterval !== newInterval) {
+      this.setState({ historyPollingInterval: newInterval });
+      clearInterval(this.activeTimeNodesFetchInterval);
+      this.activeTimeNodesFetchInterval = setInterval(
+        () => this.props.keenStore.refreshActiveTimeNodesHistory(),
+        newInterval
+      );
+    }
+  }
+
   deepCopy(array) {
     return JSON.parse(JSON.stringify(array));
   }
