@@ -126,7 +126,9 @@ class Header extends Component {
                 Upcoming transactions:
               </span>
             </span>
-            <span className="timenode-count">{transactionsScheduledInNextHoursAmount}</span>
+            <span className="timenode-count">
+              {loaderIfNull(transactionsScheduledInNextHoursAmount)}
+            </span>
           </div>
           <div className="header-separator" />
           <div>
@@ -140,7 +142,9 @@ class Header extends Component {
                 Efficiency:
               </span>
             </span>
-            <span className="timenode-count">{efficiency !== null && `${efficiency}%`}</span>
+            <span className="timenode-count">
+              {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
+            </span>
           </div>
           <div className="header-separator" />
           <div data-test="network-display">
