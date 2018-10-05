@@ -123,14 +123,35 @@ class TransactionDetails extends Component {
       if (split.length !== 2) {
         throw new Error('Provide the two arguments separated by a comma!');
       }
+      // Remove quotations if they are there
+      if (
+        (split[0][0] === '"' && split[0][split[0].length - 1] === '"') ||
+        (split[0][0] === "'" && split[0][split[0].length - 1] === "'")
+      ) {
+        split[0] = split[0].slice(1, split[0].length - 1);
+      }
       if (!ethUtil.isValidAddress(split[0])) {
-        throw new Error('First argument provided is not a valid Ethereum address!');
+        throw new Error(
+          `First argument provided is not a valid Ethereum address! Got: ${split[0]}`
+        );
+      }
+      if (split[1].startsWith(' ')) {
+        split[1] = split[1].slice(1);
+      }
+      // Remove quotations if they are there
+      if (
+        (split[1][0] === '"' && split[1][split[1].length - 1] === '"') ||
+        (split[1][0] === "'" && split[1][split[1].length - 1] === "'")
+      ) {
+        split[1] = split[1].slice(1, split[1].length - 1);
+      }
+      if (!split[1].startsWith('0x')) {
+        throw new Error(`Please pass a valid hex string as the second argument! Got: ${split[1]}`);
       }
 
-      // TODO validate split[1] is valid hex bytes
       return {
         destination: split[0],
-        data: split[1].slice(1)
+        data: split[1]
       };
     };
 
