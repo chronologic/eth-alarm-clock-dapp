@@ -251,14 +251,18 @@ class SidePanel extends Component {
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Upcoming Transactions</div>
               <div className="sidebar-additional-item--display">
-                {transactionsScheduledInNextHoursAmount}
+                {transactionsScheduledInNextHoursAmount === null ? (
+                  <BeatLoader color="#fff" size={4} />
+                ) : (
+                  transactionsScheduledInNextHoursAmount
+                )}
               </div>
             </li>
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Efficiency</div>
               <div className="sidebar-additional-item--display">
-                {efficiency !== null && `${efficiency}%`}
+                {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
               </div>
             </li>
           </ul>
