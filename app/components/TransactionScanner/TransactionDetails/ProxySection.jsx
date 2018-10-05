@@ -77,10 +77,10 @@ const ProxySection = props => {
   }
 
   if (isOwner && !afterExecutionWindow) {
-    return <div>Please wait until after conclusion of execution window to send proxy call.</div>;
+    return <div>You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable.</div>;
   }
 
-  return <div>didn't match</div>
+  return <div />
 }
 
 ProxySection.propTypes = {

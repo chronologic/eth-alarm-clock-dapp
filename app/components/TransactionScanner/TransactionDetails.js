@@ -47,168 +47,14 @@ class TransactionDetails extends Component {
     this.sendTokensToOwner = this.sendTokensToOwner.bind(this);
   }
 
-  getExecutedEvents(requestLib, fromBlock = 0) {
-    return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
-        resolve(events);
-      });
-    });
+  async componentDidMount() {
+    this._isMounted = true;
+
+    await this.setupDetails();
   }
 
-  handleProxyDataClick() {
-    this.setState({
-      proxyDataCheckBox: !this.state.proxyDataCheckBox
-    });
-  }
-
-  proxyInputOnChange(e) {
-    this.setState({ customProxyData: e.target.value });
-  }
-
-  async customProxySend() {
-    const { transaction } = this.props;
-    const { customProxyData } = this.state;
-
-    const validate = proxyCallData => {
-      const split = proxyCallData.split(',');
-      if (split.length !== 2) {
-        throw new Error('Provide the two arguments separated by a comma!');
-      }
-      if (!ethUtil.isValidAddress(split[0])) {
-        throw new Error('First argument provided is not a valid Ethereum address!');
-      }
-
-      // TODO validate split[1] is valid hex bytes
-      return {
-        destination: split[0],
-        data: split[1].slice(1)
-      };
-    };
-
-    const { destination, data } = validate(customProxyData);
-
-    await transaction.proxy(destination, data);
-  }
-
-  async sendTokensToOwner(token, amount) {
-    const { tokenHelper, transaction } = this.props;
-    const { owner } = transaction;
-
-    const data = await tokenHelper.sendTokensData(token, owner, amount);
-    await transaction.proxy(token, data);
-  }
-
-  async executedAt(transaction, status, transactionStore) {
-    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
-    let executedAt = '';
-
-    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
-      const events = await this.getExecutedEvents(
-        requestLib,
-        transactionStore.requestFactoryStartBlock
-      );
-
-      if (events.length > 0) {
-        executedAt = events[0].transactionHash;
-      }
-    }
-
-    this.setState({ executedAt });
-  }
-
-  async testToken() {
-    const { tokenHelper, transaction } = this.props;
-    const { address, toAddress } = transaction;
-
-    let tokenTransferApproved;
-    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
-
-    if (isTokenTransfer) {
-      await this.fetchTokenTransferInfo();
-
-      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
-      this.setState({ token: Object.assign(this.state.token, { info }) });
-
-      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
-        toAddress,
-        address,
-        this.state.token.info.value
-      );
-    }
-    this.setState({ isTokenTransfer, tokenTransferApproved });
-  }
-
-  async fetchTokenTransferInfo() {
-    const { tokenHelper, transaction } = this.props;
-    const { toAddress } = transaction;
-    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
-
-    this.setState({ token: tokenDetails });
-  }
-
-  async getFrozenStatus() {
-    const { transaction, transactionStore } = this.props;
-
-    if (!transaction || !transaction.inFreezePeriod) {
-      return;
-    }
-
-    const isFrozen = await transactionStore.isTransactionFrozen(transaction);
-    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
-  }
-
-  async checkContractBalance() {
-    const {
-      transaction: { address },
-      web3Service
-    } = this.props;
-    const balance = await web3Service.getAddressBalance(address);
-    this.setState({ balance });
-  }
-
-  async cancelTransaction() {
-    const { transaction, transactionStore } = this.props;
-
-    const originalBodyCss = document.body.className;
-    document.body.className += ' fade-me';
-    this.cancelBtn.innerHTML = 'Canceling...';
-
-    try {
-      const success = await transactionStore.cancel(transaction);
-      if (success) {
-        this.setState({
-          status: TRANSACTION_STATUS.CANCELLED
-        });
-        this.checkContractBalance();
-      }
-    } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
-      this.cancelBtn.innerHTML = 'Cancel';
-    }
-    document.body.className = originalBodyCss;
-  }
-
-  async refundBalance(event) {
-    const { target } = event;
-    const { transaction, transactionStore } = this.props;
-
-    const originalBodyCss = document.body.className;
-
-    document.body.className += ' fade-me';
-    target.innerHTML = 'Refunding...';
-
-    try {
-      const success = await transactionStore.refund(transaction);
-      if (success) {
-        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
-        this.setState({ balance: 0 });
-        this.checkContractBalance();
-      }
-    } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
-    }
-    target.innerHTML = 'Refund Balance';
-    document.body.className = originalBodyCss;
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   async approveTokenTransfer(event) {
@@ -237,41 +83,78 @@ class TransactionDetails extends Component {
     document.body.className = originalBodyCss;
   }
 
-  isOwner(transaction) {
-    const { owner } = transaction;
-    const {
-      web3Service: {
-        eth: { accounts }
-      }
-    } = this.props;
-
-    return accounts[0] == owner;
-  }
-
-  async componentDidMount() {
-    this._isMounted = true;
-
-    await this.setupDetails();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  async setupDetails() {
+  async cancelTransaction() {
     const { transaction, transactionStore } = this.props;
 
-    const status = await transactionStore.getTxStatus(transaction, moment().unix());
+    const originalBodyCss = document.body.className;
+    document.body.className += ' fade-me';
+    this.cancelBtn.innerHTML = 'Canceling...';
 
-    this.setState({
-      callData: await transaction.callData(),
-      status
-    });
+    try {
+      const success = await transactionStore.cancel(transaction);
+      if (success) {
+        this.setState({
+          status: TRANSACTION_STATUS.CANCELLED
+        });
+        this.checkContractBalance();
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+      this.cancelBtn.innerHTML = 'Cancel';
+    }
+    document.body.className = originalBodyCss;
+  }
 
-    await this.getFrozenStatus();
-    await this.testToken();
-    await this.executedAt(transaction, status, transactionStore);
-    await this.fetchTokenTransferEvents();
+  async checkContractBalance() {
+    const {
+      transaction: { address },
+      web3Service
+    } = this.props;
+    const balance = await web3Service.getAddressBalance(address);
+    this.setState({ balance });
+  }
+
+  async customProxySend() {
+    const { transaction } = this.props;
+    const { customProxyData } = this.state;
+
+    const validate = proxyCallData => {
+      const split = proxyCallData.split(',');
+      if (split.length !== 2) {
+        throw new Error('Provide the two arguments separated by a comma!');
+      }
+      if (!ethUtil.isValidAddress(split[0])) {
+        throw new Error('First argument provided is not a valid Ethereum address!');
+      }
+
+      // TODO validate split[1] is valid hex bytes
+      return {
+        destination: split[0],
+        data: split[1].slice(1)
+      };
+    };
+
+    const { destination, data } = validate(customProxyData);
+
+    await transaction.proxy(destination, data);
+  }
+
+  async executedAt(transaction, status, transactionStore) {
+    const requestLib = this.props.eacService.getRequestLibInstance(transaction.address);
+    let executedAt = '';
+
+    if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
+      const events = await this.getExecutedEvents(
+        requestLib,
+        transactionStore.requestFactoryStartBlock
+      );
+
+      if (events.length > 0) {
+        executedAt = events[0].transactionHash;
+      }
+    }
+
+    this.setState({ executedAt });
   }
 
   async fetchTokenTransferEvents() {
@@ -305,9 +188,35 @@ class TransactionDetails extends Component {
       this.setState({
         afterExecutionWindow,
         tokenTransferDetails
-        // tokenTransferEvents
       });
     }
+  }
+
+  async fetchTokenTransferInfo() {
+    const { tokenHelper, transaction } = this.props;
+    const { toAddress } = transaction;
+    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
+
+    this.setState({ token: tokenDetails });
+  }
+
+  getExecutedEvents(requestLib, fromBlock = 0) {
+    return new Promise(resolve => {
+      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
+        resolve(events);
+      });
+    });
+  }
+
+  async getFrozenStatus() {
+    const { transaction, transactionStore } = this.props;
+
+    if (!transaction || !transaction.inFreezePeriod) {
+      return;
+    }
+
+    const isFrozen = await transactionStore.isTransactionFrozen(transaction);
+    this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
   getTransactionPropertyTimeDisplay(transaction, property) {
@@ -321,6 +230,99 @@ class TransactionDetails extends Component {
 
     return display;
   }
+
+  handleProxyDataClick() {
+    this.setState({
+      proxyDataCheckBox: !this.state.proxyDataCheckBox
+    });
+  }
+
+  isOwner(transaction) {
+    const { owner } = transaction;
+    const {
+      web3Service: {
+        eth: { accounts }
+      }
+    } = this.props;
+
+    return accounts[0] == owner;
+  }
+
+  proxyInputOnChange(e) {
+    this.setState({ customProxyData: e.target.value });
+  }
+
+  async refundBalance(event) {
+    const { target } = event;
+    const { transaction, transactionStore } = this.props;
+
+    const originalBodyCss = document.body.className;
+
+    document.body.className += ' fade-me';
+    target.innerHTML = 'Refunding...';
+
+    try {
+      const success = await transactionStore.refund(transaction);
+      if (success) {
+        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
+        this.setState({ balance: 0 });
+        this.checkContractBalance();
+      }
+    } catch (error) {
+      showNotification('Action cancelled by the user.', 'danger', 4000);
+    }
+    target.innerHTML = 'Refund Balance';
+    document.body.className = originalBodyCss;
+  }
+
+  async sendTokensToOwner(token, amount) {
+    const { tokenHelper, transaction } = this.props;
+    const { owner } = transaction;
+
+    const data = await tokenHelper.sendTokensData(token, owner, amount);
+    await transaction.proxy(token, data);
+  }
+
+  async setupDetails() {
+    const { transaction, transactionStore } = this.props;
+
+    const status = await transactionStore.getTxStatus(transaction, moment().unix());
+
+    this.setState({
+      callData: await transaction.callData(),
+      status
+    });
+
+    await this.getFrozenStatus();
+    await this.testToken();
+    await this.executedAt(transaction, status, transactionStore);
+    await this.fetchTokenTransferEvents();
+  }
+
+  async testToken() {
+    const { tokenHelper, transaction } = this.props;
+    const { address, toAddress } = transaction;
+
+    let tokenTransferApproved;
+    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
+
+    if (isTokenTransfer) {
+      await this.fetchTokenTransferInfo();
+
+      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
+      this.setState({ token: Object.assign(this.state.token, { info }) });
+
+      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
+        toAddress,
+        address,
+        this.state.token.info.value
+      );
+    }
+    this.setState({ isTokenTransfer, tokenTransferApproved });
+  }
+
+  /** TODO: These `get*Section()` function can be refactored into stateless components
+   and moved to individual files in the TransactionDetails folder. Note for future work. */
 
   getApproveSection() {
     const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
