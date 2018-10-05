@@ -35,6 +35,7 @@ export class KeenStore {
   historyActiveTimeNodes = [];
   @observable
   gettingActiveTimeNodesHistory = false;
+  @observable
   historyPollingInterval = FIVE_SEC;
 
   constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
@@ -123,11 +124,6 @@ export class KeenStore {
     this.isBlacklisted = this.activeTimeNodes === null;
   }
 
-  async intervalActiveTimeNodesHistory() {
-    await this.refreshActiveTimeNodesHistory();
-    setTimeout(() => this.intervalActiveTimeNodesHistory(), this.historyPollingInterval);
-  }
-
   async refreshActiveTimeNodesHistory() {
     this.gettingActiveTimeNodesHistory = true;
 
@@ -206,7 +202,5 @@ export class KeenStore {
   async _pollActiveTimeNodesCount() {
     await this.refreshActiveTimeNodesCount();
     setInterval(() => this.refreshActiveTimeNodesCount(), ACTIVE_TIMENODES_POLLING_INTERVAL);
-
-    await this.intervalActiveTimeNodesHistory();
   }
 }
