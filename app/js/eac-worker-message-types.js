@@ -9,5 +9,6 @@ export const EAC_WORKER_MESSAGE_TYPES = {
   CLEAR_STATS: 'clear-stats',
   GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS: 'get-claimed-not-executed-transactions',
   RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS: 'received-claimed-not-executed-transactions',
-  BOUNTIES_GRAPH_DATA: 'bounties-graph-data'
+  BOUNTIES_GRAPH_DATA: 'bounties-graph-data',
+  PROCESSED_TXS: 'processed-transactions'
 };

@@ -84,6 +84,8 @@ export default class TimeNodeStore {
 
   @observable
   bountiesGraphData = null;
+  @observable
+  processedTxs = null;
 
   @computed
   get nodeStatus() {
@@ -153,10 +155,13 @@ export default class TimeNodeStore {
   updateStatsInterval = null;
   updateBalancesInterval = null;
   updateBountiesGraphInterval = null;
+  updateProcessedTxsInterval = null;
   getNetworkInfoInterval = null;
 
   @observable
   updatingBountiesGraphInProgress = false;
+  @observable
+  updatingProcessedTxsGraphInProgress = false;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -225,6 +230,9 @@ export default class TimeNodeStore {
     this.updateBountiesGraph();
     this.updateBountiesGraphInterval = setInterval(this.updateBountiesGraph, 300000);
 
+    this.updateProcessedTxsGraph();
+    this.updateProcessedTxsGraphInterval = setInterval(this.updateProcessedTxsGraph, 300000);
+
     this.getNetworkInfo();
     this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
   }
@@ -292,6 +300,11 @@ export default class TimeNodeStore {
           case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
             this.updatingBountiesGraphInProgress = false;
             getValuesIfInMessage(['bountiesGraphData']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+            getValuesIfInMessage(['processedTxs']);
+            this.updatingProcessedTxsGraphInProgress = false;
             break;
         }
       };
@@ -470,6 +483,11 @@ export default class TimeNodeStore {
   updateBountiesGraph() {
     this.updatingBountiesGraphInProgress = true;
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
+  }
+
+  updateProcessedTxsGraph() {
+    this.updatingProcessedTxsGraphInProgress = true;
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS);
   }
 
   clearStats() {
