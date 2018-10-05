@@ -41,10 +41,11 @@ const ProxySection = props => {
   const { afterExecutionWindow, customProxyData, customProxySend, handleProxyDataClick, isOwner, proxyDataCheckBox, proxyInputOnChange, sendTokensToOwner, tokenTransferDetails } = props;
 
   const tableRows = tokenTransferDetails.map(details => {
+    const formattedBal = Number(details.balance) / 10 ** details.decimals + ' ' + details.symbol;
     return (
       <tr className="row">
         <td className="d-inline-block col-4 col-md-4">{details.name}</td>
-        <td className="d-inline-block col-4 col-md-4">{Number(details.balance) / 10 ** details.decimals + ' ' + details.symbol}</td>
+        <td className="d-inline-block col-4 col-md-4">{formattedBal}</td>
         <button 
           className="btn btn-white btn-cons pull-right"
           onClick={() => sendTokensToOwner(details.address, details.balance)}
