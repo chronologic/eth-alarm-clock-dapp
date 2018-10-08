@@ -38,7 +38,7 @@
     ]
   },
   "dependencies": {
-    "eac.js-lib": "file:../../ethereum-alarm-clock/eac.js-lib",
+    "eac.js-lib": "^2.4.5",
     "electron-is-dev": "0.3.0",
     "electron-updater": "3.1.2"
   },
