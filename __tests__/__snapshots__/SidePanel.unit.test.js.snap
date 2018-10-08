@@ -120,6 +120,26 @@ exports[`SidePanel is correctly rendered 1`] = `
               </span>
             </a>
           </li>
+          <li>
+            <a
+              aria-current={null}
+              href="/transactions/owner/null"
+              onClick={[Function]}
+            >
+              <span
+                className="title"
+              >
+                My Transactions
+              </span>
+              <span
+                className="icon-thumbnail"
+              >
+                <i
+                  className="fas fa-user"
+                />
+              </span>
+            </a>
+          </li>
         </ul>
       </li>
       <li>

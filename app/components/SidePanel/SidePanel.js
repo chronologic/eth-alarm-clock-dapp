@@ -81,6 +81,10 @@ class SidePanel extends Component {
     const { isElectron } = this.state;
     const { keenStore, transactionStatistics, web3Service } = this.props;
 
+    const defaultAccount = web3Service.accounts && web3Service.accounts[0];
+
+    const myTransactionsLink = `/transactions/owner/${defaultAccount}`;
+
     const activeTimenodes = keenStore.activeTimeNodes ? (
       keenStore.activeTimeNodes
     ) : (
@@ -161,6 +165,16 @@ class SidePanel extends Component {
                       </span>
                     </NavLink>
                   </li>
+                  {defaultAccount && (
+                    <li>
+                      <NavLink to={myTransactionsLink}>
+                        <span className="title">My Transactions</span>
+                        <span className="icon-thumbnail">
+                          <i className="fas fa-user" />
+                        </span>
+                      </NavLink>
+                    </li>
+                  )}
                 </ul>
               </li>
             )}
