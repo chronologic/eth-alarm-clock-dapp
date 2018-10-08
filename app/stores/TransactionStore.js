@@ -427,6 +427,16 @@ export class TransactionStore {
     };
   }
 
+  async getAvgGasPrice() {
+    const ethGasStationStream = await fetch('https://ethgasstation.info/json/ethgasAPI.json');
+    const avgGasPrice = (await ethGasStationStream.json()).average;
+    const gwei = 1000000000;
+    // EthGasStation returns the average gas is such a weird format,
+    // where the number XX represents GWEI with one decimal place. So,
+    // the return value "33" would mean 3.3 gwei, hence this strange return.
+    return (avgGasPrice * gwei) / 10;
+  }
+
   async schedule(
     toAddress,
     callData = '',
@@ -474,6 +484,8 @@ export class TransactionStore {
       value: endowment
     });
 
+    const sendGasPrice = await this.getAvgGasPrice();
+
     if (isTimestamp) {
       const receipt = await this._eacScheduler.timestampSchedule(
         toAddress,
@@ -486,7 +498,8 @@ export class TransactionStore {
         fee,
         payment,
         requiredDeposit,
-        waitForMined
+        waitForMined,
+        sendGasPrice
       );
 
       return receipt;
@@ -503,7 +516,8 @@ export class TransactionStore {
       fee,
       payment,
       requiredDeposit,
-      waitForMined
+      waitForMined,
+      sendGasPrice
     );
 
     return receipt;
