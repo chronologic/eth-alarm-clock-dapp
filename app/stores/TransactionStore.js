@@ -464,8 +464,6 @@ export class TransactionStore {
       payment,
       requiredDeposit,
       isTimestamp,
-      
-      
       endowment
     );
 
