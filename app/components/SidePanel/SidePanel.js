@@ -149,6 +149,16 @@ class SidePanel extends Component {
                 </a>
 
                 <ul className="sub-menu">
+                  {defaultAccount && (
+                    <li>
+                      <NavLink to={myTransactionsLink}>
+                        <span className="title">My Transactions</span>
+                        <span className="icon-thumbnail">
+                          <i className="fas fa-user" />
+                        </span>
+                      </NavLink>
+                    </li>
+                  )}
                   <li>
                     <NavLink to="/transactions/scheduled">
                       <span className="title">Scheduled</span>
@@ -165,16 +175,6 @@ class SidePanel extends Component {
                       </span>
                     </NavLink>
                   </li>
-                  {defaultAccount && (
-                    <li>
-                      <NavLink to={myTransactionsLink}>
-                        <span className="title">My Transactions</span>
-                        <span className="icon-thumbnail">
-                          <i className="fas fa-user" />
-                        </span>
-                      </NavLink>
-                    </li>
-                  )}
                 </ul>
               </li>
             )}
