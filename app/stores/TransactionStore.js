@@ -2,6 +2,7 @@ import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
+import { Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -427,16 +428,6 @@ export class TransactionStore {
     };
   }
 
-  async getAvgGasPrice() {
-    const ethGasStationStream = await fetch('https://ethgasstation.info/json/ethgasAPI.json');
-    const avgGasPrice = (await ethGasStationStream.json()).average;
-    const gwei = 1000000000;
-    // EthGasStation returns the average gas is such a weird format,
-    // where the number XX represents GWEI with one decimal place. So,
-    // the return value "33" would mean 3.3 gwei, hence this strange return.
-    return (avgGasPrice * gwei) / 10;
-  }
-
   async schedule(
     toAddress,
     callData = '',
@@ -484,7 +475,7 @@ export class TransactionStore {
       value: endowment
     });
 
-    const sendGasPrice = await this.getAvgGasPrice();
+    const sendGasPrice = (await TNUtil.getAdvancedNetworkGasPrice()).standard;
 
     if (isTimestamp) {
       const receipt = await this._eacScheduler.timestampSchedule(
