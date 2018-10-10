@@ -72,11 +72,7 @@ class TimeNodeNetwork extends Component {
       <div id="timeNodeNetwork">
         <div className="row">
           <div className="col-md-6" style={{ display: 'flex' }}>
-            <div
-              data-pages="card"
-              className="card card-default"
-              style={{ 'align-items': 'stretch' }}
-            >
+            <div data-pages="card" className="card card-default" style={{ alignItems: 'stretch' }}>
               <div className="card-header">
                 <div className="card-title">Active TimeNodes (last 24h)</div>
                 <div className="card-controls">
