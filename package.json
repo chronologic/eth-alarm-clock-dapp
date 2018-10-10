@@ -49,7 +49,7 @@
     "@babel/preset-react": "7.0.0",
     "@babel/runtime": "7.1.2",
     "@ethereum-alarm-clock/timenode-core": "5.3.2",
-    "@fortawesome/fontawesome-free": "5.3.1",
+    "@fortawesome/fontawesome-free": "5.4.0",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
     "babel-core": "7.0.0-bridge.0",
@@ -69,7 +69,7 @@
     "copy-webpack-plugin": "4.5.2",
     "crypto-js": "3.1.9-1",
     "css-loader": "1.0.0",
-    "debug": "3.1.0",
+    "debug": "4.1.0",
     "dotenv-webpack": "1.5.7",
     "eac.js-lib": "2.4.4",
     "electron": "2.0.9",
@@ -137,7 +137,7 @@
     "webpack-dev-server": "3.1.9",
     "webpack-merge": "4.1.4",
     "websocket": "1.0.28",
-    "worker-loader": "2.0.0",
+    "worker-plugin": "1.1.0",
     "xss": "1.0.3"
   },
   "repository": {
@@ -152,9 +152,6 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/eth-alarm-clock-dapp-.*"
     ],
-    "moduleNameMapper": {
-      "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
-    },
     "testURL": "http://localhost"
   },
   "license": "MIT"
