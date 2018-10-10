@@ -22,20 +22,20 @@ exports[`TransactionDetails correctly renders 1`] = `
         <td
           className="d-inline-block col-7 col-md-9"
         >
-          
-          <span
-            className="d-none"
+          <div
+            className=""
           >
-             at
-             
-            <a
-              href="https://etherscan.io/tx/"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              
-            </a>
-          </span>
+            <div
+              className="css-16ar6ui"
+            />
+            <div
+              className="css-16fmdcz"
+            />
+            <div
+              className="css-16ar6ui"
+            />
+          </div>
+          
         </td>
       </tr>
       <tr
@@ -82,7 +82,19 @@ exports[`TransactionDetails correctly renders 1`] = `
           className="d-inline-block col-7 col-md-9"
           title=""
         >
-          
+          <div
+            className=""
+          >
+            <div
+              className="css-16ar6ui"
+            />
+            <div
+              className="css-16fmdcz"
+            />
+            <div
+              className="css-16ar6ui"
+            />
+          </div>
         </td>
       </tr>
       <tr

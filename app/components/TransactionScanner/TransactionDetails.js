@@ -8,6 +8,7 @@ import { showNotification } from '../../services/notification';
 import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import * as ethUtil from 'ethereumjs-util';
+import { BeatLoader } from 'react-spinners';
 
 import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
@@ -480,17 +481,19 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Status</td>
               <td className="d-inline-block col-7 col-md-9">
-                {status}
-                <span className={status !== TRANSACTION_STATUS.EXECUTED ? 'd-none' : ''}>
-                  &nbsp;at{' '}
-                  <a
-                    href={this.props.web3Service.explorer + 'tx/' + executedAt}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {executedAt}
-                  </a>
-                </span>
+                {status ? status : <BeatLoader size={6} color="#aaa" />}
+                {executedAt && (
+                  <span>
+                    {` at `}
+                    <a
+                      href={this.props.web3Service.explorer + 'tx/' + executedAt}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {executedAt}
+                    </a>
+                  </span>
+                )}
               </td>
             </tr>
             <tr className="row">
@@ -538,7 +541,7 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
               <td className="d-inline-block col-7 col-md-9" title={callData}>
-                {callData}
+                {callData ? callData : <BeatLoader size={6} color="#aaa" />}
               </td>
             </tr>
             <tr className="row">

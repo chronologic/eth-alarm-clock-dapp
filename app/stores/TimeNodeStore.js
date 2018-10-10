@@ -1,7 +1,6 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
-import EacWorker from 'worker-loader!../js/eac-worker.js';
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
@@ -239,7 +238,7 @@ export default class TimeNodeStore {
 
   startWorker(options) {
     return new Promise(resolve => {
-      this.eacWorker = new EacWorker();
+      this.eacWorker = new Worker('../js/eac-worker.js', { type: 'module' });
 
       this.eacWorker.onmessage = async event => {
         const { type, value } = event.data;
