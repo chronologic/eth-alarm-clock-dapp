@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { transactionCache } from '../../../stores/index';
 
 const CancelSection = props => {
   const { cancelButtonEnabled, cancelBtnRef, cancelTransaction, claimWindowStart, executionWindowEnd, isOwner, owner } = props;
@@ -48,7 +47,17 @@ const CancelSection = props => {
 
       </div>
     </div>
-  )
-}
+  );
+};
+
+CancelSection.propTypes = {
+  cancelButtonEnabled: PropTypes.any,
+  cancelBtnRef: PropTypes.any,
+  cancelTransaction: PropTypes.any,
+  claimWindowStart: PropTypes.any,
+  executionWindowEnd: PropTypes.any,
+  isOwner: PropTypes.any,
+  owner: PropTypes.any
+};
 
 export default CancelSection;

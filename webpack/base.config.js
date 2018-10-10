@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ClearDistPlugin = require('./plugins/clearDist');
 const paths = require('./paths');
+const WorkerPlugin = require('worker-plugin');
 
 // Extracts the SCSS to a file
 const extractSASS = new MiniCssExtractPlugin({
@@ -32,11 +33,6 @@ module.exports = {
 
   module: {
     rules: [
-      {
-        test: /\.worker\.js$/,
-        use: { loader: 'worker-loader' }
-      },
-
       // Loader for the image files
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -72,6 +68,7 @@ module.exports = {
   },
 
   plugins: [
+    new WorkerPlugin(),
     new ClearDistPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(paths.src, 'index.html'),

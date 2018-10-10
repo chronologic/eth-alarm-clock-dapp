@@ -137,7 +137,7 @@
     "webpack-dev-server": "3.1.9",
     "webpack-merge": "4.1.4",
     "websocket": "1.0.28",
-    "worker-loader": "2.0.0",
+    "worker-plugin": "1.1.0",
     "xss": "1.0.3"
   },
   "repository": {
@@ -152,9 +152,6 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/eth-alarm-clock-dapp-.*"
     ],
-    "moduleNameMapper": {
-      "worker-loader!../js/eac-worker.js": "<rootDir>/__mocks__/eacWorkerMock.js"
-    },
     "testURL": "http://localhost"
   },
   "license": "MIT"
