@@ -41,6 +41,7 @@ export class TransactionStore {
   _requestFactory;
   _helper;
   _bucketHelper;
+  _util;
 
   constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
@@ -50,6 +51,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
+    this.util = new TNUtil(this._web3);
 
     this.init();
   }
@@ -475,7 +477,7 @@ export class TransactionStore {
       value: endowment
     });
 
-    const sendGasPrice = (await TNUtil.getAdvancedNetworkGasPrice()).standard;
+    const sendGasPrice = (await this.util.getAdvancedNetworkGasPrice()).average;
 
     if (isTimestamp) {
       const receipt = await this._eacScheduler.timestampSchedule(
