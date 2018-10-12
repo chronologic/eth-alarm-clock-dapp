@@ -53,10 +53,14 @@ class TimeNodeNetwork extends Component {
       processedTxs,
       updatingProcessedTxsGraphInProgress
     } = this.props.timeNodeStore;
-    const { historyActiveTimeNodes, gettingActiveTimeNodesHistory } = this.props.keenStore;
+    const {
+      historyActiveTimeNodes,
+      gettingActiveTimeNodesHistory,
+      isBlacklisted
+    } = this.props.keenStore;
 
     const shouldShowActiveTimeNodesGraph =
-      historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory;
+      (historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory) || isBlacklisted;
 
     const shouldShowTimeBountiesGraph =
       bountiesGraphData !== null && !updatingBountiesGraphInProgress;
@@ -67,8 +71,8 @@ class TimeNodeNetwork extends Component {
     return (
       <div id="timeNodeNetwork">
         <div className="row">
-          <div className="col-md-6">
-            <div data-pages="card" className="card card-default">
+          <div className="col-md-6" style={{ display: 'flex' }}>
+            <div data-pages="card" className="card card-default" style={{ alignItems: 'stretch' }}>
               <div className="card-header">
                 <div className="card-title">Active TimeNodes (last 24h)</div>
                 <div className="card-controls">
@@ -92,7 +96,16 @@ class TimeNodeNetwork extends Component {
                 </div>
               </div>
               <div className="card-body horizontal-center">
-                <ActiveTimeNodesGraph data={this.deepCopy(historyActiveTimeNodes)} />
+                {isBlacklisted ? (
+                  <div>
+                    <h3 className="text-warning">
+                      <i className="fa fa-info-circle" />
+                    </h3>
+                    <p>Please whitelist our site to see this graph.</p>
+                  </div>
+                ) : (
+                  <ActiveTimeNodesGraph data={this.deepCopy(historyActiveTimeNodes)} />
+                )}
               </div>
             </div>
           </div>
