@@ -2,7 +2,7 @@ import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
-import { Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
+import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 
 export const DEFAULT_LIMIT = 10;
 
