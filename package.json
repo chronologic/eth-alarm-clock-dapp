@@ -26,7 +26,6 @@
     "package:win": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.ico --platform=win32",
     "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
     "package:mac": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.icns --platform=darwin",
-    "precommit": "lint-staged",
     "electron:distribute": "npm run build:electron:prod && node tools/buildElectron.js",
     "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
   },
@@ -49,7 +48,7 @@
     "@babel/preset-react": "7.0.0",
     "@babel/runtime": "7.1.2",
     "@ethereum-alarm-clock/timenode-core": "5.3.2",
-    "@fortawesome/fontawesome-free": "5.4.0",
+    "@fortawesome/fontawesome-free": "5.4.1",
     "acorn5-object-spread": "5.1.2",
     "autoprefixer": "9.1.5",
     "babel-core": "7.0.0-bridge.0",
@@ -66,12 +65,12 @@
     "chart.js": "2.7.2",
     "compression-webpack-plugin": "2.0.0",
     "concurrently": "4.0.1",
-    "copy-webpack-plugin": "4.5.2",
+    "copy-webpack-plugin": "4.5.3",
     "crypto-js": "3.1.9-1",
     "css-loader": "1.0.0",
     "debug": "4.1.0",
     "dotenv-webpack": "1.5.7",
-    "eac.js-lib": "2.4.4",
+    "eac.js-lib": "2.4.5",
     "electron": "3.0.4",
     "electron-builder": "20.28.4",
     "electron-packager": "12.2.0",
@@ -87,10 +86,10 @@
     "eslint-plugin-standard": "4.0.0",
     "ethereumjs-util": "5.2.0",
     "ethereumjs-wallet": "0.6.2",
-    "file-loader": "1.1.11",
+    "file-loader": "2.0.0",
     "github-api": "3.0.0",
     "html-webpack-plugin": "3.2.0",
-    "husky": "0.14.3",
+    "husky": "1.1.2",
     "is-url": "1.2.4",
     "jest": "23.6.0",
     "jquery": "3.3.1",
@@ -100,7 +99,7 @@
     "keen-tracking": "3.1.2",
     "lint-staged": "7.3.0",
     "lokijs": "1.5.5",
-    "mini-css-extract-plugin": "0.4.3",
+    "mini-css-extract-plugin": "0.4.4",
     "mobx": "5.5.0",
     "mobx-react": "5.2.8",
     "mobx-react-router": "4.0.5",
@@ -137,7 +136,7 @@
     "webpack-dev-server": "3.1.9",
     "webpack-merge": "4.1.4",
     "websocket": "1.0.28",
-    "worker-plugin": "1.1.0",
+    "worker-plugin": "1.1.1",
     "xss": "1.0.3"
   },
   "repository": {
@@ -154,5 +153,10 @@
     ],
     "testURL": "http://localhost"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
