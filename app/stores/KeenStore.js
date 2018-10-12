@@ -120,46 +120,29 @@ export class KeenStore {
         this.timeNodeSpecificProviderNetId
       );
     }
-
-    if (this.activeTimeNodesTimeNodeSpecificProvider !== null) {
-      // Push the Active TimeNodes count to the array
-      // that holds the last 1h of active TimeNodes counters
-      this.latestActiveTimeNodes.push({
-        amount: this.activeTimeNodesTimeNodeSpecificProvider,
-        timestamp: moment().unix()
-      });
-
-      // If there are some old counters that are in the 'latest' array
-      if (
-        this.latestActiveTimeNodes.some(counter => !this._timestampIsInThisHour(counter.timestamp))
-      ) {
-        // Archive them
-        this._archiveActiveTimeNodeCounters();
-      }
-    }
-
-    this.isBlacklisted = this.activeTimeNodes === null;
   }
 
   async refreshActiveTimeNodesHistory() {
-    this.gettingActiveTimeNodesHistory = true;
+    if (!this.isBlacklisted) {
+      this.gettingActiveTimeNodesHistory = true;
 
-    const isAllZeroes = array => array.every(counter => counter === 0);
+      const isAllZeroes = array => array.every(counter => counter === 0);
 
-    const history = await this._getActiveTimeNodesHistory();
+      const history = await this._getActiveTimeNodesHistory();
 
-    /*
-      Keen sometimes returns all zeroes instead of the real value.
-      We keep getting the values from Keen every 5 seconds until we get the proper values.
-      After that we switch to a longer time interval.
-      NOTE: This check can be remove if Keen fixes sending incorrect values
-    */
-    if (!isAllZeroes(history)) {
-      this.historyPollingInterval = TEN_MIN; // Set a longer polling interval
-      this.historyActiveTimeNodes = history;
+      /*
+        Keen sometimes returns all zeroes instead of the real value.
+        We keep getting the values from Keen every 5 seconds until we get the proper values.
+        After that we switch to a longer time interval.
+        NOTE: This check can be remove if Keen fixes sending incorrect values
+      */
+      if (!isAllZeroes(history)) {
+        this.historyPollingInterval = TEN_MIN; // Set a longer polling interval
+        this.historyActiveTimeNodes = history;
+      }
+
+      this.gettingActiveTimeNodesHistory = false;
     }
-
-    this.gettingActiveTimeNodesHistory = false;
   }
 
   async _getActiveTimeNodesHistory() {
@@ -183,37 +166,48 @@ export class KeenStore {
   async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
     await this.awaitKeenInitialized();
 
-    const count = new KeenAnalysis.Query('count', {
-      event_collection: COLLECTIONS.TIMENODES,
-      target_property: 'nodeAddress',
-      timeframe,
-      group_by: 'nodeAddress',
-      filters: [
-        {
-          property_name: 'networkId',
-          operator: 'eq',
-          property_value: networkId
-        },
-        {
-          property_name: 'eacVersions.contracts',
-          operator: 'eq',
-          property_value: this.versions.contracts
-        },
-        {
-          property_name: 'status',
-          operator: 'eq',
-          property_value: 'active'
-        }
-      ]
-    });
+    if (!this.isBlacklisted) {
+      const count = new KeenAnalysis.Query('count', {
+        event_collection: COLLECTIONS.TIMENODES,
+        target_property: 'nodeAddress',
+        timeframe,
+        group_by: 'nodeAddress',
+        filters: [
+          {
+            property_name: 'networkId',
+            operator: 'eq',
+            property_value: networkId
+          },
+          {
+            property_name: 'eacVersions.contracts',
+            operator: 'eq',
+            property_value: this.versions.contracts
+          },
+          {
+            property_name: 'status',
+            operator: 'eq',
+            property_value: 'active'
+          }
+        ]
+      });
 
-    const response = await this.analysisClient.run(count);
+      let response = null;
+      try {
+        response = await this.analysisClient.run(count);
+      } catch (e) {
+        this.isBlacklisted = true;
+      }
 
-    if (response === null || !response.hasOwnProperty('result') || response.hasOwnProperty('err')) {
-      return null;
+      if (
+        response === null ||
+        !response.hasOwnProperty('result') ||
+        response.hasOwnProperty('err')
+      ) {
+        return null;
+      }
+
+      return response.result.length;
     }
-
-    return response.result.length;
   }
 
   async _pollActiveTimeNodesCount() {
