@@ -1,12 +1,11 @@
 /* eslint-disable no-console */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell, protocol } = require('electron');
+const { app, BrowserWindow, dialog, Menu, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const path = require('path');
 const urlLib = require('url');
-const os = require('os');
 
 const packageJson = require('./package.json');
 
@@ -32,37 +31,6 @@ let shouldShowUpToDate = false;
 let updateInProgress = false;
 
 function createWindow() {
-  // Handle files that do not have the correct paths set (assets, worker file, etc.)
-  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    let url = request.url.substr(PROTOCOL.length + 1);
-    let packagePath = __dirname;
-
-    const windows = os.platform() === 'win32';
-    if (windows) {
-      packagePath = packagePath.replace(/\\/g, '/');
-
-      if (url.indexOf('///') === 0) {
-        url = url.slice(3, url.length);
-      }
-    }
-
-    if (url.indexOf(packagePath) === -1) {
-      // Build complete path for node require function for file paths
-      if (windows) {
-        url = path.join(packagePath, url.slice(3, url.length));
-
-        // Replace backslashes by forward slashes (windows)
-        url = url.replace(/\\/g, '/');
-      } else {
-        url = path.join(packagePath, url);
-      }
-
-      url = path.normalize(url);
-    }
-
-    callback({ path: url });
-  });
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -72,8 +40,6 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   });
-
-  // mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
