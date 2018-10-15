@@ -26,12 +26,11 @@ __Smart Contracts__: [Source](https://github.com/ethereum-alarm-clock/ethereum-a
 5. Make sure your MetaMask network is set to either Kovan to start using the DApp.
 
 ### Docker
-If you wish to run the DApp as a Docker container, we have an [image](https://github.com/chronologic/eth-alarm-clock-dapp/blob/master/Dockerfile) prepared for you.
-To test the docker container, use the following commands
-1. Build the image - `npm run build:docker`
-2. Run the container - `npm run docker`
-3. Visit `localhost:8080` in your browser and the DApp should be available as a Docker container
-4. (Optional) To stop and remove the container, run `npm run docker:remove`
+If you wish to run the DApp as a Docker container, we have a Docker [image](Dockerfile) prepared for you.
+To run the container, use the following commands:
+1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/Dockerfile`
+2. Run the container - `docker run --name eac_dapp -d -p 8080:80 eac_dapp`
+3. Visit `localhost:8080` in your browser to see the DApp running
 
 ### Debugging
 Having issues with the project? Try these:
