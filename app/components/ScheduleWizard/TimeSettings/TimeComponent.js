@@ -110,7 +110,7 @@ class TimeComponent extends AbstractSetting {
         dateTimeValidatorStore.isValid(scheduleStore.transactionDate, value, scheduleStore.timeZone)
           ? 0
           : 1,
-      errors: ['Please indicate Valid Time']
+      errors: ['Please indicate a valid time']
     };
   }
 
@@ -122,14 +122,14 @@ class TimeComponent extends AbstractSetting {
         dateTimeValidatorStore.isValid(value, scheduleStore.transactionTime, scheduleStore.timeZone)
           ? 0
           : 1,
-      errors: ['Please indicate a Valid Date']
+      errors: ['Please indicate a valid date']
     };
   }
 
   validators = {
     timeZone: {
       validator: value => (typeof moment.tz.zone(value) == 'object' ? 0 : 1),
-      errors: ['Please indicate Valid time zone']
+      errors: ['Please indicate a valid time zone']
     },
     transactionDate: '',
     transactionTime: '',
