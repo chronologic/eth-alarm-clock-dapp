@@ -11,6 +11,7 @@ class TimeNodeResetStatsModal extends Component {
 
   resetStats() {
     this.props.timeNodeStore.clearStats();
+    this.props.timeNodeStore.updateStats();
   }
 
   render() {
