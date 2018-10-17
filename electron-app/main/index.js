@@ -15,7 +15,8 @@ const isDev = require('electron-is-dev');
 const APP_NAME = 'TimeNode';
 const PROTOCOL = 'file';
 
-const logger = new FileLogger('.timenode.log', 1);
+const logsFile = `${app.getPath('logs')}/.timenode.log`;
+const logger = new FileLogger(logsFile, 1);
 
 let MAIN_URL = urlLib.format({
   protocol: PROTOCOL,
