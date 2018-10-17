@@ -5,3 +5,5 @@ eth-alarm-clock-dapp**
 yarn-error.log
 electron-builds
 yarn.lock
+.timenode.log*
+TimeNode.app/

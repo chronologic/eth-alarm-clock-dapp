@@ -1,6 +1,7 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
+
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
@@ -37,7 +38,6 @@ const LOG_CAP = 1000;
 const BASIC_LOG_TYPES = [LOGGER_MSG_TYPES.INFO, LOGGER_MSG_TYPES.ERROR];
 
 const STORAGE_KEYS = {
-  LOGS: 'tn_logs',
   ATTACHED_DAY_ACCOUNT: 'attachedDAYAccount',
   TIMENODE: 'tn',
   CLAIMING: 'claiming',
@@ -184,7 +184,6 @@ export default class TimeNodeStore {
     this.walletKeystore = this._storageService.load(STORAGE_KEYS.TIMENODE);
     this.claiming = !!this._storageService.load(STORAGE_KEYS.CLAIMING);
     this.scanningStarted = !!this._storageService.load(STORAGE_KEYS.SCANNING);
-    this.allLogs = JSON.parse(this._storageService.load(STORAGE_KEYS.LOGS)) || [];
 
     this.updateStats = this.updateStats.bind(this);
     this.updateBalances = this.updateBalances.bind(this);
@@ -340,10 +339,12 @@ export default class TimeNodeStore {
   handleLogMessage(log) {
     if (log.type === LOGGER_MSG_TYPES.CACHE) return;
 
+    if (isRunningInElectron()) {
+      window.ipc.send('save-timenode-logs', log);
+    }
+
     if (this.allLogs.length === LOG_CAP) this.allLogs.shift();
     this.allLogs.push(log);
-
-    this._storageService.save(STORAGE_KEYS.LOGS, JSON.stringify(this.allLogs));
   }
 
   sendActiveTimeNodeEvent() {
@@ -498,7 +499,6 @@ export default class TimeNodeStore {
 
   clearStats() {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
-    this._storageService.remove(STORAGE_KEYS.LOGS);
     this.allLogs = [];
   }
 
