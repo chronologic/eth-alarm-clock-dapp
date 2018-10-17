@@ -1,0 +1,374 @@
+
+2018-10-17T10:38:20.000Z [DEBUG]  WebSockets provider detected! Setting up reconnect events...
+2018-10-17T10:38:20.000Z [INFO]  EAC-TimeNode
+2018-10-17T10:38:20.000Z [INFO]  Version: 5.4.1
+2018-10-17T10:38:20.000Z [INFO]  Operating on Ropsten
+2018-10-17T10:38:22.000Z [DEBUG]  TxPool started
+2018-10-17T10:38:23.000Z [DEBUG]  Buckets: Watcher for bucket=-4254480 has been started
+2018-10-17T10:38:23.000Z [DEBUG]  Buckets: Watcher for bucket=-4254720 has been started
+2018-10-17T10:38:23.000Z [DEBUG]  Buckets: Watcher for bucket=1539770400 has been started
+2018-10-17T10:38:23.000Z [DEBUG]  Buckets: Watcher for bucket=1539774000 has been started
+2018-10-17T10:38:23.000Z [INFO]  Scanner STARTED
+2018-10-17T10:38:24.000Z [INFO] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Discovered.
+2018-10-17T10:38:24.000Z [INFO] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Discovered.
+2018-10-17T10:38:24.000Z [INFO] 0x68059938e7b9c9a9c34887571223b3895573f38c Discovered.
+2018-10-17T10:38:24.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Discovered.
+2018-10-17T10:38:24.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Discovered.
+2018-10-17T10:38:26.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0x68059938e7b9c9a9c34887571223b3895573f38c Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transition from ClaimWindow to FreezePeriod completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Transition from ClaimWindow to FreezePeriod completed
+2018-10-17T10:38:26.000Z [DEBUG] 0x68059938e7b9c9a9c34887571223b3895573f38c Transition from ClaimWindow to FreezePeriod completed
+2018-10-17T10:38:26.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transition from FreezePeriod to ExecutionWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Transition from FreezePeriod to ExecutionWindow completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Transition from ExecutionWindow to Executed completed
+2018-10-17T10:38:26.000Z [DEBUG] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Transition from Executed to Done completed
+2018-10-17T10:38:26.000Z [INFO] 0xec2065ec584d3f4f224494a69b1b26236eb3797a Finished. Deleting from cache...
+2018-10-17T10:38:26.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:26.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:26.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.93 gasPrice=1000000000 bounty=10000000000 reward=-99990700000000 >= minProfitability=0 returns false
+2018-10-17T10:38:26.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:26.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 shouldExecuteTx: gasCost=284375000000000 <= expectedReward=284385500000999 returns true
+2018-10-17T10:38:27.000Z [INFO] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Sending EXECUTE
+2018-10-17T10:38:27.000Z [DEBUG]  Tx: ["0x099d","0x3b9aca00","0x0456d7","0x797432fbd07fa6d09653154dbbb56486372c2da3","0x","0x61461954","0x1b","0xdf4ea31feb246aaa8a801e3e2d531b6b292376c9642d0648d9a92a6e8f08849a","0x64c534cf92ad4c84a61bc284d36afe6fac07c8ed54491c287a064463e67a19e5"]
+2018-10-17T10:38:27.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Pending transaction discovered {"address":"0x797432fbd07fa6d09653154dbbb56486372c2da3","blockHash":null,"blockNumber":null,"data":"0x0000000000000000000000000000000000000000000000000000ab3d1ee9e6000000000000000000000000000000000000000000000000000000000000000309000000000000000000000000000000000000000000000000000000000002df6d","logIndex":null,"topics":["0x3e504bb8b225ad41f613b0c3c4205cdd752d1615b4d77cd1773417282fcfb5d9"],"transactionHash":"0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa","transactionIndex":null,"transactionLogIndex":null,"type":"pending"}
+2018-10-17T10:38:30.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:30.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:30.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:30.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.93 gasPrice=1000000000 bounty=10000000000 reward=-99990700000000 >= minProfitability=0 returns false
+2018-10-17T10:38:30.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:34.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:34.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:34.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:34.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.93 gasPrice=1000000000 bounty=10000000000 reward=-99990700000000 >= minProfitability=0 returns false
+2018-10-17T10:38:34.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:38.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:38.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:38.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:38.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:38.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:42.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:42.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:42.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:42.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:42.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:46.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:46.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:46.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:46.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:46.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:47.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Pending transaction discovered {"address":"0x797432fbd07fa6d09653154dbbb56486372c2da3","blockHash":"0x2d3ae7718df4622b1db1a03f0841a2553ac7f99db58c43674d05d0071dd08a4f","blockNumber":4254484,"data":"0x0000000000000000000000000000000000000000000000000000ab3d1ee9e6000000000000000000000000000000000000000000000000000000000000000309000000000000000000000000000000000000000000000000000000000002df6d","logIndex":0,"topics":["0x3e504bb8b225ad41f613b0c3c4205cdd752d1615b4d77cd1773417282fcfb5d9"],"transactionHash":"0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa","transactionIndex":1,"transactionLogIndex":"0x0","type":"mined"}
+2018-10-17T10:38:50.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:50.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:50.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:50.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:50.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:54.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:54.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:54.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:54.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:54.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.97 gasPrice=1000000000 bounty=10000000000 reward=-99990300000000 >= minProfitability=0 returns false
+2018-10-17T10:38:54.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:54.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:57.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Discovered.
+2018-10-17T10:38:58.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:38:58.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Transition from BeforeClaimWindow to ClaimWindow completed
+2018-10-17T10:38:58.000Z [DEBUG]  Receipt: {"blockHash":"0x2d3ae7718df4622b1db1a03f0841a2553ac7f99db58c43674d05d0071dd08a4f","blockNumber":4254484,"contractAddress":null,"cumulativeGasUsed":398119,"gasUsed":120657,"logs":[{"address":"0x797432fbd07fa6d09653154dbbb56486372c2da3","blockHash":"0x2d3ae7718df4622b1db1a03f0841a2553ac7f99db58c43674d05d0071dd08a4f","blockNumber":4254484,"data":"0x0000000000000000000000000000000000000000000000000000ab3d1ee9e6000000000000000000000000000000000000000000000000000000000000000309000000000000000000000000000000000000000000000000000000000002df6d","logIndex":0,"topics":["0x3e504bb8b225ad41f613b0c3c4205cdd752d1615b4d77cd1773417282fcfb5d9"],"transactionHash":"0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa","transactionIndex":1,"transactionLogIndex":"0x0","type":"mined"}],"logsBloom":"0x00000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000002000000000000","root":null,"status":"0x1","transactionHash":"0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa","transactionIndex":1}
+2018-10-17T10:38:58.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Awaiting for confirmation for tx 0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa from 0x981bc3331908602aa4b617182ef85bcc19ab5692
+2018-10-17T10:38:58.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:58.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:58.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:38:58.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:38:58.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:38:58.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:38:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:02.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:02.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:39:02.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:02.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:02.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:02.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.94 gasPrice=1000000000 bounty=10000000000 reward=-99990600000000 >= minProfitability=0 returns false
+2018-10-17T10:39:02.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:06.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:06.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:06.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:06.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:06.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:06.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:06.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:10.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:10.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:10.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:10.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:10.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:10.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:10.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:14.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:14.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:14.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:14.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:14.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:14.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:14.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:18.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:18.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:18.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:18.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:18.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:18.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:18.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:22.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:22.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:22.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:22.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:22.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:22.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:22.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:26.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:26.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:26.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:26.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:26.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:26.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:26.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:30.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:30.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:30.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:30.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:30.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:30.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:30.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:34.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:34.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:34.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:34.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:34.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:34.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:34.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:38.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:38.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:38.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:38.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:38.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:38.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:38.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:42.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:42.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:42.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:42.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:42.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:42.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:42.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:46.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:46.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:46.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:46.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:46.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:46.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:46.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:50.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:50.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.98 gasPrice=1000000000 bounty=10000000000 reward=-99990200000000 >= minProfitability=0 returns false
+2018-10-17T10:39:50.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:50.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:50.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:50.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.95 gasPrice=1000000000 bounty=10000000000 reward=-99990500000000 >= minProfitability=0 returns false
+2018-10-17T10:39:50.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:54.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Routing in progress. Skipping...
+2018-10-17T10:39:54.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:39:54.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:54.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:54.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:39:54.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:54.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:54.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:39:54.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:54.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:55.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transaction 0xee1011d057d556285816bcc036d16345aabb5da237663c7668f12f20815b0afa from 0x981bc3331908602aa4b617182ef85bcc19ab5692 confirmed
+2018-10-17T10:39:55.000Z [INFO] 0x797432fbd07fa6d09653154dbbb56486372c2da3 EXECUTED.
+2018-10-17T10:39:55.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transition from ExecutionWindow to Executed completed
+2018-10-17T10:39:55.000Z [DEBUG] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Transition from Executed to Done completed
+2018-10-17T10:39:55.000Z [INFO] 0x797432fbd07fa6d09653154dbbb56486372c2da3 Finished. Deleting from cache...
+2018-10-17T10:39:58.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:39:58.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:58.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:39:58.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:39:58.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:39:58.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:39:58.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:02.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:02.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:02.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:02.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:02.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:02.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:02.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:06.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:06.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:06.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:06.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:06.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:06.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:06.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:10.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:10.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:10.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:10.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:10.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:10.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:10.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:14.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:14.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:14.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:14.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:14.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:14.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:14.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:18.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:18.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:18.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:18.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:18.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:18.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:18.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:22.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:22.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:22.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:22.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:22.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:22.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:22.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:26.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:26.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:26.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:26.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:26.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:26.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:26.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:30.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:30.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:30.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:30.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:30.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:30.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:30.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:34.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:34.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:34.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:34.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:34.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:34.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:34.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:38.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:38.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:38.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:38.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:38.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:38.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:38.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:42.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:42.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:42.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:42.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:42.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:42.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:42.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:46.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:46.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:46.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:46.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:46.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:46.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:46.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:50.000Z [DEBUG] 0x6de0204e9c43cd981a084674fe7402990007aced isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:50.000Z [INFO] 0x6de0204e9c43cd981a084674fe7402990007aced Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:50.000Z [DEBUG] 0x80c39cb122bfd91da2636877ce35078d12fdf632 isClaimingProfitable: paymentModifier=0.96 gasPrice=1000000000 bounty=10000000000 reward=-99990400000000 >= minProfitability=0 returns false
+2018-10-17T10:40:50.000Z [INFO] 0x80c39cb122bfd91da2636877ce35078d12fdf632 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
+2018-10-17T10:40:50.000Z [DEBUG] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 isClaimingProfitable: paymentModifier=0.99 gasPrice=1000000000 bounty=10000000000 reward=-99990100000000 >= minProfitability=0 returns false
+2018-10-17T10:40:50.000Z [INFO] 0xc1b2480c25a889ba8c8e3d5e7962540f6e032a83 Claiming: Skipped - Transaction not profitable.
+2018-10-17T10:40:50.000Z [DEBUG]  ECONOMIC STRATEGY: {"maxDeposit":"1000000000000000000","minBalance":"0","minProfitability":"0","maxGasSubsidy":"100"}
