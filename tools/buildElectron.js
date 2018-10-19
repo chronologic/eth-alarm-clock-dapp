@@ -33,6 +33,7 @@ async function buildElectron() {
   copyToAppDir(path.join(paths.root, 'package.json'), 'package.json');
   copyToAppDir(path.join(paths.electron, 'main/index.js'), 'main.js');
   copyToAppDir(path.join(paths.electron, 'main/preload.js'), 'preload.js');
+  copyToAppDir(path.join(paths.electron, 'main/logger.js'), 'logger.js');
 
   const productName = 'TimeNode';
 
