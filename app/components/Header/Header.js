@@ -122,7 +122,7 @@ class Header extends Component {
             &nbsp;
             <span className="active-timenodes">
               <i className="fa fa-chart-bar" />
-              <span className="mx-2" title="Amount of transactions scheduled in next 24 hours">
+              <span className="mx-2" title="Amount of transactions scheduled">
                 Upcoming transactions:
               </span>
             </span>
