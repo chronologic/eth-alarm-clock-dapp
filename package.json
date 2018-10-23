@@ -99,7 +99,7 @@
     "lokijs": "1.5.5",
     "mini-css-extract-plugin": "0.4.4",
     "mobx": "5.5.0",
-    "mobx-react": "5.2.8",
+    "mobx-react": "5.3.5",
     "mobx-react-router": "4.0.5",
     "moment": "2.22.2",
     "moment-duration-format": "2.2.2",
