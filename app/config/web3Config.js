@@ -9,6 +9,12 @@ export const DOCKER_NETWORK_ID = 1001;
 
 export const DEFAULT_NETWORK_WHEN_NO_METAMASK = MAIN_NETWORK_ID;
 
+export const requestFactoryStartBlocks = {
+  [MAIN_NETWORK_ID]: 6204104,
+  [ROPSTEN_NETWORK_ID]: 2594245,
+  [KOVAN_NETWORK_ID]: 5555500
+};
+
 const Networks = {
   0: {
     id: 0,

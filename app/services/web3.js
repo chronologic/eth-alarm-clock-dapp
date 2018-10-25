@@ -6,6 +6,7 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
+import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 
 let instance = null;
 
@@ -51,6 +52,14 @@ export default class Web3Service {
     return this.web3.fromWei(wei);
   }
 
+  async getBlockNumberFromTxHash(txHash) {
+    return new Promise(resolve => {
+      this.web3.eth.getTransaction(txHash, (_, res) => {
+        resolve(res.blockNumber);
+      });
+    });
+  }
+
   async fetchReceipt(hash) {
     return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
   }
@@ -67,6 +76,24 @@ export default class Web3Service {
     });
 
     return Log;
+  }
+
+  getTokenTransfers(address, fromBlock = 0) {
+    const filter = this.web3.eth.filter({
+      fromBlock,
+      toBlock: 'latest',
+      topics: [
+        '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+        null, // from
+        '0x' + '0'.repeat(24) + address.slice(2) // to
+      ]
+    });
+
+    return new Promise(resolve => {
+      filter.get((_, res) => {
+        resolve(res);
+      });
+    });
   }
 
   async trackTransaction(hash) {
@@ -131,7 +158,10 @@ export default class Web3Service {
     }
 
     const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
-    this._keyModifier.setNetworkId(netId);
+
+    if (this._keyModifier) {
+      this._keyModifier.setNetworkId(netId);
+    }
 
     this.network = Networks[netId];
     this.explorer = this.network.explorer;
@@ -167,7 +197,7 @@ export default class Web3Service {
   }
 
   getWeb3FromProviderUrl(url) {
-    return this._w3Util.getWeb3FromProviderUrl(url);
+    return W3Util.getWeb3FromProviderUrl(url);
   }
 
   /**

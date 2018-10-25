@@ -1,6 +1,7 @@
 import KeenAnalysis from 'keen-analysis';
 import KeenTracking from 'keen-tracking';
 import { observable } from 'mobx';
+import moment from 'moment';
 
 const COLLECTIONS = {
   PAGEVIEWS: 'pageviews',
@@ -9,6 +10,8 @@ const COLLECTIONS = {
 
 // 2 minutes in milliseconds
 const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
+const FIVE_SEC = 5000;
 
 export class KeenStore {
   @observable
@@ -28,12 +31,18 @@ export class KeenStore {
 
   _web3Service = null;
 
-  constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
+  @observable
+  historyActiveTimeNodes = [];
+  @observable
+  gettingActiveTimeNodesHistory = false;
+  @observable
+  historyPollingInterval = FIVE_SEC;
+
+  constructor(projectId, writeKey, readKey, web3Service, versions) {
     this.projectId = projectId;
     this.writeKey = writeKey;
     this.readKey = readKey;
 
-    this._storageService = storageService;
     this._web3Service = web3Service;
     this.versions = versions;
 
@@ -110,48 +119,98 @@ export class KeenStore {
         this.timeNodeSpecificProviderNetId
       );
     }
-
-    this.isBlacklisted = this.activeTimeNodes === null;
   }
 
-  async getActiveTimeNodesCount(networkId) {
-    await this.awaitKeenInitialized();
+  async refreshActiveTimeNodesHistory() {
+    if (!this.isBlacklisted) {
+      this.gettingActiveTimeNodesHistory = true;
 
-    const count = new KeenAnalysis.Query('count', {
-      event_collection: COLLECTIONS.TIMENODES,
-      target_property: 'nodeAddress',
-      timeframe: 'previous_2_minutes',
-      filters: [
-        {
-          property_name: 'networkId',
-          operator: 'eq',
-          property_value: networkId
-        },
-        {
-          property_name: 'eacVersions.contracts',
-          operator: 'eq',
-          property_value: this.versions.contracts
-        },
-        {
-          property_name: 'status',
-          operator: 'eq',
-          property_value: 'active'
-        }
-      ]
-    });
+      const isAllZeroes = array => array.every(counter => counter === 0);
 
-    const response = await this.analysisClient.run(count);
+      const history = await this._getActiveTimeNodesHistory();
 
-    if (response === null || !response.hasOwnProperty('result') || response.hasOwnProperty('err')) {
-      return null;
+      /*
+        Keen sometimes returns all zeroes instead of the real value.
+        We keep getting the values from Keen every 5 seconds until we get the proper values.
+        After that we switch to a longer time interval.
+        NOTE: This check can be remove if Keen fixes sending incorrect values
+      */
+      if (!isAllZeroes(history)) {
+        this.historyPollingInterval = TEN_MIN; // Set a longer polling interval
+        this.historyActiveTimeNodes = history;
+      }
+
+      this.gettingActiveTimeNodesHistory = false;
+    }
+  }
+
+  async _getActiveTimeNodesHistory() {
+    const promises = [];
+
+    for (let i = 24; i > 0; i--) {
+      const promise = this.getActiveTimeNodesCount(this.timeNodeSpecificProviderNetId, {
+        start: moment()
+          .subtract(i, 'hours')
+          .toISOString(),
+        end: moment()
+          .subtract(i - 1, 'hours')
+          .toISOString()
+      });
+      promises.push(promise);
     }
 
-    return response.result;
+    return Promise.all(promises);
+  }
+
+  async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
+    await this.awaitKeenInitialized();
+
+    if (!this.isBlacklisted) {
+      const count = new KeenAnalysis.Query('count', {
+        event_collection: COLLECTIONS.TIMENODES,
+        target_property: 'nodeAddress',
+        timeframe,
+        group_by: 'nodeAddress',
+        filters: [
+          {
+            property_name: 'networkId',
+            operator: 'eq',
+            property_value: networkId
+          },
+          {
+            property_name: 'eacVersions.contracts',
+            operator: 'eq',
+            property_value: this.versions.contracts
+          },
+          {
+            property_name: 'status',
+            operator: 'eq',
+            property_value: 'active'
+          }
+        ]
+      });
+
+      let response = null;
+      try {
+        response = await this.analysisClient.run(count);
+      } catch (e) {
+        this.isBlacklisted = true;
+      }
+
+      if (
+        response === null ||
+        !response.hasOwnProperty('result') ||
+        response.hasOwnProperty('err')
+      ) {
+        return null;
+      }
+
+      return response.result.length;
+    }
   }
 
   async _pollActiveTimeNodesCount() {
     await this.refreshActiveTimeNodesCount();
-
     setInterval(() => this.refreshActiveTimeNodesCount(), ACTIVE_TIMENODES_POLLING_INTERVAL);
   }
 }

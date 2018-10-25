@@ -2,7 +2,7 @@
 [16. Tables and Datatables]
 */
 
-/* Generic Tables 
+/* Generic Tables
 ------------------------------------
 */
 .table {
@@ -97,7 +97,7 @@
                    border-top: 0;
                 }
             }
-        }       
+        }
     }
     &.table-condensed {
         table-layout: fixed;
@@ -170,8 +170,9 @@
                         font-size: 8px;
                         top: -1px;
                         position: relative;
-                        font-family: 'FontAwesome';
+                        font-family: 'Font Awesome\ 5 Free';
                         @include transition(all 0.12s linear);
+                        font-weight: 900;
                     }
                 }
             }
@@ -197,7 +198,7 @@
     margin-bottom: 0 !important;
 }
 
-/* Data-tables 
+/* Data-tables
 ------------------------------------
 */
 .table.dataTable.no-footer{
@@ -245,7 +246,7 @@
 .dataTables_wrapper .dataTables_paginate ul > li.next > a,
 .dataTables_wrapper .dataTables_paginate ul > li.prev > a{
     opacity: 1;
-} 
+}
 .dataTables_wrapper .dataTables_paginate ul > li.disabled a{
     opacity: .35;
     &:hover{
@@ -263,7 +264,7 @@
 .dataTables_wrapper .dataTables_info{
      clear: none;
     font-size: 12px;
-    
+
     padding: 0 33px;
     color: $color-master;
 }
@@ -307,7 +308,7 @@ table.dataTable thead {
     .sorting_desc_disabled:after{
         background-image: url("#{$base-img-url}/icons/sort_desc_disabled.png");
     }
-    
+
 }
 
 table.dataTable thead .sorting:after,
@@ -323,8 +324,8 @@ table.dataTable thead .sorting_desc_disabled:after{
     opacity: 1;
 }
 
-table.dataTable.table-condensed .sorting:after, 
-table.dataTable.table-condensed .sorting_asc:after, 
+table.dataTable.table-condensed .sorting:after,
+table.dataTable.table-condensed .sorting_asc:after,
 table.dataTable.table-condensed .sorting_desc:after{
     top: 12px;
 }

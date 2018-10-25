@@ -4,7 +4,9 @@ import { NavLink } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import NetworkChooser from '../Header/NetworkChooser';
 
+@inject('transactionStatistics')
 @inject('web3Service')
 @inject('keenStore')
 @observer
@@ -77,7 +79,11 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
-    const { keenStore, web3Service } = this.props;
+    const { keenStore, transactionStatistics, web3Service } = this.props;
+
+    const defaultAccount = web3Service.accounts && web3Service.accounts[0];
+
+    const myTransactionsLink = `/transactions/owner/${defaultAccount}`;
 
     const activeTimenodes = keenStore.activeTimeNodes ? (
       keenStore.activeTimeNodes
@@ -98,6 +104,8 @@ class SidePanel extends Component {
     );
 
     const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
+
+    const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 
     return (
       <nav className="page-sidebar" data-pages="sidebar">
@@ -141,6 +149,16 @@ class SidePanel extends Component {
                 </a>
 
                 <ul className="sub-menu">
+                  {defaultAccount && (
+                    <li>
+                      <NavLink to={myTransactionsLink}>
+                        <span className="title">My Transactions</span>
+                        <span className="icon-thumbnail">
+                          <i className="fas fa-user" />
+                        </span>
+                      </NavLink>
+                    </li>
+                  )}
                   <li>
                     <NavLink to="/transactions/scheduled">
                       <span className="title">Scheduled</span>
@@ -223,33 +241,42 @@ class SidePanel extends Component {
               </a>
             </li>
 
-            <hr id="sidebar-separator" className="d-md-block d-lg-none mx-4" />
+            <hr className="sidebar-separator mx-4" />
 
-            <li className="d-md-block d-lg-none">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
-                    <span className="active-timenodes">Active TimeNodes</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">{displayActiveTimenodes}</span>
-                  </div>
-                </div>
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Active TimeNodes</div>
+              <div className="sidebar-additional-item--display">{displayActiveTimenodes}</div>
+            </li>
+
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Network</div>
+              <div className="sidebar-additional-item--display">
+                <NetworkChooser />
               </div>
             </li>
 
-            <li className="d-md-block d-lg-none">
-              <div className="container py-2">
-                <div className="row p-l-20 p-r-15">
-                  <div className="col-8 px-0">
-                    <span className="active-timenodes">Current Block</span>
-                  </div>
-                  <div className="col-4 px-0 text-right">
-                    <span className="timenode-count col-6">
-                      {this.props.web3Service.latestBlockNumber}
-                    </span>
-                  </div>
-                </div>
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Current Block</div>
+              <div className="sidebar-additional-item--display">
+                {this.props.web3Service.latestBlockNumber}
+              </div>
+            </li>
+
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Upcoming Transactions</div>
+              <div className="sidebar-additional-item--display">
+                {transactionsScheduledInNextHoursAmount === null ? (
+                  <BeatLoader color="#fff" size={4} />
+                ) : (
+                  transactionsScheduledInNextHoursAmount
+                )}
+              </div>
+            </li>
+
+            <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Efficiency</div>
+              <div className="sidebar-additional-item--display">
+                {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
               </div>
             </li>
           </ul>
@@ -263,7 +290,8 @@ class SidePanel extends Component {
 SidePanel.propTypes = {
   web3Service: PropTypes.any,
   keenStore: PropTypes.any,
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  transactionStatistics: PropTypes.any
 };
 
 export default SidePanel;

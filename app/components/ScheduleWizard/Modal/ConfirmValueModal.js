@@ -2,26 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from 'mobx-react';
 
-@inject('timeNodeStore')
-class TimeNodeResetStatsModal extends Component {
-  constructor(props) {
-    super(props);
-    this.resetStats = this.resetStats.bind(this);
-  }
-
-  resetStats() {
-    this.props.timeNodeStore.clearStats();
-    this.props.timeNodeStore.updateStats();
-  }
-
+@inject('scheduleStore')
+class ConfirmValueModal extends Component {
   render() {
+    const { scheduleStore } = this.props;
     return (
       <div
         className="modal fade stick-up"
-        id="timeNodeResetStatsModal"
+        id="confirmValueModal"
         tabIndex="-1"
         role="dialog"
-        aria-labelledby="timeNodeResetStatsModalLabel"
+        aria-labelledby="confirmValueModalLabel"
         aria-hidden="true"
       >
         <div className="modal-dialog">
@@ -31,13 +22,16 @@ class TimeNodeResetStatsModal extends Component {
                 <i className="pg-close fs-14" />
               </button>
               <h3 className="timenode-modal-title m-0">
-                Reset stats for <span className="semi-bold">TimeNode</span>
+                Confirm <span className="semi-bold">Schedule</span> details
               </h3>
             </div>
             <div className="modal-body">
               <hr />
-              <p>Are you sure you want to do this?</p>
-              <span className="semi-bold">This will erase your TimeNode statistics.</span>
+              <p>
+                You are about to schedule a transaction with{' '}
+                <b>{Number(scheduleStore.amountToSend)} value</b> and <b>No Data</b>.<br />
+                Are you sure you want Continue ?
+              </p>
             </div>
             <div className="modal-footer">
               <div className="row">
@@ -51,9 +45,9 @@ class TimeNodeResetStatsModal extends Component {
                     className="btn btn-primary btn-block"
                     type="button"
                     data-dismiss="modal"
-                    onClick={this.resetStats}
+                    onClick={this.props.scheduleTransaction}
                   >
-                    <strong>Reset</strong>
+                    <strong>Confirm</strong>
                   </button>
                 </div>
               </div>
@@ -65,8 +59,9 @@ class TimeNodeResetStatsModal extends Component {
   }
 }
 
-TimeNodeResetStatsModal.propTypes = {
-  timeNodeStore: PropTypes.any
+ConfirmValueModal.propTypes = {
+  scheduleStore: PropTypes.any,
+  scheduleTransaction: PropTypes.any
 };
 
-export default TimeNodeResetStatsModal;
+export default ConfirmValueModal;

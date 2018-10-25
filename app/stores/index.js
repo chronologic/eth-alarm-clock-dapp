@@ -9,6 +9,8 @@ import { KeenStore } from './KeenStore';
 import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
 import TransactionHelper from '../services/transaction-helper';
+import BucketHelper from '../services/bucket-helper';
+import { TransactionStatistics } from './TransactionStatistics';
 
 const {
   eacService,
@@ -29,7 +31,6 @@ const keenStore = new KeenStore(
   process.env.KEEN_WRITE_KEY,
   process.env.KEEN_READ_KEY,
   web3Service,
-  storageService,
   eacVersions
 );
 
@@ -41,6 +42,7 @@ const dateTimeValidatorStore = new DateTimeValidatorStore();
 export const transactionCache = new TransactionCache(networkAwareStorageService);
 
 const transactionHelper = new TransactionHelper(transactionCache);
+const bucketHelper = new BucketHelper();
 
 export const transactionFetcher = new TransactionFetcher(
   eacService,
@@ -54,18 +56,23 @@ export const transactionStore = new TransactionStore(
   transactionFetcher,
   transactionCache,
   featuresService,
-  transactionHelper
+  transactionHelper,
+  bucketHelper
 );
 export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
+
+export const transactionStatistics = new TransactionStatistics(transactionHelper, transactionStore);
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
 export const stores = {
-  routing: routingStore,
-  transactionStore,
-  transactionCache,
-  timeNodeStore,
-  scheduleStore,
   dateTimeValidatorStore,
-  keenStore
+  keenStore,
+  routing: routingStore,
+  scheduleStore,
+  timeNodeStore,
+  transactionCache,
+  transactionHelper,
+  transactionStatistics,
+  transactionStore
 };

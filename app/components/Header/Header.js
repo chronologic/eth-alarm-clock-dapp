@@ -4,7 +4,10 @@ import { observer, inject } from 'mobx-react';
 import NetworkChooser from './NetworkChooser';
 import { isRunningInElectron } from '../../lib/electron-util';
 import { BeatLoader } from 'react-spinners';
+import { withRouter } from 'react-router-dom';
 
+@withRouter
+@inject('transactionStatistics')
 @inject('web3Service')
 @inject('eacService')
 @inject('keenStore')
@@ -15,17 +18,8 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPath: props.history.location.pathname,
       eacContracts: {}
     };
-
-    this.props.history.listen(location => {
-      if (location.pathname !== this.state.currentPath) {
-        this.setState({
-          currentPath: location.pathname
-        });
-      }
-    });
   }
 
   async componentDidMount() {
@@ -56,10 +50,6 @@ class Header extends Component {
     this.setState({ eacContracts });
   }
 
-  isOnTimeNodeScreen() {
-    return this.state.currentPath === '/timenode';
-  }
-
   getInfoButton(message) {
     return (
       <span
@@ -74,8 +64,12 @@ class Header extends Component {
     );
   }
 
+  isOnTimeNodeScreen() {
+    return this.props.location.pathname === '/timenode';
+  }
+
   render() {
-    const { web3Service, keenStore, timeNodeStore } = this.props;
+    const { web3Service, keenStore, timeNodeStore, transactionStatistics } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
@@ -96,6 +90,8 @@ class Header extends Component {
       ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
       : whichCounter;
 
+    const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
+
     return (
       <div className="header">
         <a
@@ -113,25 +109,56 @@ class Header extends Component {
             />
           </div>
         </div>
-        <div className="d-flex align-items-center">
-          <div className="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+        <div className="header-items">
+          <div>
             <span className="active-timenodes">
               <i className="fa fa-sitemap" />
               <span className="mx-2">Active TimeNodes:</span>
             </span>
             <span className="timenode-count">{displayActiveTimenodes}</span>
           </div>
-          <div className="left-separator right-separator pull-left px-2 fs-14 font-heading d-lg-block d-none">
+          <div className="header-separator" />
+          <div>
+            &nbsp;
+            <span className="active-timenodes">
+              <i className="fa fa-chart-bar" />
+              <span className="mx-2" title="Amount of transactions scheduled">
+                Upcoming transactions:
+              </span>
+            </span>
+            <span className="timenode-count">
+              {loaderIfNull(transactionsScheduledInNextHoursAmount)}
+            </span>
+          </div>
+          <div className="header-separator" />
+          <div>
+            &nbsp;
+            <span className="active-timenodes">
+              <i className="fa fa-check-square" />
+              <span
+                className="mx-2"
+                title="% of available transaction executed over the last 24 hours"
+              >
+                Efficiency:
+              </span>
+            </span>
+            <span className="timenode-count">
+              {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
+            </span>
+          </div>
+          <div className="header-separator" />
+          <div data-test="network-display">
             <span className="active-timenodes">
               <i className="fa fa-th-large" />
               &nbsp;Network:&nbsp;
             </span>
             <span className="timenode-count">
-              <NetworkChooser onTimeNodeScreen={this.isOnTimeNodeScreen()} />
+              <NetworkChooser showBlockNumber={true} />
             </span>
           </div>
-          <div className="pull-left p-l-10 fs-14 font-heading d-lg-block d-none">
-            <span className="active-timenodes" data-toggle="dropdown">
+          <div className="header-separator" />
+          <div>
+            <span className="active-timenodes" data-toggle="dropdown" title="Contracts">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />
               &nbsp;
             </span>
@@ -256,12 +283,14 @@ class Header extends Component {
 }
 
 Header.propTypes = {
+  location: PropTypes.any,
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   keenStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
+  transactionStatistics: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 

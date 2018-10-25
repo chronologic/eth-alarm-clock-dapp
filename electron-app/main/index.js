@@ -1,15 +1,22 @@
+/* eslint-disable no-console */
+
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell, protocol } = require('electron');
+const { app, BrowserWindow, dialog, Menu, shell, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
+const FileLogger = require('./logger');
 
 const path = require('path');
 const urlLib = require('url');
-const os = require('os');
 
 const packageJson = require('./package.json');
 
 const isDev = require('electron-is-dev');
 
+const APP_NAME = 'TimeNode';
 const PROTOCOL = 'file';
+
+const logsFile = `${app.getPath('userData')}/timenode.log`;
+const logger = new FileLogger(logsFile, 1);
 
 let MAIN_URL = urlLib.format({
   protocol: PROTOCOL,
@@ -21,49 +28,22 @@ let MAIN_URL = urlLib.format({
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+const isMacOS = process.platform === 'darwin';
+
+autoUpdater.autoDownload = false;
+let shouldShowUpToDate = false;
+let updateInProgress = false;
+
 function createWindow() {
-  // Handle files that do not have the correct paths set (assets, worker file, etc.)
-  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    let url = request.url.substr(PROTOCOL.length + 1);
-    let packagePath = __dirname;
-
-    const windows = os.platform() === 'win32';
-    if (windows) {
-      packagePath = packagePath.replace(/\\/g, '/');
-
-      if (url.indexOf('///') === 0) {
-        url = url.slice(3, url.length);
-      }
-    }
-
-    if (url.indexOf(packagePath) === -1) {
-      // Build complete path for node require function for file paths
-      if (windows) {
-        url = path.join(packagePath, url.slice(3, url.length));
-
-        // Replace backslashes by forward slashes (windows)
-        url = url.replace(/\\/g, '/');
-      } else {
-        url = path.join(packagePath, url);
-      }
-
-      url = path.normalize(url);
-    }
-
-    callback({ path: url });
-  });
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1024,
+    width: 1280,
     height: 768,
     webPreferences: {
       nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js')
     }
   });
-
-  // mainWindow.toggleDevTools();
 
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
@@ -89,12 +69,36 @@ function createWindow() {
       },
       { type: 'separator' },
       {
-        label: 'Report a Bug',
+        label: 'Report an Issue',
         click() {
           shell.openExternal(`${packageJson.repository.url}/issues/new`);
         }
       }
     ]
+  };
+
+  const checkForUpdates = {
+    label: 'Check for Updates...',
+    click() {
+      shouldShowUpToDate = true;
+
+      if (isMacOS) {
+        shell.openExternal(`${packageJson.repository.url}/releases`);
+      } else if (updateInProgress) {
+        dialog.showMessageBox(
+          {
+            type: 'info',
+            title: 'Update in progress...',
+            message: 'Update in progress...',
+            detail:
+              'There is another update in progress. Please wait for it to finish before checking for new updates.'
+          },
+          () => console.log('Blocked checking for updates.')
+        );
+      } else {
+        autoUpdater.checkForUpdates();
+      }
+    }
   };
 
   const template = [
@@ -117,13 +121,14 @@ function createWindow() {
     HELP_MENU
   ];
 
-  if (process.platform === 'darwin') {
-    app.getName = () => 'TimeNode';
+  if (isMacOS) {
+    app.getName = () => APP_NAME;
 
     template.unshift({
-      label: 'TimeNode',
+      label: APP_NAME,
       submenu: [
         { role: 'about' },
+        checkForUpdates,
         { type: 'separator' },
         { role: 'services', submenu: [] },
         { type: 'separator' },
@@ -133,6 +138,11 @@ function createWindow() {
         { type: 'separator' },
         { role: 'quit' }
       ]
+    });
+  } else {
+    template.unshift({
+      label: 'File',
+      submenu: [checkForUpdates, { type: 'separator' }, { role: 'quit' }]
     });
   }
 
@@ -155,7 +165,12 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  if (!isMacOS) {
+    autoUpdater.checkForUpdates();
+  }
+  createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -174,5 +189,80 @@ app.on('activate', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+autoUpdater.on('update-available', info => {
+  dialog.showMessageBox(
+    {
+      type: 'info',
+      title: `New version available!`,
+      message: `${APP_NAME} update available!`,
+      detail: `Do you want update to version ${
+        info.version
+      } now?\nWe highly recommend using the latest version of ${APP_NAME}.`,
+      buttons: ['Yes', 'No']
+    },
+    buttonIndex => {
+      if (buttonIndex === 0) {
+        autoUpdater.downloadUpdate();
+      }
+    }
+  );
+});
+
+autoUpdater.on('update-not-available', () => {
+  if (shouldShowUpToDate) {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'No Updates',
+      message: 'No Updates.',
+      detail: 'Current version is up-to-date.'
+    });
+  }
+});
+
+// DOWNLOAD SECTION
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox(
+    {
+      type: 'info',
+      title: 'Updates downloaded',
+      message: 'Updates downloaded',
+      detail: 'The application will now restart to perform the update.',
+      buttons: ['Restart']
+    },
+    () => {
+      updateInProgress = false;
+      mainWindow.webContents.executeJavaScript(`localStorage.removeItem('changelogSeen')`);
+      setImmediate(() => autoUpdater.quitAndInstall());
+    }
+  );
+});
+
+let shownDownloadInProgressScreen = false;
+autoUpdater.on('download-progress', progressObj => {
+  updateInProgress = true;
+
+  const { percent, transferred, total } = progressObj;
+  mainWindow.setProgressBar(percent / 100);
+  console.log(`Downloading updates... Downloaded ${percent.toFixed(2)}% (${transferred}/${total})`);
+
+  if (!shownDownloadInProgressScreen) {
+    shownDownloadInProgressScreen = true;
+    dialog.showMessageBox(
+      {
+        type: 'info',
+        title: 'The update is starting...',
+        message: 'The update is starting...',
+        detail: `Check the progress bar on the ${APP_NAME} icon.`
+      },
+      () => console.log('Shown download screen.')
+    );
+  }
+});
+
+autoUpdater.on('error', error => {
+  dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString());
+});
+
+ipcMain.on('save-timenode-logs', (event, log) => {
+  logger.log(log);
+});

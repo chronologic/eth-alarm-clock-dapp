@@ -16,6 +16,7 @@ import { TRANSACTION_ROW_TEST_ATTRS } from '../app/components/TransactionScanner
 import { TRANSACTIONS_TABLE_TEST_ATTRS } from '../app/components/TransactionScanner/TransactionsTable';
 import { TRANSACTION_SCANNER_LIMIT } from '../app/components/TransactionScanner/TransactionScanner';
 import TransactionHelper from '../app/services/transaction-helper';
+import BucketHelper from '../app/services/bucket-helper';
 
 momentDurationFormatSetup(moment);
 
@@ -158,6 +159,7 @@ describe('TransactionScanner', () => {
     };
     const transactionCache = new TransactionCache(storageService);
     const transactionHelper = new TransactionHelper(transactionCache);
+    const bucketHelper = new BucketHelper();
 
     transactionHelper.isTransactionMissed = () => false;
 
@@ -167,7 +169,8 @@ describe('TransactionScanner', () => {
       fetcher,
       transactionCache,
       featuresService,
-      transactionHelper
+      transactionHelper,
+      bucketHelper
     );
 
     const injectables = {

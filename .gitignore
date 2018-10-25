@@ -4,3 +4,5 @@ eth-alarm-clock-dapp**
 .DS_Store
 yarn-error.log
 electron-builds
+yarn.lock
+TimeNode.app/

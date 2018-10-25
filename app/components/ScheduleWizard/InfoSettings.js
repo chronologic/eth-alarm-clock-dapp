@@ -32,10 +32,19 @@ class InfoSettings extends AbstractSetting {
   validators = {
     toAddress: this.ethereumAddressValidator(),
     gasAmount: '',
-    amountToSend: this.decimalValidator(),
+    amountToSend: {
+      validator: value => {
+        if (value && !new RegExp('^\\d+\\.?\\d*$').test(value)) return 1;
+        if (value && Number(value) < 0) {
+          return 2;
+        }
+        return 0;
+      },
+      errors: ['Please enter valid value/amount', 'Value must be greater than or equal to 0']
+    },
     gasPrice: this.integerValidator(),
     yourData: {
-      validator: value => (typeof value === 'string' ? 0 : 1),
+      validator: value => (typeof value === 'string' && value.length > 0 ? 0 : 1),
       errors: ['Please provide valid input data']
     },
     receiverAddress: this.ethereumAddressValidator(),

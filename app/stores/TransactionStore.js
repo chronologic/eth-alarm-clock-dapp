@@ -1,15 +1,8 @@
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-
-const requestFactoryStartBlocks = {
-  1: 6204104,
-  3: 2594245,
-  42: 5555500
-};
-
-const BLOCK_BUCKET_SIZE = 240;
-const TIMESTAMP_BUCKET_SIZE = 3600;
+import { requestFactoryStartBlocks } from '../config/web3Config';
+import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -37,32 +30,38 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
 };
 
 export class TransactionStore {
+  initialized = false;
+
   _eac;
   _web3;
   _fetcher;
   _eacScheduler;
   _cache;
-  initialized = false;
-
   _features;
-
   _requestFactory;
-
   _helper;
+  _bucketHelper;
+  _util;
 
-  constructor(eac, web3, fetcher, cache, featuresService, helper) {
+  constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
     this._eac = eac;
     this._fetcher = fetcher;
     this._cache = cache;
     this._features = featuresService;
     this._helper = helper;
+    this._bucketHelper = bucketHelper;
+    this._util = new TNUtil(this._web3);
 
     this.init();
   }
 
   get lastBlock() {
     return this._fetcher && this._fetcher.lastBlock;
+  }
+
+  async updateLastBlock() {
+    return await this._fetcher.updateLastBlock();
   }
 
   // Returns an array of only the addresses of all transactions
@@ -101,6 +100,8 @@ export class TransactionStore {
     if (!this._requestFactory) {
       this._requestFactory = await this._eac.requestFactory();
     }
+
+    this._bucketHelper.setRequestFactory(this._requestFactory);
 
     this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
 
@@ -144,35 +145,6 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async getBucketsForLastHours(hours) {
-    const currentTimestamp = moment().unix();
-
-    const buckets = [];
-
-    let timestampBucket = await this.calcBucketForTimestamp(currentTimestamp);
-    let blockBucket = await this.calcBucketForBlock(this.lastBlock);
-
-    // Adding 0.5, because for each hour we fetch 2 buckets: timestamp, block.
-    for (let i = 0; i < hours; i += 0.5) {
-      // First, we fetch timestamp bucket, then block bucket.
-      const isTimestampBucket = i % 1 === 0;
-
-      buckets.push(isTimestampBucket ? timestampBucket : blockBucket);
-
-      if (isTimestampBucket) {
-        timestampBucket -= TIMESTAMP_BUCKET_SIZE;
-      } else {
-        /*
-         * Since blockBucket is negative number we should add it to block bucket size,
-         * if we want to go back in time.
-         */
-        blockBucket += BLOCK_BUCKET_SIZE;
-      }
-    }
-
-    return buckets;
-  }
-
   /**
    * @private
    * @returns Promise<{ transactions: Array }>
@@ -191,7 +163,7 @@ export class TransactionStore {
     let buckets;
 
     if (pastHours) {
-      buckets = await this.getBucketsForLastHours(pastHours);
+      buckets = await this._bucketHelper.getBucketsForLastHours(pastHours, this.lastBlock);
     }
 
     const currentTimestamp = moment().unix();
@@ -204,7 +176,7 @@ export class TransactionStore {
       );
       let includeTransaction = false;
 
-      if ((isResolved && resolved) || (!isResolved && unresolved)) {
+      if ((resolved && unresolved) || (isResolved && resolved) || (!isResolved && unresolved)) {
         includeTransaction = true;
       }
 
@@ -222,9 +194,18 @@ export class TransactionStore {
       const transactionsToExclude = [];
 
       for (const transaction of processed) {
-        if (
-          this._helper.isTransactionAfterWindowStart(transaction, currentTimestamp, this.lastBlock)
-        ) {
+        const isAfterWindowStart = this._helper.isTransactionAfterWindowStart(
+          transaction,
+          currentTimestamp,
+          this.lastBlock
+        );
+        const isResolved = this._helper.isTransactionResolved(
+          transaction,
+          currentTimestamp,
+          this.lastBlock
+        );
+
+        if (isAfterWindowStart && !isResolved) {
           transactionsToCheck.push(transaction);
         }
       }
@@ -282,19 +263,6 @@ export class TransactionStore {
     };
   }
 
-  // ------ UTILS ------
-  async calcBucketForTimestamp(timestamp) {
-    await this.init();
-
-    return this._requestFactory.calcBucket(timestamp, TEMPORAL_UNIT.TIMESTAMP);
-  }
-
-  async calcBucketForBlock(blockNumber) {
-    await this.init();
-
-    return this._requestFactory.calcBucket(blockNumber, TEMPORAL_UNIT.BLOCK);
-  }
-
   async getTransactionsFiltered({
     startBlock,
     endBlock,
@@ -330,9 +298,7 @@ export class TransactionStore {
   }
 
   async getRequestsByOwner(ownerAddress, { limit = DEFAULT_LIMIT, offset = 0 }) {
-    if (!this._requestFactory) {
-      this._requestFactory = await this._eac.requestFactory();
-    }
+    await this.init();
 
     const transactionsAddresses = await this._requestFactory.getRequestsByOwner(ownerAddress);
     let transactions = [];
@@ -372,11 +338,13 @@ export class TransactionStore {
   }
 
   async getBountiesForBucket(windowStart, isUsingTime) {
+    await this.init();
+
     let bucket;
     if (isUsingTime) {
-      bucket = await this.calcBucketForTimestamp(windowStart);
+      bucket = await this._bucketHelper.calcBucketForTimestamp(windowStart, this.lastBlock);
     } else {
-      bucket = await this.calcBucketForBlock(windowStart);
+      bucket = await this._bucketHelper.calcBucketForBlock(windowStart, this.lastBlock);
     }
     const transactions = await this._fetcher.getTransactionsInBuckets([bucket]);
 
@@ -407,9 +375,7 @@ export class TransactionStore {
     isTimestamp,
     endowment
   ) {
-    if (!this._requestFactory) {
-      this._requestFactory = await this._eac.requestFactory();
-    }
+    await this.init();
 
     const temporalUnit = isTimestamp ? 2 : 1;
     const freezePeriod = isTimestamp ? 3 * 60 : 10; // 3 minutes or 10 blocks
@@ -505,6 +471,8 @@ export class TransactionStore {
       value: endowment
     });
 
+    const sendGasPrice = (await this._util.getAdvancedNetworkGasPrice()).average;
+
     if (isTimestamp) {
       const receipt = await this._eacScheduler.timestampSchedule(
         toAddress,
@@ -517,7 +485,8 @@ export class TransactionStore {
         fee,
         payment,
         requiredDeposit,
-        waitForMined
+        waitForMined,
+        sendGasPrice
       );
 
       return receipt;
@@ -534,7 +503,8 @@ export class TransactionStore {
       fee,
       payment,
       requiredDeposit,
-      waitForMined
+      waitForMined,
+      sendGasPrice
     );
 
     return receipt;

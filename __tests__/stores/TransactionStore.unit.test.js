@@ -2,6 +2,7 @@ import FeaturesService from '../../app/services/features';
 import { Networks, KOVAN_NETWORK_ID } from '../../app/config/web3Config';
 import { TransactionStore, TEMPORAL_UNIT } from '../../app/stores/TransactionStore';
 import TransactionHelper from '../../app/services/transaction-helper';
+import BucketHelper from '../../app/services/bucket-helper';
 
 describe('Stores / TransactionStore', () => {
   describe('getBountiesForBucket', () => {
@@ -62,13 +63,22 @@ describe('Stores / TransactionStore', () => {
       startLazy() {},
       getTransactions() {
         return [];
-      },
-      calcBucketForTimestamp() {
-        return Promise.resolve(1527588000);
       }
     };
 
-    const getInstance = () => new TransactionStore(eacService, web3, fetcher, {}, featuresService);
+    const bucketHelper = new BucketHelper();
+    const transactionHelper = new TransactionHelper({});
+
+    const getInstance = () =>
+      new TransactionStore(
+        eacService,
+        web3,
+        fetcher,
+        {},
+        featuresService,
+        transactionHelper,
+        bucketHelper
+      );
 
     it('calls fetcher.getTransactionsInBuckets passing array as argument', async () => {
       const store = getInstance();
