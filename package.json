@@ -48,7 +48,7 @@
     "@ethereum-alarm-clock/timenode-core": "5.4.3",
     "@fortawesome/fontawesome-free": "5.4.1",
     "acorn5-object-spread": "5.1.2",
-    "autoprefixer": "9.1.5",
+    "autoprefixer": "9.3.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",
