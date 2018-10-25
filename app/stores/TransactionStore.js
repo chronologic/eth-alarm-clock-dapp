@@ -2,6 +2,7 @@ import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
+import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -40,6 +41,7 @@ export class TransactionStore {
   _requestFactory;
   _helper;
   _bucketHelper;
+  _util;
 
   constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
@@ -49,6 +51,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
+    this._util = new TNUtil(this._web3);
 
     this.init();
   }
@@ -140,12 +143,6 @@ export class TransactionStore {
     }
 
     return await this._fetcher.getTransactions({}, true, true);
-  }
-
-  async getTransactionsScheduledInNextHoursAmount(hours) {
-    const buckets = await this._bucketHelper.getBucketsForNextHours(hours, this.lastBlock);
-
-    return await this._fetcher.getTransactionsInBuckets(buckets);
   }
 
   /**
@@ -474,6 +471,8 @@ export class TransactionStore {
       value: endowment
     });
 
+    const sendGasPrice = (await this._util.getAdvancedNetworkGasPrice()).average;
+
     if (isTimestamp) {
       const receipt = await this._eacScheduler.timestampSchedule(
         toAddress,
@@ -486,7 +485,8 @@ export class TransactionStore {
         fee,
         payment,
         requiredDeposit,
-        waitForMined
+        waitForMined,
+        sendGasPrice
       );
 
       return receipt;
@@ -503,7 +503,8 @@ export class TransactionStore {
       fee,
       payment,
       requiredDeposit,
-      waitForMined
+      waitForMined,
+      sendGasPrice
     );
 
     return receipt;

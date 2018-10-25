@@ -28,11 +28,14 @@ export class TransactionStatistics {
 
     await this._transactionStore.updateLastBlock();
 
-    const transactionsScheduledInNextHours = await this._transactionStore.getTransactionsScheduledInNextHoursAmount(
-      this.nextHours
-    );
+    const {
+      total: transactionsScheduledInNextHoursAmount
+    } = await this._transactionStore.getTransactionsFiltered({
+      resolved: false,
+      unresolved: true
+    });
 
-    this.transactionsScheduledInNextHoursAmount = transactionsScheduledInNextHours.length;
+    this.transactionsScheduledInNextHoursAmount = transactionsScheduledInNextHoursAmount;
 
     const {
       transactions: pastTransactions,

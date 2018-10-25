@@ -6,6 +6,17 @@ import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
 import { Networks, CUSTOM_PROVIDER_NET_ID } from '../config/web3Config';
+import moment from 'moment';
+
+import BucketHelper from '../services/bucket-helper';
+import FeaturesService from '../services/features';
+import NetworkAwareKeyModifier from '../services/network-specific-key-modifier';
+import NetworkAwareStorageService from '../services/network-aware-storage';
+import TransactionFetcher from '../stores/TransactionFetcher';
+import TransactionCache from '../stores/TransactionCache';
+import { initWeb3Service } from '../services/web3';
+import { W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { requestFactoryStartBlocks } from '../config/web3Config';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
@@ -24,6 +35,8 @@ class EacWorker {
   dayAccountAddress = null;
   keystore = null;
   detectedNetId = null;
+
+  _web3Service = null;
 
   async start(options) {
     const { customProviderUrl, network, dayAccountAddress } = options;
@@ -49,7 +62,7 @@ class EacWorker {
     }
 
     this.config = new Config({
-      providerUrl,
+      providerUrls: [providerUrl],
       claiming: options.claiming,
       scanSpread: options.scan,
       logfile: options.logfile,
@@ -69,6 +82,32 @@ class EacWorker {
     this.timenode = new TimeNode(this.config);
 
     await this._detectNetworkId();
+
+    const networkAwareKeyModifier = new NetworkAwareKeyModifier();
+
+    const web3Service = initWeb3Service(
+      false,
+      { web3: this.config.web3 },
+      networkAwareKeyModifier,
+      new W3Util()
+    );
+    web3Service.init();
+
+    const networkAwareStorageService = new NetworkAwareStorageService(networkAwareKeyModifier);
+
+    this._transactionFetcher = new TransactionFetcher(
+      this.config.eac,
+      new TransactionCache(networkAwareStorageService),
+      web3Service,
+      new FeaturesService(web3Service)
+    );
+
+    this._transactionFetcher.requestFactoryStartBlock =
+      requestFactoryStartBlocks[this.network.id] || 0;
+
+    this.bucketHelper = new BucketHelper();
+    const requestFactory = await this.config.eac.requestFactory();
+    this.bucketHelper.setRequestFactory(requestFactory);
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.STARTED
@@ -202,6 +241,87 @@ class EacWorker {
       );
     }
   }
+
+  async getBountiesGraphData() {
+    const labels = [],
+      values = [],
+      promises = [];
+
+    const currentTime = moment().unix();
+
+    const average = arr =>
+      arr.reduce((accumulator, currentValue) => accumulator + currentValue) / arr.length;
+
+    for (let i = 24; i > 0; i--) {
+      const bucket = currentTime - 3600 * i;
+      labels.push(`${moment.unix(bucket).hour()}:00`);
+
+      let promise = this._getBountiesForTimestampBucket(bucket);
+      promises.push(promise);
+    }
+
+    const bountyArrays = await Promise.all(promises);
+
+    bountyArrays.forEach(bounties => {
+      bounties = bounties.map(bn => bn.toNumber());
+      const averageBounty = bounties.length > 0 ? average(bounties) : 0.0;
+      values.push(averageBounty);
+    });
+
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA,
+      bountiesGraphData: { labels, values }
+    });
+  }
+
+  async _getBountiesForTimestampBucket(windowStart) {
+    const bucket = await this.bucketHelper.calcBucketForTimestamp(windowStart);
+
+    this._transactionFetcher.startLazy();
+    const transactions = await this._transactionFetcher.getTransactionsInBuckets(
+      [bucket],
+      true,
+      false
+    );
+
+    const bounties = [];
+    let bounty, bountyInEth;
+
+    transactions.forEach(tx => {
+      bounty = tx.data.paymentData.bounty;
+      bountyInEth = new BigNumber(this.config.web3.fromWei(bounty, 'ether'));
+      bounties.push(bountyInEth);
+    });
+
+    return bounties;
+  }
+
+  async getProcessedTxs() {
+    const labels = [],
+      values = [],
+      promises = [];
+
+    const currentTime = moment().unix();
+
+    for (let i = 24; i > 0; i--) {
+      const bucketTime = currentTime - 3600 * i;
+      const bucket = await this.bucketHelper.calcBucketForTimestamp(bucketTime);
+      labels.push(`${moment.unix(bucket).hour()}:00`);
+
+      let promise = this._transactionFetcher.getTransactionsInBuckets([bucket], false, false);
+      promises.push(promise);
+    }
+
+    const processedTxsArrays = await Promise.all(promises);
+
+    processedTxsArrays.forEach(processedTxs => {
+      values.push(processedTxs.length);
+    });
+    postMessage({
+      type: EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS,
+      processedTxs: { labels, values }
+    });
+  }
 }
 
 let eacWorker = null;
@@ -241,6 +361,14 @@ onmessage = async function(event) {
 
     case EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
       eacWorker.getClaimedNotExecutedTransactions();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+      await eacWorker.getBountiesGraphData();
+      break;
+
+    case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+      await eacWorker.getProcessedTxs();
       break;
   }
 };

@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
-import moment from 'moment';
 
-@inject('keenStore')
+const INITIAL_CURRENCY_DENOMINATION = 'ETH';
+
+@inject('timeNodeStore')
+@inject('web3Service')
 @observer
-class ActiveTimeNodesGraph extends Component {
+class TimeBountiesGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chart: null
+      chart: null,
+      currencyDenomination: INITIAL_CURRENCY_DENOMINATION
     };
     this.setChart = this.setChart.bind(this);
     this.updateChart = this.updateChart.bind(this);
@@ -28,27 +31,35 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   refreshChart() {
-    const { data } = this.props;
+    if (this.props.data) {
+      const { web3Service } = this.props;
+      let { labels, values } = this.props.data;
 
-    if (data.length > 0) {
-      const labels = [];
-      for (let i = 24; i > 0; i--) {
-        labels.push(
-          moment()
-            .subtract(i, 'hours')
-            .hour() + ':00'
-        );
+      // Chart.js has issues if all numbers are lower than 0.00001
+      // If that is the case, convert the number representation to GWei
+      if (values.every(value => value < 1e-5)) {
+        const valuesInGwei = [];
+
+        values.forEach(value => {
+          const wei = web3Service.web3.toWei(value, 'ether');
+          valuesInGwei.push(web3Service.web3.fromWei(wei, 'gwei'));
+        });
+        values = valuesInGwei;
+
+        this.setState({ currencyDenomination: 'Gwei' });
+      } else if (this.state.currencyDenomination !== INITIAL_CURRENCY_DENOMINATION) {
+        this.setState({ currencyDenomination: INITIAL_CURRENCY_DENOMINATION });
       }
 
-      const graphData = {
+      const data = {
         labels,
-        values: data
+        values
       };
 
       if (this.state.chart !== null) {
-        this.updateChart(graphData);
+        this.updateChart(data);
       } else {
-        this.setChart(this.activeTnsGraph.getContext('2d'), graphData);
+        this.setChart(this.timeBountiesGraph.getContext('2d'), data);
       }
     }
   }
@@ -61,7 +72,7 @@ class ActiveTimeNodesGraph extends Component {
           labels: data.labels,
           datasets: [
             {
-              label: '# of Active TimeNodes',
+              label: 'Average TimeBounty',
               data: data.values,
               backgroundColor: 'rgba(33, 255, 255, 0.2)',
               borderColor: 'rgba(33, 255, 255, 1)',
@@ -75,12 +86,11 @@ class ActiveTimeNodesGraph extends Component {
               {
                 ticks: {
                   min: 0,
-                  beginAtZero: true,
-                  callback: value => {
-                    if (Math.floor(value) === value) {
-                      return value;
-                    }
-                  }
+                  beginAtZero: true
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: this.state.currencyDenomination
                 }
               }
             ]
@@ -107,12 +117,13 @@ class ActiveTimeNodesGraph extends Component {
   }
 
   render() {
-    return <canvas id="activeTnsGraph" ref={el => (this.activeTnsGraph = el)} />;
+    return <canvas id="timeBountiesGraph" ref={el => (this.timeBountiesGraph = el)} />;
   }
 }
 
-ActiveTimeNodesGraph.propTypes = {
-  data: PropTypes.array
+TimeBountiesGraph.propTypes = {
+  data: PropTypes.any,
+  web3Service: PropTypes.any
 };
 
-export { ActiveTimeNodesGraph };
+export { TimeBountiesGraph };

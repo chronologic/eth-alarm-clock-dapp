@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import SidePanel from '../SidePanel/SidePanel';
 import SearchOverlay from '../Search/SearchOverlay';
 import Header from '../Header/Header';
-import { CustomProviderModal } from '../Modals';
+import { CustomProviderModal, ReleaseNotesModal } from '../Modals';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import AwaitingMining from '../Common/AwaitingMining';
 import Faucet from '../Common/Faucet';
@@ -12,9 +12,12 @@ import TimeNodeRoute from '../TimeNode/TimeNodeRoute';
 import { ScheduleRoute } from '../ScheduleWizard/ScheduleRoute';
 import URLNotFound from '../Common/URLNotFound';
 import { inject } from 'mobx-react';
+import { isRunningInElectron } from '../../lib/electron-util';
+import NetworkChooserModal from '../Header/NetworkChooserModal';
 
 @withRouter
 @inject('web3Service')
+@inject('storageService')
 class App extends Component {
   constructor(props) {
     super(props);
@@ -45,11 +48,18 @@ class App extends Component {
   }
 
   async componentDidMount() {
+    const $ = window.jQuery;
     document.addEventListener('keydown', this.onEscKey, false);
 
     await this.getCurrentBlock();
     // Check every 10 seconds if the block number changed
     this.interval = setInterval(await this.getCurrentBlock, 10000);
+
+    if (isRunningInElectron() && !this.props.storageService.load('changelogSeen')) {
+      $('#releaseNotesModal').modal({
+        show: true
+      });
+    }
   }
 
   async getCurrentBlock() {
@@ -86,6 +96,8 @@ class App extends Component {
         )}
 
         <CustomProviderModal />
+        <ReleaseNotesModal />
+        <NetworkChooserModal />
       </div>
     );
   }

@@ -199,12 +199,15 @@ export default class TransactionFetcher {
   /**
    * @param {Number[]} buckets - This is an array of buckets.
    */
-  async getTransactionsInBuckets(buckets, fillData = true) {
+  async getTransactionsInBuckets(buckets, fillData = true, useAlternativeWeb3 = true) {
     await this.awaitRunning();
 
-    const requestFactory = this._web3._web3AlternativeToMetaMask.eth
-      .contract(RequestFactoryABI)
-      .at(this._requestFactory.address);
+    const web3 =
+      useAlternativeWeb3 && this._web3._web3AlternativeToMetaMask
+        ? this._web3._web3AlternativeToMetaMask
+        : this._web3.web3;
+
+    const requestFactory = web3.eth.contract(RequestFactoryABI).at(this._requestFactory.address);
 
     let transactions = await new Promise(resolve => {
       requestFactory
