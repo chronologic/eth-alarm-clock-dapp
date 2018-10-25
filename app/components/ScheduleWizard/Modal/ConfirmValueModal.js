@@ -4,7 +4,6 @@ import { inject } from 'mobx-react';
 
 @inject('scheduleStore')
 class ConfirmValueModal extends Component {
-
   render() {
     const { scheduleStore } = this.props;
     return (
@@ -28,8 +27,11 @@ class ConfirmValueModal extends Component {
             </div>
             <div className="modal-body">
               <hr />
-              <p>You are about to schedule a transaction with <b>{Number(scheduleStore.amountToSend)} value</b> and <b>No Data</b>.<br />
-              Are you sure you want Continue ?</p>
+              <p>
+                You are about to schedule a transaction with{' '}
+                <b>{Number(scheduleStore.amountToSend)} value</b> and <b>No Data</b>.<br />
+                Are you sure you want Continue ?
+              </p>
             </div>
             <div className="modal-footer">
               <div className="row">

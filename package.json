@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "electron-is-dev": "0.3.0",
+    "electron-is-dev": "1.0.1",
     "electron-updater": "3.1.2"
   },
   "devDependencies": {

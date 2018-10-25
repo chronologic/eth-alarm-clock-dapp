@@ -151,7 +151,8 @@ class ScheduleWizard extends Component {
       !scheduleStore.isTokenTransfer ||
       (Boolean(scheduleStore.receiverAddress) && this._validations.InfoSettings.receiverAddress);
     const _amountToSend =
-      !scheduleStore.isTokenTransfer && Number(scheduleStore.amountToSend) >= 0 &&
+      !scheduleStore.isTokenTransfer &&
+      Number(scheduleStore.amountToSend) >= 0 &&
       this._validations.InfoSettings.amountToSend;
     const _tokenToSend =
       scheduleStore.isTokenTransfer &&
@@ -188,9 +189,13 @@ class ScheduleWizard extends Component {
     );
   }
 
-  get isZeroValueAndNoData () {
+  get isZeroValueAndNoData() {
     const { scheduleStore } = this.props;
-    return !scheduleStore.isTokenTransfer && Number(scheduleStore.amountToSend) === 0 && !scheduleStore.yourData;
+    return (
+      !scheduleStore.isTokenTransfer &&
+      Number(scheduleStore.amountToSend) === 0 &&
+      !scheduleStore.yourData
+    );
   }
 
   async scheduleTransaction() {
@@ -391,7 +396,7 @@ class ScheduleWizard extends Component {
                   </button>
                 </li>
                 <li className="next finish" style={{ display: 'none' }}>
-                  { !this.isZeroValueAndNoData &&
+                  {!this.isZeroValueAndNoData && (
                     <button
                       className="btn btn-primary btn-cons pull-right"
                       type="button"
@@ -400,8 +405,8 @@ class ScheduleWizard extends Component {
                     >
                       Schedule
                     </button>
-                  }
-                  { this.isZeroValueAndNoData &&
+                  )}
+                  {this.isZeroValueAndNoData && (
                     <button
                       className="btn btn-primary btn-cons pull-right"
                       type="button"
@@ -412,7 +417,7 @@ class ScheduleWizard extends Component {
                     >
                       Schedule
                     </button>
-                  }
+                  )}
                 </li>
                 <li className="previous first" style={{ display: 'none' }}>
                   <button className="btn btn-white btn-cons pull-right" type="button">
@@ -432,10 +437,7 @@ class ScheduleWizard extends Component {
             <PoweredByEAC className="col-md-2 footer-buttons mt-5" />
           </div>
         </div>
-        <ConfirmValueModal
-          scheduleTransaction={this.scheduleTransaction}
-        />
-
+        <ConfirmValueModal scheduleTransaction={this.scheduleTransaction} />
       </div>
     );
   }
