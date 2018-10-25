@@ -1,7 +1,7 @@
 import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
-import EacWorker from 'worker-loader!../js/eac-worker.js';
+
 import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
@@ -35,12 +35,22 @@ export class TIMENODE_STATUS {
 // 2 minute as milliseconds
 const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
 const LOG_CAP = 1000;
+const BASIC_LOG_TYPES = [LOGGER_MSG_TYPES.INFO, LOGGER_MSG_TYPES.ERROR];
+
+const STORAGE_KEYS = {
+  ATTACHED_DAY_ACCOUNT: 'attachedDAYAccount',
+  TIMENODE: 'tn',
+  CLAIMING: 'claiming',
+  SCANNING: 'isTimenodeScanning',
+  PROVIDER_ID: 'selectedProviderId',
+  PROVIDER_ENDPOINT: 'selectedProviderEndpoint'
+};
 
 export default class TimeNodeStore {
   @observable
-  walletKeystore = '';
+  walletKeystore = null;
   @observable
-  attachedDAYAccount = '';
+  attachedDAYAccount = null;
   @observable
   scanningStarted = false;
   @observable
@@ -50,15 +60,16 @@ export default class TimeNodeStore {
   unlocked = false;
 
   @observable
-  basicLogs = [];
-  @observable
-  detailedLogs = [];
+  logType = LOG_TYPE.BASIC;
 
   @observable
-  logType = LOG_TYPE.BASIC;
+  allLogs = [];
   @computed
   get logs() {
-    return this.logType === LOG_TYPE.BASIC ? this.basicLogs : this.detailedLogs;
+    if (this.logType === LOG_TYPE.BASIC) {
+      return this.allLogs.filter(log => BASIC_LOG_TYPES.indexOf(log.type) > -1);
+    }
+    return this.allLogs;
   }
 
   @observable
@@ -80,7 +91,12 @@ export default class TimeNodeStore {
   isTimeMint = null;
 
   @observable
+  proposedNewNetId = null;
+
+  @observable
   bountiesGraphData = null;
+  @observable
+  processedTxs = null;
 
   @computed
   get nodeStatus() {
@@ -119,7 +135,11 @@ export default class TimeNodeStore {
       maxDeposit: load('maxDeposit'),
       minBalance: load('minBalance'),
       minProfitability: load('minProfitability'),
-      maxGasSubsidy: load('maxGasSubsidy')
+      maxGasSubsidy: load('maxGasSubsidy'),
+      minClaimWindow: load('minClaimWindow'),
+      minClaimWindowBlock: load('minClaimWindowBlock'),
+      minExecutionWindow: load('minExecutionWindow'),
+      minExecutionWindowBlock: load('minExecutionWindowBlock')
     };
   }
 
@@ -150,7 +170,13 @@ export default class TimeNodeStore {
   updateStatsInterval = null;
   updateBalancesInterval = null;
   updateBountiesGraphInterval = null;
+  updateProcessedTxsInterval = null;
   getNetworkInfoInterval = null;
+
+  @observable
+  updatingBountiesGraphInProgress = false;
+  @observable
+  updatingProcessedTxsGraphInProgress = false;
 
   constructor(eacService, web3Service, keenStore, storageService) {
     this._eacService = eacService;
@@ -158,11 +184,10 @@ export default class TimeNodeStore {
     this._keenStore = keenStore;
     this._storageService = storageService;
 
-    if (this._storageService.load('attachedDAYAccount') !== null)
-      this.attachedDAYAccount = this._storageService.load('attachedDAYAccount');
-    if (this._storageService.load('tn') !== null)
-      this.walletKeystore = this._storageService.load('tn');
-    if (this._storageService.load('claiming')) this.claiming = true;
+    this.attachedDAYAccount = this._storageService.load(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT);
+    this.walletKeystore = this._storageService.load(STORAGE_KEYS.TIMENODE);
+    this.claiming = !!this._storageService.load(STORAGE_KEYS.CLAIMING);
+    this.scanningStarted = !!this._storageService.load(STORAGE_KEYS.SCANNING);
 
     this.updateStats = this.updateStats.bind(this);
     this.updateBalances = this.updateBalances.bind(this);
@@ -174,7 +199,7 @@ export default class TimeNodeStore {
     if (this.walletKeystore && password) {
       this.unlocked = true;
       await this.startClient(this.walletKeystore, password);
-      if (localStorage.getItem('isTimenodeScanning')) {
+      if (this._storageService.load(STORAGE_KEYS.SCANNING)) {
         await this.startScanning();
       }
     } else {
@@ -219,13 +244,16 @@ export default class TimeNodeStore {
     this.updateBountiesGraph();
     this.updateBountiesGraphInterval = setInterval(this.updateBountiesGraph, 300000);
 
+    this.updateProcessedTxsGraph();
+    this.updateProcessedTxsGraphInterval = setInterval(this.updateProcessedTxsGraph, 300000);
+
     this.getNetworkInfo();
     this.getNetworkInfoInterval = setInterval(this.getNetworkInfo, 15000);
   }
 
   startWorker(options) {
     return new Promise(resolve => {
-      this.eacWorker = new EacWorker();
+      this.eacWorker = new Worker('../js/eac-worker.js', { type: 'module' });
 
       this.eacWorker.onmessage = async event => {
         const { type, value } = event.data;
@@ -284,7 +312,13 @@ export default class TimeNodeStore {
             break;
 
           case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+            this.updatingBountiesGraphInProgress = false;
             getValuesIfInMessage(['bountiesGraphData']);
+            break;
+
+          case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+            getValuesIfInMessage(['processedTxs']);
+            this.updatingProcessedTxsGraphInProgress = false;
             break;
         }
       };
@@ -306,18 +340,15 @@ export default class TimeNodeStore {
     });
   }
 
-  pushToLog(logs, log) {
-    if (logs.length === LOG_CAP) logs.shift();
-    logs.push(log);
-  }
-
   handleLogMessage(log) {
     if (log.type === LOGGER_MSG_TYPES.CACHE) return;
-    if (log.type !== LOGGER_MSG_TYPES.DEBUG) {
-      this.pushToLog(this.basicLogs, log);
+
+    if (isRunningInElectron()) {
+      window.ipc.send('save-timenode-logs', log);
     }
 
-    this.pushToLog(this.detailedLogs, log);
+    if (this.allLogs.length === LOG_CAP) this.allLogs.shift();
+    this.allLogs.push(log);
   }
 
   sendActiveTimeNodeEvent() {
@@ -345,7 +376,7 @@ export default class TimeNodeStore {
     });
 
     this.updateStats();
-    this._storageService.save('isTimenodeScanning', true);
+    this._storageService.save(STORAGE_KEYS.SCANNING, true);
   }
 
   stopScanning() {
@@ -360,7 +391,7 @@ export default class TimeNodeStore {
         type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
       });
     }
-    this._storageService.remove('isTimenodeScanning');
+    this._storageService.remove(STORAGE_KEYS.SCANNING);
   }
 
   encrypt(message) {
@@ -387,7 +418,7 @@ export default class TimeNodeStore {
 
   setKeyStore(keystore) {
     this.walletKeystore = keystore;
-    this._storageService.save('tn', keystore);
+    this._storageService.save(STORAGE_KEYS.TIMENODE, keystore);
   }
 
   async testCustomProvider(endpoint) {
@@ -396,8 +427,8 @@ export default class TimeNodeStore {
 
   async setCustomProvider(id, endpoint) {
     this.customProviderUrl = endpoint;
-    this._storageService.save('selectedProviderId', id);
-    this._storageService.save('selectedProviderEndpoint', endpoint);
+    this._storageService.save(STORAGE_KEYS.PROVIDER_ID, id);
+    this._storageService.save(STORAGE_KEYS.PROVIDER_ENDPOINT, endpoint);
 
     this.stopScanning();
 
@@ -411,8 +442,8 @@ export default class TimeNodeStore {
 
   getCustomProvider() {
     return {
-      id: parseInt(this._storageService.load('selectedProviderId')),
-      endpoint: this._storageService.load('selectedProviderEndpoint')
+      id: parseInt(this._storageService.load(STORAGE_KEYS.PROVIDER_ID)),
+      endpoint: this._storageService.load(STORAGE_KEYS.PROVIDER_ENDPOINT)
     };
   }
 
@@ -432,7 +463,7 @@ export default class TimeNodeStore {
   }
 
   getAttachedDAYAddress() {
-    const encryptedAddress = this._storageService.load('attachedDAYAccount');
+    const encryptedAddress = this._storageService.load(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT);
     if (encryptedAddress) {
       return this.decrypt(encryptedAddress);
     } else {
@@ -461,13 +492,18 @@ export default class TimeNodeStore {
   }
 
   updateBountiesGraph() {
+    this.updatingBountiesGraphInProgress = true;
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
+  }
+
+  updateProcessedTxsGraph() {
+    this.updatingProcessedTxsGraphInProgress = true;
+    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS);
   }
 
   clearStats() {
     this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
-    this.basicLogs = [];
-    this.detailedLogs = [];
+    this.allLogs = [];
   }
 
   /*
@@ -499,7 +535,7 @@ export default class TimeNodeStore {
       const encryptedAttachedAddress = this.encrypt(signature.address);
 
       if (this.nodeStatus !== TIMENODE_STATUS.DISABLED) {
-        this._storageService.save('attachedDAYAccount', encryptedAttachedAddress);
+        this._storageService.save(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT, encryptedAttachedAddress);
         this.attachedDAYAccount = encryptedAttachedAddress;
         showNotification('Success.', 'success');
       } else {
@@ -516,9 +552,9 @@ export default class TimeNodeStore {
 
   saveClaimingStrategy(economicStrategy) {
     if (this.claiming) {
-      this._storageService.save('claiming', true);
+      this._storageService.save(STORAGE_KEYS.CLAIMING, true);
     } else {
-      this._storageService.remove('claiming');
+      this._storageService.remove(STORAGE_KEYS.CLAIMING);
     }
 
     const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
@@ -551,11 +587,18 @@ export default class TimeNodeStore {
   }
 
   detachWallet() {
-    this._storageService.remove('tn');
-    this._storageService.remove('attachedDAYAccount');
-    this.attachedDAYAccount = '';
-    this.walletKeystore = '';
+    this._storageService.remove(STORAGE_KEYS.TIMENODE);
+    this.walletKeystore = null;
+
+    this._storageService.remove(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT);
+    this.attachedDAYAccount = null;
+
+    this._storageService.remove(STORAGE_KEYS.CLAIMING);
+    this.claiming = false;
+
+    this._storageService.remove(STORAGE_KEYS.SCANNING);
     this.stopScanning();
+
     this.eacWorker = null;
     showNotification('Your wallet has been detached.', 'success');
   }

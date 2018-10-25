@@ -118,14 +118,22 @@ export default class TokenHelper {
     });
   }
 
-  async fetchTokenBalance(address) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(address);
+  sendTokensData(token, destination, amount) {
+    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
 
-    return this._firstAccount
-      ? (await Bb.fromCallback(callback =>
-          contract.balanceOf.call(this._firstAccount, callback)
-        )).valueOf()
-      : '-';
+    return contract.transfer.getData(destination, amount);
+  }
+
+  async getTokenBalanceOf(tokenAddress, targetAddress) {
+    const contract = this._web3.eth.contract(standardTokenAbi).at(tokenAddress);
+
+    return (await Bb.fromCallback(callback => {
+      return contract.balanceOf.call(targetAddress, callback);
+    })).valueOf();
+  }
+
+  async fetchTokenBalance(address) {
+    return this._firstAccount ? await this.getTokenBalanceOf(address, this._firstAccount) : '-';
   }
 
   /**

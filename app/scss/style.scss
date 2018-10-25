@@ -48,12 +48,23 @@ $warning-color: gold;
     max-width: 920px;
     display: none;
 
+    .networkChooserSelect select {
+      font-size: 12px;
+      padding-left: 5px;
+      padding-right: 15px;
+    }
+
     @media screen and (min-width: 1200px) {
       display: flex;
     }
 
     @media screen and (min-width: 1300px) {
       font-size: 14px;
+
+      .networkChooserSelect select {
+        font-size: 14px;
+        padding-right: 20px;
+      }
     }
   }
 }
@@ -317,10 +328,6 @@ hr {
   overflow-y: auto;
 }
 
-#sidebar-separator {
-  border-color: #1D1F27;
-}
-
 #signatureCheck {
   height: 250px;
 }
@@ -358,7 +365,7 @@ hr {
   height: 6px;
 }
 
-#networkChooser select {
+.networkChooser select {
   color: #fff;
   width: auto !important;
   min-height: 0px;
@@ -375,17 +382,21 @@ hr {
   text-overflow: '';
 }
 
-#networkChooserSelect::after {
+.networkChooserSelect {
   position: relative;
-  content: '';
-  width: 0;
-  height: 0;
-  top: 12px;
-  right: 20px;
-  border-style: solid;
-  border-width: 5px 5px 0 5px;
-  border-color: #616161 transparent transparent transparent;
-  pointer-events: none;
+
+  &::after {
+    position: absolute;
+    content: '';
+    width: 0;
+    height: 0;
+    top: 7px;
+    right: 10px;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: #616161 transparent transparent transparent;
+    pointer-events: none;
+  }
 }
 
 #searchOverlayButton {
@@ -403,18 +414,64 @@ hr {
   padding-left: 14px;
 }
 
+.sidebar-separator {
+  border-color: #1D1F27;
+  display: none;
+}
+
 .sidebar-additional-item {
   display: none !important;
 
+  @mixin show-item() {
+    display: flex !important;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 20px !important;
+    line-height: 40px;
+  }
+
   @media screen and (max-width: 991px) {
     .sidebar-open & {
-      display: block !important;
+      @include show-item();
     }
   }
 
   @media screen and (min-width: 992px) and (max-width: 1199px) {
     .sidebar-visible & {
-      display: block !important;
+      @include show-item();
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .sidebar-visible & {
+      padding: 0 32px !important;
+    }
+  }
+
+  &--label {
+    flex-grow: 1;
+    color: #21ffff;
+  }
+
+  &--display {
+    flex-grow: 1;
+    text-align: right;
+    color: white;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .sidebar-open {
+    .sidebar-separator {
+      display: block;
+    }
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .sidebar-visible {
+    .sidebar-separator {
+      display: block;
     }
   }
 }

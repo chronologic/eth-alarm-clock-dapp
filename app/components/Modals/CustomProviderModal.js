@@ -20,7 +20,7 @@ class CustomProviderModal extends Component {
   async setCustomProvider() {
     const url = this.providerInputField.value;
 
-    if (this.validateProviderUrl() && await this.testProviderUrl()) {
+    if (this.validateProviderUrl() && (await this.testProviderUrl())) {
       this.props.timeNodeStore.setCustomProvider(CUSTOM_PROVIDER_NET_ID, url);
     }
   }
@@ -29,7 +29,10 @@ class CustomProviderModal extends Component {
     const url = this.providerInputField.value;
     const isOk = await this.props.timeNodeStore.testCustomProvider(url);
 
-    return this.validate(isOk, 'Your provider does not support eth_getFilter method, please provide compatible web3 provider.');
+    return this.validate(
+      isOk,
+      'Your provider does not support eth_getFilter method, please provide compatible web3 provider.'
+    );
   }
 
   validateProviderUrl() {
