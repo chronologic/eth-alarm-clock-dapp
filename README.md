@@ -26,14 +26,11 @@ __Smart Contracts__: [Source](https://github.com/ethereum-alarm-clock/ethereum-a
 5. Make sure your MetaMask network is set to either Kovan to start using the DApp.
 
 ### Docker
-Useful in case a developer would like to test a feature in an isolated environment.
-1. Build containers - `npm run docker-build`
-2. Wait for the containers to finish building and starting.
-3. Visit `localhost:8080` on your browser. If it still not running, check logs with `docker logs ethalarmclockdapp_dapp_1`.
-4. Once the DApp is running, point your MetaMask provider to `http://localhost:9545` and import an account with the following private key: `c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3` (default Ganache account).
-5. (Optional) To run a TimeNode - select _Custom..._ from the network chooser in the page header and set `http://localhost:9545` as the provider URL.
-6. You are now running a fully dockerized environment!
-7. _(Optional)_ If you need test DAY tokens, you can get some from the faucet.
+If you wish to run the DApp as a Docker container, we have a Docker [image](Dockerfile) prepared for you.
+To run the container, use the following commands:
+1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/Dockerfile`
+2. Run the container - `docker run --name eac_dapp -d -p 8080:80 eac_dapp`
+3. Visit `localhost:8080` in your browser to see the DApp running
 
 ### Debugging
 Having issues with the project? Try these:

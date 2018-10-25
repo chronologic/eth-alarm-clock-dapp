@@ -31,7 +31,6 @@ const keenStore = new KeenStore(
   process.env.KEEN_WRITE_KEY,
   process.env.KEEN_READ_KEY,
   web3Service,
-  storageService,
   eacVersions
 );
 

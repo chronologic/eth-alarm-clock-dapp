@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell } = require('electron');
+const { app, BrowserWindow, dialog, Menu, shell, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
+const FileLogger = require('./logger');
 
 const path = require('path');
 const urlLib = require('url');
@@ -13,6 +14,9 @@ const isDev = require('electron-is-dev');
 
 const APP_NAME = 'TimeNode';
 const PROTOCOL = 'file';
+
+const logsFile = `${app.getPath('userData')}/timenode.log`;
+const logger = new FileLogger(logsFile, 1);
 
 let MAIN_URL = urlLib.format({
   protocol: PROTOCOL,
@@ -257,4 +261,8 @@ autoUpdater.on('download-progress', progressObj => {
 
 autoUpdater.on('error', error => {
   dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString());
+});
+
+ipcMain.on('save-timenode-logs', (event, log) => {
+  logger.log(log);
 });
