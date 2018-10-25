@@ -135,7 +135,11 @@ export default class TimeNodeStore {
       maxDeposit: load('maxDeposit'),
       minBalance: load('minBalance'),
       minProfitability: load('minProfitability'),
-      maxGasSubsidy: load('maxGasSubsidy')
+      maxGasSubsidy: load('maxGasSubsidy'),
+      minClaimWindow: load('minClaimWindow'),
+      minClaimWindowBlock: load('minClaimWindowBlock'),
+      minExecutionWindow: load('minExecutionWindow'),
+      minExecutionWindowBlock: load('minExecutionWindowBlock')
     };
   }
 
