@@ -38,12 +38,11 @@ export class KeenStore {
   @observable
   historyPollingInterval = FIVE_SEC;
 
-  constructor(projectId, writeKey, readKey, web3Service, storageService, versions) {
+  constructor(projectId, writeKey, readKey, web3Service, versions) {
     this.projectId = projectId;
     this.writeKey = writeKey;
     this.readKey = readKey;
 
-    this._storageService = storageService;
     this._web3Service = web3Service;
     this.versions = versions;
 
