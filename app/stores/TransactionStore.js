@@ -145,12 +145,6 @@ export class TransactionStore {
     return await this._fetcher.getTransactions({}, true, true);
   }
 
-  async getTransactionsScheduledInNextHoursAmount(hours) {
-    const buckets = await this._bucketHelper.getBucketsForNextHours(hours, this.lastBlock);
-
-    return await this._fetcher.getTransactionsInBuckets(buckets);
-  }
-
   /**
    * @private
    * @returns Promise<{ transactions: Array }>
