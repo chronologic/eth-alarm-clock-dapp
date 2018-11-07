@@ -81,8 +81,10 @@ class AwaitingMining extends Component {
 
       while (unconfirmed) {
         const confirmations = await web3Service.fetchConfirmations(transactionHash);
+
+        this.setState({ confirmations });
+
         if (confirmations >= REQUIRED_CONFIRMATIONS) {
-          this.setState({ confirmations });
           unconfirmed = false;
         }
       }
@@ -139,7 +141,7 @@ class AwaitingMining extends Component {
               <PacmanLoader {...Object.assign({ loading: true }, loaderConfig)} />
             </div>
             <div>
-              Confirmations: {Math.min(confirmations || 0, REQUIRED_CONFIRMATIONS)} of{' '}
+              Confirmations: {Math.min(Math.max(confirmations, 0), REQUIRED_CONFIRMATIONS)} of{' '}
               {REQUIRED_CONFIRMATIONS}
             </div>
             <br />
