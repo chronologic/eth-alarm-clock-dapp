@@ -103,7 +103,7 @@
     "mobx-react-router": "4.0.5",
     "moment": "2.22.2",
     "moment-duration-format": "2.2.2",
-    "moment-timezone": "0.5.21",
+    "moment-timezone": "0.5.23",
     "node-sass": "4.10.0",
     "popper": "1.0.1",
     "popper.js": "1.14.5",
