@@ -13,6 +13,10 @@ const storageService = new LocalStorageService();
 const networkAwareStorageService = new NetworkAwareStorageService(networkAwareKeyModifier);
 const w3Util = new W3Util();
 
+if (window && window.ethereum && window.ethereum.enable) {
+  window.ethereum.enable();
+}
+
 const web3Service = initWeb3Service(false, window.web3, networkAwareKeyModifier, w3Util);
 web3Service.init();
 
