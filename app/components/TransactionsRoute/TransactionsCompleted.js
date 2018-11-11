@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import TransactionScanner from '../TransactionScanner/TransactionScanner';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import NetworkUnsupported from '../Common/NetworkUnsupported';
 
+@inject('loadingStateStore')
 @inject('featuresService')
+@observer
 class TransactionsCompleted extends Component {
+  componentDidMount() {
+    this.props.loadingStateStore.reset();
+  }
+
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
 
@@ -29,7 +35,8 @@ class TransactionsCompleted extends Component {
 }
 
 TransactionsCompleted.propTypes = {
-  featuresService: PropTypes.any
+  featuresService: PropTypes.any,
+  loadingStateStore: PropTypes.any
 };
 
 export default TransactionsCompleted;
