@@ -63,7 +63,7 @@ export default class LoadingStateStore {
       return nextLoadingState.LOADING_MESSAGE;
     }
 
-    return this.loadingStatesInfo[CORE_LOADING_STATES_NAMES.FINISHING];
+    return this.loadingStatesInfo[CORE_LOADING_STATES_NAMES.FINISHING].LOADING_MESSAGE;
   }
 
   get progress() {
