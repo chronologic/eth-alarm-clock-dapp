@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import TransactionDetails from '../app/components/TransactionScanner/TransactionDetails';
 import { TransactionStore } from '../app/stores/TransactionStore';
 import TokenHelper from '../app/services/token-helper';
+import LoadingStateStore from '../app/stores/LoadingStateStore';
 
 describe('TransactionDetails', () => {
   it('correctly renders', async () => {
@@ -56,8 +57,11 @@ describe('TransactionDetails', () => {
     const transactionStore = new TransactionStore(eacService, web3Service);
     const tokenHelper = new TokenHelper(web3Service);
 
+    const loadingStateStore = new LoadingStateStore(web3Service, {}, transactionStore);
+
     const injectables = {
       eacService,
+      loadingStateStore,
       tokenHelper,
       transactionStore,
       web3Service
