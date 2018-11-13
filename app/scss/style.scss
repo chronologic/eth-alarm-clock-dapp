@@ -67,6 +67,11 @@ $warning-color: gold;
       }
     }
   }
+
+  &-item {
+    margin: 0px 4px;
+    white-space: nowrap;
+  }
 }
 
 .loading-icon {
@@ -307,12 +312,11 @@ hr {
   }
 }
 
-
-.active-timenodes {
+.analytics-name {
   color: $primary-color;
 }
 
-.timenode-count {
+.analytics-count {
   color: #fff;
 
   & > div {

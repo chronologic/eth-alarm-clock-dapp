@@ -18,12 +18,13 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      eacContracts: {}
+      eacContracts: {},
+      totalEthTransferred: null
     };
   }
 
   async componentDidMount() {
-    this.fetchEacContracts();
+    this.fetchEacInfo();
 
     const $ = window.jQuery;
     if ($) {
@@ -38,7 +39,7 @@ class Header extends Component {
     }
   }
 
-  async fetchEacContracts() {
+  async fetchEacInfo() {
     const { web3Service } = this.props;
     await web3Service.init();
 
@@ -47,7 +48,12 @@ class Header extends Component {
     }
 
     const eacContracts = await this.props.eacService.getActiveContracts();
-    this.setState({ eacContracts });
+    const totalEthTransferred = await this.props.eacService.Analytics.getTotalEthTransferred();
+
+    this.setState({
+      eacContracts,
+      totalEthTransferred: Math.round(totalEthTransferred)
+    });
   }
 
   getInfoButton(message) {
@@ -99,41 +105,60 @@ class Header extends Component {
           className="btn-link toggle-sidebar d-lg-none pg pg-menu"
           data-toggle="sidebar"
         />
-        <div>
-          <div className="brand inline">
-            <img
-              src="img/logo-white.png"
-              data-src="img/logo-white.png"
-              alt="ChronoLogic"
-              height="36"
-            />
-          </div>
+
+        <div className="brand inline">
+          <img
+            src="img/logo-white.png"
+            data-src="img/logo-white.png"
+            alt="ChronoLogic"
+            height="36"
+          />
         </div>
+
         <div className="header-items">
-          <div>
-            <span className="active-timenodes">
-              <i className="fa fa-sitemap" />
-              <span className="mx-2">Active TimeNodes:</span>
+          <div className="header-item">
+            <span className="analytics-name">
+              <i className="fa fa-exchange-alt" />
+              <span
+                className="mx-2"
+                title="Amount of ETH transferred using the Ethereum Alarm Clock"
+              >
+                Transferred:
+              </span>
             </span>
-            <span className="timenode-count">{displayActiveTimenodes}</span>
+            <span className="analytics-count">
+              {loaderIfNull(this.state.totalEthTransferred)}&nbsp;ETH
+            </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            &nbsp;
-            <span className="active-timenodes">
+
+          <div className="header-item">
+            <span className="analytics-name">
+              <i className="fa fa-sitemap" />
+              <span className="mx-2">TimeNodes:</span>
+            </span>
+            <span className="analytics-count">{displayActiveTimenodes}</span>
+          </div>
+
+          <div className="header-separator" />
+
+          <div className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-chart-bar" />
               <span className="mx-2" title="Amount of transactions scheduled">
                 Upcoming transactions:
               </span>
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               {loaderIfNull(transactionsScheduledInNextHoursAmount)}
             </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            &nbsp;
-            <span className="active-timenodes">
+
+          <div className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-check-square" />
               <span
                 className="mx-2"
@@ -142,23 +167,27 @@ class Header extends Component {
                 Efficiency:
               </span>
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
             </span>
           </div>
+
           <div className="header-separator" />
-          <div data-test="network-display">
-            <span className="active-timenodes">
+
+          <div data-test="network-display" className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-th-large" />
               &nbsp;Network:&nbsp;
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               <NetworkChooser showBlockNumber={true} />
             </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            <span className="active-timenodes" data-toggle="dropdown" title="Contracts">
+
+          <div className="header-item">
+            <span className="analytics-name" data-toggle="dropdown" title="Contracts">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />
               &nbsp;
             </span>
