@@ -263,7 +263,7 @@ class SidePanel extends Component {
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Current Block</div>
               <div className="sidebar-additional-item--display">
-                {this.props.web3Service.latestBlockNumber}
+                {loaderIfNull(web3Service.latestBlockNumber)}
               </div>
             </li>
 
