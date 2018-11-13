@@ -461,6 +461,10 @@ hr {
     flex-grow: 1;
     text-align: right;
     color: white;
+
+    & > div {
+      display: inline;
+    }
   }
 }
 

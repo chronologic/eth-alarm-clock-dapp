@@ -13,19 +13,10 @@ import { withRouter } from 'react-router-dom';
 @inject('keenStore')
 @inject('featuresService')
 @inject('timeNodeStore')
+@inject('eacStore')
 @observer
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      eacContracts: {},
-      totalEthTransferred: null
-    };
-  }
-
   async componentDidMount() {
-    this.fetchEacInfo();
-
     const $ = window.jQuery;
     if ($) {
       $('[data-toggle="tooltip"]').tooltip();
@@ -37,23 +28,6 @@ class Header extends Component {
     if ($) {
       $('[data-toggle="tooltip"]').tooltip();
     }
-  }
-
-  async fetchEacInfo() {
-    const { web3Service } = this.props;
-    await web3Service.init();
-
-    if (!this.props.featuresService._isCurrentNetworkSupported) {
-      return;
-    }
-
-    const eacContracts = await this.props.eacService.getActiveContracts();
-    const totalEthTransferred = await this.props.eacService.Analytics.getTotalEthTransferred();
-
-    this.setState({
-      eacContracts,
-      totalEthTransferred: Math.round(totalEthTransferred)
-    });
   }
 
   getInfoButton(message) {
@@ -75,7 +49,7 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service, keenStore, timeNodeStore, transactionStatistics } = this.props;
+    const { web3Service, keenStore, timeNodeStore, transactionStatistics, eacStore } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
@@ -127,7 +101,7 @@ class Header extends Component {
               </span>
             </span>
             <span className="analytics-count">
-              {loaderIfNull(this.state.totalEthTransferred)}&nbsp;ETH
+              {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
             </span>
           </div>
 
@@ -211,7 +185,7 @@ class Header extends Component {
                         <div className="d-block text-uppercase font-weight-bold text-dark">
                           Schedulers
                         </div>
-                        {this.state.eacContracts.timestampScheduler && (
+                        {eacStore.contracts.timestampScheduler && (
                           <div className="content">
                             <div className="d-block">Time: </div>
                             <div className="d-block text-ellipsis">
@@ -219,7 +193,7 @@ class Header extends Component {
                                 href={
                                   web3Service.explorer
                                     ? `${web3Service.explorer}/address/${
-                                        this.state.eacContracts.timestampScheduler
+                                        eacStore.contracts.timestampScheduler
                                       }`
                                     : ''
                                 }
@@ -227,12 +201,12 @@ class Header extends Component {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {this.state.eacContracts.timestampScheduler}
+                                {eacStore.contracts.timestampScheduler}
                               </a>
                             </div>
                           </div>
                         )}
-                        {this.state.eacContracts.blockScheduler && (
+                        {eacStore.contracts.blockScheduler && (
                           <div className="content">
                             <div className="d-block">Block: </div>
                             <div className="d-block text-ellipsis">
@@ -240,7 +214,7 @@ class Header extends Component {
                                 href={
                                   web3Service.explorer
                                     ? `${web3Service.explorer}/address/${
-                                        this.state.eacContracts.blockScheduler
+                                        eacStore.contracts.blockScheduler
                                       }`
                                     : ''
                                 }
@@ -248,7 +222,7 @@ class Header extends Component {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {this.state.eacContracts.blockScheduler}
+                                {eacStore.contracts.blockScheduler}
                               </a>
                             </div>
                           </div>
@@ -260,8 +234,8 @@ class Header extends Component {
                         <div className="d-block text-uppercase font-weight-bold text-dark">
                           Libraries
                         </div>
-                        {this.state.eacContracts &&
-                          Object.keys(this.state.eacContracts)
+                        {eacStore.contracts &&
+                          Object.keys(eacStore.contracts)
                             .filter(contract => new RegExp('lib', 'i').test(contract))
                             .map(found => (
                               <div className="content" key={found}>
@@ -271,7 +245,7 @@ class Header extends Component {
                                     href={
                                       web3Service.explorer
                                         ? `${web3Service.explorer}/address/${
-                                            this.state.eacContracts[found]
+                                            eacStore.contracts[found]
                                           }`
                                         : ''
                                     }
@@ -279,7 +253,7 @@ class Header extends Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    {this.state.eacContracts[found]}
+                                    {eacStore.contracts[found]}
                                   </a>
                                 </div>
                               </div>
@@ -319,6 +293,7 @@ Header.propTypes = {
   eacService: PropTypes.any,
   keenStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
+  eacStore: PropTypes.any,
   transactionStatistics: PropTypes.any,
   history: PropTypes.object.isRequired
 };
