@@ -9,7 +9,6 @@ import { withRouter } from 'react-router-dom';
 @withRouter
 @inject('transactionStatistics')
 @inject('web3Service')
-@inject('eacService')
 @inject('keenStore')
 @inject('featuresService')
 @inject('timeNodeStore')
@@ -290,7 +289,6 @@ Header.propTypes = {
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
-  eacService: PropTypes.any,
   keenStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
   eacStore: PropTypes.any,
