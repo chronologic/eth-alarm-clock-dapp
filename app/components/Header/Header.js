@@ -9,22 +9,13 @@ import { withRouter } from 'react-router-dom';
 @withRouter
 @inject('transactionStatistics')
 @inject('web3Service')
-@inject('eacService')
 @inject('keenStore')
 @inject('featuresService')
 @inject('timeNodeStore')
+@inject('eacStore')
 @observer
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      eacContracts: {}
-    };
-  }
-
   async componentDidMount() {
-    this.fetchEacContracts();
-
     const $ = window.jQuery;
     if ($) {
       $('[data-toggle="tooltip"]').tooltip();
@@ -36,18 +27,6 @@ class Header extends Component {
     if ($) {
       $('[data-toggle="tooltip"]').tooltip();
     }
-  }
-
-  async fetchEacContracts() {
-    const { web3Service } = this.props;
-    await web3Service.init();
-
-    if (!this.props.featuresService._isCurrentNetworkSupported) {
-      return;
-    }
-
-    const eacContracts = await this.props.eacService.getActiveContracts();
-    this.setState({ eacContracts });
   }
 
   getInfoButton(message) {
@@ -69,7 +48,7 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service, keenStore, timeNodeStore, transactionStatistics } = this.props;
+    const { web3Service, keenStore, timeNodeStore, transactionStatistics, eacStore } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
@@ -99,41 +78,60 @@ class Header extends Component {
           className="btn-link toggle-sidebar d-lg-none pg pg-menu"
           data-toggle="sidebar"
         />
-        <div>
-          <div className="brand inline">
-            <img
-              src="img/logo-white.png"
-              data-src="img/logo-white.png"
-              alt="ChronoLogic"
-              height="36"
-            />
-          </div>
+
+        <div className="brand inline">
+          <img
+            src="img/logo-white.png"
+            data-src="img/logo-white.png"
+            alt="ChronoLogic"
+            height="36"
+          />
         </div>
+
         <div className="header-items">
-          <div>
-            <span className="active-timenodes">
-              <i className="fa fa-sitemap" />
-              <span className="mx-2">Active TimeNodes:</span>
+          <div className="header-item">
+            <span className="analytics-name">
+              <i className="fa fa-exchange-alt" />
+              <span
+                className="mx-2"
+                title="Amount of ETH transferred using the Ethereum Alarm Clock"
+              >
+                Transferred:
+              </span>
             </span>
-            <span className="timenode-count">{displayActiveTimenodes}</span>
+            <span className="analytics-count">
+              {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+            </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            &nbsp;
-            <span className="active-timenodes">
+
+          <div className="header-item">
+            <span className="analytics-name">
+              <i className="fa fa-sitemap" />
+              <span className="mx-2">TimeNodes:</span>
+            </span>
+            <span className="analytics-count">{displayActiveTimenodes}</span>
+          </div>
+
+          <div className="header-separator" />
+
+          <div className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-chart-bar" />
               <span className="mx-2" title="Amount of transactions scheduled">
                 Upcoming transactions:
               </span>
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               {loaderIfNull(transactionsScheduledInNextHoursAmount)}
             </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            &nbsp;
-            <span className="active-timenodes">
+
+          <div className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-check-square" />
               <span
                 className="mx-2"
@@ -142,23 +140,27 @@ class Header extends Component {
                 Efficiency:
               </span>
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
             </span>
           </div>
+
           <div className="header-separator" />
-          <div data-test="network-display">
-            <span className="active-timenodes">
+
+          <div data-test="network-display" className="header-item">
+            <span className="analytics-name">
               <i className="fa fa-th-large" />
               &nbsp;Network:&nbsp;
             </span>
-            <span className="timenode-count">
+            <span className="analytics-count">
               <NetworkChooser showBlockNumber={true} />
             </span>
           </div>
+
           <div className="header-separator" />
-          <div>
-            <span className="active-timenodes" data-toggle="dropdown" title="Contracts">
+
+          <div className="header-item">
+            <span className="analytics-name" data-toggle="dropdown" title="Contracts">
               <i className="fa fa-file-alt ml-2 cursor-pointer" />
               &nbsp;
             </span>
@@ -182,7 +184,7 @@ class Header extends Component {
                         <div className="d-block text-uppercase font-weight-bold text-dark">
                           Schedulers
                         </div>
-                        {this.state.eacContracts.timestampScheduler && (
+                        {eacStore.contracts.timestampScheduler && (
                           <div className="content">
                             <div className="d-block">Time: </div>
                             <div className="d-block text-ellipsis">
@@ -190,7 +192,7 @@ class Header extends Component {
                                 href={
                                   web3Service.explorer
                                     ? `${web3Service.explorer}/address/${
-                                        this.state.eacContracts.timestampScheduler
+                                        eacStore.contracts.timestampScheduler
                                       }`
                                     : ''
                                 }
@@ -198,12 +200,12 @@ class Header extends Component {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {this.state.eacContracts.timestampScheduler}
+                                {eacStore.contracts.timestampScheduler}
                               </a>
                             </div>
                           </div>
                         )}
-                        {this.state.eacContracts.blockScheduler && (
+                        {eacStore.contracts.blockScheduler && (
                           <div className="content">
                             <div className="d-block">Block: </div>
                             <div className="d-block text-ellipsis">
@@ -211,7 +213,7 @@ class Header extends Component {
                                 href={
                                   web3Service.explorer
                                     ? `${web3Service.explorer}/address/${
-                                        this.state.eacContracts.blockScheduler
+                                        eacStore.contracts.blockScheduler
                                       }`
                                     : ''
                                 }
@@ -219,7 +221,7 @@ class Header extends Component {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {this.state.eacContracts.blockScheduler}
+                                {eacStore.contracts.blockScheduler}
                               </a>
                             </div>
                           </div>
@@ -231,8 +233,8 @@ class Header extends Component {
                         <div className="d-block text-uppercase font-weight-bold text-dark">
                           Libraries
                         </div>
-                        {this.state.eacContracts &&
-                          Object.keys(this.state.eacContracts)
+                        {eacStore.contracts &&
+                          Object.keys(eacStore.contracts)
                             .filter(contract => new RegExp('lib', 'i').test(contract))
                             .map(found => (
                               <div className="content" key={found}>
@@ -242,7 +244,7 @@ class Header extends Component {
                                     href={
                                       web3Service.explorer
                                         ? `${web3Service.explorer}/address/${
-                                            this.state.eacContracts[found]
+                                            eacStore.contracts[found]
                                           }`
                                         : ''
                                     }
@@ -250,7 +252,7 @@ class Header extends Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    {this.state.eacContracts[found]}
+                                    {eacStore.contracts[found]}
                                   </a>
                                 </div>
                               </div>
@@ -287,9 +289,9 @@ Header.propTypes = {
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
-  eacService: PropTypes.any,
   keenStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
+  eacStore: PropTypes.any,
   transactionStatistics: PropTypes.any,
   history: PropTypes.object.isRequired
 };
