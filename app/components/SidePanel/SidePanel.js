@@ -9,6 +9,7 @@ import NetworkChooser from '../Header/NetworkChooser';
 @inject('transactionStatistics')
 @inject('web3Service')
 @inject('keenStore')
+@inject('eacStore')
 @observer
 class SidePanel extends Component {
   constructor() {
@@ -54,6 +55,8 @@ class SidePanel extends Component {
     const subtitleClasses = 'sub-title ';
     const thumbnailClasses = 'icon-thumbnail ';
 
+    const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
+
     const entryList = [
       {
         title: 'Schedule',
@@ -79,17 +82,11 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
-    const { keenStore, transactionStatistics, web3Service } = this.props;
+    const { keenStore, transactionStatistics, web3Service, eacStore } = this.props;
 
     const defaultAccount = web3Service.accounts && web3Service.accounts[0];
 
     const myTransactionsLink = `/transactions/owner/${defaultAccount}`;
-
-    const activeTimenodes = keenStore.activeTimeNodes ? (
-      keenStore.activeTimeNodes
-    ) : (
-      <BeatLoader color="#fff" size={4} />
-    );
 
     const infoBtn = (
       <span
@@ -103,7 +100,9 @@ class SidePanel extends Component {
       </span>
     );
 
-    const displayActiveTimenodes = keenStore.isBlacklisted ? infoBtn : activeTimenodes;
+    const displayActiveTimenodes = keenStore.isBlacklisted
+      ? infoBtn
+      : loaderIfNull(keenStore.activeTimeNodes);
 
     const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 
@@ -214,17 +213,16 @@ class SidePanel extends Component {
                 </a>
               </li>
             )}
-            {!isElectron &&
-              !web3Service.isOnMainnet() && (
-                <li>
-                  <NavLink to="/faucet">
-                    <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
-                    <span className={entryList[3].thumbnailClasses}>
-                      <i className="fas fa-tint" />
-                    </span>
-                  </NavLink>
-                </li>
-              )}
+            {!isElectron && !web3Service.isOnMainnet() && (
+              <li>
+                <NavLink to="/faucet">
+                  <span className={entryList[3].titleClasses}>{entryList[3].title}</span>
+                  <span className={entryList[3].thumbnailClasses}>
+                    <i className="fas fa-tint" />
+                  </span>
+                </NavLink>
+              </li>
+            )}
             <li>
               <a
                 href="https://blog.chronologic.network/chronos-platform/home"
@@ -244,6 +242,13 @@ class SidePanel extends Component {
             <hr className="sidebar-separator mx-4" />
 
             <li className="sidebar-additional-item">
+              <div className="sidebar-additional-item--label">Transferred</div>
+              <div className="sidebar-additional-item--display">
+                {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+              </div>
+            </li>
+
+            <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Active TimeNodes</div>
               <div className="sidebar-additional-item--display">{displayActiveTimenodes}</div>
             </li>
@@ -258,25 +263,21 @@ class SidePanel extends Component {
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Current Block</div>
               <div className="sidebar-additional-item--display">
-                {this.props.web3Service.latestBlockNumber}
+                {loaderIfNull(web3Service.latestBlockNumber)}
               </div>
             </li>
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Upcoming Transactions</div>
               <div className="sidebar-additional-item--display">
-                {transactionsScheduledInNextHoursAmount === null ? (
-                  <BeatLoader color="#fff" size={4} />
-                ) : (
-                  transactionsScheduledInNextHoursAmount
-                )}
+                {loaderIfNull(transactionsScheduledInNextHoursAmount)}
               </div>
             </li>
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Efficiency</div>
               <div className="sidebar-additional-item--display">
-                {efficiency === null ? <BeatLoader color="#fff" size={4} /> : `${efficiency}%`}
+                {loaderIfNull(efficiency)}&nbsp;%
               </div>
             </li>
           </ul>
@@ -290,6 +291,7 @@ class SidePanel extends Component {
 SidePanel.propTypes = {
   web3Service: PropTypes.any,
   keenStore: PropTypes.any,
+  eacStore: PropTypes.any,
   location: PropTypes.object.isRequired,
   transactionStatistics: PropTypes.any
 };

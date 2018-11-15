@@ -17,6 +17,7 @@ import { TRANSACTIONS_TABLE_TEST_ATTRS } from '../app/components/TransactionScan
 import { TRANSACTION_SCANNER_LIMIT } from '../app/components/TransactionScanner/TransactionScanner';
 import TransactionHelper from '../app/services/transaction-helper';
 import BucketHelper from '../app/services/bucket-helper';
+import LoadingStateStore from '../app/stores/LoadingStateStore';
 
 momentDurationFormatSetup(moment);
 
@@ -173,8 +174,11 @@ describe('TransactionScanner', () => {
       bucketHelper
     );
 
+    const loadingStateStore = new LoadingStateStore(web3Service, featuresService, transactionStore);
+
     const injectables = {
       eacService,
+      loadingStateStore,
       transactionStore,
       web3Service
     };

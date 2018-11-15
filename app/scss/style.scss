@@ -67,11 +67,16 @@ $warning-color: gold;
       }
     }
   }
+
+  &-item {
+    margin: 0px 4px;
+    white-space: nowrap;
+  }
 }
 
 .loading-icon {
   margin: auto;
-  width: 5%;
+  width: 12px;
   padding-top: 5%;
 }
 
@@ -307,12 +312,11 @@ hr {
   }
 }
 
-
-.active-timenodes {
+.analytics-name {
   color: $primary-color;
 }
 
-.timenode-count {
+.analytics-count {
   color: #fff;
 
   & > div {
@@ -457,6 +461,10 @@ hr {
     flex-grow: 1;
     text-align: right;
     color: white;
+
+    & > div {
+      display: inline;
+    }
   }
 }
 

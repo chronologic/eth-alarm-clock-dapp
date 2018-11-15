@@ -8,6 +8,9 @@ export default class FeaturesService {
   @observable
   isCurrentNetworkSupported = null;
 
+  @observable
+  initialized = false;
+
   constructor(web3Service) {
     this._web3 = web3Service;
 
