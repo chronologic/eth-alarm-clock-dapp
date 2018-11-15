@@ -231,7 +231,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         <div
           className="sidebar-additional-item--label"
         >
-          Active TimeNodes
+          Transferred
         </div>
         <div
           className="sidebar-additional-item--display"
@@ -249,7 +249,20 @@ exports[`SidePanel is correctly rendered 1`] = `
               className="css-1ncsqv2"
             />
           </div>
+           ETH
         </div>
+      </li>
+      <li
+        className="sidebar-additional-item"
+      >
+        <div
+          className="sidebar-additional-item--label"
+        >
+          Active TimeNodes
+        </div>
+        <div
+          className="sidebar-additional-item--display"
+        />
       </li>
       <li
         className="sidebar-additional-item"
@@ -277,7 +290,21 @@ exports[`SidePanel is correctly rendered 1`] = `
         </div>
         <div
           className="sidebar-additional-item--display"
-        />
+        >
+          <div
+            className=""
+          >
+            <div
+              className="css-1ncsqv2"
+            />
+            <div
+              className="css-o7y5po"
+            />
+            <div
+              className="css-1ncsqv2"
+            />
+          </div>
+        </div>
       </li>
       <li
         className="sidebar-additional-item"
@@ -302,7 +329,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         <div
           className="sidebar-additional-item--display"
         >
-          undefined%
+           %
         </div>
       </li>
     </ul>

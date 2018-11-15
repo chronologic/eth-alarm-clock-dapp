@@ -11,6 +11,8 @@ import LocalStorageService from '../app/services/storage';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
 import TimeNodeStore from '../app/stores/TimeNodeStore';
 import { KOVAN_NETWORK_ID } from '../app/config/web3Config';
+import EacStore from '../app/stores/EacStore';
+import { eacService } from '../__mocks__/EacServiceMock';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
@@ -42,24 +44,21 @@ describe('Header', () => {
     });
 
     const keenStore = {};
-    const eacService = {
-      getActiveContracts: () => {
-        return {};
-      }
-    };
     const featuresService = {};
 
     const storageService = new LocalStorageService(new LocalStorageMock());
     const timeNodeStore = new TimeNodeStore({}, web3Service, {}, storageService);
     const transactionStatistics = {};
 
+    const eacStore = new EacStore(eacService, featuresService, web3Service);
+
     const injectables = {
       featuresService,
       keenStore,
       storageService,
       web3Service,
-      eacService,
       timeNodeStore,
+      eacStore,
       transactionStatistics
     };
 
@@ -87,7 +86,7 @@ describe('Header', () => {
         .html()
         .trim()
     ).toBe(
-      `<div data-test="network-display"><span class="active-timenodes"><i class="fa fa-th-large"></i>&nbsp;Network:&nbsp;</span><span class="timenode-count"><span>Kovan at #${CURRENT_BLOCK}</span></span></div>`
+      `<div data-test="network-display" class="header-item"><span class="analytics-name"><i class="fa fa-th-large"></i>&nbsp;Network:&nbsp;</span><span class="analytics-count"><span>Kovan at #${CURRENT_BLOCK}</span></span></div>`
     );
 
     mockedRender.unmount();
