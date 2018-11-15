@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TransactionRow from './TransactionRow';
 import { PropagateLoader } from 'react-spinners';
+import InformativeLoader from '../Common/InformativeLoader';
 
 const INITIAL_STATE = {
   pages: [],
@@ -122,7 +123,8 @@ class TransactionsTable extends Component {
                   )}
                   onClick={() => this.goToPage(currentPage - 1)}
                 >
-                  {this.getPreviousPageButton()}&nbsp;
+                  {this.getPreviousPageButton()}
+                  &nbsp;
                 </span>
 
                 {this.state.pages.map(page => (
@@ -132,7 +134,8 @@ class TransactionsTable extends Component {
                     onClick={() => this.goToPage(page)}
                     data-test={TRANSACTIONS_TABLE_TEST_ATTRS.CURRENT_PAGE}
                   >
-                    {page}&nbsp;
+                    {page}
+                    &nbsp;
                   </span>
                 ))}
 
@@ -151,9 +154,14 @@ class TransactionsTable extends Component {
         </div>
 
         {fetchingTransactions && (
-          <div className="loading-icon">
-            <PropagateLoader loading={fetchingTransactions} color="#21FFFF" />
-          </div>
+          <>
+            <div className="loading-icon">
+              <PropagateLoader color="#21FFFF" />
+            </div>
+            <br />
+            <br />
+            <InformativeLoader />
+          </>
         )}
 
         <div

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import Alert from '../Common/Alert';
 import { BlockOrTimeDisplay } from './BlockOrTimeDisplay';
 import { TRANSACTION_STATUS } from '../../stores/TransactionStore';
@@ -25,10 +25,12 @@ const INITIAL_STATE = {
   tokenTransferDetails: []
 };
 
+@inject('loadingStateStore')
 @inject('tokenHelper')
 @inject('transactionStore')
 @inject('eacService')
 @inject('web3Service')
+@observer
 class TransactionDetails extends Component {
   state = INITIAL_STATE;
 
@@ -186,7 +188,10 @@ class TransactionDetails extends Component {
       web3Service
     } = this.props;
 
-    // TODO error handling?
+    if (!this.state.executedAt) {
+      return;
+    }
+
     const fromBlock = await web3Service.getBlockNumberFromTxHash(this.state.executedAt);
 
     let afterExecutionWindow;
@@ -631,6 +636,7 @@ class TransactionDetails extends Component {
 TransactionDetails.propTypes = {
   address: PropTypes.string,
   eacService: PropTypes.any,
+  loadingStateStore: PropTypes.any,
   tokenHelper: PropTypes.any,
   transaction: PropTypes.any,
   transactionStore: PropTypes.any,

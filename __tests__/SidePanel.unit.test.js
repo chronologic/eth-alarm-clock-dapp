@@ -9,6 +9,8 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import TimeNodeStore from '../app/stores/TimeNodeStore';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
 import LocalStorageService from '../app/services/storage';
+import EacStore from '../app/stores/EacStore';
+import { eacService } from '../__mocks__/EacServiceMock';
 
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
@@ -31,12 +33,16 @@ describe('SidePanel', () => {
 
     const keenStore = {};
     const transactionStatistics = {};
+    const featuresService = {};
 
     const localStorageMock = new LocalStorageMock();
     const storageService = new LocalStorageService(localStorageMock);
     const timeNodeStore = new TimeNodeStore({}, {}, {}, storageService);
 
+    const eacStore = new EacStore(eacService, featuresService, web3Service);
+
     const injectables = {
+      eacStore,
       keenStore,
       timeNodeStore,
       transactionStatistics,
