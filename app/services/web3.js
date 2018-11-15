@@ -146,7 +146,7 @@ export default class Web3Service {
     let { web3 } = this;
     if (!web3) {
       if (typeof window.web3 !== 'undefined') {
-        web3 = new Web3(window.web3.currentProvider);
+        web3 = new Web3(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
         web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);

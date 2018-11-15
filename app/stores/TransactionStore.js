@@ -3,6 +3,7 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
+import { observable } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -30,7 +31,13 @@ const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
 };
 
 export class TransactionStore {
+  @observable
   initialized = false;
+
+  @observable
+  info = {
+    gettingTransactions: false
+  };
 
   _eac;
   _web3;
@@ -112,11 +119,17 @@ export class TransactionStore {
   }
 
   async getTransactions({ startBlock, endBlock = 'latest' }, cached) {
+    this.info.gettingTransactions = true;
+
     await this.init();
 
     startBlock = startBlock || this.requestFactoryStartBlock; // allow all components preload
 
-    return await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
+    const transactions = await this._fetcher.getTransactions({ startBlock, endBlock }, cached);
+
+    this.info.gettingTransactions = false;
+
+    return transactions;
   }
 
   async getAllTransactions(cached) {
