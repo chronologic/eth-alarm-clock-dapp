@@ -16,6 +16,8 @@ import DateTimeValidator from '../app/stores/DateTimeValidatorStore';
 import LocalStorageService from '../app/services/storage';
 import LocalStorageMock from '../__mocks__/LocalStorageMock';
 import TokenHelper from '../app/services/token-helper';
+import EacStore from '../app/stores/EacStore';
+import { eacService, MOCKED_TRANSACTIONS } from '../__mocks__/EacServiceMock';
 
 momentDurationFormatSetup(moment);
 
@@ -24,11 +26,6 @@ Enzyme.configure({ adapter: new Adapter() });
 describe('App', () => {
   it('correctly navigates when clicking links', async () => {
     const TEST_EXPLORER = 'https://etherscan.io/';
-
-    const MOCKED_TRANSACTIONS = [
-      '0x123306090abab3a6e1400e9345bc60c78a8bef57',
-      '0x456306090abab3a6e1400e9345bc60c78a8bef57'
-    ];
 
     const web3Service = new Web3Service({
       eth: {
@@ -69,45 +66,6 @@ describe('App', () => {
       connect() {},
       init: () => Promise.resolve(true)
     });
-
-    const eacService = {
-      calcEndowment(num) {
-        return num;
-      },
-      getActiveContracts: () => {
-        return {};
-      },
-      requestFactory: () =>
-        Promise.resolve({
-          getRequestCreatedLogs() {
-            return MOCKED_TRANSACTIONS.map(tx => ({
-              args: {
-                request: tx,
-                params: []
-              }
-            }));
-          }
-        }),
-      scheduler: () => Promise.resolve({}),
-
-      transactionRequest(address) {
-        return {
-          address
-        };
-      },
-      getTransactionsEventsForAddresses() {
-        return {};
-      },
-      Util: {
-        getBlockNumber() {
-          return 1;
-        },
-        getTimestampForBlock: () => 123
-      },
-      RequestData() {
-        return {};
-      }
-    };
 
     const TRANSACTIONS_LENGTH = 20;
 
@@ -180,9 +138,12 @@ describe('App', () => {
 
     const transactionStatistics = {};
 
+    const eacStore = new EacStore(eacService, featuresService, web3Service);
+
     const injectables = {
       dateTimeValidatorStore,
       eacService,
+      eacStore,
       featuresService,
       keenStore,
       scheduleStore,

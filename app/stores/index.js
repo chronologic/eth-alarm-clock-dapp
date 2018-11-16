@@ -11,6 +11,8 @@ import TransactionCache from './TransactionCache';
 import TransactionHelper from '../services/transaction-helper';
 import BucketHelper from '../services/bucket-helper';
 import { TransactionStatistics } from './TransactionStatistics';
+import LoadingStateStore from './LoadingStateStore';
+import EacStore from './EacStore';
 
 const {
   eacService,
@@ -65,8 +67,14 @@ export const transactionStatistics = new TransactionStatistics(transactionHelper
 
 export const history = syncHistoryWithStore(browserHistory, routingStore);
 
+const loadingStateStore = new LoadingStateStore(web3Service, featuresService, transactionStore);
+
+export const eacStore = new EacStore(eacService, featuresService, web3Service);
+
 export const stores = {
   dateTimeValidatorStore,
+  eacStore,
+  loadingStateStore,
   keenStore,
   routing: routingStore,
   scheduleStore,

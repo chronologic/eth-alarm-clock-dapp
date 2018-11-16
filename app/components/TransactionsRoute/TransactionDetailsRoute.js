@@ -5,7 +5,9 @@ import TransactionDetails from '../TransactionScanner/TransactionDetails';
 import TransactionNotFound from '../TransactionScanner/TransactionNotFound';
 import { PropagateLoader } from 'react-spinners';
 import PoweredByEAC from '../Common/PoweredByEAC';
+import InformativeLoader from '../Common/InformativeLoader';
 
+@inject('loadingStateStore')
 @inject('eacService')
 @inject('transactionStore')
 @observer
@@ -16,6 +18,8 @@ class TransactionDetailsRoute extends Component {
   };
 
   async componentDidMount() {
+    this.props.loadingStateStore.reset();
+
     const { txAddress } = this.props.match.params;
 
     this.getTransactionData(txAddress);
@@ -53,9 +57,14 @@ class TransactionDetailsRoute extends Component {
       }
     } else {
       content = (
-        <div className="loading-icon">
-          <PropagateLoader loading={true} color="#21FFFF" />
-        </div>
+        <>
+          <div className="loading-icon">
+            <PropagateLoader loading={true} color="#21FFFF" />
+          </div>
+          <br />
+          <br />
+          <InformativeLoader />
+        </>
       );
     }
 
@@ -75,6 +84,7 @@ class TransactionDetailsRoute extends Component {
 
 TransactionDetailsRoute.propTypes = {
   eacService: PropTypes.any,
+  loadingStateStore: PropTypes.any,
   match: PropTypes.any,
   transactionStore: PropTypes.any
 };

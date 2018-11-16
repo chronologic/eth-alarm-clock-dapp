@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import TransactionScanner from '../TransactionScanner/TransactionScanner';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import NetworkUnsupported from '../Common/NetworkUnsupported';
 import PropTypes from 'prop-types';
 
+@inject('loadingStateStore')
 @inject('featuresService')
+@observer
 class TransactionsScheduled extends Component {
+  componentDidMount() {
+    this.props.loadingStateStore.reset();
+  }
+
   render() {
     const { isCurrentNetworkSupported } = this.props.featuresService;
 
@@ -29,7 +35,8 @@ class TransactionsScheduled extends Component {
 }
 
 TransactionsScheduled.propTypes = {
-  featuresService: PropTypes.any
+  featuresService: PropTypes.any,
+  loadingStateStore: PropTypes.any
 };
 
 export default TransactionsScheduled;
