@@ -27,11 +27,19 @@ class TimeNodeWallet extends Component {
   };
 
   componentDidMount() {
+    if (!this.walletTabRef) {
+      return;
+    }
+
     this.walletTabRef.addEventListener('keyup', this._handleEnterPress);
     this.walletFileRef.addEventListener('change', this._handleFileUpload);
   }
 
   componentWillUnmount() {
+    if (!this.walletTabRef) {
+      return;
+    }
+
     this.walletTabRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
