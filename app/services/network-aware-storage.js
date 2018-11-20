@@ -1,6 +1,5 @@
 import Loki from 'lokijs';
-import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-import LokiMemoryAdapter from 'lokijs/src/loki-memory-adapter.js'
+import LokiMemoryAdapter from 'lokijs/src/loki-memory-adapter.js';
 
 export default class NetworkAwareStorageService {
   _keyModifier;
