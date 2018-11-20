@@ -78,7 +78,7 @@ export default class NetworkAwareStorageService {
    * @private
    */
   _getStorageAdapter() {
-    if (LokiIndexedAdapter.checkAvailability()) {
+    if (LokiIndexedAdapter.prototype.checkAvailability()) {
       return new LokiIndexedAdapter();
     }
 
