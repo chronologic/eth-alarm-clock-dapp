@@ -1,5 +1,6 @@
 import Loki from 'lokijs';
-import LokiMemoryAdapter from 'lokijs/src/loki-memory-adapter.js';
+
+const LokiMemoryAdapter = Loki.LokiMemoryAdapter;
 
 export default class NetworkAwareStorageService {
   _keyModifier;
