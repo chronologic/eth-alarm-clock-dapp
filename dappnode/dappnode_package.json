@@ -1,0 +1,19 @@
+{
+  "name": "eth-alarm-clock-dapp.public.dappnode.eth",
+  "version": "0.0.1",
+  "description": "",
+  "avatar": "",
+  "type": "service",
+  "image": {
+    "path": "",
+    "hash": "",
+    "size": "",
+    "restart": "always",
+    "volumes": [
+      "ipfsdnpdappnodeeth_export:/export",
+      "/home/ipfs_data:/data/ipfs"
+    ]
+  },
+  "author": "Joseph Bagaric",
+  "license": "MIT"
+}

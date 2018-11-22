@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+    testinho.public.dappnode.eth:
+        image: 'eth-alarm-clock-dapp.public.dappnode.eth:0.0.1'
+        build: ./build
+        volumes:
+            - 'ipfsdnpdappnodeeth_export:/export'
+            - '/home/ipfs_data:/data/ipfs'
+volumes:
+    ipfsdnpdappnodeeth_export: {}
