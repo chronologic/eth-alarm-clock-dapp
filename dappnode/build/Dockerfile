@@ -12,3 +12,5 @@ RUN rm -rf /usr/share/nginx/html/*
 RUN cp -r dist/* /usr/share/nginx/html/
 
 RUN rm -rf dist node_modules .git
+
+EXPOSE 80

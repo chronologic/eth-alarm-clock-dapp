@@ -16,7 +16,7 @@
     "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
-    "cleanup": "rm -rf dist/ node_modules/ electron-builds/",
+    "cleanup": "rm -rf dist/ node_modules/ electron-builds/ dappnode/build_*",
     "validate": "npm ls",
     "docker": "npm run docker:remove && docker run --name eth-alarm-clock-dapp -d -p 8080:80 eth-alarm-clock-dapp",
     "docker:remove": "docker stop eth-alarm-clock-dapp || true && docker rm -f eth-alarm-clock-dapp || true",
