@@ -1,6 +1,8 @@
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
 
+const LokiMemoryAdapter = Loki.LokiMemoryAdapter;
+
 export default class NetworkAwareStorageService {
   _keyModifier;
 
@@ -75,10 +77,21 @@ export default class NetworkAwareStorageService {
   /**
    * @private
    */
+  _getStorageAdapter() {
+    if (LokiIndexedAdapter.prototype.checkAvailability()) {
+      return new LokiIndexedAdapter();
+    }
+
+    return new LokiMemoryAdapter();
+  }
+
+  /**
+   * @private
+   */
   async _initDatabase() {
     await this._keyModifier.waitForInitialization();
 
-    const persistenceAdapter = new LokiIndexedAdapter();
+    const persistenceAdapter = this._getStorageAdapter();
 
     return new Promise(resolve => {
       this._db = new Loki(this._getDatabaseName(), {
