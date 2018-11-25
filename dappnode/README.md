@@ -6,7 +6,7 @@
 1. Test the new release: 
     - `dappnode build`
     - Take the IPFS hash that was given to you and install it in your local DAppNode.
-    - Go to http://my.eth-alarm-clock-dapp.public.dappnode.eth/ and test the functionality
+    - Go to http://my.timenode.public.dappnode.eth/ and test the functionality
 2. If everything looks OK, publish it with `dappnode publish`
 
 Note: If you're having troubles setting up the DAppNode SDK, follow points 1, 2, 4 and 5 of this guide https://github.com/dappnode/DAppNodeSDK/wiki/DAppNode-SDK-tutorial.

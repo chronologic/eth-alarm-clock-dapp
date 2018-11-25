@@ -1,7 +1,7 @@
 {
-  "name": "eth-alarm-clock-dapp.public.dappnode.eth",
+  "name": "timenode.public.dappnode.eth",
   "version": "1.1.6",
-  "description": "Ethereum Alarm Clock DApp is used to schedule transactions on Ethereum and to run a TimeNode.",
+  "description": "The TimeNode DApp can be used earn ETH by executing transactions scheduled on the Ethereum Alarm Clock. It also allows the users to schedule a transaction themselves.",
   "avatar": "../electron-app/icons/icon.png",
   "type": "service",
   "image": {

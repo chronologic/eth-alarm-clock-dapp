@@ -1,7 +1,7 @@
 version: '3.4'
 services:
-    eth-alarm-clock-dapp.public.dappnode.eth:
-        image: 'eth-alarm-clock-dapp.public.dappnode.eth:1.1.6'
+    timenode.public.dappnode.eth:
+        image: 'timenode.public.dappnode.eth:1.1.6'
         build: ./build
         volumes:
             - 'ipfsdnpdappnodeeth_export:/export'

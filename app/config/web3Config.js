@@ -15,6 +15,8 @@ export const requestFactoryStartBlocks = {
   [KOVAN_NETWORK_ID]: 5555500
 };
 
+export const DAPPNODE_MAINNET_NODE_URL = 'ws://my.ethchain.dnp.dappnode.eth:8546';
+
 const Networks = {
   0: {
     id: 0,
