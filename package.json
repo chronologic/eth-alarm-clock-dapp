@@ -9,8 +9,10 @@
     "build": "webpack --config webpack/prod.config.js",
     "build:electron:dev": "webpack --config webpack/electron.dev.config.js",
     "build:electron:prod": "webpack --config webpack/electron.prod.config.js",
+    "build:dappnode": "webpack --config webpack/dappnode.prod.config.js",
     "dev": "node_modules/.bin/webpack-dev-server --config webpack/dev.config.js --host 0.0.0.0 --disable-host-check",
     "dev:electron": "concurrently \"npm run dev\" \"wait-on http://localhost:8080 && electron electron-app/main/index.js\"",
+    "dev:dappnode": "node_modules/.bin/webpack-dev-server --config webpack/dappnode.dev.config.js --host 0.0.0.0 --disable-host-check",
     "prod": "node_modules/.bin/webpack-dev-server --config webpack/prod.config.js --host 0.0.0.0 --disable-host-check --hot",
     "debug-prod": "webpack --config webpack/debug.prod.config.js",
     "lint": "eslint .",
@@ -25,7 +27,8 @@
     "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
     "package:mac": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.icns --platform=darwin",
     "electron:distribute": "npm run build:electron:prod && node tools/buildElectron.js",
-    "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override"
+    "formatAll": "find ./app/ ./__tests__/ -name '*.js*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
+    "dappnode:build": "cd dappnode/ && dappnodesdk build && cd ../"
   },
   "lint-staged": {
     "*.js": [
