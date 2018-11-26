@@ -209,8 +209,6 @@ export default class TimeNodeStore {
   }
 
   getWorkerOptions(keystore, keystorePassword) {
-    // console.log(this.network);
-    // console.log(this.customProviderUrl);
     return {
       network: this.network,
       customProviderUrl: this.customProviderUrl,
