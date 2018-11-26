@@ -1,6 +1,7 @@
 import DAYTokenABI from '../abi/DAYTokenABI';
 
 import testnetDAYFaucetABI from '../abi/testnetDAYFaucetABI';
+import { isRunningInDAppNode } from '../lib/dappnode-util';
 
 export const MAIN_NETWORK_ID = 1;
 export const ROPSTEN_NETWORK_ID = 3;
@@ -15,12 +16,25 @@ export const requestFactoryStartBlocks = {
   [KOVAN_NETWORK_ID]: 5555500
 };
 
-export const DAPPNODE_MAINNET_NODE_URL = 'ws://my.ethchain.dnp.dappnode.eth:8546';
+export const PROVIDER_URLS = {
+  MAINNET: {
+    QUIKNODE: {
+      ws:
+        'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
+      http:
+        'https://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/'
+    },
+    DAPPNODE: {
+      ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',
+      http: 'http://my.ethchain.dnp.dappnode.eth:8546'
+    }
+  }
+};
 
 const Networks = {
   0: {
     id: 0,
-    name: 'Private',
+    name: 'Local',
     endpoint: 'http://localhost:8545',
     showInChooser: false,
     explorer: '127.0.0.1:7545'
@@ -28,10 +42,12 @@ const Networks = {
   [MAIN_NETWORK_ID]: {
     id: MAIN_NETWORK_ID,
     name: 'Mainnet',
-    endpoint:
-      'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
-    httpEndpoint:
-      'https://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
+    endpoint: isRunningInDAppNode()
+      ? PROVIDER_URLS.MAINNET.DAPPNODE.ws
+      : PROVIDER_URLS.MAINNET.QUIKNODE.ws,
+    httpEndpoint: isRunningInDAppNode()
+      ? PROVIDER_URLS.MAINNET.DAPPNODE.http
+      : PROVIDER_URLS.MAINNET.QUIKNODE.http,
     showInChooser: true,
     dayTokenAddress: '0xe814aee960a85208c3db542c53e7d4a6c8d5f60f',
     dayTokenAbi: DAYTokenABI,
