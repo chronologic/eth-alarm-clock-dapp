@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 RUN git clone https://github.com/chronologic/eth-alarm-clock-dapp.git . --single-branch -b dappnode-integration
 
 RUN npm install
-RUN npm run build:dappnode
+RUN npm run build:dappnode:dev
 
 RUN rm -rf /usr/share/nginx/html/*
 RUN cp -r dist/* /usr/share/nginx/html/
