@@ -1,7 +1,7 @@
 version: '3.4'
 services:
     timenode.public.dappnode.eth:
-        image: 'timenode.public.dappnode.eth:1.1.6'
+        image: 'timenode.public.dappnode.eth:1.0.0'
         build: ./build
         volumes:
             - 'ipfsdnpdappnodeeth_export:/export'
