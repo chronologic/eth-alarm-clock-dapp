@@ -23,7 +23,7 @@
     "docker": "docker run --name eth-alarm-clock-dapp -d -p 8080:80 eth-alarm-clock-dapp",
     "docker:build": "docker build -t eth-alarm-clock-dapp ./dappnode/build/",
     "docker:rm": "docker stop eth-alarm-clock-dapp || true && docker rm -f eth-alarm-clock-dapp || true",
-    "docker:rebuild": "npm run docker:remove && npm run docker:build",
+    "docker:rebuild": "npm run docker:rm && npm run docker:build",
     "package:win": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.ico --platform=win32",
     "package:linux": "npm run build && electron-packager . --overwrite --platform=linux",
     "package:mac": "npm run build && electron-packager . --overwrite --icon=electron-app/icons/icon.icns --platform=darwin",
