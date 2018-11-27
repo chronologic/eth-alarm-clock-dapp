@@ -28,7 +28,7 @@ __Smart Contracts__: [Source](https://github.com/ethereum-alarm-clock/ethereum-a
 ### Docker
 If you wish to run the DApp as a Docker container, we have a Docker [image](Dockerfile) prepared for you.
 To run the container, use the following commands:
-1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/Dockerfile`
+1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/dappnode/build/Dockerfile`
 2. Run the container - `docker run --name eac_dapp -d -p 8080:80 eac_dapp`
 3. Visit `localhost:8080` in your browser to see the DApp running
 
