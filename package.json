@@ -101,7 +101,7 @@
     "keen-tracking": "3.1.2",
     "lint-staged": "7.3.0",
     "lokijs": "1.5.5",
-    "mini-css-extract-plugin": "0.4.5",
+    "mini-css-extract-plugin": "0.5.0",
     "mobx": "5.6.0",
     "mobx-react": "5.3.6",
     "mobx-react-router": "4.0.5",
