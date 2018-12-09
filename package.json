@@ -108,7 +108,7 @@
     "moment": "2.22.2",
     "moment-duration-format": "2.2.2",
     "moment-timezone": "0.5.23",
-    "node-sass": "4.10.0",
+    "node-sass": "4.11.0",
     "popper": "1.0.1",
     "popper.js": "1.14.5",
     "postcss-loader": "3.0.0",
