@@ -94,8 +94,8 @@ const Networks = {
   [RSK_TESTNET_NETWORK_ID]: {
     id: RSK_TESTNET_NETWORK_ID,
     name: 'RSK TestNet',
-    endpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com/',
-    httpEndpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com/',
+    endpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com:4444/',
+    httpEndpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com:4444/',
     showInChooser: true,
     // dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
     dayTokenAbi: DAYTokenABI,
