@@ -525,7 +525,7 @@ export default class TimeNodeStore {
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
         this.network,
-        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
+        W3Util.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 

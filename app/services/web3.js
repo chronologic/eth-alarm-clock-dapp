@@ -149,7 +149,9 @@ export default class Web3Service {
         web3 = new Web3(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
-        web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
+        web3 = W3Util.getWeb3FromProviderUrl(
+          Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint
+        );
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
@@ -167,7 +169,7 @@ export default class Web3Service {
     this.explorer = this.network.explorer;
 
     if (this.network && this.network.endpoint && this.connectedToMetaMask) {
-      this._web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
+      this._web3AlternativeToMetaMask = W3Util.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
@@ -194,10 +196,6 @@ export default class Web3Service {
 
   isOnMainnet() {
     return this.network === Networks[MAIN_NETWORK_ID];
-  }
-
-  getWeb3FromProviderUrl(url) {
-    return W3Util.getWeb3FromProviderUrl(url);
   }
 
   /**
