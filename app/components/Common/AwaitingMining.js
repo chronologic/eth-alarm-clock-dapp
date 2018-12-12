@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { services } from '../../services';
 import Coder from 'web3/lib/solidity/coder';
 import { PacmanLoader } from 'react-spinners';
+import { Constants } from '@ethereum-alarm-clock/lib';
 
 const loaderConfig = {
   color: '#21ffff'
@@ -13,7 +13,7 @@ const mineDestinations = {
   scheduler: {
     path: 'transactions',
     prop: 'newContract',
-    logEventHex: services.eacService.Constants.NEWREQUESTLOG,
+    logEventHex: Constants.NEWREQUESTLOG,
     logEventTypes: ['address'],
     nextParameterPosition: 0
   }

@@ -15,7 +15,7 @@ import NetworkAwareStorageService from '../services/network-aware-storage';
 import TransactionFetcher from '../stores/TransactionFetcher';
 import TransactionCache from '../stores/TransactionCache';
 import { initWeb3Service } from '../services/web3';
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
@@ -89,7 +89,7 @@ class EacWorker {
       false,
       { web3: this.config.web3 },
       networkAwareKeyModifier,
-      new W3Util()
+      new Util()
     );
     web3Service.init();
 

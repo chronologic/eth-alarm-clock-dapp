@@ -2,7 +2,7 @@ import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
-import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
 
 export const DEFAULT_LIMIT = 10;
@@ -58,7 +58,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
-    this._util = new TNUtil(this._web3);
+    this._util = new Util(this._web3);
 
     this.init();
   }

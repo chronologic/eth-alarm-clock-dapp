@@ -1,4 +1,4 @@
-import EAC from 'eac.js-lib';
+import { EAC } from '@ethereum-alarm-clock/lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
@@ -23,11 +23,7 @@ const getAdditionalProperties = () => ({
     fee = fee || 0;
     payment = payment || 0;
 
-    const {
-      Util: { calcEndowment }
-    } = this;
-
-    const endowment = calcEndowment(
+    const endowment = this.util.calcEndowment(
       new BigNumber(gasAmount),
       new BigNumber(amountToSend),
       new BigNumber(gasPrice),
@@ -39,17 +35,15 @@ const getAdditionalProperties = () => ({
   },
 
   async getActiveContracts() {
-    const { Util } = this;
-    const chainName = await Util.getChainName();
-
-    return require(`eac.js-lib/lib/assets/${chainName}.json`);
+    const contractsAddresses = await this.util.getContractsAddresses();
+    return contractsAddresses;
   }
 });
 
 export function initEacService(web3Service) {
   if (!instance) {
     web3 = web3Service;
-    instance = Object.assign(EAC(web3Service), getAdditionalProperties());
+    instance = Object.assign(new EAC(web3Service), getAdditionalProperties());
   }
   return instance;
 }

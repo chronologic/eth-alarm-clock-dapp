@@ -6,7 +6,7 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 
 let instance = null;
 
@@ -149,9 +149,7 @@ export default class Web3Service {
         web3 = new Web3(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
-        web3 = W3Util.getWeb3FromProviderUrl(
-          Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint
-        );
+        web3 = Util.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
@@ -169,7 +167,7 @@ export default class Web3Service {
     this.explorer = this.network.explorer;
 
     if (this.network && this.network.endpoint && this.connectedToMetaMask) {
-      this._web3AlternativeToMetaMask = W3Util.getWeb3FromProviderUrl(this.network.endpoint);
+      this._web3AlternativeToMetaMask = Util.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
     if (!this.connectedToMetaMask || !this.web3.isConnected()) return;

@@ -7,7 +7,8 @@ import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
-import { Config, W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { isRunningInElectron } from '../lib/electron-util';
 import { Networks } from '../config/web3Config';
 
@@ -422,7 +423,7 @@ export default class TimeNodeStore {
   }
 
   async testCustomProvider(endpoint) {
-    return W3Util.testProvider(endpoint);
+    return Util.testProvider(endpoint);
   }
 
   async setCustomProvider(id, endpoint) {
@@ -525,7 +526,7 @@ export default class TimeNodeStore {
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
         this.network,
-        W3Util.getWeb3FromProviderUrl(this.network.endpoint),
+        Util.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
