@@ -152,7 +152,7 @@ export default class Web3Service {
     }
     this.web3 = web3;
 
-    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
+    const netId = await this.web3.eth.net.getId();
 
     if (this._keyModifier) {
       this._keyModifier.setNetworkId(netId);
@@ -165,7 +165,7 @@ export default class Web3Service {
       this._web3AlternativeToMetaMask = Util.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
-    if (!this.connectedToMetaMask || !this.web3.eth.net.isListening()()) return;
+    if (!this.connectedToMetaMask || !this.web3.eth.net.isListening()) return;
 
     // console.log(this.web3);
 

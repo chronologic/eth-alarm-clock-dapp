@@ -236,9 +236,7 @@ class EacWorker {
 
   async _detectNetworkId() {
     if (this.network.id === CUSTOM_PROVIDER_NET_ID) {
-      this.detectedNetId = await Bb.fromCallback(callback =>
-        this.config.web3.version.getNetwork(callback)
-      );
+      this.detectedNetId = await this.config.web3.eth.net.getId();
     }
   }
 
