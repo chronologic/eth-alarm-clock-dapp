@@ -558,7 +558,7 @@ export default class TimeNodeStore {
       this._storageService.remove(STORAGE_KEYS.CLAIMING);
     }
 
-    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
+    const numberFromString = string => this._web3Service.web3.utils.toWei(string, 'ether');
     for (let key of Object.keys(economicStrategy)) {
       if (economicStrategy[key]) {
         const value =

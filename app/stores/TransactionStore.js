@@ -368,7 +368,7 @@ export class TransactionStore {
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
-      bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
+      bountyInEth = new BigNumber(web3.utils.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
     });
 

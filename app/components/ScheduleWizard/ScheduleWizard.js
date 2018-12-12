@@ -236,11 +236,11 @@ class ScheduleWizard extends Component {
       isTokenTransfer
     } = scheduleStore;
 
-    amountToSend = web3.toWei(amountToSend, 'ether');
-    gasPrice = web3.toWei(gasPrice, 'gwei');
-    fee = web3.toWei(fee, 'ether');
-    timeBounty = web3.toWei(timeBounty, 'ether');
-    deposit = web3.toWei(deposit, 'ether');
+    amountToSend = web3.utils.toWei(amountToSend, 'ether');
+    gasPrice = web3.utils.toWei(gasPrice, 'gwei');
+    fee = web3.utils.toWei(fee, 'ether');
+    timeBounty = web3.utils.toWei(timeBounty, 'ether');
+    deposit = web3.utils.toWei(deposit, 'ether');
     const data = isTokenTransfer ? tokenData : yourData;
 
     try {

@@ -1,4 +1,4 @@
-import Web3 from 'web3/index';
+import Web3 from 'web3';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
 import {
@@ -46,10 +46,6 @@ export default class Web3Service {
     }
 
     return this._initializationPromise;
-  }
-
-  fromWei(wei) {
-    return this.web3.fromWei(wei);
   }
 
   async getBlockNumberFromTxHash(txHash) {
@@ -153,11 +149,10 @@ export default class Web3Service {
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
-
-      this.web3 = web3;
     }
+    this.web3 = web3;
 
-    const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+    const netId = await Bb.fromCallback(callback => this.web3.version.getNetwork(callback));
 
     if (this._keyModifier) {
       this._keyModifier.setNetworkId(netId);
@@ -170,9 +165,11 @@ export default class Web3Service {
       this._web3AlternativeToMetaMask = Util.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
-    if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
+    if (!this.connectedToMetaMask || !this.web3.eth.net.isListening()()) return;
 
-    this.accounts = web3.eth.accounts;
+    // console.log(this.web3);
+
+    this.accounts = this.web3.eth.getAccounts();
 
     if (this.accounts && this.accounts.length > 0) {
       web3.eth.defaultAccount = this.accounts[0];

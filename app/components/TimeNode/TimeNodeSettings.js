@@ -33,7 +33,7 @@ class TimeNodeSettings extends Component {
   }
 
   _toEth(wei) {
-    return this.props.timeNodeStore._web3Service.fromWei(wei, 'ether');
+    return this.props.timeNodeStore._web3Service.web3.utils.fromWei(wei, 'ether');
   }
 
   _initField(field) {
@@ -77,7 +77,7 @@ class TimeNodeSettings extends Component {
       const currentSetField =
         field === 'maxGasSubsidy'
           ? economicStrategy[field]
-          : _web3Service.web3.fromWei(economicStrategy[field], 'ether');
+          : _web3Service.web3.utils.fromWei(economicStrategy[field], 'ether');
 
       if (detectedValue === '') detectedValue = defaultValue;
       if (detectedValue != currentSetField) unsavedChanges = true;

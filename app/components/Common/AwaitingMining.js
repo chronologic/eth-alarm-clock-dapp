@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import Coder from 'web3/lib/solidity/coder';
+// import Coder from 'web3/lib/solidity/coder';
 import { PacmanLoader } from 'react-spinners';
 import { Constants } from '@ethereum-alarm-clock/lib';
 
@@ -93,7 +93,9 @@ class AwaitingMining extends Component {
     if (mineDestinations[type].logEventTypes && mineDestinations[type].logEventHex) {
       const log = await web3Service.fetchLog(transactionHash, mineDestinations[type].logEventHex);
       const data = log.data.substring(2);
-      const args = Coder.decodeParams(mineDestinations[type].logEventTypes, data);
+      // console.log(data);
+      // console.log(mineDestinations[type].logEventTypes);
+      const args = data; //Coder.decodeParams(mineDestinations[type].logEventTypes, data);
       let newSate = {};
       newSate[mineDestinations[type].prop] = args[mineDestinations[type].nextParameterPosition];
       this.setState(newSate);
