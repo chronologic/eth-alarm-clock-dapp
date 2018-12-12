@@ -24,7 +24,7 @@ export default class EacStore {
 
     this.contracts = await this._eac.getActiveContracts();
 
-    const totalEthTransferred = await this._eac.Analytics.getTotalEthTransferred();
+    const totalEthTransferred = await this._eac.getTotalEthTransferred();
     this.totalEthTransferred = Math.round(totalEthTransferred);
   }
 }

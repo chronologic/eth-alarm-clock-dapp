@@ -1,4 +1,4 @@
-import { EAC } from '@ethereum-alarm-clock/lib';
+import { EAC, Analytics, RequestFactory } from '@ethereum-alarm-clock/lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
@@ -37,6 +37,13 @@ const getAdditionalProperties = () => ({
   async getActiveContracts() {
     const contractsAddresses = await this.util.getContractsAddresses();
     return contractsAddresses;
+  },
+
+  async getTotalEthTransferred() {
+    const addresses = await this.util.getContractsAddresses();
+    const requestFactory = new RequestFactory(addresses.requestFactory, this.web3);
+    const analytics = new Analytics(this.web3, requestFactory);
+    return await analytics.getTotalEthTransferred();
   }
 });
 
