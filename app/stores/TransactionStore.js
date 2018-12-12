@@ -58,7 +58,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
-    this._util = new Util(this._web3);
+    this._util = new Util(web3);
 
     this.init();
   }

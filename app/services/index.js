@@ -11,13 +11,17 @@ const networkAwareKeyModifier = new NetworkAwareKeyModifier();
 
 const storageService = new LocalStorageService();
 const networkAwareStorageService = new NetworkAwareStorageService(networkAwareKeyModifier);
-const w3Util = new Util();
 
 if (window && window.ethereum && window.ethereum.enable) {
   window.ethereum.enable();
 }
 
-const web3Service = initWeb3Service(false, window.web3, networkAwareKeyModifier, w3Util);
+const web3Service = initWeb3Service(
+  false,
+  window.web3,
+  networkAwareKeyModifier,
+  new Util(window.web3)
+);
 web3Service.init();
 
 const eacService = initEacService(web3Service);

@@ -42,8 +42,7 @@ const getAdditionalProperties = () => ({
 
 export function initEacService(web3Service) {
   if (!instance) {
-    web3 = web3Service;
-    instance = Object.assign(new EAC(web3Service), getAdditionalProperties());
+    instance = Object.assign(new EAC(web3Service.web3), getAdditionalProperties());
   }
   return instance;
 }

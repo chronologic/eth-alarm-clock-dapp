@@ -89,7 +89,7 @@ class EacWorker {
       false,
       { web3: this.config.web3 },
       networkAwareKeyModifier,
-      new Util()
+      new Util(this.config.web3)
     );
     web3Service.init();
 
