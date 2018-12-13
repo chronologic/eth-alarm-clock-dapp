@@ -91,9 +91,7 @@ export default class TransactionFetcher {
   }
 
   async updateLastBlock() {
-    const { getBlockNumber } = this._eac.Util;
-
-    const result = await getBlockNumber();
+    const result = await this._eac.util.web3.eth.getBlockNumber();
 
     if (result) {
       this.lastBlock = result;
@@ -207,28 +205,18 @@ export default class TransactionFetcher {
         ? this._web3._web3AlternativeToMetaMask
         : this._web3.web3;
 
-    const requestFactory = web3.eth.contract(RequestFactoryABI).at(this._requestFactory.address);
+    const requestFactory = new web3.eth.Contract(RequestFactoryABI, this._requestFactory.address);
 
-    let transactions = await new Promise(resolve => {
-      requestFactory
-        .RequestCreated(
-          {
-            bucket: buckets
-          },
-          {
-            fromBlock: this.requestFactoryStartBlock,
-            toBlock: 'latest'
-          }
-        )
-        .get((error, events) => {
-          resolve(
-            events.map(log => ({
-              address: log.args.request,
-              params: log.args.params
-            }))
-          );
-        });
+    let transactions = await requestFactory.getPastEvents('RequestCreated', {
+      filter: { bucket: buckets },
+      fromBlock: this.requestFactoryStartBlock
     });
+
+    transactions = transactions.map(event => ({
+      address: event.address,
+      params: event.returnValues.params,
+      bucket: event.returnValues.bucket
+    }));
 
     transactions.reverse(); // Switch to most recent block first
 

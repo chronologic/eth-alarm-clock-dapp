@@ -110,7 +110,7 @@ export class TransactionStore {
 
     this._bucketHelper.setRequestFactory(this._requestFactory);
 
-    this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
+    this._eacScheduler = this._eacScheduler || (await this._eac.getScheduler());
 
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock || 1;
     this._fetcher.startLazy();
