@@ -202,6 +202,7 @@ class TransactionDetails extends Component {
     }
 
     if (afterExecutionWindow) {
+      // const tokenContract = new web3Service.web3.Contract(address);
       const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
       const tokenTransferDetails = await Promise.all(
         tokenTransferEvents.map(async event => {

@@ -1,7 +1,6 @@
 import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-import { requestFactoryStartBlocks } from '../config/web3Config';
 import { Util } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
 
@@ -76,12 +75,6 @@ export class TransactionStore {
     return this._fetcher.allTransactionsAddresses;
   }
 
-  get requestFactoryStartBlock() {
-    const { network } = this._web3;
-
-    return (network && requestFactoryStartBlocks[network.id]) || 0;
-  }
-
   _initializationPromise;
 
   init() {
@@ -107,6 +100,9 @@ export class TransactionStore {
     if (!this._requestFactory) {
       this._requestFactory = await this._eac.requestFactory();
     }
+
+    const startBlock = await this._eac.util.getRequestFactoryStartBlock();
+    this.requestFactoryStartBlock = (this._web3.network && startBlock) || 0;
 
     this._bucketHelper.setRequestFactory(this._requestFactory);
 

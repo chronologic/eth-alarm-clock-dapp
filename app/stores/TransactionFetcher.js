@@ -1,6 +1,9 @@
 import { observable } from 'mobx';
 import { TRANSACTION_EVENT } from '../services/eac';
-import RequestFactoryABI from '../abi/RequestFactory';
+import {
+  TransactionRequestData,
+  RequestFactoryABI /*TransactionRequestCoreABI*/
+} from '@ethereum-alarm-clock/lib';
 
 export const ABORTED_TOPIC = '0xc008bc849b42227c61d5063a1313ce509a6e99211bfd59e827e417be6c65c81b';
 export const CANCELLED_TOPIC = '0xa761582a460180d55522f9f5fdc076390a1f48a7a62a8afbd45c1bb797948edb';
@@ -41,6 +44,8 @@ export default class TransactionFetcher {
     if (!this._requestFactory && this._features.isCurrentNetworkSupported) {
       this._requestFactory = await this._eac.requestFactory();
     }
+
+    this.requestFactoryStartBlock = await this._eac.util.getRequestFactoryStartBlock();
 
     if (this.running || !this.requestFactoryStartBlock) {
       return;
@@ -163,7 +168,7 @@ export default class TransactionFetcher {
     ],
     transaction
   ) {
-    const data = new this._eac.RequestData(
+    const data = new TransactionRequestData(
       [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
       transaction.instance
     );
@@ -356,6 +361,19 @@ export default class TransactionFetcher {
 
     let allEvents = [];
 
+    // console.log(addresses);
+    // console.log(this.requestFactoryStartBlock);
+
+    // addresses.forEach(async (address) => {
+    //   const txRequest = new this._web3.web3.eth.Contract(TransactionRequestCoreABI, address);
+    //   console.log(txRequest);
+    //   const event = await txRequest.getPastEvents('RequestCreated', {
+    //     // filter: { bucket: buckets },
+    //     fromBlock: this.requestFactoryStartBlock
+    //   });
+    //   allEvents.push(event);
+    // });
+
     for (let i = 0; i < addresses.length; i += MAX_ADDRESSES_AMOUNT_IN_CHUNK) {
       await new Promise(resolve => {
         this._web3
@@ -420,7 +438,7 @@ export default class TransactionFetcher {
   }
 
   updateTransactionDataBasedOnEvents(transaction, cancelled, executed) {
-    const data = new this._eac.RequestData(
+    const data = new TransactionRequestData(
       [[], [], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], []],
       transaction.instance
     );

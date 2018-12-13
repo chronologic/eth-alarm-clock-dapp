@@ -167,8 +167,6 @@ export default class Web3Service {
 
     if (!this.connectedToMetaMask || !this.web3.eth.net.isListening()) return;
 
-    // console.log(this.web3);
-
     this.accounts = this.web3.eth.getAccounts();
 
     if (this.accounts && this.accounts.length > 0) {

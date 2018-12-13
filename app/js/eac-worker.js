@@ -16,7 +16,6 @@ import TransactionFetcher from '../stores/TransactionFetcher';
 import TransactionCache from '../stores/TransactionCache';
 import { initWeb3Service } from '../services/web3';
 import { Util } from '@ethereum-alarm-clock/lib';
-import { requestFactoryStartBlocks } from '../config/web3Config';
 
 import { TimeNode, Config } from '@ethereum-alarm-clock/timenode-core';
 
@@ -103,7 +102,7 @@ class EacWorker {
     );
 
     this._transactionFetcher.requestFactoryStartBlock =
-      requestFactoryStartBlocks[this.network.id] || 0;
+      (await this.config.eac.util.getRequestFactoryStartBlock()) || 0;
 
     this.bucketHelper = new BucketHelper();
     const requestFactory = await this.config.eac.requestFactory();
