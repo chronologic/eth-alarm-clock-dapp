@@ -1,0 +1,37 @@
+{
+  "name": "timenode.public.dappnode.eth",
+  "version": "1.0.0",
+  "description": "The TimeNode DApp can be used earn ETH by executing transactions scheduled on the Ethereum Alarm Clock. It also allows the users to schedule a transaction themselves.",
+  "avatar": "../electron-app/icons/icon.png",
+  "type": "service",
+  "image": {
+    "path": "",
+    "hash": "",
+    "size": "",
+    "restart": "always",
+    "volumes": [
+      "ipfsdnpdappnodeeth_export:/export",
+      "/home/ipfs_data:/data/ipfs",
+      "data:/usr/src/app"
+    ],
+    "ports": [
+      "31313:80"
+    ],
+    "keywords": [
+      "ethereum",
+      "alarm",
+      "clock",
+      "scheduling",
+      "transactions",
+      "timenode"
+    ]
+  },
+  "author": "Joseph Bagaric, https://github.com/Bagaric",
+  "homepage": "https://app.chronologic.network",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chronologic/eth-alarm-clock-dapp.git"
+  },
+  "bugs": "https://github.com/chronologic/eth-alarm-clock-dapp/issues",
+  "license": "MIT"
+}

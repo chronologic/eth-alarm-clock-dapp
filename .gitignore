@@ -6,3 +6,4 @@ yarn-error.log
 electron-builds
 yarn.lock
 TimeNode.app/
+dappnode/build_*

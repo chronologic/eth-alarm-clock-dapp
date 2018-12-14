@@ -9,9 +9,9 @@ _Update: This DApp is operational on the Mainnet as well as on the Kovan and Rop
 
 __Homepage:__ [Ethereum Alarm Clock](http://www.ethereum-alarm-clock.com/)
 
-__Looking for the latest install?__: [Latest Releases](https://github.com/chronologic/eth-alarm-clock-dapp/releases)
+__Looking for the latest install?__ [Latest Releases](https://github.com/chronologic/eth-alarm-clock-dapp/releases)
 
-__Want to run a TimeNode?__: [Guide](https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef)
+__Want to run a TimeNode?__ [Guide](https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef)
 
 __Smart Contracts__: [Source](https://github.com/ethereum-alarm-clock/ethereum-alarm-clock)
 
@@ -28,9 +28,15 @@ __Smart Contracts__: [Source](https://github.com/ethereum-alarm-clock/ethereum-a
 ### Docker
 If you wish to run the DApp as a Docker container, we have a Docker [image](Dockerfile) prepared for you.
 To run the container, use the following commands:
-1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/Dockerfile`
+1. Build the image - `docker build -t eac_dapp https://raw.githubusercontent.com/chronologic/eth-alarm-clock-dapp/master/dappnode/build/Dockerfile`
 2. Run the container - `docker run --name eac_dapp -d -p 8080:80 eac_dapp`
 3. Visit `localhost:8080` in your browser to see the DApp running
+
+### DAppNode
+You can now run a TimeNode through [DAppNode](https://dappnode.io/):
+- Search the DAppNode Installer for `timenode.public.dappnode.eth`
+- Click Install
+- Go to `my.timenode.public.dappnode.eth` in your browser.
 
 ### Debugging
 Having issues with the project? Try these:
