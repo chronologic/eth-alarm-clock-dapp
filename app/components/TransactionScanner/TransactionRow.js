@@ -49,11 +49,11 @@ class TransactionsRow extends Component {
       let time;
 
       if (currentBlock > windowStart) {
-        time = await eacService.Util.getTimestampForBlock(transaction.windowStart.toNumber());
+        time = await eacService.util.getTimestampForBlock(transaction.windowStart.toNumber());
       } else {
         const difference = windowStart - currentBlock;
 
-        const currentBlockTimestamp = await eacService.Util.getTimestampForBlock(currentBlock);
+        const currentBlockTimestamp = await eacService.util.getTimestampForBlock(currentBlock);
 
         time = currentBlockTimestamp + difference * CONFIG.averageBlockTime;
       }

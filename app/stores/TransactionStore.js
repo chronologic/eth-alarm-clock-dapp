@@ -237,7 +237,7 @@ export class TransactionStore {
     transactions = processed;
 
     if (sortByTimestampAscending) {
-      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(this.lastBlock);
+      const currentBlockTimestamp = await this._eac.util.getTimestampForBlock(this.lastBlock);
 
       transactions = transactions.sort((a, b) => {
         const aTimestamp = this._helper.getTxTimestampEstimation(

@@ -530,8 +530,8 @@ export default class TimeNodeStore {
         signature.address
       );
 
-      this.balanceDAY = balanceDAY.toNumber();
-      this.isTimeMint = mintingPower > 0;
+      this.balanceDAY = parseInt(balanceDAY);
+      this.isTimeMint = parseInt(mintingPower) > 0;
 
       const encryptedAttachedAddress = this.encrypt(signature.address);
 

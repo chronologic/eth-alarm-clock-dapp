@@ -14,7 +14,7 @@ export default class TokenHelper {
   }
 
   async approveTokenTransfer(token, receiver, amount) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
     return await Bb.fromCallback(callback =>
       contract.approve(receiver, amount, { from: this.defaultAccount }, callback)
@@ -33,7 +33,7 @@ export default class TokenHelper {
   }
 
   async isTokenTransferApproved(token, sender, value) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
     const allowance = await Bb.fromCallback(callback =>
       contract.allowance(this._firstAccount, sender, callback)
@@ -58,7 +58,7 @@ export default class TokenHelper {
   }
 
   async getTokenTransferData(token, receiver, amount) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
     return contract.transferFrom.getData(this._firstAccount, receiver, amount);
   }
@@ -68,7 +68,7 @@ export default class TokenHelper {
       return 0;
     }
 
-    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
     return await Bb.fromCallback(callback =>
       contract.transfer.estimateGas(receiver, amount, callback)
@@ -76,7 +76,7 @@ export default class TokenHelper {
   }
 
   async fetchTokenDetails(address) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(address);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, address);
 
     return {
       address,
@@ -119,13 +119,13 @@ export default class TokenHelper {
   }
 
   sendTokensData(token, destination, amount) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(token);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
     return contract.transfer.getData(destination, amount);
   }
 
   async getTokenBalanceOf(tokenAddress, targetAddress) {
-    const contract = this._web3.eth.contract(standardTokenAbi).at(tokenAddress);
+    const contract = new this._web3.eth.Contract(standardTokenAbi, tokenAddress);
 
     return (await Bb.fromCallback(callback => {
       return contract.balanceOf.call(targetAddress, callback);

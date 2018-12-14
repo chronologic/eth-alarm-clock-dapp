@@ -192,19 +192,6 @@ export default class Web3Service {
   }
 
   /**
-   * Since there are problems with using filter for events
-   * with array as an address parameter in MetaMask,
-   * we're using custom HTTP provider for running filter query.
-   *
-   * @param {object} options
-   */
-  filter(options) {
-    const web3 = this._web3AlternativeToMetaMask || this.web3;
-
-    return web3.eth.filter(options);
-  }
-
-  /**
    * @private
    */
   async _init() {

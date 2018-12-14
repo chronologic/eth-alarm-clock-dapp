@@ -1,20 +1,16 @@
-import Bb from 'bluebird';
-
 const getDAYBalance = async (network, web3, address) => {
   const dayTokenAddress = network.dayTokenAddress;
   const dayTokenAbi = network.dayTokenAbi;
 
-  const contract = web3.eth.contract(dayTokenAbi).at(dayTokenAddress);
+  const contract = new web3.eth.Contract(dayTokenAbi, dayTokenAddress);
 
-  const balanceNum = await Bb.fromCallback(callback => contract.balanceOf(address, callback));
+  const balanceNum = await contract.methods.balanceOf(address).call();
   const balanceDAY = web3.utils.fromWei(balanceNum, 'ether');
 
   const mintingPower =
     process.env.NODE_ENV === 'docker'
       ? 0
-      : await Bb.fromCallback(callback => {
-          contract.getMintingPowerByAddress(address, callback);
-        });
+      : await contract.methods.getMintingPowerByAddress(address).call();
 
   return { balanceDAY, mintingPower };
 };

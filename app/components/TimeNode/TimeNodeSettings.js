@@ -33,7 +33,7 @@ class TimeNodeSettings extends Component {
   }
 
   _toEth(wei) {
-    return this.props.timeNodeStore._web3Service.web3.utils.fromWei(wei, 'ether');
+    return this.props.timeNodeStore._web3Service.web3.utils.fromWei(wei.toString(), 'ether');
   }
 
   _initField(field) {

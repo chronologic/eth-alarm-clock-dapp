@@ -1,9 +1,6 @@
 import { observable } from 'mobx';
 import { TRANSACTION_EVENT } from '../services/eac';
-import {
-  TransactionRequestData,
-  RequestFactoryABI /*TransactionRequestCoreABI*/
-} from '@ethereum-alarm-clock/lib';
+import { TransactionRequestData, RequestFactoryABI } from '@ethereum-alarm-clock/lib';
 
 export const ABORTED_TOPIC = '0xc008bc849b42227c61d5063a1313ce509a6e99211bfd59e827e417be6c65c81b';
 export const CANCELLED_TOPIC = '0xa761582a460180d55522f9f5fdc076390a1f48a7a62a8afbd45c1bb797948edb';
@@ -132,7 +129,7 @@ export default class TransactionFetcher {
   }
 
   async getRequestsByBuckets(buckets) {
-    const logs = await this._requestFactory.getRequestCreatedLogs(
+    const logs = await this._requestFactory.getRequestCreatedEvents(
       {
         bucket: buckets
       },
@@ -238,14 +235,14 @@ export default class TransactionFetcher {
     return transactions;
   }
 
-  async getRequestCreatedLogs(startBlock, endBlock) {
+  async getRequestCreatedEvents(startBlock, endBlock) {
     const cachedLogs = this._cache.requestCreatedLogs;
 
     if (cachedLogs && cachedLogs.length > 0) {
       return cachedLogs;
     }
 
-    const logs = await this._requestFactory.getRequestCreatedLogs({}, startBlock, endBlock);
+    const logs = await this._requestFactory.getRequestCreatedEvents({}, startBlock, endBlock);
 
     this._cache.cacheRequestCreatedLogs(logs, endBlock);
 
@@ -259,7 +256,7 @@ export default class TransactionFetcher {
       endBlock = this.lastBlock;
     }
 
-    const logs = await this.getRequestCreatedLogs(startBlock, endBlock);
+    const logs = await this.getRequestCreatedEvents(startBlock, endBlock);
 
     const transactions = logs.map(({ args: { request: address, params } }) => {
       const request = this._eac.transactionRequest(address);
@@ -313,7 +310,7 @@ export default class TransactionFetcher {
       this._cache.requestCreatedLogsLastBlockFetched,
       async (error, log) => {
         if (log) {
-          const address = log.args.request;
+          const address = log.address;
           const exists = this.allTransactionsAddresses.find(
             cachedRequest => cachedRequest === address
           );
@@ -361,33 +358,14 @@ export default class TransactionFetcher {
 
     let allEvents = [];
 
-    // console.log(addresses);
-    // console.log(this.requestFactoryStartBlock);
-
-    // addresses.forEach(async (address) => {
-    //   const txRequest = new this._web3.web3.eth.Contract(TransactionRequestCoreABI, address);
-    //   console.log(txRequest);
-    //   const event = await txRequest.getPastEvents('RequestCreated', {
-    //     // filter: { bucket: buckets },
-    //     fromBlock: this.requestFactoryStartBlock
-    //   });
-    //   allEvents.push(event);
-    // });
-
     for (let i = 0; i < addresses.length; i += MAX_ADDRESSES_AMOUNT_IN_CHUNK) {
-      await new Promise(resolve => {
-        this._web3
-          .filter({
-            address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
-            topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
-            fromBlock: this.requestFactoryStartBlock,
-            toBlock: 'latest'
-          })
-          .get((error, events) => {
-            allEvents = allEvents.concat(...events);
-            resolve();
-          });
+      const events = await this._web3.web3.eth.getPastLogs({
+        address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
+        topics: [ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC],
+        fromBlock: this.requestFactoryStartBlock
       });
+
+      allEvents = allEvents.concat(...events);
     }
 
     return allEvents;

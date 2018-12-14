@@ -78,7 +78,7 @@ describe('TransactionScanner', () => {
       },
       requestFactory: () =>
         Promise.resolve({
-          getRequestCreatedLogs() {
+          getRequestCreatedEvents() {
             return MOCKED_TRANSACTIONS.map(tx => ({
               args: {
                 request: tx,

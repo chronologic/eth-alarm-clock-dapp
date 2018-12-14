@@ -46,7 +46,7 @@ class BlockOrTimeDisplay extends Component {
 
     const difference = block - currentBlock;
 
-    const currentBlockTimestamp = await eacService.Util.getTimestampForBlock(currentBlock);
+    const currentBlockTimestamp = await eacService.util.getTimestampForBlock(currentBlock);
 
     return currentBlockTimestamp + difference * CONFIG.averageBlockTime;
   }
