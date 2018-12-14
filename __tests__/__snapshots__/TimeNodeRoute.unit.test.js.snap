@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TimeNodeRoute has timenodeRoute identifier for usage in GTM tools 1`] = `
+<div
+  className="container padding-25 sm-padding-10 subsection"
+  id="timenodeRoute"
+>
+  <h1
+    className="view-title"
+  >
+     
+    <span
+      className="view-subtitle d-none d-md-inline"
+    >
+      0x
+    </span>
+  </h1>
+  <div
+    className="widget-12 card no-border widget-loader-circle no-margin"
+  >
+    <div
+      className="tab-content"
+      id="timeNodeWallet"
+    >
+      <div
+        className="tab-pane active show"
+      >
+        <div
+          className="row"
+        >
+          <div
+            className="col-md-6 p-4"
+          >
+            <h1>
+              TimeNode
+            </h1>
+            <p>
+              A TimeNode enables you to earn ETH by executing transactions scheduled on the Ethereum Alarm Clock protocol.
+            </p>
+            <p>
+              To find out more about TimeNodes and how to properly use them, please see the
+               
+              <a
+                href="https://blog.chronologic.network/how-to-prove-day-ownership-to-be-a-timenode-3dc1333c74ef"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                tutorial on how to run up a TimeNode
+              </a>
+              .
+            </p>
+            <p>
+              <i>
+                <strong>
+                  Note:
+                </strong>
+                 We strongly advise that you run the TimeNode using our desktop apps instead of the browser TimeNode. You can find the link to the latest desktop releases
+                 
+                <a
+                  href="https://github.com/chronologic/eth-alarm-clock-dapp/releases"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  here.
+                </a>
+              </i>
+            </p>
+          </div>
+          <div
+            className="col-md-6 p-4"
+          >
+            <h3
+              className="mb-4"
+            >
+              Step 1. Select Your Wallet File
+            </h3>
+            <p>
+              In order to enable TimeNode functionality please unlock your wallet that contains small amount of ETH necessary for scheduled transactions execution.
+            </p>
+            <p>
+              We support the standard Ethereum keystore wallet file (v3).
+            </p>
+            <p>
+              If you don't have the wallet yet, please visit 
+              <a
+                href="https://www.mycrypto.com"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                https://www.mycrypto.com
+              </a>
+               and create a new one.
+            </p>
+            <div
+              className="my-4"
+            >
+              <div
+                className="row"
+              >
+                <div
+                  className="col-md-6"
+                >
+                  <label
+                    className="btn btn-block"
+                    htmlFor="walletFile"
+                  >
+                    Select wallet file
+                  </label>
+                  <input
+                    className="hide"
+                    id="walletFile"
+                    type="file"
+                  />
+                </div>
+              </div>
+              <p />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="row"
+      >
+        <div
+          className="col-md-6 d-none d-md-block"
+        >
+          <div
+            className="col-md-2"
+          >
+            <a
+              href="https://www.ethereum-alarm-clock.com/ "
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <img
+                alt="Powered by the Ethereum Alarm Clock"
+                data="img/powered-by-eac.svg"
+                height="36"
+                src="img/powered-by-eac.svg"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          className="col-md-6"
+        >
+          <button
+            className="btn btn-primary pull-right mr-4 px-5"
+            disabled={true}
+            id="verifyWalletBtn"
+            onClick={[Function]}
+            type="button"
+          >
+            Unlock
+          </button>
+        </div>
+        <div
+          className="d-sm-inline d-md-none"
+        >
+          <div
+            className="mt-5"
+          >
+            <a
+              href="https://www.ethereum-alarm-clock.com/ "
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <img
+                alt="Powered by the Ethereum Alarm Clock"
+                data="img/powered-by-eac.svg"
+                height="36"
+                src="img/powered-by-eac.svg"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
