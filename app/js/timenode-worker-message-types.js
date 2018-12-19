@@ -1,4 +1,4 @@
-export const EAC_WORKER_MESSAGE_TYPES = {
+export const TIMENODE_WORKER_MESSAGE_TYPES = {
   LOG: 'log',
   START: 'start',
   STARTED: 'started',

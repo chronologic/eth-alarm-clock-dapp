@@ -1,7 +1,7 @@
 import Bb from 'bluebird';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-import { EAC_WORKER_MESSAGE_TYPES } from './eac-worker-message-types';
+import { TIMENODE_WORKER_MESSAGE_TYPES } from './timenode-worker-message-types';
 import WorkerLogger from '../lib/worker-logger';
 import { getDAYBalance } from '../lib/timenode-util';
 import BigNumber from 'bignumber.js';
@@ -28,7 +28,7 @@ const formatBN = num => {
   );
 };
 
-class EacWorker {
+class TimeNodeWorker {
   timenode = null;
   network = null;
   dayAccountAddress = null;
@@ -109,7 +109,7 @@ class EacWorker {
     this.bucketHelper.setRequestFactory(requestFactory);
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.STARTED
+      type: TIMENODE_WORKER_MESSAGE_TYPES.STARTED
     });
   }
 
@@ -135,7 +135,7 @@ class EacWorker {
     await this._detectNetworkId();
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO,
       providerBlockNumber,
       netId: this.detectedNetId || this.network.id
     });
@@ -157,7 +157,7 @@ class EacWorker {
     );
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_BALANCES,
       balanceETH: formatBN(balanceETH),
       balanceDAY: formatBN(balanceDAY),
       isTimeMint: mintingPower > 0
@@ -186,7 +186,7 @@ class EacWorker {
     const toEth = num => web3.utils.fromWei(num, 'ether');
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_STATS,
       bounties: formatBN(toEth(bounties)),
       costs: formatBN(toEth(costs)),
       profit: formatBN(toEth(profit)),
@@ -222,13 +222,13 @@ class EacWorker {
   clearStats() {
     this.config.statsDb.clearAll();
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS
+      type: TIMENODE_WORKER_MESSAGE_TYPES.CLEAR_STATS
     });
   }
 
   async getClaimedNotExecutedTransactions() {
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS,
       transactions: await this.timenode.getClaimedNotExecutedTransactions()
     });
   }
@@ -266,7 +266,7 @@ class EacWorker {
     });
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA,
       bountiesGraphData: { labels, values }
     });
   }
@@ -315,57 +315,57 @@ class EacWorker {
       values.push(processedTxs.length);
     });
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.PROCESSED_TXS,
       processedTxs: { labels, values }
     });
   }
 }
 
-let eacWorker = null;
+let timeNodeWorker = null;
 
-onmessage = async function(event) {
+onmessage = async event => {
   const type = event.data.type;
 
   switch (type) {
-    case EAC_WORKER_MESSAGE_TYPES.START:
-      eacWorker = new EacWorker();
-      await eacWorker.start(event.data.options);
+    case TIMENODE_WORKER_MESSAGE_TYPES.START:
+      timeNodeWorker = new TimeNodeWorker();
+      await timeNodeWorker.start(event.data.options);
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.START_SCANNING:
-      await eacWorker.startScanning();
+    case TIMENODE_WORKER_MESSAGE_TYPES.START_SCANNING:
+      await timeNodeWorker.startScanning();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING:
-      eacWorker.stopScanning();
+    case TIMENODE_WORKER_MESSAGE_TYPES.STOP_SCANNING:
+      timeNodeWorker.stopScanning();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
-      await eacWorker.getNetworkInfo();
+    case TIMENODE_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+      await timeNodeWorker.getNetworkInfo();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
-      await eacWorker.updateStats();
+    case TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+      await timeNodeWorker.updateStats();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
-      await eacWorker.getBalances();
+    case TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+      await timeNodeWorker.getBalances();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
-      eacWorker.clearStats();
+    case TIMENODE_WORKER_MESSAGE_TYPES.CLEAR_STATS:
+      timeNodeWorker.clearStats();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
-      eacWorker.getClaimedNotExecutedTransactions();
+    case TIMENODE_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+      timeNodeWorker.getClaimedNotExecutedTransactions();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
-      await eacWorker.getBountiesGraphData();
+    case TIMENODE_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+      await timeNodeWorker.getBountiesGraphData();
       break;
 
-    case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
-      await eacWorker.getProcessedTxs();
+    case TIMENODE_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+      await timeNodeWorker.getProcessedTxs();
       break;
   }
 };

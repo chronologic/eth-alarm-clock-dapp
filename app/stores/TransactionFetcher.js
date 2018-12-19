@@ -209,7 +209,9 @@ export default class TransactionFetcher {
 
     const requestFactory = new web3.eth.Contract(RequestFactoryABI, this._requestFactory.address);
 
-    let transactions = await requestFactory.getPastEvents('RequestCreated', {
+    let transactions;
+
+    transactions = await requestFactory.getPastEvents('RequestCreated', {
       filter: { bucket: buckets },
       fromBlock: this.requestFactoryStartBlock
     });

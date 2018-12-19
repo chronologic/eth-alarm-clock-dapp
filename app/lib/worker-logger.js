@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
+import { TIMENODE_WORKER_MESSAGE_TYPES } from '../js/timenode-worker-message-types';
 
 export const LOGGER_MSG_TYPES = {
   CACHE: 'Cache',
@@ -38,7 +38,7 @@ export default class WorkerLogger {
     }
 
     postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.LOG,
+      type: TIMENODE_WORKER_MESSAGE_TYPES.LOG,
       value: {
         timestamp,
         message: `${address} ${message}`,

@@ -43,7 +43,9 @@ const getAdditionalProperties = () => ({
     const addresses = await this.util.getContractsAddresses();
     const requestFactory = new RequestFactory(addresses.requestFactory, this.web3);
     const analytics = new Analytics(this.web3, requestFactory);
-    return await analytics.getTotalEthTransferred();
+
+    const total = await analytics.getTotalEthTransferred();
+    return total;
   }
 });
 
