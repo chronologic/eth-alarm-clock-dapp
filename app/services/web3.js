@@ -74,22 +74,17 @@ export default class Web3Service {
     return Log;
   }
 
-  getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.eth.filter({
-      fromBlock,
-      toBlock: 'latest',
+  async getTokenTransfers(address, fromBlock = this.requestFactoryStartBlock) {
+    const filter = await this.web3.eth.getPastLogs({
       topics: [
         '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         null, // from
         '0x' + '0'.repeat(24) + address.slice(2) // to
-      ]
+      ],
+      fromBlock
     });
 
-    return new Promise(resolve => {
-      filter.get((_, res) => {
-        resolve(res);
-      });
-    });
+    return filter;
   }
 
   async trackTransaction(hash) {
