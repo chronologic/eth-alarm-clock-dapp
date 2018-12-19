@@ -50,7 +50,7 @@ class AwaitingMining extends Component {
       return;
     }
 
-    if (web3Service.web3.isAddress(hash)) {
+    if (web3Service.web3.utils.isAddress(hash)) {
       this.setState({ newContract: hash });
     } else {
       this.setState({ transactionHash: hash });
