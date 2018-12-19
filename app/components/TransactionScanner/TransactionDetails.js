@@ -168,13 +168,13 @@ class TransactionDetails extends Component {
     let executedAt = '';
 
     if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
-      const events = await this.getExecutedEvents(
+      const executedEvent = await this.getExecutedEvents(
         requestLib,
         transactionStore.requestFactoryStartBlock
       );
 
-      if (events.length > 0) {
-        executedAt = events[0].transactionHash;
+      if (executedEvent) {
+        executedAt = executedEvent.transactionHash;
       }
     }
 
@@ -230,8 +230,8 @@ class TransactionDetails extends Component {
 
   getExecutedEvents(requestLib, fromBlock = 0) {
     return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
-        resolve(events);
+      requestLib.events.Executed({}, { fromBlock, toBlock: 'latest' }, (error, event) => {
+        resolve(event);
       });
     });
   }

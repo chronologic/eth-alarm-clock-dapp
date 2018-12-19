@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
 let instance = null;
-let web3 = null;
 
 export const TRANSACTION_EVENT = {
   ABORTED: 'aborted',
@@ -13,7 +12,7 @@ export const TRANSACTION_EVENT = {
 
 const getAdditionalProperties = () => ({
   getRequestLibInstance(address) {
-    return new web3.eth.Contract(RequestLib, address);
+    return new this.web3.eth.Contract(RequestLib, address);
   },
 
   calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, payment = 0) {

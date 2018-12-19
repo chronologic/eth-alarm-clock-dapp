@@ -169,7 +169,7 @@ export default class TokenHelper {
       return;
     }
 
-    return this._web3.sha3(functionName).substring(0, 10);
+    return this._web3.utils.sha3(functionName).substring(0, 10);
   }
 
   /**
