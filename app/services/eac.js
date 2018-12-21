@@ -1,4 +1,4 @@
-import { EAC, Analytics, RequestFactory } from '@ethereum-alarm-clock/lib';
+import { EAC, Analytics, RequestFactory, Util } from '@ethereum-alarm-clock/lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
@@ -22,7 +22,7 @@ const getAdditionalProperties = () => ({
     fee = fee || 0;
     payment = payment || 0;
 
-    const endowment = this.util.calcEndowment(
+    const endowment = Util.calcEndowment(
       new BigNumber(gasAmount),
       new BigNumber(amountToSend),
       new BigNumber(gasPrice),
