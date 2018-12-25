@@ -284,7 +284,7 @@ class InfoSettings extends AbstractSetting {
           (_validations.tokenToSend && _validations.toAddress && _validations.receiverAddress) &&
           !scheduleStore.tokenData && (
             <Alert
-              {...{ msg: ' Unable to generate transaction Data, check transferrable balance.' }}
+              {...{ msg: 'Unable to generate transaction Data, check transferrable balance.' }}
             />
           )}
         <div className="row">
@@ -501,32 +501,31 @@ class InfoSettings extends AbstractSetting {
             <label htmlFor="checkboxAddData">Add Data</label>
           </div>
         )}
-        {!scheduleStore.isTokenTransfer &&
-          scheduleStore.useData && (
-            <div className="row">
-              <div className="col-md-4">
-                <div
-                  className={
-                    'form-group form-group-default required' +
-                    (_validations.yourData ? '' : ' has-error')
-                  }
-                >
-                  <label>Your Data</label>
-                  <input
-                    type="text"
-                    placeholder="Enter Your Data"
-                    value={scheduleStore.yourData}
-                    onBlur={this.validate('yourData')}
-                    onChange={this.onChangeCheck('yourData')}
-                    className="form-control"
-                  />
-                </div>
-                {!_validations.yourData && (
-                  <label className="error">{_validationsErrors.yourData}</label>
-                )}
+        {!scheduleStore.isTokenTransfer && scheduleStore.useData && (
+          <div className="row">
+            <div className="col-md-4">
+              <div
+                className={
+                  'form-group form-group-default required' +
+                  (_validations.yourData ? '' : ' has-error')
+                }
+              >
+                <label>Your Data</label>
+                <input
+                  type="text"
+                  placeholder="Enter Your Data"
+                  value={scheduleStore.yourData}
+                  onBlur={this.validate('yourData')}
+                  onChange={this.onChangeCheck('yourData')}
+                  className="form-control"
+                />
               </div>
+              {!_validations.yourData && (
+                <label className="error">{_validationsErrors.yourData}</label>
+              )}
             </div>
-          )}
+          </div>
+        )}
       </div>
     );
   }

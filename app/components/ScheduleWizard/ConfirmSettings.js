@@ -117,14 +117,23 @@ class ConfirmSettings extends Component {
       <div id="confirmSettings" className="tab-pane">
         <h2>Summary</h2>
         {this.web3Error()}
-        {errMsg.length > 0 && <Alert {...{ msg: `- Please check:  ${ errMsg.map(err => Tabs[err]).join(',') } tab(s) for correct input values`, close: false }} />}
+        {errMsg.length > 0 && (
+          <Alert
+            {...{
+              msg: `Please check:  ${errMsg
+                .map(err => Tabs[err])
+                .join(',')} tab(s) for correct input values`,
+              close: false
+            }}
+          />
+        )}
         {scheduleStore.isTokenTransfer && (
           <Alert
             {...{
               type: 'info',
               close: false,
               msg:
-                ': Please note that you will be prompted to send additional transaction to set token allowance required to complete tokens transfer scheduling, after successful deployment'
+                'Please note that you will be prompted to send additional transaction to set token allowance required to complete tokens transfer scheduling, after successful deployment'
             }}
           />
         )}
