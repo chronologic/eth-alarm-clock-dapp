@@ -29,9 +29,7 @@ export default class EacStore {
 
     const eacCounter = new EacCounter();
 
-    // Optional: Needed to fetch the amount of USD transferred
-    // To use this, first get an API key from https://nomics.com/
-    await eacCounter.enableUSDFetching('c13b3d7a7c837cab121a749c7824b162');
+    await eacCounter.enableUSDFetching(process.env.NOMICS_API_KEY);
 
     const { eth, usd } = await eacCounter.getTotalTransferred();
 
