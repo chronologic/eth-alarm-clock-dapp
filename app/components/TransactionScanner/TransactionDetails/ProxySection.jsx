@@ -46,12 +46,14 @@ const ProxySection = props => {
       <tr key={index} className="row">
         <td className="d-inline-block col-4 col-md-4">{details.name}</td>
         <td className="d-inline-block col-4 col-md-4">{formattedBal}</td>
-        <button
-          className="btn btn-white btn-cons pull-right"
-          onClick={() => sendTokensToOwner(details.address, details.balance)}
-        >
-          Send!
-        </button>
+        <td className="d-inline-block col-4 col-md-4">
+          <button
+            className="btn btn-white btn-cons pull-right"
+            onClick={() => sendTokensToOwner(details.address, details.balance)}
+          >
+            Send!
+          </button>
+        </td>
       </tr>
     );
   });
@@ -72,13 +74,15 @@ const ProxySection = props => {
             proxyDataCheckBox={proxyDataCheckBox}
             proxyInputOnChange={proxyInputOnChange}
           />
+          <br/>
+          For more information about proxy call please read&nbsp;<a href="https://blog.chronologic.network/ethereum-alarm-clock-proxy-call-explanation-477170847094" target="_blank" rel="noopener noreferrer">this tutorial.</a>
         </div>
       </div>
     );
   }
 
   if (isOwner && !afterExecutionWindow) {
-    return <div>You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable.</div>;
+    return <div>You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable. For more information please read&nbsp;<a href="https://blog.chronologic.network/ethereum-alarm-clock-proxy-call-explanation-477170847094" target="_blank" rel="noopener noreferrer">this tutorial.</a></div>;
   }
 
   return <div />;
