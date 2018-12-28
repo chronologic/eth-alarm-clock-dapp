@@ -244,7 +244,13 @@ class SidePanel extends Component {
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Transferred</div>
               <div className="sidebar-additional-item--display">
-                {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+                {eacStore.totalEthTransferred !== null ? (
+                  `${eacStore.totalEthTransferred} ETH`
+                ) : (
+                  <BeatLoader color="#fff" size={4} />
+                )}
+                {eacStore.totalUsdTransferred !== null &&
+                  ` (${eacStore.getFormattedUSDTranferred()})`}
               </div>
             </li>
 

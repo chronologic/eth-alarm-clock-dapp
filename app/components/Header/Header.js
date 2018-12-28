@@ -71,12 +71,6 @@ class Header extends Component {
 
     const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 
-    const currencyFormatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    });
-
     return (
       <div className="header">
         <a
@@ -112,7 +106,7 @@ class Header extends Component {
                 <BeatLoader color="#fff" size={4} />
               )}
               {eacStore.totalUsdTransferred !== null &&
-                ` (${currencyFormatter.format(eacStore.totalUsdTransferred)})`}
+                ` (${eacStore.getFormattedUSDTranferred()})`}
             </span>
           </div>
 

@@ -38,4 +38,13 @@ export default class EacStore {
     this.totalEthTransferred = Math.round(eth);
     this.totalUsdTransferred = Math.round(usd);
   }
+
+  getFormattedUSDTranferred() {
+    const currencyFormatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    });
+    return currencyFormatter.format(this.totalUsdTransferred);
+  }
 }
