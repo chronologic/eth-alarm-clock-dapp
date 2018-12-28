@@ -1,4 +1,5 @@
 import { autorun, observable } from 'mobx';
+import EacCounter from 'eac-counter';
 
 export default class EacStore {
   @observable
@@ -6,6 +7,8 @@ export default class EacStore {
 
   @observable
   totalEthTransferred = null;
+  @observable
+  totalUsdTransferred = null;
 
   constructor(eacService, featuresService, web3Service) {
     this._eac = eacService;
@@ -24,7 +27,15 @@ export default class EacStore {
 
     this.contracts = await this._eac.getActiveContracts();
 
-    const totalEthTransferred = await this._eac.Analytics.getTotalEthTransferred();
-    this.totalEthTransferred = Math.round(totalEthTransferred);
+    const eacCounter = new EacCounter();
+
+    // Optional: Needed to fetch the amount of USD transferred
+    // To use this, first get an API key from https://nomics.com/
+    await eacCounter.enableUSDFetching('c13b3d7a7c837cab121a749c7824b162');
+
+    const { eth, usd } = await eacCounter.getTotalTransferred();
+
+    this.totalEthTransferred = Math.round(eth);
+    this.totalUsdTransferred = Math.round(usd);
   }
 }
