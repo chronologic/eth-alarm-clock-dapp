@@ -100,7 +100,13 @@ class Header extends Component {
               </span>
             </span>
             <span className="analytics-count">
-              {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+              {eacStore.totalEthTransferred !== null ? (
+                `${eacStore.totalEthTransferred} ETH`
+              ) : (
+                <BeatLoader color="#fff" size={4} />
+              )}
+              {eacStore.totalUsdTransferred !== null &&
+                ` (${eacStore.getFormattedUSDTranferred()})`}
             </span>
           </div>
 

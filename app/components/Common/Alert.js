@@ -17,7 +17,7 @@ class Alert extends Component {
       <div className={'d-flex flex-nowrap alert alert-' + type} role="alert">
         <div className="d-flex flex-wrap flex-stretch flex-sm-nowrap justify-content-center justify-content-sm-start align-items-center ">
           <div className="flex-stretch">
-            <strong> {Titles[type]} </strong>
+            <strong>{Titles[type]}: </strong>
             {this.props.msg}
           </div>
           {callToAction && (

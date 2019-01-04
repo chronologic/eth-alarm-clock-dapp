@@ -4,7 +4,6 @@ exports[`TransactionDetails correctly renders 1`] = `
 <div
   className="tab-pane slide active show"
 >
-  <div />
   <table
     className="table d-block"
   >
@@ -35,7 +34,7 @@ exports[`TransactionDetails correctly renders 1`] = `
               className="css-16ar6ui"
             />
           </div>
-          
+          <span />
         </td>
       </tr>
       <tr
@@ -207,9 +206,6 @@ exports[`TransactionDetails correctly renders 1`] = `
         <div
           className="col-6"
         />
-        <div
-          className="col-6"
-        />
       </div>
     </div>
     <div
@@ -274,7 +270,14 @@ exports[`TransactionDetails correctly renders 1`] = `
     </div>
   </div>
   <div>
-    You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable.
+    You are the owner. Please wait until after conclusion of execution window when proxy call feature will enable. For more information please read 
+    <a
+      href="https://blog.chronologic.network/ethereum-alarm-clock-proxy-call-explanation-477170847094"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      this tutorial.
+    </a>
   </div>
 </div>
 `;
