@@ -326,12 +326,15 @@ class TransactionDetails extends Component {
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
+    const statePropertiesToSet = {
+      status
+    };
+
     if (!transactionMissingData) {
-      this.setState({
-        callData: await transaction.callData(),
-        status
-      });
+      statePropertiesToSet.callData = await transaction.callData();
     }
+
+    this.setState(statePropertiesToSet);
 
     await this.getFrozenStatus();
     await this.testToken();
