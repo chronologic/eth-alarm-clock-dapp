@@ -64,6 +64,21 @@ export default class Web3Service {
     return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
   }
 
+  async waitForMining(hash) {
+    let receipt;
+
+    while (!receipt || !receipt.blockNumber) {
+      await new Promise(resolve => {
+        setTimeout(async () => {
+          receipt = await this.fetchReceipt(hash);
+          resolve();
+        }, 500);
+      });
+    }
+
+    return receipt;
+  }
+
   async fetchLog(hash, event) {
     const receipt = await this.trackTransaction(hash);
     let Log;

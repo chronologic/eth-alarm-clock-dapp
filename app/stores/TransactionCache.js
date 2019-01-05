@@ -97,7 +97,7 @@ export default class TransactionCache {
     }
   }
 
-  addRequestCreatedLogToCache(log) {
+  addRequestCreatedLogToCache(log, skipUpdatingEndBlock = false) {
     const logs = this._storage.load(REQUEST_LOGS_CACHE_KEY);
     let newLogs;
 
@@ -114,7 +114,10 @@ export default class TransactionCache {
     }
 
     this._storage.save(REQUEST_LOGS_CACHE_KEY, JSON.stringify(newLogs));
-    this._storage.save(REQUEST_LOGS_END_BLOCK_CACHE_KEY, log.blockNumber);
+
+    if (!skipUpdatingEndBlock) {
+      this._storage.save(REQUEST_LOGS_END_BLOCK_CACHE_KEY, log.blockNumber);
+    }
 
     this.loadRequestCreatedLogsFromStorage();
   }
