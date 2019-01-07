@@ -334,6 +334,7 @@ class TransactionDetails extends Component {
       statePropertiesToSet.callData = await transaction.callData();
     } catch (error) {
       statePropertiesToSet.callData = '';
+      console.error('Error from TransactionDetails:', error);
     }
 
     this.setState(statePropertiesToSet);
