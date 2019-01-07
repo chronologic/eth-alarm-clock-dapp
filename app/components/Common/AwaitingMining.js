@@ -1,26 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { services } from '../../services';
-import Coder from 'web3/lib/solidity/coder';
 import { PacmanLoader } from 'react-spinners';
 
 const loaderConfig = {
   color: '#21ffff'
 };
 
-const mineDestinations = {
-  scheduler: {
-    path: 'transactions',
-    prop: 'newContract',
-    logEventHex: services.eacService.Constants.NEWREQUESTLOG,
-    logEventTypes: ['address'],
-    nextParameterPosition: 0
-  }
-};
-
-const REQUIRED_CONFIRMATIONS = 1;
-
+@inject('transactionStore')
 @inject('web3Service')
 @observer
 class AwaitingMining extends Component {
@@ -30,19 +17,13 @@ class AwaitingMining extends Component {
     super(props);
 
     this.state = {
-      confirmations: 0,
-      transactionHash: '',
-      newContract: '',
-      deploying: false
+      transactionHash: ''
     };
   }
 
   async loadUp() {
-    const { match, web3Service } = this.props;
-    const { hash, type } = match.params;
-
-    let unmined = true;
-    let unconfirmed = true;
+    const { match, web3Service, transactionStore, history } = this.props;
+    const { hash } = match.params;
 
     await web3Service.init();
 
@@ -50,69 +31,17 @@ class AwaitingMining extends Component {
       return;
     }
 
-    if (web3Service.web3.isAddress(hash)) {
-      this.setState({ newContract: hash });
-    } else {
-      this.setState({ transactionHash: hash });
-    }
+    this.setState({ transactionHash: hash });
 
-    if (this.state.newContract) {
-      return this.next();
-    }
-
-    const { transactionHash } = this.state;
-
-    if (!transactionHash) {
+    if (!hash) {
       return;
     }
 
-    while (unmined) {
-      let txReceipt = await web3Service.fetchReceipt(transactionHash);
+    const txReceipt = await web3Service.waitForMining(hash);
 
-      unmined = !txReceipt;
+    const requestAddress = transactionStore.getAndSaveRequestFromLogs(txReceipt.logs);
 
-      this.setState({
-        deploying: unmined
-      });
-
-      if (unmined) {
-        await web3Service.trackTransaction(transactionHash);
-      }
-
-      while (unconfirmed) {
-        const confirmations = await web3Service.fetchConfirmations(transactionHash);
-
-        this.setState({ confirmations });
-
-        if (confirmations >= REQUIRED_CONFIRMATIONS) {
-          unconfirmed = false;
-        }
-      }
-    }
-
-    if (mineDestinations[type].logEventTypes && mineDestinations[type].logEventHex) {
-      const log = await web3Service.fetchLog(transactionHash, mineDestinations[type].logEventHex);
-      const data = log.data.substring(2);
-      const args = Coder.decodeParams(mineDestinations[type].logEventTypes, data);
-      let newSate = {};
-      newSate[mineDestinations[type].prop] = args[mineDestinations[type].nextParameterPosition];
-      this.setState(newSate);
-    }
-
-    this.next();
-  }
-
-  getDestination() {
-    const { type } = this.props.match.params;
-    return '/' + mineDestinations[type].path + '/' + this.state[mineDestinations[type].prop];
-  }
-
-  next() {
-    const { history } = this.props;
-    const destination = this.getDestination();
-    history.push({
-      pathname: destination
-    });
+    history.push(`/transactions/${requestAddress}`);
   }
 
   async componentDidMount() {
@@ -129,23 +58,17 @@ class AwaitingMining extends Component {
     const {
       web3Service: { explorer }
     } = this.props;
-    const { confirmations, transactionHash, newContract } = this.state;
+    const { transactionHash } = this.state;
 
     return (
       <div id="awaitingMining" className="container padding-25 sm-padding-10 horizontal-center">
-        {this.state.deploying && <h1 className="view-title">Deploying</h1>}
-        {!this.state.deploying && <h1 className="view-title"> ... </h1>}
+        <h1 className="view-title">Deploying</h1>
         <div className="card card-body">
           <div className="tabs-content">
             <div className="loader">
               <PacmanLoader {...Object.assign({ loading: true }, loaderConfig)} />
             </div>
-            <div>
-              Confirmations: {Math.min(Math.max(confirmations, 0), REQUIRED_CONFIRMATIONS)} of{' '}
-              {REQUIRED_CONFIRMATIONS}
-            </div>
-            <br />
-            {this.state.transactionHash && (
+            {transactionHash && (
               <p className="horizontal-center">
                 Transaction Hash: <br />
                 <a
@@ -154,20 +77,7 @@ class AwaitingMining extends Component {
                   rel="noopener noreferrer"
                 >
                   {' '}
-                  {this.state.transactionHash}{' '}
-                </a>
-              </p>
-            )}
-            {this.state.newContract && (
-              <p className="horizontal-center">
-                Contract Address: <br />
-                <a
-                  target="_blank"
-                  href={explorer + '/address/' + newContract}
-                  rel="noopener noreferrer"
-                >
-                  {' '}
-                  {this.state.newContract}{' '}
+                  {transactionHash}{' '}
                 </a>
               </p>
             )}

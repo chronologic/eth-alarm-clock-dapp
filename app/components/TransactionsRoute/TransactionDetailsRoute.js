@@ -7,45 +7,111 @@ import { PropagateLoader } from 'react-spinners';
 import PoweredByEAC from '../Common/PoweredByEAC';
 import InformativeLoader from '../Common/InformativeLoader';
 
+const MAXIMUM_TRIES_FOR_FETCHING_DATA = 40;
+const FETCHING_DATA_ATTEMPT_INTERVAL = 1200;
+
+@inject('transactionCache')
 @inject('loadingStateStore')
 @inject('eacService')
 @inject('transactionStore')
 @observer
 class TransactionDetailsRoute extends Component {
+  _isMounted = false;
+
   state = {
     transaction: null,
-    transactionNotFound: false
+    transactionNotFound: false,
+    transactionMissingData: true
   };
 
   async componentDidMount() {
+    this._isMounted = true;
+
     this.props.loadingStateStore.reset();
 
     const { txAddress } = this.props.match.params;
 
-    this.getTransactionData(txAddress);
+    await this.getTransactionData(txAddress);
+
+    let i = 0;
+
+    while (
+      this.state.transactionMissingData &&
+      i < MAXIMUM_TRIES_FOR_FETCHING_DATA &&
+      this._isMounted
+    ) {
+      i++;
+
+      await new Promise(resolve => {
+        setTimeout(resolve, FETCHING_DATA_ATTEMPT_INTERVAL);
+      });
+
+      await this.getTransactionData(txAddress);
+    }
   }
 
-  transactionInvalid(transaction) {
-    return transaction.temporalUnit === 0;
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  transactionHasNoBasicData(transaction) {
+    return !transaction.data || transaction.temporalUnit === 0;
+  }
+
+  transactionMissingData(transaction) {
+    return this.transactionHasNoBasicData(transaction) || !transaction.toAddress;
   }
 
   async getTransactionData(address) {
-    const { transactionStore } = this.props;
+    const { transactionStore, transactionCache } = this.props;
+
+    await transactionCache.waitForInitialization();
 
     const transaction = await transactionStore.getTransactionByAddress(address);
 
-    await transaction.fillData();
+    try {
+      await transaction.fillData();
+    } catch (error) {
+      this.setState({
+        transaction,
+        transactionNotFound: true,
+        transactionMissingData: false
+      });
+
+      return;
+    }
+
+    let transactionHasNoBasicData = this.transactionHasNoBasicData(transaction);
+    let transactionMissingData = false;
+
+    if (transactionHasNoBasicData) {
+      const requestCreatedLog = transactionCache.requestCreatedLogs.find(
+        l => l.args.request === transaction.address
+      );
+
+      if (requestCreatedLog) {
+        transactionStore.fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedLog);
+
+        transactionHasNoBasicData = this.transactionHasNoBasicData(transaction);
+        transactionMissingData = true;
+      }
+    }
+
+    if (!this._isMounted) {
+      return;
+    }
 
     this.setState({
       transaction,
-      transactionNotFound: this.transactionInvalid(transaction)
+      transactionNotFound: transactionHasNoBasicData,
+      transactionMissingData
     });
   }
 
   render() {
     const { txAddress } = this.props.match.params;
 
-    const { transaction, transactionNotFound } = this.state;
+    const { transaction, transactionNotFound, transactionMissingData } = this.state;
 
     let content = <div />;
 
@@ -53,7 +119,12 @@ class TransactionDetailsRoute extends Component {
       if (transactionNotFound) {
         content = <TransactionNotFound address={txAddress} />;
       } else {
-        content = <TransactionDetails transaction={transaction} />;
+        content = (
+          <TransactionDetails
+            transaction={transaction}
+            transactionMissingData={transactionMissingData}
+          />
+        );
       }
     } else {
       content = (

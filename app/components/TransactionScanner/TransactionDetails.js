@@ -58,6 +58,12 @@ class TransactionDetails extends Component {
     await this.setupDetails();
   }
 
+  async componentDidUpdate(prevProps) {
+    if (prevProps.transactionMissingData && !this.props.transactionMissingData) {
+      await this.setupDetails();
+    }
+  }
+
   componentWillUnmount() {
     this._isMounted = false;
     clearInterval(this.tokenCheckInterval);
@@ -316,16 +322,29 @@ class TransactionDetails extends Component {
   }
 
   async setupDetails() {
-    const { transaction, transactionStore } = this.props;
+    const { transaction, transactionStore, transactionMissingData } = this.props;
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
-    this.setState({
-      callData: await transaction.callData(),
+    const statePropertiesToSet = {
       status
-    });
+    };
+
+    try {
+      statePropertiesToSet.callData = await transaction.callData();
+    } catch (error) {
+      statePropertiesToSet.callData = '';
+      console.error('Error from TransactionDetails:', error);
+    }
+
+    this.setState(statePropertiesToSet);
 
     await this.getFrozenStatus();
+
+    if (transactionMissingData) {
+      return;
+    }
+
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
     await this.fetchTokenTransferEvents();
@@ -418,7 +437,13 @@ class TransactionDetails extends Component {
   }
 
   getTokenNotificationSection() {
-    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
+    const {
+      status,
+      isFrozen,
+      isTokenTransfer,
+      tokenTransferApproved,
+      transactionMissingData
+    } = this.state;
     const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
@@ -429,6 +454,7 @@ class TransactionDetails extends Component {
     );
 
     if (
+      !transactionMissingData &&
       isOwner &&
       tokenTransferApproved === false &&
       isTokenTransfer &&
@@ -454,7 +480,7 @@ class TransactionDetails extends Component {
   }
 
   render() {
-    const { transaction } = this.props;
+    const { transaction, transactionMissingData } = this.props;
     const { callData, executedAt, isFrozen, status, tokenTransferApproved } = this.state;
     const {
       bounty,
@@ -474,15 +500,24 @@ class TransactionDetails extends Component {
 
     const tokenTransferApprovalStatus = tokenTransferApproved ? 'Approved' : 'Not Approved';
 
+    const loader = <BeatLoader size={6} color="#aaa" />;
+
     return (
       <div className="tab-pane slide active show">
         {this.getTokenNotificationSection()}
+        {transactionMissingData && (
+          <Alert
+            type="warning"
+            close={false}
+            msg={`Please wait... Your transaction is being confirmed by the network. Some details might be missing while this process is taking place.`}
+          />
+        )}
         <table className="table d-block">
           <tbody className="d-block">
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Status</td>
               <td className="d-inline-block col-7 col-md-9">
-                {status ? status : <BeatLoader size={6} color="#aaa" />}
+                {status ? status : loader}
                 {executedAt ? (
                   <span>
                     {` at `}
@@ -503,11 +538,7 @@ class TransactionDetails extends Component {
               <tr className="row">
                 <td className="d-inline-block col-5 col-md-3">Approval status</td>
                 <td className="d-inline-block col-7 col-md-9">
-                  {tokenTransferApproved === undefined ? (
-                    <BeatLoader size={6} color="#aaa" />
-                  ) : (
-                    tokenTransferApprovalStatus
-                  )}
+                  {tokenTransferApproved === undefined ? loader : tokenTransferApprovalStatus}
                 </td>
               </tr>
             )}
@@ -521,7 +552,7 @@ class TransactionDetails extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {toAddress}
+                  {toAddress || loader}
                 </a>
               </td>
             </tr>
@@ -556,7 +587,7 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
               <td className="d-inline-block col-7 col-md-9" title={callData}>
-                {callData ? callData : <BeatLoader size={6} color="#aaa" />}
+                {callData || loader}
               </td>
             </tr>
             <tr className="row">
@@ -610,9 +641,12 @@ class TransactionDetails extends Component {
         </div>
         <CancelSection
           cancelButtonEnabled={
+            !transactionMissingData &&
             isOwner &&
             !isFrozen &&
-            (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED)
+            ((status === TRANSACTION_STATUS.SCHEDULED &&
+              moment() < moment.unix(transaction.claimWindowStart)) ||
+              status === TRANSACTION_STATUS.MISSED)
           }
           cancelBtnRef={el => (this.cancelBtn = el)}
           cancelTransaction={this.cancelTransaction}
@@ -646,6 +680,7 @@ TransactionDetails.propTypes = {
   loadingStateStore: PropTypes.any,
   tokenHelper: PropTypes.any,
   transaction: PropTypes.any,
+  transactionMissingData: PropTypes.any,
   transactionStore: PropTypes.any,
   web3Service: PropTypes.any
 };
