@@ -499,6 +499,8 @@ class TransactionDetails extends Component {
 
     const tokenTransferApprovalStatus = tokenTransferApproved ? 'Approved' : 'Not Approved';
 
+    const loader = <BeatLoader size={6} color="#aaa" />;
+
     return (
       <div className="tab-pane slide active show">
         {this.getTokenNotificationSection()}
@@ -514,7 +516,7 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Status</td>
               <td className="d-inline-block col-7 col-md-9">
-                {status ? status : <BeatLoader size={6} color="#aaa" />}
+                {status ? status : loader}
                 {executedAt ? (
                   <span>
                     {` at `}
@@ -535,11 +537,7 @@ class TransactionDetails extends Component {
               <tr className="row">
                 <td className="d-inline-block col-5 col-md-3">Approval status</td>
                 <td className="d-inline-block col-7 col-md-9">
-                  {tokenTransferApproved === undefined ? (
-                    <BeatLoader size={6} color="#aaa" />
-                  ) : (
-                    tokenTransferApprovalStatus
-                  )}
+                  {tokenTransferApproved === undefined ? loader : tokenTransferApprovalStatus}
                 </td>
               </tr>
             )}
@@ -553,7 +551,7 @@ class TransactionDetails extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {toAddress || <BeatLoader size={6} color="#aaa" />}
+                  {toAddress || loader}
                 </a>
               </td>
             </tr>
@@ -588,7 +586,7 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
               <td className="d-inline-block col-7 col-md-9" title={callData}>
-                {callData || <BeatLoader size={6} color="#aaa" />}
+                {callData || loader}
               </td>
             </tr>
             <tr className="row">
