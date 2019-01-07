@@ -322,7 +322,7 @@ class TransactionDetails extends Component {
   }
 
   async setupDetails() {
-    const { transaction, transactionStore } = this.props;
+    const { transaction, transactionStore, transactionMissingData } = this.props;
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
@@ -339,6 +339,11 @@ class TransactionDetails extends Component {
     this.setState(statePropertiesToSet);
 
     await this.getFrozenStatus();
+
+    if (transactionMissingData) {
+      return;
+    }
+
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
     await this.fetchTokenTransferEvents();
@@ -431,7 +436,13 @@ class TransactionDetails extends Component {
   }
 
   getTokenNotificationSection() {
-    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
+    const {
+      status,
+      isFrozen,
+      isTokenTransfer,
+      tokenTransferApproved,
+      transactionMissingData
+    } = this.state;
     const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
@@ -442,6 +453,7 @@ class TransactionDetails extends Component {
     );
 
     if (
+      !transactionMissingData &&
       isOwner &&
       tokenTransferApproved === false &&
       isTokenTransfer &&
