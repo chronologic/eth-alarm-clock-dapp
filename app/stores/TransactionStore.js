@@ -51,6 +51,8 @@ export class TransactionStore {
   _bucketHelper;
   _util;
 
+  scheduledTransactions = [];
+
   constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
     this._eac = eac;
@@ -487,8 +489,10 @@ export class TransactionStore {
 
     const sendGasPrice = (await this._util.getAdvancedNetworkGasPrice()).average;
 
+    let receipt;
+
     if (isTimestamp) {
-      const receipt = await this._eacScheduler.timestampSchedule(
+      receipt = await this._eacScheduler.timestampSchedule(
         toAddress,
         callData,
         callGas,
@@ -502,24 +506,38 @@ export class TransactionStore {
         waitForMined,
         sendGasPrice
       );
-
-      return receipt;
+    } else {
+      receipt = await this._eacScheduler.blockSchedule(
+        toAddress,
+        callData,
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit,
+        waitForMined,
+        sendGasPrice
+      );
     }
 
-    const receipt = await this._eacScheduler.blockSchedule(
-      toAddress,
-      callData,
-      callGas,
-      callValue,
-      windowSize,
-      windowStart,
-      gasPrice,
-      fee,
-      payment,
-      requiredDeposit,
-      waitForMined,
-      sendGasPrice
-    );
+    if (receipt && receipt.transactionHash) {
+      this.scheduledTransactions.push({
+        transactionHash: receipt.transactionHash,
+        toAddress: toAddress.toLowerCase(),
+        callData: callData || '0x',
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit
+      });
+    }
 
     return receipt;
   }
@@ -565,21 +583,46 @@ export class TransactionStore {
 
     const requestCreatedLog = parsedLogs[0];
 
+    if (!requestCreatedLog) {
+      throw new Error('RequestCreated log has not been found.');
+    }
+
     this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
 
-    return requestCreatedLog.args.request;
+    const transactionAddress = requestCreatedLog.args.request;
+
+    const scheduledTx = this.scheduledTransactions.find(
+      tx => tx.transactionHash === requestCreatedLog.transactionHash
+    );
+
+    if (scheduledTx) {
+      scheduledTx.address = transactionAddress;
+    }
+
+    return transactionAddress;
   }
 
   fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedEvent) {
+    const locallyStoredTx = this.scheduledTransactions.find(
+      tx => tx.address === transaction.address
+    );
+
+    let toAddress = '';
+
+    if (locallyStoredTx) {
+      toAddress = locallyStoredTx.toAddress;
+      transaction.callData = () => Promise.resolve(locallyStoredTx.callData);
+    }
+
     const data = new this._eac.RequestData(
       [
         [
           '', // self.claimData.claimedBy,
-          '', // self.meta.createdBy,
+          requestCreatedEvent.args.owner, // self.meta.createdBy,
           requestCreatedEvent.args.owner, // self.meta.owner,
           '', // self.paymentData.feeRecipient,
           '', // self.paymentData.bountyBenefactor,
-          '' // self.txnData.toAddress
+          toAddress // self.txnData.toAddress
         ],
         [false, false, false],
         [

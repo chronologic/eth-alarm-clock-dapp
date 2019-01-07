@@ -322,7 +322,7 @@ class TransactionDetails extends Component {
   }
 
   async setupDetails() {
-    const { transaction, transactionStore, transactionMissingData } = this.props;
+    const { transaction, transactionStore } = this.props;
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
@@ -330,8 +330,10 @@ class TransactionDetails extends Component {
       status
     };
 
-    if (!transactionMissingData) {
+    try {
       statePropertiesToSet.callData = await transaction.callData();
+    } catch (error) {
+      statePropertiesToSet.callData = '';
     }
 
     this.setState(statePropertiesToSet);
@@ -574,7 +576,7 @@ class TransactionDetails extends Component {
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
               <td className="d-inline-block col-7 col-md-9" title={callData}>
-                {callData ? callData : <BeatLoader size={6} color="#aaa" />}
+                {callData || <BeatLoader size={6} color="#aaa" />}
               </td>
             </tr>
             <tr className="row">
@@ -628,9 +630,12 @@ class TransactionDetails extends Component {
         </div>
         <CancelSection
           cancelButtonEnabled={
+            !transactionMissingData &&
             isOwner &&
             !isFrozen &&
-            (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED)
+            ((status === TRANSACTION_STATUS.SCHEDULED &&
+              moment() < moment.unix(transaction.claimWindowStart)) ||
+              status === TRANSACTION_STATUS.MISSED)
           }
           cancelBtnRef={el => (this.cancelBtn = el)}
           cancelTransaction={this.cancelTransaction}

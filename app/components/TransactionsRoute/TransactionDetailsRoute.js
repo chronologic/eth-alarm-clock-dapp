@@ -69,11 +69,22 @@ class TransactionDetailsRoute extends Component {
 
     const transaction = await transactionStore.getTransactionByAddress(address);
 
-    await transaction.fillData();
+    try {
+      await transaction.fillData();
+    } catch (error) {
+      this.setState({
+        transaction,
+        transactionNotFound: true,
+        transactionMissingData: false
+      });
 
-    let transactionNoBasicData = this.transactionHasNoBasicData(transaction);
+      return;
+    }
 
-    if (transactionNoBasicData) {
+    let transactionHasNoBasicData = this.transactionHasNoBasicData(transaction);
+    let transactionMissingData = false;
+
+    if (transactionHasNoBasicData) {
       const requestCreatedLog = transactionCache.requestCreatedLogs.find(
         l => l.args.request === transaction.address
       );
@@ -81,7 +92,8 @@ class TransactionDetailsRoute extends Component {
       if (requestCreatedLog) {
         transactionStore.fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedLog);
 
-        transactionNoBasicData = this.transactionHasNoBasicData(transaction);
+        transactionHasNoBasicData = this.transactionHasNoBasicData(transaction);
+        transactionMissingData = true;
       }
     }
 
@@ -91,8 +103,8 @@ class TransactionDetailsRoute extends Component {
 
     this.setState({
       transaction,
-      transactionNotFound: transactionNoBasicData,
-      transactionMissingData: this.transactionMissingData(transaction)
+      transactionNotFound: transactionHasNoBasicData,
+      transactionMissingData
     });
   }
 
