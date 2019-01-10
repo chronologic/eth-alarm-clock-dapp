@@ -156,6 +156,7 @@ class TransactionDetailsRoute extends Component {
 TransactionDetailsRoute.propTypes = {
   eacService: PropTypes.any,
   loadingStateStore: PropTypes.any,
+  transactionCache: PropTypes.any,
   match: PropTypes.any,
   transactionStore: PropTypes.any
 };
