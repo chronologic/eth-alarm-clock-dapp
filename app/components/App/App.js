@@ -105,6 +105,7 @@ class App extends Component {
 
 App.propTypes = {
   web3Service: PropTypes.any,
+  storageService: PropTypes.any,
   history: PropTypes.object.isRequired
 };
 
