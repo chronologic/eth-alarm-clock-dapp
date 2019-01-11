@@ -99,7 +99,10 @@ class Header extends Component {
                 Transferred:
               </span>
             </span>
-            <span className="analytics-count">
+            <span
+              className="analytics-count"
+              title="Some or all data provided by Nomics.com Cryptocurrency Market Data API."
+            >
               {eacStore.totalEthTransferred !== null ? (
                 `${eacStore.totalEthTransferred} ETH`
               ) : (
