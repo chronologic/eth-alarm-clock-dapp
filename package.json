@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "main": "main.js",
   "description": "",
   "scripts": {
@@ -75,7 +75,7 @@
     "eac-counter": "0.1.2",
     "eac.js-lib": "2.5.1",
     "electron": "3.0.11",
-    "electron-builder": "20.38.4",
+    "electron-builder": "20.28.4",
     "electron-packager": "13.0.1",
     "enzyme": "3.8.0",
     "enzyme-adapter-react-16": "1.7.1",
