@@ -235,6 +235,7 @@ exports[`SidePanel is correctly rendered 1`] = `
         </div>
         <div
           className="sidebar-additional-item--display"
+          title="Some or all data provided by Nomics.com Cryptocurrency Market Data API."
         >
           <div
             className=""

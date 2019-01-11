@@ -243,7 +243,10 @@ class SidePanel extends Component {
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Transferred</div>
-              <div className="sidebar-additional-item--display">
+              <div
+                className="sidebar-additional-item--display"
+                title="Some or all data provided by Nomics.com Cryptocurrency Market Data API."
+              >
                 {eacStore.totalEthTransferred !== null ? (
                   `${eacStore.totalEthTransferred} ETH`
                 ) : (

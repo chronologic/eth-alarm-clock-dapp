@@ -34,7 +34,7 @@ export default class EacStore {
     const { eth, usd } = await eacCounter.getTotalTransferred();
 
     this.totalEthTransferred = Math.round(eth);
-    this.totalUsdTransferred = Math.round(usd);
+    this.totalUsdTransferred = usd ? Math.round(usd) : null;
   }
 
   getFormattedUSDTranferred() {

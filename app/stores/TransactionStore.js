@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 import { observable } from 'mobx';
+import SolidityEvent from 'web3/lib/web3/event.js';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -49,6 +50,8 @@ export class TransactionStore {
   _helper;
   _bucketHelper;
   _util;
+
+  scheduledTransactions = [];
 
   constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
@@ -486,8 +489,10 @@ export class TransactionStore {
 
     const sendGasPrice = (await this._util.getAdvancedNetworkGasPrice()).average;
 
+    let receipt;
+
     if (isTimestamp) {
-      const receipt = await this._eacScheduler.timestampSchedule(
+      receipt = await this._eacScheduler.timestampSchedule(
         toAddress,
         callData,
         callGas,
@@ -501,25 +506,147 @@ export class TransactionStore {
         waitForMined,
         sendGasPrice
       );
-
-      return receipt;
+    } else {
+      receipt = await this._eacScheduler.blockSchedule(
+        toAddress,
+        callData,
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit,
+        waitForMined,
+        sendGasPrice
+      );
     }
 
-    const receipt = await this._eacScheduler.blockSchedule(
-      toAddress,
-      callData,
-      callGas,
-      callValue,
-      windowSize,
-      windowStart,
-      gasPrice,
-      fee,
-      payment,
-      requiredDeposit,
-      waitForMined,
-      sendGasPrice
-    );
+    if (receipt && receipt.transactionHash) {
+      this.scheduledTransactions.push({
+        transactionHash: receipt.transactionHash,
+        toAddress: toAddress.toLowerCase(),
+        callData: callData || '0x',
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit
+      });
+    }
 
     return receipt;
+  }
+
+  getAndSaveRequestFromLogs(logs) {
+    const requestCreatedEventABI = {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          name: 'request',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          name: 'owner',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          name: 'bucket',
+          type: 'int256'
+        },
+        {
+          indexed: false,
+          name: 'params',
+          type: 'uint256[12]'
+        }
+      ],
+      name: 'RequestCreated',
+      type: 'event'
+    };
+
+    const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+
+    const parsedLogs = logs
+      .map(log => {
+        if (decoder.signature() === log.topics[0].replace('0x', '')) {
+          return decoder.decode(log);
+        }
+      })
+      .filter(parsedLog => parsedLog);
+
+    const requestCreatedLog = parsedLogs[0];
+
+    if (!requestCreatedLog) {
+      throw new Error('RequestCreated log has not been found.');
+    }
+
+    this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
+
+    const transactionAddress = requestCreatedLog.args.request;
+
+    const scheduledTx = this.scheduledTransactions.find(
+      tx => tx.transactionHash === requestCreatedLog.transactionHash
+    );
+
+    if (scheduledTx) {
+      scheduledTx.address = transactionAddress;
+    }
+
+    return transactionAddress;
+  }
+
+  fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedEvent) {
+    const locallyStoredTx = this.scheduledTransactions.find(
+      tx => tx.address === transaction.address
+    );
+
+    let toAddress = '';
+
+    if (locallyStoredTx) {
+      toAddress = locallyStoredTx.toAddress;
+      transaction.callData = () => Promise.resolve(locallyStoredTx.callData);
+    }
+
+    const data = new this._eac.RequestData(
+      [
+        [
+          '', // self.claimData.claimedBy,
+          requestCreatedEvent.args.owner, // self.meta.createdBy,
+          requestCreatedEvent.args.owner, // self.meta.owner,
+          '', // self.paymentData.feeRecipient,
+          '', // self.paymentData.bountyBenefactor,
+          toAddress // self.txnData.toAddress
+        ],
+        [false, false, false],
+        [
+          0, // self.claimData.claimDeposit,
+          requestCreatedEvent.args.params[0], // self.paymentData.fee,
+          0, // self.paymentData.feeOwed,
+          requestCreatedEvent.args.params[1], // self.paymentData.bounty,
+          0, // self.paymentData.bountyOwed,
+          requestCreatedEvent.args.params[2], // self.schedule.claimWindowSize,
+          requestCreatedEvent.args.params[3], // self.schedule.freezePeriod,
+          requestCreatedEvent.args.params[4], // self.schedule.reservedWindowSize,
+          requestCreatedEvent.args.params[5], // uint(self.schedule.temporalUnit),
+          requestCreatedEvent.args.params[6], // self.schedule.windowSize,
+          requestCreatedEvent.args.params[7], // self.schedule.windowStart,
+          requestCreatedEvent.args.params[8], // self.txnData.callGas,
+          requestCreatedEvent.args.params[9], // self.txnData.callValue,
+          requestCreatedEvent.args.params[10], // self.txnData.gasPrice,
+          requestCreatedEvent.args.params[11] // self.claimData.requiredDeposit
+        ],
+        []
+      ],
+      transaction.instance
+    );
+
+    transaction.data = data;
   }
 }
