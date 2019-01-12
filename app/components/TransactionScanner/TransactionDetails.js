@@ -352,7 +352,7 @@ class TransactionDetails extends Component {
 
   async testToken() {
     const { tokenHelper, transaction } = this.props;
-    const { address, toAddress } = transaction;
+    const { address, owner, toAddress } = transaction;
 
     let tokenTransferApproved;
     const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
@@ -367,6 +367,7 @@ class TransactionDetails extends Component {
         const previouslyApproved = this.state.tokenTransferApproved;
         const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
           toAddress,
+          owner,
           address,
           this.state.token.info.value
         );
