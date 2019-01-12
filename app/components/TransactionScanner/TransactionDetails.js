@@ -189,7 +189,9 @@ class TransactionDetails extends Component {
       }
     }
 
-    this.setState({ executedAt });
+    if (this._isMounted) {
+      this.setState({ executedAt });
+    }
   }
 
   async fetchTokenTransferEvents() {
@@ -363,27 +365,31 @@ class TransactionDetails extends Component {
       const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
       this.setState({ token: Object.assign(this.state.token, { info }) });
 
-      const checkTransferApproved = async () => {
-        const previouslyApproved = this.state.tokenTransferApproved;
-        const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
-          toAddress,
-          owner,
-          address,
-          this.state.token.info.value
-        );
+      if (this.state.status === TRANSACTION_STATUS.SCHEDULED) {
+        const checkTransferApproved = async () => {
+          const previouslyApproved = this.state.tokenTransferApproved;
+          const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
+            toAddress,
+            owner,
+            address,
+            this.state.token.info.value
+          );
 
-        if (tokenTransferApproved) {
-          if (previouslyApproved === false) {
-            showNotification(`Token transfer approved.`, 'success', 0);
+          if (tokenTransferApproved) {
+            if (previouslyApproved === false) {
+              showNotification(`Token transfer approved.`, 'success', 0);
+            }
+            clearInterval(this.tokenCheckInterval);
           }
-          clearInterval(this.tokenCheckInterval);
+
+          this.setState({ isTokenTransfer, tokenTransferApproved });
+        };
+
+        if (!tokenTransferApproved) {
+          this.tokenCheckInterval = setInterval(checkTransferApproved, 1000);
         }
-
-        this.setState({ isTokenTransfer, tokenTransferApproved });
-      };
-
-      if (!tokenTransferApproved) {
-        this.tokenCheckInterval = setInterval(checkTransferApproved, 1000);
+      } else {
+        tokenTransferApproved = true;
       }
     }
     this.setState({ isTokenTransfer, tokenTransferApproved });
@@ -535,7 +541,7 @@ class TransactionDetails extends Component {
                 )}
               </td>
             </tr>
-            {this.state.isTokenTransfer && (
+            {this.state.isTokenTransfer && status === TRANSACTION_STATUS.SCHEDULED && (
               <tr className="row">
                 <td className="d-inline-block col-5 col-md-3">Approval status</td>
                 <td className="d-inline-block col-7 col-md-9">
