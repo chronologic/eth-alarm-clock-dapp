@@ -32,11 +32,11 @@ export default class TokenHelper {
     return new RegExp(encodedFunction).test(callData);
   }
 
-  async isTokenTransferApproved(token, sender, value) {
+  async isTokenTransferApproved(token, owner, spender, value) {
     const contract = this._web3.eth.contract(standardTokenAbi).at(token);
 
     const allowance = await Bb.fromCallback(callback =>
-      contract.allowance(this._firstAccount, sender, callback)
+      contract.allowance(owner, spender, callback)
     );
 
     return Number(allowance) >= Number(value);
