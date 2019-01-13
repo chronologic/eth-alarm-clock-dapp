@@ -58,7 +58,7 @@
     "babel-jest": "23.6.0",
     "babel-loader": "8.0.5",
     "babel-plugin-transform-class-properties": "6.24.1",
-    "bignumber.js": "5.0.0",
+    "bignumber.js": "8.0.2",
     "bluebird": "3.5.3",
     "bootstrap": "4.2.1",
     "bootstrap-datepicker": "1.8.0",
