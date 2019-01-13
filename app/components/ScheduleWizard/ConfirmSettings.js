@@ -318,6 +318,7 @@ class ConfirmSettings extends Component {
 
 ConfirmSettings.propTypes = {
   scheduleStore: PropTypes.any,
+  tokenHelper: PropTypes.any,
   web3Service: PropTypes.any,
   eacService: PropTypes.any,
   isWeb3Usable: PropTypes.any,
