@@ -483,3 +483,42 @@ hr {
     }
   }
 }
+
+.collectibles {
+  display: flex;
+  flex-wrap: wrap;
+
+  &_item {
+    width: 180px;
+    height: 180px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    cursor: pointer;
+    margin-top: 5px;
+
+    &-selected {
+      background: rgba(0, 0, 0, 0.07);
+      border: 1px solid #d2d2d2;
+    }
+
+    $root: &;
+
+    &:hover {
+      background: #ededed;
+
+      #{$root}_image {
+        width: 160px;
+        height: 160px;
+      }
+    }
+
+    &:not(:first-child) {
+      margin-left: 5px;
+    }
+
+    &_image {
+      width: 140px;
+      height: 140px;
+    }
+  }
+}

@@ -32,6 +32,7 @@ export default class ScheduleStore {
   @observable tokenToSend;
   @observable tokenData;
   @observable tokenSymbol;
+  @observable collectibleIdToTransfer;
 
   @observable isUsingTime;
   @observable isTokenTransfer;
@@ -46,8 +47,8 @@ export default class ScheduleStore {
   }
 
   /*
-  * Currently MobX doesn't have a more elegant
-  * way to reset to defaults.
+   * Currently MobX doesn't have a more elegant
+   * way to reset to defaults.
    */
   @action
   reset = () => {
@@ -79,6 +80,7 @@ export default class ScheduleStore {
 
     this.isUsingTime = true;
     this.isTokenTransfer = false;
+    this.collectibleIdToTransfer = null;
   };
 
   constructor() {
