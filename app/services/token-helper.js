@@ -37,10 +37,12 @@ export default class TokenHelper {
       return false;
     }
 
-    const functionName = 'transferFrom(address,address,uint256)';
-    const encodedFunction = this._encodeFunctionName(functionName);
+    const encodedTransferFrom = this._encodeFunctionName('transferFrom(address,address,uint256)');
+    const encodedSafeTransferFrom = this._encodeFunctionName(
+      'safeTransferFrom(address,address,uint256)'
+    );
 
-    return new RegExp(encodedFunction).test(callData);
+    return new RegExp(`${encodedTransferFrom}|${encodedSafeTransferFrom}`).test(callData);
   }
 
   async isTokenTransferApproved(token, owner, spender, value) {
@@ -117,12 +119,30 @@ export default class TokenHelper {
 
     const contract = this._web3.eth.contract(ERC721Abi).at(tokenAddress);
 
+    const config = this.getTokenConfig(tokenAddress);
+
+    if (config && config.supportedMethods && config.supportedMethods.safeTransferFrom) {
+      return await Bb.fromCallback(callback =>
+        contract.safeTransferFrom.estimateGas(from, to, tokenId, callback)
+      );
+    }
+
     return await Bb.fromCallback(callback =>
       contract.transferFrom.estimateGas(from, to, tokenId, callback)
     );
   }
 
   async isERC721(address) {
+    const config = this.getTokenConfig(address);
+
+    if (config && config.supportedMethods) {
+      return {
+        ERC721: config.type === 'erc721',
+        getApproved: config.supportedMethods.getApproved,
+        safeTransferFrom: config.supportedMethods.safeTransferFrom
+      };
+    }
+
     const supportsEIP165 = await this._web3Service.supportsEIP165(address);
 
     if (!supportsEIP165) {
@@ -173,6 +193,12 @@ export default class TokenHelper {
     }
 
     const contract = this._web3.eth.contract(ERC721Abi).at(tokenAddress);
+
+    const config = this.getTokenConfig(tokenAddress);
+
+    if (config && config.supportedMethods && config.supportedMethods.safeTransferFrom) {
+      return contract.safeTransferFrom.getData(from, to, tokenId);
+    }
 
     return contract.transferFrom.getData(from, to, tokenId);
   }

@@ -152,6 +152,21 @@ const TOKEN_ADDRESSES = {
         }
 
         return json.kitties.map(kittie => kittie.id.toString());
+      },
+      supportedMethods: {
+        getApproved: false,
+        safeTransferFrom: false
+      }
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x9382c0b652f505a88a4c5bad05084df26a4a2f54',
+      type: 'erc721',
+      imagePath:
+        'https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: false,
+        safeTransferFrom: false
       }
     }
   },
@@ -160,7 +175,21 @@ const TOKEN_ADDRESSES = {
       address: '0x960f401aed58668ef476ef02b2a2d43b83c261d8',
       type: 'erc721',
       imagePath: 'https://api.dragonereum.io/images/dragons/small/{TOKEN_ID}.png',
-      imageHeight: '140px'
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x6823cac086c70858b9bec21770520a672481a96b',
+      type: 'erc721',
+      imagePath: 'https://api.dragonereum.io/images/dragons/small/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
     }
   }
 };
