@@ -127,9 +127,20 @@ export default class TokenHelper {
       );
     }
 
-    return await Bb.fromCallback(callback =>
-      contract.transferFrom.estimateGas(from, to, tokenId, callback)
-    );
+    try {
+      return await Bb.fromCallback(callback =>
+        contract.transferFrom.estimateGas(from, to, tokenId, callback)
+      );
+    } catch (error) {
+      const cryptoKittiesContract = this._web3.eth.contract(cryptoKittiesTokenAbi).at(tokenAddress);
+      console.error(
+        'Error when estimating gas cost for ERC721 transferFrom. Falling back to estimation for transfer.',
+        error
+      );
+      return await Bb.fromCallback(callback =>
+        cryptoKittiesContract.transfer.estimateGas(to, tokenId, callback)
+      );
+    }
   }
 
   async isERC721(address) {

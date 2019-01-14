@@ -32,6 +32,7 @@ export default class ScheduleStore {
   @observable tokenToSend;
   @observable tokenData;
   @observable tokenSymbol;
+  @observable tokenName;
   @observable collectibleIdToTransfer;
 
   @observable isUsingTime;
@@ -77,10 +78,11 @@ export default class ScheduleStore {
     this.tokenToSend = '';
     this.tokenData = '';
     this.tokenSymbol = '';
+    this.tokenName = '';
+    this.collectibleIdToTransfer = null;
 
     this.isUsingTime = true;
     this.isTokenTransfer = false;
-    this.collectibleIdToTransfer = null;
   };
 
   constructor() {

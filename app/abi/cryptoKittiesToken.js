@@ -76,5 +76,23 @@ export default [
     payable: false,
     stateMutability: 'view',
     type: 'function'
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        name: '_to',
+        type: 'address'
+      },
+      {
+        name: '_tokenId',
+        type: 'uint256'
+      }
+    ],
+    name: 'transfer',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function'
   }
 ];

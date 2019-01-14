@@ -186,6 +186,7 @@ class InfoSettings extends AbstractSetting {
       const tokenDetails = await tokenHelper.fetchTokenDetails(scheduleStore.toAddress);
       this.setState({ token: tokenDetails });
       scheduleStore.tokenSymbol = tokenDetails.symbol;
+      scheduleStore.tokenName = tokenDetails.name;
     }
     let _balance = await tokenHelper.fetchTokenBalance(scheduleStore.toAddress);
     _balance = _balance == '-' ? _balance : Number(_balance / 10 ** this.state.token.decimals);

@@ -21,13 +21,13 @@ class CollectibleDisplay extends Component {
   }
 
   render() {
-    const { tokenAddress, tokenHelper, tokenName } = this.props;
+    const { onlyText, tokenAddress, tokenHelper, tokenName } = this.props;
 
     const collectibleId = this.getCollectibleIdDisplay();
 
     const token = tokenHelper.getTokenConfig(tokenAddress);
 
-    if (token && token.imagePath) {
+    if (!onlyText && token && token.imagePath) {
       return (
         <img
           src={tokenHelper.getTokenImagePath(token, collectibleId)}
@@ -50,6 +50,7 @@ class CollectibleDisplay extends Component {
 
 CollectibleDisplay.propTypes = {
   collectibleId: PropTypes.any,
+  onlyText: PropTypes.any,
   tokenAddress: PropTypes.any,
   tokenHelper: PropTypes.any,
   tokenName: PropTypes.any

@@ -120,6 +120,8 @@ class ConfirmSettings extends Component {
             <CollectibleDisplay
               tokenAddress={scheduleStore.toAddress}
               collectibleId={scheduleStore.collectibleIdToTransfer}
+              tokenName={scheduleStore.tokenName}
+              onlyText={true}
             />
           </td>
         );
