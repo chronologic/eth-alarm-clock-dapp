@@ -16,7 +16,7 @@ export const requestFactoryStartBlocks = {
   [KOVAN_NETWORK_ID]: 5555500
 };
 
-const CRYPTO_KITTIES_API_KEY = '';
+const CRYPTO_KITTIES_API_KEY = 'jM7HYCDKABweBJlWNE29QSkDyD4-HK4ypx__2Qw7xzg';
 
 export const PROVIDER_URLS = {
   MAINNET: {
@@ -137,7 +137,7 @@ const TOKEN_ADDRESSES = {
         'https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/{TOKEN_ID}.png',
       imageHeight: '140px',
       async customGetTokensForOwner(address) {
-        const URL = `https://public.api.cryptokitties.co/v1/kitties?owner_wallet_address=${address}`;
+        const URL = `https://public.api.cryptokitties.co/v1/kitties?owner_wallet_address=${address}&limit=400`;
 
         const response = await fetch(URL, {
           headers: {
