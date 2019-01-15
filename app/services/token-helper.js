@@ -297,7 +297,7 @@ export default class TokenHelper {
     const tokenConfig = this.getTokenConfig(tokenAddress);
 
     if (tokenConfig && tokenConfig.customGetTokensForOwner) {
-      return tokenConfig.customGetTokensForOwner(tokenAddress);
+      return tokenConfig.customGetTokensForOwner(addressToCheck);
     }
 
     return (await Bb.fromCallback(callback => {
