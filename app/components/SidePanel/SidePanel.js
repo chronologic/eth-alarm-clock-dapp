@@ -294,7 +294,7 @@ class SidePanel extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Cryptocurrency Market Data API.
+                  Cryptocurrency Market Data API
                 </a>
               </small>
             </li>
