@@ -423,6 +423,12 @@ hr {
   display: none;
 }
 
+.sidebar-bottom-item {
+  position: absolute;
+  bottom: 0;
+  padding: 15px !important;
+}
+
 .sidebar-additional-item {
   display: none !important;
 
