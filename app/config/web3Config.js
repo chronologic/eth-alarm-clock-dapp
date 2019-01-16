@@ -16,7 +16,7 @@ export const requestFactoryStartBlocks = {
   [KOVAN_NETWORK_ID]: 5555500
 };
 
-const CRYPTO_KITTIES_API_KEY = 'jM7HYCDKABweBJlWNE29QSkDyD4-HK4ypx__2Qw7xzg';
+const CRYPTO_KITTIES_API_KEY = process.env.CRYPTO_KITTIES_API_KEY;
 
 export const PROVIDER_URLS = {
   MAINNET: {
