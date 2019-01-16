@@ -243,17 +243,14 @@ class SidePanel extends Component {
 
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Transferred</div>
-              <div
-                className="sidebar-additional-item--display"
-                title="Some or all data provided by Nomics.com Cryptocurrency Market Data API."
-              >
+              <div className="sidebar-additional-item--display">
                 {eacStore.totalEthTransferred !== null ? (
                   `${eacStore.totalEthTransferred} ETH`
                 ) : (
                   <BeatLoader color="#fff" size={4} />
                 )}
                 {eacStore.totalUsdTransferred !== null &&
-                  ` (${eacStore.getFormattedUSDTranferred()})`}
+                  ` (${eacStore.getFormattedUSDTranferred()}*)`}
               </div>
             </li>
 
@@ -288,6 +285,18 @@ class SidePanel extends Component {
               <div className="sidebar-additional-item--display">
                 {loaderIfNull(efficiency)}&nbsp;%
               </div>
+            </li>
+            <li className="sidebar-bottom-item">
+              <small>
+                *&nbsp;Some data provided by Nomics.com{' '}
+                <a
+                  href="https://p.nomics.com/cryptocurrency-bitcoin-api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Cryptocurrency Market Data API.
+                </a>
+              </small>
             </li>
           </ul>
           <div className="clearfix" />
