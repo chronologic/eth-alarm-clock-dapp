@@ -1,6 +1,9 @@
 /*eslint no-control-regex: "off"*/
 import Bb from 'bluebird';
 import standardTokenAbi from '../abi/standardToken';
+import cryptoKittiesTokenAbi from '../abi/cryptoKittiesToken';
+import ERC721Abi from '../abi/ERC721';
+import { PREDEFINED_TOKENS_FOR_NETWORK } from '../config/web3Config';
 
 const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
 
@@ -17,7 +20,15 @@ export default class TokenHelper {
     const contract = this._web3.eth.contract(standardTokenAbi).at(token);
 
     return await Bb.fromCallback(callback =>
-      contract.approve(receiver, amount, { from: this.defaultAccount }, callback)
+      contract.approve(receiver, amount, { from: this._defaultAccount }, callback)
+    );
+  }
+
+  async approveERC721Transfer(token, spender, collectibleId) {
+    const contract = this._web3.eth.contract(ERC721Abi).at(token);
+
+    return await Bb.fromCallback(callback =>
+      contract.approve(spender, collectibleId, { from: this._firstAccount }, callback)
     );
   }
 
@@ -26,10 +37,12 @@ export default class TokenHelper {
       return false;
     }
 
-    const functionName = 'transferFrom(address,address,uint256)';
-    const encodedFunction = this._encodeFunctionName(functionName);
+    const encodedTransferFrom = this._encodeFunctionName('transferFrom(address,address,uint256)');
+    const encodedSafeTransferFrom = this._encodeFunctionName(
+      'safeTransferFrom(address,address,uint256)'
+    );
 
-    return new RegExp(encodedFunction).test(callData);
+    return new RegExp(`${encodedTransferFrom}|${encodedSafeTransferFrom}`).test(callData);
   }
 
   async isTokenTransferApproved(token, owner, spender, value) {
@@ -40,6 +53,26 @@ export default class TokenHelper {
     );
 
     return Number(allowance) >= Number(value);
+  }
+
+  async isERC721TransferApproved(address, scheduledTxAddress, tokenId, supportsGetApproved) {
+    let approved = false;
+
+    if (supportsGetApproved) {
+      const contract = this._web3.eth.contract(ERC721Abi).at(address);
+
+      approved = (await Bb.fromCallback(callback => {
+        return contract.getApproved.call(tokenId, callback);
+      })).valueOf();
+    } else {
+      const contract = this._web3.eth.contract(cryptoKittiesTokenAbi).at(address);
+
+      approved = (await Bb.fromCallback(callback => {
+        return contract.kittyIndexToApproved.call(tokenId, callback);
+      })).valueOf();
+    }
+
+    return approved === scheduledTxAddress;
   }
 
   async getTokenTransferInfoFromData(callData) {
@@ -75,15 +108,134 @@ export default class TokenHelper {
     );
   }
 
+  async estimateERC721Transfer(tokenAddress, from, to, tokenId) {
+    if (!from) {
+      from = this._firstAccount;
+    }
+
+    if (!tokenId) {
+      return 0;
+    }
+
+    const contract = this._web3.eth.contract(ERC721Abi).at(tokenAddress);
+
+    const config = this.getTokenConfig(tokenAddress);
+
+    if (config && config.supportedMethods && config.supportedMethods.safeTransferFrom) {
+      return await Bb.fromCallback(callback =>
+        contract.safeTransferFrom.estimateGas(from, to, tokenId, callback)
+      );
+    }
+
+    try {
+      return await Bb.fromCallback(callback =>
+        contract.transferFrom.estimateGas(from, to, tokenId, callback)
+      );
+    } catch (error) {
+      const cryptoKittiesContract = this._web3.eth.contract(cryptoKittiesTokenAbi).at(tokenAddress);
+      console.error(
+        'Error when estimating gas cost for ERC721 transferFrom. Falling back to estimation for transfer.',
+        error
+      );
+      return await Bb.fromCallback(callback =>
+        cryptoKittiesContract.transfer.estimateGas(to, tokenId, callback)
+      );
+    }
+  }
+
+  async isERC721(address) {
+    const config = this.getTokenConfig(address);
+
+    if (config && config.supportedMethods) {
+      return {
+        ERC721: config.type === 'erc721',
+        getApproved: config.supportedMethods.getApproved,
+        safeTransferFrom: config.supportedMethods.safeTransferFrom
+      };
+    }
+
+    const supportsEIP165 = await this._web3Service.supportsEIP165(address);
+
+    if (!supportsEIP165) {
+      return false;
+    }
+
+    const INTERFACE_ERC_721 = '0x80ac58cd'; // ERC721 with safeTransferFrom and getApproved
+
+    const supportsFullERC721 = await this._web3Service.supportsInterface(
+      address,
+      INTERFACE_ERC_721
+    );
+
+    if (supportsFullERC721) {
+      return {
+        ERC721: true,
+        safeTransferFrom: true,
+        getApproved: true
+      };
+    }
+
+    const INTERFACE_ERC_721_INCOMPLETE = '0x9a20483d';
+    // NO safeTransferFrom and getApproved
+
+    const supportsIncompleteERC721 = await this._web3Service.supportsInterface(
+      address,
+      INTERFACE_ERC_721_INCOMPLETE
+    );
+
+    if (supportsIncompleteERC721) {
+      return {
+        ERC721: true,
+        safeTransferFrom: false,
+        getApproved: false
+      };
+    }
+
+    return {
+      ERC721: false,
+      safeTransferFrom: false,
+      getApproved: false
+    };
+  }
+
+  async getERC721TransferData(tokenAddress, from, to, tokenId) {
+    if (!from) {
+      from = this._firstAccount;
+    }
+
+    const contract = this._web3.eth.contract(ERC721Abi).at(tokenAddress);
+
+    const config = this.getTokenConfig(tokenAddress);
+
+    if (config && config.supportedMethods && config.supportedMethods.safeTransferFrom) {
+      return contract.safeTransferFrom.getData(from, to, tokenId);
+    }
+
+    return contract.transferFrom.getData(from, to, tokenId);
+  }
+
   async fetchTokenDetails(address) {
     const contract = this._web3.eth.contract(standardTokenAbi).at(address);
 
-    return {
+    const details = {
       address,
       name: await this.getTokenName(address),
-      symbol: await this.getTokenSymbol(address),
-      decimals: (await Bb.fromCallback(callback => contract.decimals.call(callback))).valueOf()
+      symbol: await this.getTokenSymbol(address)
     };
+
+    try {
+      details.decimals = (await Bb.fromCallback(callback =>
+        contract.decimals.call(callback)
+      )).valueOf();
+    } catch (error) {
+      console.error(
+        'Trying to call token decimals() function failed. Falling back to decimals: 0.',
+        error
+      );
+      details.decimals = 0;
+    }
+
+    return details;
   }
 
   async getTokenSymbol(address) {
@@ -134,6 +286,62 @@ export default class TokenHelper {
 
   async fetchTokenBalance(address) {
     return this._firstAccount ? await this.getTokenBalanceOf(address, this._firstAccount) : '-';
+  }
+
+  /**
+   * Helper method for contracts such as CryptoKitties
+   */
+  async getTokensOfOwner(tokenAddress, addressToCheck = this._firstAccount) {
+    const contract = this._web3.eth.contract(cryptoKittiesTokenAbi).at(tokenAddress);
+
+    const tokenConfig = this.getTokenConfig(tokenAddress);
+
+    if (tokenConfig && tokenConfig.customGetTokensForOwner) {
+      return tokenConfig.customGetTokensForOwner(addressToCheck);
+    }
+
+    return (await Bb.fromCallback(callback => {
+      return contract.tokensOfOwner.call(addressToCheck, callback);
+    })).valueOf();
+  }
+
+  getTokenConfig(address) {
+    if (!address) {
+      return;
+    }
+
+    const networkTokens = PREDEFINED_TOKENS_FOR_NETWORK[this._web3Service.network.id];
+
+    address = address.toLowerCase();
+
+    if (networkTokens) {
+      return networkTokens.find(t => t.address.toLowerCase() === address);
+    }
+  }
+
+  getTokenImagePath(token, tokenId) {
+    if (!token || !tokenId || !token.imagePath) {
+      return;
+    }
+
+    return token.imagePath.replace('{TOKEN_ID}', tokenId);
+  }
+
+  getPredefinedTokenSymbols() {
+    const predefinedTokens =
+      this._web3Service.network && PREDEFINED_TOKENS_FOR_NETWORK[this._web3Service.network.id];
+
+    return predefinedTokens && predefinedTokens.map(t => t.symbol);
+  }
+
+  isCollectible(tokenAddress) {
+    if (!tokenAddress) {
+      return false;
+    }
+
+    const config = this.getTokenConfig(tokenAddress);
+
+    return config && config.type === 'erc721';
   }
 
   /**
