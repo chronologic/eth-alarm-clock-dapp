@@ -129,6 +129,18 @@ const TOKEN_ADDRESSES = {
       address: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
     }
   },
+  EGG: {
+    [MAIN_NETWORK_ID]: {
+      address: '0xfcad2859f3e602d4cfb9aca35465a618f9009f7b',
+      type: 'erc721',
+      imagePath: 'https://api.dragonereum.io/images/eggs/small/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
+    }
+  },
   CK: {
     [MAIN_NETWORK_ID]: {
       address: '0x06012c8cf97bead5deae237070f9587f8e7a266d',
