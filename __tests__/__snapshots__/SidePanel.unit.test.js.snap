@@ -144,6 +144,46 @@ exports[`SidePanel is correctly rendered 1`] = `
       </li>
       <li>
         <a
+          href="https://automate.chronologic.network"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            className="title"
+          >
+            Automate
+          </span>
+          <span
+            className="icon-thumbnail"
+          >
+            <i
+              className="fas fa-font"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://blog.chronologic.network/automate-meets-zapier-acd09d31c166"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            className="title"
+          >
+            Automate Zapier
+          </span>
+          <span
+            className="icon-thumbnail"
+          >
+            <i
+              className="fas fa-bolt"
+            />
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
           href="https://alpha.chronologic.network/debt/"
           rel="noopener noreferrer"
           target="_blank"

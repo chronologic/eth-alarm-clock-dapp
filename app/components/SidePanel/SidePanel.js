@@ -185,6 +185,30 @@ class SidePanel extends Component {
                 </span>
               </NavLink>
             </li>
+            <li>
+              <a
+                href="https://automate.chronologic.network"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="title">Automate</span>
+                <span className="icon-thumbnail">
+                  <i className="fas fa-font" />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://blog.chronologic.network/automate-meets-zapier-acd09d31c166"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="title">Automate Zapier</span>
+                <span className="icon-thumbnail">
+                  <i className="fas fa-bolt" />
+                </span>
+              </a>
+            </li>
             {!isElectron && (
               <li>
                 <a

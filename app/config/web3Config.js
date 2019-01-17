@@ -113,22 +113,6 @@ const Networks = {
 const CUSTOM_PROVIDER_NET_ID = 9999;
 
 const TOKEN_ADDRESSES = {
-  DAI: {
-    [MAIN_NETWORK_ID]: {
-      address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
-    },
-    [KOVAN_NETWORK_ID]: {
-      address: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
-    }
-  },
-  DAY: {
-    [MAIN_NETWORK_ID]: {
-      address: '0xE814aeE960a85208C3dB542C53E7D4a6C8D5f60F'
-    },
-    [KOVAN_NETWORK_ID]: {
-      address: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
-    }
-  },
   CK: {
     [MAIN_NETWORK_ID]: {
       address: '0x06012c8cf97bead5deae237070f9587f8e7a266d',
@@ -168,6 +152,22 @@ const TOKEN_ADDRESSES = {
         getApproved: false,
         safeTransferFrom: false
       }
+    }
+  },
+  DAI: {
+    [MAIN_NETWORK_ID]: {
+      address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
+    }
+  },
+  DAY: {
+    [MAIN_NETWORK_ID]: {
+      address: '0xE814aeE960a85208C3dB542C53E7D4a6C8D5f60F'
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
     }
   },
   DRAGON: {
