@@ -42,7 +42,7 @@ class TimeNodeDetachModal extends Component {
               <p>Are you sure you want to do this?</p>
               <span className="semi-bold">This will erase your TimeNode statistics.</span>
             </div>
-            <div className="modal-footer">
+            <div className="p-3">
               <div className="row">
                 <div className="col-md-6">
                   <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
