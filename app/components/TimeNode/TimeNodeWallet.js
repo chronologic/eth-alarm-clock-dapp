@@ -62,14 +62,18 @@ class TimeNodeWallet extends Component {
 
       reader.onload = async () => {
         const keystore = reader.result;
+        const supportedKeystoreVersion = 3;
 
         try {
           let parsedKeystore = JSON.parse(keystore);
-          if (
-            parsedKeystore.version === 3 &&
-            'id' in parsedKeystore &&
-            'address' in parsedKeystore
-          ) {
+          if (parsedKeystore.version !== supportedKeystoreVersion) {
+            showNotification(
+              `Keystore version doesn't match. Supported versions: ${supportedKeystoreVersion}`
+            );
+            throw new Error();
+          }
+
+          if ('id' in parsedKeystore && 'address' in parsedKeystore) {
             parsedKeystore = this.verifyKeystoreCapitalization(parsedKeystore);
 
             const encryptedKeystore = timeNodeStore.encrypt(JSON.stringify(parsedKeystore));
