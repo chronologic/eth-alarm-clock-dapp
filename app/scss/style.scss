@@ -72,6 +72,12 @@ $warning-color: gold;
     margin: 0px 4px;
     white-space: nowrap;
   }
+
+  & .search-text {
+    @media screen and (max-width: 1600px) {
+      display: none;
+    }
+  }
 }
 
 .loading-icon {
