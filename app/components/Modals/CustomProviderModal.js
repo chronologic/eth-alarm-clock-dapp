@@ -14,53 +14,34 @@ class CustomProviderModal extends Component {
       error: null
     };
     this.setCustomProvider = this.setCustomProvider.bind(this);
-    this.validateProviderUrl = this.validateProviderUrl.bind(this);
+    this.validateProvider = this.validateProvider.bind(this);
   }
 
   async setCustomProvider() {
+    const { disabled } = this.state;
     const url = this.providerInputField.value;
+    const providerHasNecessaryMethods = await this.props.timeNodeStore.testCustomProvider(url);
 
-    if (this.validateProviderUrl() && (await this.testProviderUrl())) {
-      this.props.timeNodeStore.setCustomProvider(CUSTOM_PROVIDER_NET_ID, url);
-    }
-  }
-
-  async testProviderUrl() {
-    const url = this.providerInputField.value;
-    const isOk = await this.props.timeNodeStore.testCustomProvider(url);
-
-    return this.validate(
-      isOk,
-      'Your provider does not support eth_getFilter method, please provide compatible web3 provider.'
-    );
-  }
-
-  validateProviderUrl() {
-    const url = this.providerInputField.value;
-    const isValid = isUrl(url);
-
-    return this.validate(isValid, 'Please enter a valid provider URL.');
-  }
-
-  validate(condition, error) {
-    if (condition) {
-      if (this.state.error) {
-        this.setState({
-          error: null,
-          disabled: false
-        });
+    if (!disabled) {
+      if (providerHasNecessaryMethods) {
+        this.props.timeNodeStore.setCustomProvider(CUSTOM_PROVIDER_NET_ID, url);
+        return;
       }
-      return true;
-    }
-
-    if (!this.state.error) {
       this.setState({
-        error,
-        disabled: true
+        error: providerHasNecessaryMethods
+          ? null
+          : 'Your provider does not support eth_getFilter method. Please provide a compatible web3 provider.'
       });
     }
+  }
 
-    return false;
+  async validateProvider() {
+    const urlValid = isUrl(this.providerInputField.value);
+
+    this.setState({
+      error: urlValid ? null : 'Not a valid URL',
+      disabled: !urlValid
+    });
   }
 
   render() {
@@ -92,7 +73,7 @@ class CustomProviderModal extends Component {
                   placeholder="http://localhost:8545"
                   className="form-control"
                   ref={el => (this.providerInputField = el)}
-                  onChange={this.validateProviderUrl}
+                  onChange={this.validateProvider}
                   autoFocus
                 />
               </div>
