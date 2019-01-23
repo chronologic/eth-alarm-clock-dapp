@@ -14,7 +14,7 @@ class CustomProviderModal extends Component {
       error: null
     };
     this.setCustomProvider = this.setCustomProvider.bind(this);
-    this.validateProvider = this.validateProvider.bind(this);
+    this.validateProviderUrl = this.validateProviderUrl.bind(this);
   }
 
   async setCustomProvider() {
@@ -35,7 +35,7 @@ class CustomProviderModal extends Component {
     }
   }
 
-  async validateProvider() {
+  async validateProviderUrl() {
     const urlValid = isUrl(this.providerInputField.value);
 
     this.setState({
@@ -73,7 +73,7 @@ class CustomProviderModal extends Component {
                   placeholder="http://localhost:8545"
                   className="form-control"
                   ref={el => (this.providerInputField = el)}
-                  onChange={this.validateProvider}
+                  onChange={this.validateProviderUrl}
                   autoFocus
                 />
               </div>
