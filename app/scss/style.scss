@@ -534,3 +534,43 @@ hr {
     }
   }
 }
+
+.TimeBountyField {
+  &-advanced-toggle {
+    display: block;
+    font-weight: normal;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+}
+
+.GroupedRadioToggle {
+  $root: &;
+
+  &-button {
+    min-width: 60px;
+    padding: 10px 20px;
+    border-radius: 0;
+    height: 48px;
+    line-height: 26px;
+
+    &:not(:first-of-type) {
+      border-left: none;
+    }
+  }
+
+  &-input {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .input-group & {
+    margin-bottom: 1rem;
+  }
+
+  &.invalid {
+    #{$root}-button {
+      border-color: #db5846;
+    }
+  }
+}
