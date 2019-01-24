@@ -64,13 +64,13 @@ export default class ScheduleStore {
     this.blockSize = '';
 
     this.requireDeposit = true;
-    this.timeBounty = '';
-    this.deposit = '';
+    this.timeBounty = '0.02';
+    this.deposit = '0.04';
 
     this.toAddress = '';
     this.gasAmount = 21000;
     this.amountToSend = '';
-    this.gasPrice = '';
+    this.gasPrice = '20';
     this.useData = false;
     this.yourData = '';
 
