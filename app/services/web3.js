@@ -7,8 +7,11 @@ import {
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
 import { Util } from '@ethereum-alarm-clock/lib';
+import { stripHexPrefixAndLower } from '../lib/signature.js';
 
 let instance = null;
+
+const SUPPORTS_INTERFACE_CALL_DATA = '0x01ffc9a7'; // bytes4(keccak256('supportsInterface(bytes4)'));
 
 export default class Web3Service {
   web3 = null;
@@ -58,6 +61,21 @@ export default class Web3Service {
 
   async fetchReceipt(hash) {
     return await Bb.fromCallback(callback => this.web3.eth.getTransactionReceipt(hash, callback));
+  }
+
+  async waitForMining(hash) {
+    let receipt;
+
+    while (!receipt || !receipt.blockNumber) {
+      await new Promise(resolve => {
+        setTimeout(async () => {
+          receipt = await this.fetchReceipt(hash);
+          resolve();
+        }, 500);
+      });
+    }
+
+    return receipt;
   }
 
   async fetchLog(hash, event) {
@@ -184,6 +202,42 @@ export default class Web3Service {
 
   isOnMainnet() {
     return this.network === Networks[MAIN_NETWORK_ID];
+  }
+
+  /**
+   * Since there are problems with using filter for events
+   * with array as an address parameter in MetaMask,
+   * we're using custom HTTP provider for running filter query.
+   *
+   * @param {object} options
+   */
+  filter(options) {
+    const web3 = this._web3AlternativeToMetaMask || this.web3;
+
+    return web3.eth.filter(options);
+  }
+
+  toBoolean(hexString) {
+    return this.web3.toBigNumber(hexString).toString() === '1';
+  }
+
+  supportsEIP165(address) {
+    return this.supportsInterface(address, SUPPORTS_INTERFACE_CALL_DATA);
+  }
+
+  // checks using EIP165 if contract supports certain interface
+  supportsInterface(address, interfaceToCheckFor) {
+    return new Promise(resolve => {
+      this.web3.eth.call(
+        {
+          to: address,
+          data: SUPPORTS_INTERFACE_CALL_DATA + stripHexPrefixAndLower(interfaceToCheckFor)
+        },
+        (error, result) => {
+          resolve(this.toBoolean(result));
+        }
+      );
+    });
   }
 
   /**

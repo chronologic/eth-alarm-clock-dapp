@@ -11,6 +11,8 @@ export const RSK_TESTNET_NETWORK_ID = 31;
 
 export const DEFAULT_NETWORK_WHEN_NO_METAMASK = MAIN_NETWORK_ID;
 
+const CRYPTO_KITTIES_API_KEY = process.env.CRYPTO_KITTIES_API_KEY;
+
 export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
@@ -119,13 +121,96 @@ const Networks = {
 const CUSTOM_PROVIDER_NET_ID = 9999;
 
 const TOKEN_ADDRESSES = {
+  EGG: {
+    [MAIN_NETWORK_ID]: {
+      address: '0xfcad2859f3e602d4cfb9aca35465a618f9009f7b',
+      type: 'erc721',
+      imagePath: 'https://api.dragonereum.io/images/eggs/small/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
+    }
+  },
+  CK: {
+    [MAIN_NETWORK_ID]: {
+      address: '0x06012c8cf97bead5deae237070f9587f8e7a266d',
+      type: 'erc721',
+      imagePath:
+        'https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      async customGetTokensForOwner(address) {
+        const URL = `https://public.api.cryptokitties.co/v1/kitties?owner_wallet_address=${address}&limit=400`;
+
+        const response = await fetch(URL, {
+          headers: {
+            'x-api-token': CRYPTO_KITTIES_API_KEY
+          }
+        });
+
+        const json = await response.json();
+
+        if (!json.kitties || !json.kitties.length) {
+          return [];
+        }
+
+        return json.kitties.map(kittie => kittie.id.toString());
+      },
+      supportedMethods: {
+        getApproved: false,
+        safeTransferFrom: false
+      }
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x9382c0b652f505a88a4c5bad05084df26a4a2f54',
+      type: 'erc721',
+      imagePath:
+        'https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: false,
+        safeTransferFrom: false
+      }
+    }
+  },
   DAI: {
-    [MAIN_NETWORK_ID]: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-    [KOVAN_NETWORK_ID]: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
+    [MAIN_NETWORK_ID]: {
+      address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
+    }
   },
   DAY: {
-    [MAIN_NETWORK_ID]: '0xE814aeE960a85208C3dB542C53E7D4a6C8D5f60F',
-    [KOVAN_NETWORK_ID]: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
+    [MAIN_NETWORK_ID]: {
+      address: '0xE814aeE960a85208C3dB542C53E7D4a6C8D5f60F'
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x5a6b5c6387196bd4ea264f627792af9d09096876'
+    }
+  },
+  DRAGON: {
+    [MAIN_NETWORK_ID]: {
+      address: '0x960f401aed58668ef476ef02b2a2d43b83c261d8',
+      type: 'erc721',
+      imagePath: 'https://api.dragonereum.io/images/dragons/small/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
+    },
+    [KOVAN_NETWORK_ID]: {
+      address: '0x6823cac086c70858b9bec21770520a672481a96b',
+      type: 'erc721',
+      imagePath: 'https://api.dragonereum.io/images/dragons/small/{TOKEN_ID}.png',
+      imageHeight: '140px',
+      supportedMethods: {
+        getApproved: true,
+        safeTransferFrom: true
+      }
+    }
   }
 };
 
@@ -140,7 +225,12 @@ const PREDEFINED_TOKENS_FOR_NETWORK = {
 
 for (let token of Object.keys(TOKEN_ADDRESSES)) {
   for (let network of Object.keys(TOKEN_ADDRESSES[token])) {
-    PREDEFINED_TOKENS_FOR_NETWORK[network].push(token);
+    TOKEN_ADDRESSES[token][network].symbol = token;
+    PREDEFINED_TOKENS_FOR_NETWORK[network].push(
+      Object.assign(TOKEN_ADDRESSES[token][network], {
+        symbol: token
+      })
+    );
   }
 }
 

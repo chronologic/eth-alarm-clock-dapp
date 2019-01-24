@@ -9,19 +9,21 @@ import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import * as ethUtil from 'ethereumjs-util';
 import { BeatLoader } from 'react-spinners';
-
 import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
+import CollectibleDisplay from '../Common/CollectibleDisplay';
 
 const INITIAL_STATE = {
   callData: '',
   customProxyData: '',
   executedAt: '',
+  isCollectibleTransfer: false,
   isTokenTransfer: false,
   isFrozen: '',
   proxyDataCheckBox: false,
   status: '',
   token: {},
+  tokenTransferApproved: false,
   tokenTransferDetails: []
 };
 
@@ -41,6 +43,8 @@ class TransactionDetails extends Component {
 
     this.state = INITIAL_STATE;
 
+    this.tokenCheckInterval = null;
+
     this.approveTokenTransfer = this.approveTokenTransfer.bind(this);
     this.cancelTransaction = this.cancelTransaction.bind(this);
     this.customProxySend = this.customProxySend.bind(this);
@@ -56,8 +60,15 @@ class TransactionDetails extends Component {
     await this.setupDetails();
   }
 
+  async componentDidUpdate(prevProps) {
+    if (prevProps.transactionMissingData && !this.props.transactionMissingData) {
+      await this.setupDetails();
+    }
+  }
+
   componentWillUnmount() {
     this._isMounted = false;
+    clearInterval(this.tokenCheckInterval);
   }
 
   async approveTokenTransfer(event) {
@@ -70,18 +81,31 @@ class TransactionDetails extends Component {
     target.innerHTML = 'Approving...';
 
     try {
-      const approved = await tokenHelper.approveTokenTransfer(
-        toAddress,
-        address,
-        this.state.token.info.value
-      );
-      if (approved) {
-        showNotification(`Token Transfer approved: ${approved}`, 'success');
-        this.setState({ tokenTransferApproved: true });
+      let approvalTx;
+
+      if (this.state.isCollectibleTransfer) {
+        approvalTx = await tokenHelper.approveERC721Transfer(
+          toAddress,
+          address,
+          this.state.token.info.value
+        );
+      } else {
+        approvalTx = await tokenHelper.approveTokenTransfer(
+          toAddress,
+          address,
+          this.state.token.info.value
+        );
+      }
+
+      if (approvalTx) {
+        showNotification(`Token Transfer approval sent in tx: ${approvalTx}`, 'info', 0);
+        target.innerHTML = 'Approval sent. Waiting...';
+        target.disabled = true;
       }
     } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
+      showNotification('Action cancelled by the user.', 'danger', 0);
       target.innerHTML = 'Approve';
+      target.disabled = false;
     }
     document.body.className = originalBodyCss;
   }
@@ -102,7 +126,7 @@ class TransactionDetails extends Component {
         this.checkContractBalance();
       }
     } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
+      showNotification('Action cancelled by the user.', 'danger', 0);
       this.cancelBtn.innerHTML = 'Cancel';
     }
     document.body.className = originalBodyCss;
@@ -178,7 +202,9 @@ class TransactionDetails extends Component {
       }
     }
 
-    this.setState({ executedAt });
+    if (this._isMounted) {
+      this.setState({ executedAt });
+    }
   }
 
   async fetchTokenTransferEvents() {
@@ -222,10 +248,13 @@ class TransactionDetails extends Component {
 
   async fetchTokenTransferInfo() {
     const { tokenHelper, transaction } = this.props;
-    const { toAddress } = transaction;
-    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
 
-    this.setState({ token: tokenDetails });
+    const tokenDetails = await tokenHelper.fetchTokenDetails(transaction.toAddress);
+    tokenDetails.info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
+
+    if (this._isMounted) {
+      this.setState({ token: tokenDetails });
+    }
   }
 
   getExecutedEvents(requestLib, fromBlock = 0) {
@@ -288,12 +317,12 @@ class TransactionDetails extends Component {
     try {
       const success = await transactionStore.refund(transaction);
       if (success) {
-        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success');
+        showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success', 0);
         this.setState({ balance: 0 });
         this.checkContractBalance();
       }
     } catch (error) {
-      showNotification('Action cancelled by the user.', 'danger', 4000);
+      showNotification('Action cancelled by the user.', 'danger', 0);
     }
     target.innerHTML = 'Refund Balance';
     document.body.className = originalBodyCss;
@@ -308,16 +337,29 @@ class TransactionDetails extends Component {
   }
 
   async setupDetails() {
-    const { transaction, transactionStore } = this.props;
+    const { transaction, transactionStore, transactionMissingData } = this.props;
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
-    this.setState({
-      callData: await transaction.callData(),
+    const statePropertiesToSet = {
       status
-    });
+    };
+
+    try {
+      statePropertiesToSet.callData = await transaction.callData();
+    } catch (error) {
+      statePropertiesToSet.callData = '';
+      console.error('Error from TransactionDetails:', error);
+    }
+
+    this.setState(statePropertiesToSet);
 
     await this.getFrozenStatus();
+
+    if (transactionMissingData) {
+      return;
+    }
+
     await this.testToken();
     await this.executedAt(transaction, status, transactionStore);
     await this.fetchTokenTransferEvents();
@@ -325,56 +367,80 @@ class TransactionDetails extends Component {
 
   async testToken() {
     const { tokenHelper, transaction } = this.props;
-    const { address, toAddress } = transaction;
+    const { callData, status } = this.state;
+    const { address, owner, toAddress } = transaction;
 
     let tokenTransferApproved;
-    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
+    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(callData);
 
     if (isTokenTransfer) {
       await this.fetchTokenTransferInfo();
 
-      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
-      this.setState({ token: Object.assign(this.state.token, { info }) });
+      const {
+        ERC721: isCollectibleTransfer,
+        getApproved: getApprovedSupported
+      } = await tokenHelper.isERC721(toAddress);
 
-      tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
-        toAddress,
-        address,
-        this.state.token.info.value
-      );
+      this.setState({
+        isCollectibleTransfer
+      });
+
+      if (status === TRANSACTION_STATUS.SCHEDULED) {
+        let checkTransferApproved;
+
+        if (isCollectibleTransfer) {
+          checkTransferApproved = async () => {
+            const previouslyApproved = this.state.tokenTransferApproved;
+            const tokenTransferApproved = await tokenHelper.isERC721TransferApproved(
+              toAddress,
+              address,
+              this.state.token.info.value,
+              getApprovedSupported
+            );
+
+            if (this.state.tokenTransferApproved) {
+              if (previouslyApproved === false) {
+                showNotification(`Token transfer approved.`, 'success', 0);
+              }
+              clearInterval(this.tokenCheckInterval);
+            }
+
+            this.setState({ isTokenTransfer, tokenTransferApproved });
+          };
+        } else {
+          checkTransferApproved = async () => {
+            const previouslyApproved = this.state.tokenTransferApproved;
+            const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
+              toAddress,
+              owner,
+              address,
+              this.state.token.info.value
+            );
+
+            if (this.state.tokenTransferApproved) {
+              if (previouslyApproved === false) {
+                showNotification(`Token transfer approved.`, 'success', 0);
+              }
+              clearInterval(this.tokenCheckInterval);
+            }
+
+            this.setState({ isTokenTransfer, tokenTransferApproved });
+          };
+        }
+
+        if (!tokenTransferApproved) {
+          this.tokenCheckInterval = setInterval(checkTransferApproved, 1000);
+        }
+      } else {
+        tokenTransferApproved = true;
+      }
     }
+
     this.setState({ isTokenTransfer, tokenTransferApproved });
   }
 
   /** TODO: These `get*Section()` function can be refactored into stateless components
    and moved to individual files in the TransactionDetails folder. Note for future work. */
-
-  getApproveSection() {
-    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
-    const { transaction } = this.props;
-
-    const isOwner = this.isOwner(transaction);
-
-    if (
-      isOwner &&
-      isTokenTransfer &&
-      !tokenTransferApproved &&
-      (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
-    ) {
-      return (
-        <div className="d-inline-block text-center mt-2 mt-sm-5 col-12 col-sm-6">
-          <button
-            className="btn btn-default btn-cons"
-            onClick={this.approveTokenTransfer}
-            type="button"
-          >
-            <span>Approve</span>
-          </button>
-        </div>
-      );
-    }
-
-    return <div className="col-6" />;
-  }
 
   getInfoMessage() {
     const { status, isFrozen } = this.state;
@@ -422,7 +488,14 @@ class TransactionDetails extends Component {
   }
 
   getTokenNotificationSection() {
-    const { status, isFrozen, isTokenTransfer, tokenTransferApproved } = this.state;
+    const {
+      status,
+      isCollectibleTransfer,
+      isFrozen,
+      isTokenTransfer,
+      tokenTransferApproved,
+      transactionMissingData
+    } = this.state;
     const { transaction } = this.props;
 
     const isOwner = this.isOwner(transaction);
@@ -433,36 +506,65 @@ class TransactionDetails extends Component {
     );
 
     if (
+      !transactionMissingData &&
       isOwner &&
+      tokenTransferApproved === false &&
       isTokenTransfer &&
-      !tokenTransferApproved &&
       (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
     ) {
+      let message;
+
+      if (isCollectibleTransfer) {
+        message = `This transaction schedules a collectible transfer. This transaction has to be approved.`;
+      } else {
+        message = `This transaction schedules a token transfer. A minimum allowance of ${this.state
+          .token.info.value /
+          10 ** this.state.token.decimals} ${
+          this.state.token.symbol
+        } tokens is required to be approved to complete the scheduling.`;
+      }
+
       return (
         <Alert
           {...{
             type: 'warning',
             close: false,
             action: approve,
-            msg: `: This transaction schedules a token transfer. A minimum allowance of ${this.state
-              .token.info.value /
-              10 ** this.state.token.decimals} ${
-              this.state.token.symbol
-            } tokens is required to be approved to complete the scheduling.`
+            msg: message
           }}
         />
       );
     }
+
     return null;
   }
 
+  getValueDisplay() {
+    if (this.state.isTokenTransfer) {
+      if (this.state.isCollectibleTransfer) {
+        return (
+          <CollectibleDisplay
+            tokenAddress={this.props.transaction.toAddress}
+            collectibleId={this.state.token.info.value}
+            tokenName={this.state.token.name}
+          />
+        );
+      }
+
+      return `${this.state.token.info.value / 10 ** this.state.token.decimals} ${
+        this.state.token.symbol
+      }`;
+    }
+
+    return <ValueDisplay priceInWei={this.props.transaction.callValue} />;
+  }
+
   render() {
-    const { transaction } = this.props;
-    const { callData, executedAt, isFrozen, status } = this.state;
+    const { transaction, transactionMissingData } = this.props;
+    const { callData, executedAt, isFrozen, status, tokenTransferApproved } = this.state;
     const {
       bounty,
       callGas,
-      callValue,
       fee,
       gasPrice,
       owner,
@@ -475,16 +577,27 @@ class TransactionDetails extends Component {
     const isOwner = this.isOwner(transaction);
     const isTimestamp = transaction.temporalUnit === 2;
 
+    const tokenTransferApprovalStatus = tokenTransferApproved ? 'Approved' : 'Not Approved';
+
+    const loader = <BeatLoader size={6} color="#aaa" />;
+
     return (
       <div className="tab-pane slide active show">
-        <div>{this.getTokenNotificationSection()}</div>
+        {this.getTokenNotificationSection()}
+        {transactionMissingData && (
+          <Alert
+            type="warning"
+            close={false}
+            msg={`Please wait... Your transaction is being confirmed by the network. Some details might be missing while this process is taking place.`}
+          />
+        )}
         <table className="table d-block">
           <tbody className="d-block">
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Status</td>
               <td className="d-inline-block col-7 col-md-9">
-                {status ? status : <BeatLoader size={6} color="#aaa" />}
-                {executedAt && (
+                {status ? status : loader}
+                {executedAt ? (
                   <span>
                     {` at `}
                     <a
@@ -495,9 +608,19 @@ class TransactionDetails extends Component {
                       {executedAt}
                     </a>
                   </span>
+                ) : (
+                  <span />
                 )}
               </td>
             </tr>
+            {this.state.isTokenTransfer && status === TRANSACTION_STATUS.SCHEDULED && (
+              <tr className="row">
+                <td className="d-inline-block col-5 col-md-3">Approval status</td>
+                <td className="d-inline-block col-7 col-md-9">
+                  {tokenTransferApproved === undefined ? loader : tokenTransferApprovalStatus}
+                </td>
+              </tr>
+            )}
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">
                 {!this.state.isTokenTransfer ? 'To Address' : 'Token Address'}
@@ -508,7 +631,7 @@ class TransactionDetails extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {toAddress}
+                  {toAddress || loader}
                 </a>
               </td>
             </tr>
@@ -530,20 +653,12 @@ class TransactionDetails extends Component {
             )}
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Value/Amount</td>
-              <td className="d-inline-block col-7 col-md-9">
-                {!this.state.isTokenTransfer ? (
-                  <ValueDisplay priceInWei={callValue} />
-                ) : (
-                  `${this.state.token.info.value / 10 ** this.state.token.decimals} ${
-                    this.state.token.symbol
-                  }`
-                )}
-              </td>
+              <td className="d-inline-block col-7 col-md-9">{this.getValueDisplay()}</td>
             </tr>
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
               <td className="d-inline-block col-7 col-md-9" title={callData}>
-                {callData ? callData : <BeatLoader size={6} color="#aaa" />}
+                {callData || loader}
               </td>
             </tr>
             <tr className="row">
@@ -591,18 +706,18 @@ class TransactionDetails extends Component {
         <div className="row">
           <div className="col-2 col-sm-4 col-md-6 col-lg-8" />
           <div className="col-10 col-sm-8 col-md-6 col-lg-4">
-            <div className="row">
-              {this.getApproveSection()}
-              {this.getRefundSection()}
-            </div>
+            <div className="row">{this.getRefundSection()}</div>
           </div>
           <div className="col-12">{this.getInfoMessage()}</div>
         </div>
         <CancelSection
           cancelButtonEnabled={
+            !transactionMissingData &&
             isOwner &&
             !isFrozen &&
-            (status === TRANSACTION_STATUS.SCHEDULED || status === TRANSACTION_STATUS.MISSED)
+            ((status === TRANSACTION_STATUS.SCHEDULED &&
+              moment() < moment.unix(transaction.claimWindowStart)) ||
+              status === TRANSACTION_STATUS.MISSED)
           }
           cancelBtnRef={el => (this.cancelBtn = el)}
           cancelTransaction={this.cancelTransaction}
@@ -636,6 +751,7 @@ TransactionDetails.propTypes = {
   loadingStateStore: PropTypes.any,
   tokenHelper: PropTypes.any,
   transaction: PropTypes.any,
+  transactionMissingData: PropTypes.any,
   transactionStore: PropTypes.any,
   web3Service: PropTypes.any
 };

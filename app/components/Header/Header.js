@@ -100,7 +100,13 @@ class Header extends Component {
               </span>
             </span>
             <span className="analytics-count">
-              {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+              {eacStore.totalEthTransferred !== null ? (
+                `${eacStore.totalEthTransferred} ETH`
+              ) : (
+                <BeatLoader color="#fff" size={4} />
+              )}
+              {eacStore.totalUsdTransferred !== null &&
+                ` (${eacStore.getFormattedUSDTranferred()}*)`}
             </span>
           </div>
 
@@ -270,12 +276,13 @@ class Header extends Component {
           {!isRunningInElectron() && (
             <div
               className="search-link"
+              title="Search scheduled transactions by address"
               onClick={() => {
                 this.props.updateSearchState(true);
               }}
             >
               <i className="pg-search" />
-              <span className="d-md-inline-block d-none">Search by address</span>
+              <span className="search-text">Search by address</span>
             </div>
           )}
         </div>

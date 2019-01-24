@@ -1,7 +1,9 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
+import BigNumber from 'bignumber.js';
 import AbstractSetting from './AbstractSetting';
 import BountyEstimator from './BountySettings/BountyEstimator';
+import TimeBountyField from './TimeBountyField';
 
 @inject('scheduleStore')
 @inject('transactionStore')
@@ -14,6 +16,8 @@ class BountySettings extends AbstractSetting {
     this._validationsErrors = _validationsErrors.BountySettings;
     this.toggleRequiredDeposit = this.toggleRequiredDeposit.bind(this);
 
+    this.setTimeBounty = this.setTimeBounty.bind(this);
+
     this.state = {
       timestamp: null,
       bounties: []
@@ -24,6 +28,21 @@ class BountySettings extends AbstractSetting {
     deposit: this.decimalValidator(),
     requireDeposit: this.booleanValidator()
   };
+
+  setTimeBounty(event) {
+    this.onChange('timeBounty')(...arguments);
+
+    if (this._validations.timeBounty) {
+      const timeBounty = new BigNumber(event.target.value);
+      const deposit = timeBounty.mul(2);
+
+      this.onChange('deposit')({
+        target: {
+          value: deposit.toString()
+        }
+      });
+    }
+  }
 
   toggleRequiredDeposit() {
     const { scheduleStore } = this.props;
@@ -93,25 +112,12 @@ class BountySettings extends AbstractSetting {
 
         <div className="row">
           <div className="col-md-4">
-            <div
-              className={
-                'form-group form-group-default required ' +
-                (_validations.timeBounty ? '' : ' has-error')
-              }
-            >
-              <label>Time Bounty</label>
-              <input
-                type="number"
-                placeholder="Enter Time Bounty in ETH"
-                value={scheduleStore.timeBounty}
-                onBlur={this.validate('timeBounty')}
-                onChange={this.onChange('timeBounty')}
-                className="form-control"
-              />
-            </div>
-            {!_validations.timeBounty && (
-              <label className="error">{_validationsErrors.timeBounty}</label>
-            )}
+            <TimeBountyField
+              timeBounty={scheduleStore.timeBounty}
+              isValid={_validations.timeBounty}
+              onBlur={this.validate('timeBounty')}
+              onChange={this.setTimeBounty}
+            />
           </div>
           <div className="col-md-6 offset-md-1 px-3">{bountyEstimator}</div>
         </div>

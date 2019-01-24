@@ -185,6 +185,30 @@ class SidePanel extends Component {
                 </span>
               </NavLink>
             </li>
+            <li>
+              <a
+                href="https://automate.chronologic.network"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="title">Automate</span>
+                <span className="icon-thumbnail">
+                  <i className="fas fa-font" />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://blog.chronologic.network/automate-meets-zapier-acd09d31c166"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="title">Automate Zapier</span>
+                <span className="icon-thumbnail">
+                  <i className="fas fa-bolt" />
+                </span>
+              </a>
+            </li>
             {!isElectron && (
               <li>
                 <a
@@ -244,7 +268,13 @@ class SidePanel extends Component {
             <li className="sidebar-additional-item">
               <div className="sidebar-additional-item--label">Transferred</div>
               <div className="sidebar-additional-item--display">
-                {loaderIfNull(eacStore.totalEthTransferred)}&nbsp;ETH
+                {eacStore.totalEthTransferred !== null ? (
+                  `${eacStore.totalEthTransferred} ETH`
+                ) : (
+                  <BeatLoader color="#fff" size={4} />
+                )}
+                {eacStore.totalUsdTransferred !== null &&
+                  ` (${eacStore.getFormattedUSDTranferred()}*)`}
               </div>
             </li>
 
@@ -279,6 +309,18 @@ class SidePanel extends Component {
               <div className="sidebar-additional-item--display">
                 {loaderIfNull(efficiency)}&nbsp;%
               </div>
+            </li>
+            <li className="sidebar-bottom-item">
+              <small>
+                *&nbsp;Some data provided by Nomics.com{' '}
+                <a
+                  href="https://p.nomics.com/cryptocurrency-bitcoin-api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Cryptocurrency Market Data API
+                </a>
+              </small>
             </li>
           </ul>
           <div className="clearfix" />

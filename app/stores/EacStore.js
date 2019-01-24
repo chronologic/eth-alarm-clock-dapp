@@ -1,4 +1,5 @@
 import { autorun, observable } from 'mobx';
+import EacCounter from 'eac-counter';
 
 export default class EacStore {
   @observable
@@ -6,6 +7,8 @@ export default class EacStore {
 
   @observable
   totalEthTransferred = null;
+  @observable
+  totalUsdTransferred = null;
 
   constructor(eacService, featuresService, web3Service) {
     this._eac = eacService;
@@ -24,7 +27,22 @@ export default class EacStore {
 
     this.contracts = await this._eac.getActiveContracts();
 
-    const totalEthTransferred = await this._eac.getTotalEthTransferred();
-    this.totalEthTransferred = Math.round(totalEthTransferred);
+    const eacCounter = new EacCounter();
+
+    await eacCounter.enableUSDFetching(process.env.NOMICS_API_KEY);
+
+    const { eth, usd } = await eacCounter.getTotalTransferred();
+
+    this.totalEthTransferred = Math.round(eth);
+    this.totalUsdTransferred = usd ? Math.round(usd) : null;
+  }
+
+  getFormattedUSDTranferred() {
+    const currencyFormatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    });
+    return currencyFormatter.format(this.totalUsdTransferred);
   }
 }

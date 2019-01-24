@@ -2,6 +2,18 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { Util } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
+import SolidityEvent from 'web3/lib/web3/event.js';
+import { showNotification } from '../services/notification';
+
+const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
+  EmptyToAddress: 'Please enter recipient address.',
+  CallGasTooHigh: 'Call gas is too high.',
+  ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.',
+  InsufficientEndowment:
+    'Automatically calculated endowment is insufficient. Please contact developers.',
+  ReservedWindowBiggerThanExecutionWindow: 'Reserved window is bigger than execution window.',
+  InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
+};
 
 export const DEFAULT_LIMIT = 10;
 
@@ -37,6 +49,8 @@ export class TransactionStore {
   _helper;
   _bucketHelper;
   _util;
+
+  scheduledTransactions = [];
 
   constructor(eac, web3, fetcher, cache, featuresService, helper, bucketHelper) {
     this._web3 = web3;
@@ -358,5 +372,277 @@ export class TransactionStore {
     });
 
     return bounties;
+  }
+
+  async validateRequestParams(
+    toAddress,
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    fee,
+    timeBounty,
+    requiredDeposit,
+    isTimestamp,
+    endowment
+  ) {
+    await this.init();
+
+    const temporalUnit = isTimestamp ? 2 : 1;
+    const freezePeriod = isTimestamp ? 3 * 60 : 10; // 3 minutes or 10 blocks
+    const reservedWindowSize = isTimestamp ? 5 * 60 : 16; // 5 minutes or 16 blocks
+    const claimWindowSize = isTimestamp ? 60 * 60 : 255; // 60 minutes or 255 blocks
+    const feeRecipient = '0x0'; // stub
+    const fromAddress = this._web3.eth.defaultAccount;
+
+    const serializedParams = [
+      [fromAddress, feeRecipient, toAddress],
+      [
+        fee,
+        timeBounty,
+        claimWindowSize,
+        freezePeriod,
+        reservedWindowSize,
+        temporalUnit,
+        windowSize,
+        windowStart,
+        callGas,
+        callValue,
+        gasPrice,
+        requiredDeposit
+      ],
+      endowment
+    ];
+
+    let paramsValid = false;
+    let errors = [];
+
+    try {
+      const paramsValidBooleans = await this._requestFactory.validateRequestParams(
+        ...serializedParams
+      );
+
+      errors = this._requestFactory.parseIsValid(paramsValidBooleans);
+
+      paramsValid = errors.length === 0;
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      paramsValid,
+      errors
+    };
+  }
+
+  async schedule(
+    toAddress,
+    callData = '',
+    callGas,
+    callValue,
+    windowSize,
+    windowStart,
+    gasPrice,
+    fee,
+    payment,
+    requiredDeposit,
+    waitForMined,
+    isTimestamp
+  ) {
+    const endowment = this._eac.calcEndowment(callGas, callValue, gasPrice, fee, payment);
+
+    const { paramsValid, errors } = await this.validateRequestParams(
+      toAddress,
+      callGas,
+      callValue,
+      windowSize,
+      windowStart,
+      gasPrice,
+      fee,
+      payment,
+      requiredDeposit,
+      isTimestamp,
+      endowment
+    );
+
+    if (!paramsValid && errors.length > 0) {
+      errors.forEach(
+        error => error && showNotification(PARAMS_ERROR_TO_MESSAGE_MAPPING[error], 'danger', 4000)
+      );
+
+      return;
+    }
+
+    if (typeof this._eacScheduler === 'undefined') {
+      this._eacScheduler = await this._eac.scheduler();
+    }
+
+    await this._eacScheduler.initSender({
+      from: this._web3.eth.defaultAccount,
+      value: endowment
+    });
+
+    const sendGasPrice = (await this._util.getAdvancedNetworkGasPrice()).average;
+
+    let receipt;
+
+    if (isTimestamp) {
+      receipt = await this._eacScheduler.timestampSchedule(
+        toAddress,
+        callData,
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit,
+        waitForMined,
+        sendGasPrice
+      );
+    } else {
+      receipt = await this._eacScheduler.blockSchedule(
+        toAddress,
+        callData,
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit,
+        waitForMined,
+        sendGasPrice
+      );
+    }
+
+    if (receipt && receipt.transactionHash) {
+      this.scheduledTransactions.push({
+        transactionHash: receipt.transactionHash,
+        toAddress: toAddress.toLowerCase(),
+        callData: callData || '0x',
+        callGas,
+        callValue,
+        windowSize,
+        windowStart,
+        gasPrice,
+        fee,
+        payment,
+        requiredDeposit
+      });
+    }
+
+    return receipt;
+  }
+
+  getAndSaveRequestFromLogs(logs) {
+    const requestCreatedEventABI = {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          name: 'request',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          name: 'owner',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          name: 'bucket',
+          type: 'int256'
+        },
+        {
+          indexed: false,
+          name: 'params',
+          type: 'uint256[12]'
+        }
+      ],
+      name: 'RequestCreated',
+      type: 'event'
+    };
+
+    const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+
+    const parsedLogs = logs
+      .map(log => {
+        if (decoder.signature() === log.topics[0].replace('0x', '')) {
+          return decoder.decode(log);
+        }
+      })
+      .filter(parsedLog => parsedLog);
+
+    const requestCreatedLog = parsedLogs[0];
+
+    if (!requestCreatedLog) {
+      throw new Error('RequestCreated log has not been found.');
+    }
+
+    this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
+
+    const transactionAddress = requestCreatedLog.args.request;
+
+    const scheduledTx = this.scheduledTransactions.find(
+      tx => tx.transactionHash === requestCreatedLog.transactionHash
+    );
+
+    if (scheduledTx) {
+      scheduledTx.address = transactionAddress;
+    }
+
+    return transactionAddress;
+  }
+
+  fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedEvent) {
+    const locallyStoredTx = this.scheduledTransactions.find(
+      tx => tx.address === transaction.address
+    );
+
+    let toAddress = '';
+
+    if (locallyStoredTx) {
+      toAddress = locallyStoredTx.toAddress;
+      transaction.callData = () => Promise.resolve(locallyStoredTx.callData);
+    }
+
+    const data = new this._eac.RequestData(
+      [
+        [
+          '', // self.claimData.claimedBy,
+          requestCreatedEvent.args.owner, // self.meta.createdBy,
+          requestCreatedEvent.args.owner, // self.meta.owner,
+          '', // self.paymentData.feeRecipient,
+          '', // self.paymentData.bountyBenefactor,
+          toAddress // self.txnData.toAddress
+        ],
+        [false, false, false],
+        [
+          0, // self.claimData.claimDeposit,
+          requestCreatedEvent.args.params[0], // self.paymentData.fee,
+          0, // self.paymentData.feeOwed,
+          requestCreatedEvent.args.params[1], // self.paymentData.bounty,
+          0, // self.paymentData.bountyOwed,
+          requestCreatedEvent.args.params[2], // self.schedule.claimWindowSize,
+          requestCreatedEvent.args.params[3], // self.schedule.freezePeriod,
+          requestCreatedEvent.args.params[4], // self.schedule.reservedWindowSize,
+          requestCreatedEvent.args.params[5], // uint(self.schedule.temporalUnit),
+          requestCreatedEvent.args.params[6], // self.schedule.windowSize,
+          requestCreatedEvent.args.params[7], // self.schedule.windowStart,
+          requestCreatedEvent.args.params[8], // self.txnData.callGas,
+          requestCreatedEvent.args.params[9], // self.txnData.callValue,
+          requestCreatedEvent.args.params[10], // self.txnData.gasPrice,
+          requestCreatedEvent.args.params[11] // self.claimData.requiredDeposit
+        ],
+        []
+      ],
+      transaction.instance
+    );
+
+    transaction.data = data;
   }
 }
