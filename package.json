@@ -99,7 +99,7 @@
     "jquery.scrollbar": "0.2.11",
     "js-cookie": "2.2.0",
     "keen-analysis": "3.1.5",
-    "keen-tracking": "3.1.2",
+    "keen-tracking": "4.0.17",
     "lint-staged": "7.3.0",
     "lokijs": "1.5.6",
     "mini-css-extract-plugin": "0.5.0",
