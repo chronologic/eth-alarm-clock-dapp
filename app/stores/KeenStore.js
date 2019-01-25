@@ -9,7 +9,7 @@ const COLLECTIONS = {
 };
 
 // 2 minutes in milliseconds
-const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
+const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
 const TEN_MIN = 10 * 60 * 1000;
 const FIVE_SEC = 5000;
 
@@ -182,7 +182,7 @@ export class KeenStore {
     }
   }
 
-  async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
+  async getActiveTimeNodesCount(networkId, timeframe = 'this_5_minutes') {
     await this.initialized;
 
     if (!this.isBlacklisted) {
