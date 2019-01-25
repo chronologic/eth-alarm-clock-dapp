@@ -128,7 +128,6 @@ export class KeenStore {
 
       const history = await this._getActiveTimeNodesHistory();
 
-      debugger;
       /*
         Keen sometimes returns all zeroes instead of the real value.
         We keep getting the values from Keen every 5 seconds until we get the proper values.
