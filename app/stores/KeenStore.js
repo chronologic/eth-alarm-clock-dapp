@@ -145,10 +145,9 @@ export class KeenStore {
           start: moment()
             .subtract(24, 'hours')
             .toISOString(),
-          end: moment()
-            .toISOString()
+          end: moment().toISOString()
         },
-        interval: "hourly",
+        interval: 'hourly',
         group_by: 'nodeAddress',
         filters: [
           {
