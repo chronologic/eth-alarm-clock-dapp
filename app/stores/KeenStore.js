@@ -30,6 +30,7 @@ export class KeenStore {
   isBlacklisted = false;
 
   _web3Service = null;
+  initialized;
 
   @observable
   historyActiveTimeNodes = [];
@@ -46,7 +47,7 @@ export class KeenStore {
     this._web3Service = web3Service;
     this.versions = versions;
 
-    this.initialize();
+    this.initialized = this.initialize();
   }
 
   async initialize() {
@@ -69,17 +70,6 @@ export class KeenStore {
     this._pollActiveTimeNodesCount();
   }
 
-  async awaitKeenInitialized() {
-    if (!this.networkId || !this.analysisClient || !this.trackingClient) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitKeenInitialized());
-        }, 500);
-      });
-    }
-    return true;
-  }
-
   sendPageView() {
     this.trackingClient.recordEvent(COLLECTIONS.PAGEVIEWS, {
       title: document.title
@@ -87,7 +77,8 @@ export class KeenStore {
   }
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
-    await this.awaitKeenInitialized();
+    await this.initialized;
+
     nodeAddress = this._web3Service.web3.sha3(nodeAddress).toString();
     dayAddress = this._web3Service.web3.sha3(dayAddress).toString();
     networkId = networkId.toString();
@@ -144,7 +135,7 @@ export class KeenStore {
   }
 
   async _getActiveTimeNodesHistory() {
-    await this.awaitKeenInitialized();
+    await this.initialized;
 
     if (!this.isBlacklisted) {
       const count = new KeenAnalysis.Query('count_unique', {
@@ -193,7 +184,7 @@ export class KeenStore {
   }
 
   async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
-    await this.awaitKeenInitialized();
+    await this.initialized;
 
     if (!this.isBlacklisted) {
       const count = new KeenAnalysis.Query('count', {
