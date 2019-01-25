@@ -47,7 +47,7 @@ export default class TransactionCache {
     this.requestCreatedLogs =
       storedLogs &&
       storedLogs.map(log => {
-        log.args.params = log.args.params.map(param => new BigNumber(param));
+        log.returnValues.params = log.returnValues.params.map(param => new BigNumber(param));
 
         return log;
       });

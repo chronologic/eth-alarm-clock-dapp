@@ -2,7 +2,6 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { Util } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
-import SolidityEvent from 'web3/lib/web3/event.js';
 import { showNotification } from '../services/notification';
 
 const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
@@ -567,35 +566,41 @@ export class TransactionStore {
       type: 'event'
     };
 
-    const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+    // this._web3.eth.abi.decodeLog(requestCreatedEventABI,
+    // '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000748656c6c6f252100000000000000000000000000000000000000000000000000',
+    // ['0x000000000000000000000000000000000000000000000000000000000000f310', '0x0000000000000000000000000000000000000000000000000000000000000010']);
 
-    const parsedLogs = logs
-      .map(log => {
-        if (decoder.signature() === log.topics[0].replace('0x', '')) {
-          return decoder.decode(log);
-        }
-      })
-      .filter(parsedLog => parsedLog);
+    // @TODO 
 
-    const requestCreatedLog = parsedLogs[0];
+    // const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
 
-    if (!requestCreatedLog) {
-      throw new Error('RequestCreated log has not been found.');
-    }
+    // const parsedLogs = logs
+    //   .map(log => {
+    //     if (decoder.signature() === log.topics[0].replace('0x', '')) {
+    //       return decoder.decode(log);
+    //     }
+    //   })
+    //   .filter(parsedLog => parsedLog);
 
-    this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
+    // const requestCreatedLog = parsedLogs[0];
 
-    const transactionAddress = requestCreatedLog.args.request;
+    // if (!requestCreatedLog) {
+    //   throw new Error('RequestCreated log has not been found.');
+    // }
 
-    const scheduledTx = this.scheduledTransactions.find(
-      tx => tx.transactionHash === requestCreatedLog.transactionHash
-    );
+    // this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
 
-    if (scheduledTx) {
-      scheduledTx.address = transactionAddress;
-    }
+    // const transactionAddress = requestCreatedLog.args.request;
 
-    return transactionAddress;
+    // const scheduledTx = this.scheduledTransactions.find(
+    //   tx => tx.transactionHash === requestCreatedLog.transactionHash
+    // );
+
+    // if (scheduledTx) {
+    //   scheduledTx.address = transactionAddress;
+    // }
+
+    // return transactionAddress;
   }
 
   fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedEvent) {

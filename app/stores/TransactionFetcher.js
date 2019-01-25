@@ -260,7 +260,7 @@ export default class TransactionFetcher {
 
     const logs = await this.getRequestCreatedEvents(startBlock, endBlock);
 
-    const transactions = logs.map(({ args: { request: address, params } }) => {
+    const transactions = logs.map(({ returnValues: { request: address, params } }) => {
       const request = this._eac.transactionRequest(address);
 
       request.data = this.getDataForRequestParams(params, request);
