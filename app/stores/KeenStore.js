@@ -97,8 +97,7 @@ export class KeenStore {
       dayAddress,
       networkId,
       eacVersions: this.versions,
-      nodeType: 'dapp',
-      status: 'active'
+      nodeType: 'dapp'
     };
     this.trackingClient.recordEvent(COLLECTIONS.TIMENODES, event);
   }
@@ -129,6 +128,7 @@ export class KeenStore {
 
       const history = await this._getActiveTimeNodesHistory();
 
+      debugger;
       /*
         Keen sometimes returns all zeroes instead of the real value.
         We keep getting the values from Keen every 5 seconds until we get the proper values.
@@ -145,21 +145,52 @@ export class KeenStore {
   }
 
   async _getActiveTimeNodesHistory() {
-    const promises = [];
+    await this.awaitKeenInitialized();
 
-    for (let i = 24; i > 0; i--) {
-      const promise = this.getActiveTimeNodesCount(this.timeNodeSpecificProviderNetId, {
-        start: moment()
-          .subtract(i, 'hours')
-          .toISOString(),
-        end: moment()
-          .subtract(i - 1, 'hours')
-          .toISOString()
+    if (!this.isBlacklisted) {
+      const count = new KeenAnalysis.Query('count_unique', {
+        event_collection: COLLECTIONS.TIMENODES,
+        target_property: 'nodeAddress',
+        timeframe: {
+          start: moment()
+            .subtract(24, 'hours')
+            .toISOString(),
+          end: moment()
+            .toISOString()
+        },
+        interval: "hourly",
+        group_by: 'nodeAddress',
+        filters: [
+          {
+            property_name: 'networkId',
+            operator: 'eq',
+            property_value: this.timeNodeSpecificProviderNetId
+          },
+          {
+            property_name: 'eacVersions.contracts',
+            operator: 'eq',
+            property_value: this.versions.contracts
+          }
+        ]
       });
-      promises.push(promise);
-    }
 
-    return Promise.all(promises);
+      let response = null;
+      try {
+        response = await this.analysisClient.run(count);
+      } catch (e) {
+        this.isBlacklisted = true;
+      }
+
+      if (
+        response === null ||
+        !response.hasOwnProperty('result') ||
+        response.hasOwnProperty('err')
+      ) {
+        return null;
+      }
+
+      return response.result.map(res => res.value[0].result);
+    }
   }
 
   async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
@@ -181,11 +212,6 @@ export class KeenStore {
             property_name: 'eacVersions.contracts',
             operator: 'eq',
             property_value: this.versions.contracts
-          },
-          {
-            property_name: 'status',
-            operator: 'eq',
-            property_value: 'active'
           }
         ]
       });
