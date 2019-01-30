@@ -97,11 +97,13 @@ class BlockOrTimeDisplay extends Component {
   }
 
   render() {
-    const { duration } = this.props;
+    const { duration, includeUnitText, isTimestamp } = this.props;
     const { block, time } = this.state;
 
     if (block) {
-      return `${block} ${duration ? 'blocks ' : ''}(${time})`;
+      return `${includeUnitText && !isTimestamp ? 'block ' : ''}${block} ${
+        duration ? 'blocks ' : ''
+      }(${time})`;
     }
 
     return time;
@@ -110,6 +112,7 @@ class BlockOrTimeDisplay extends Component {
 
 BlockOrTimeDisplay.propTypes = {
   duration: PropTypes.bool,
+  includeUnitText: PropTypes.any,
   isTimestamp: PropTypes.any,
   model: PropTypes.any,
   eacService: PropTypes.any,
