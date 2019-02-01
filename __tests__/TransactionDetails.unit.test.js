@@ -7,6 +7,7 @@ import TransactionDetails from '../app/components/TransactionScanner/Transaction
 import { TransactionStore } from '../app/stores/TransactionStore';
 import TokenHelper from '../app/services/token-helper';
 import LoadingStateStore from '../app/stores/LoadingStateStore';
+import TransactionHelper from '../app/services/transaction-helper';
 
 describe('TransactionDetails', () => {
   it('correctly renders', async () => {
@@ -54,7 +55,16 @@ describe('TransactionDetails', () => {
       }
     };
 
-    const transactionStore = new TransactionStore(eacService, web3Service);
+    const transactionHelper = new TransactionHelper();
+
+    const transactionStore = new TransactionStore(
+      eacService,
+      web3Service,
+      {},
+      {},
+      {},
+      transactionHelper
+    );
     const tokenHelper = new TokenHelper(web3Service);
 
     const loadingStateStore = new LoadingStateStore(web3Service, {}, transactionStore);

@@ -33,7 +33,7 @@ export class TIMENODE_STATUS {
 }
 
 // 2 minute as milliseconds
-const STATUS_UPDATE_INTERVAL = 2 * 60 * 1000;
+const STATUS_UPDATE_INTERVAL = 5 * 60 * 1000;
 const LOG_CAP = 1000;
 const BASIC_LOG_TYPES = [LOGGER_MSG_TYPES.INFO, LOGGER_MSG_TYPES.ERROR];
 

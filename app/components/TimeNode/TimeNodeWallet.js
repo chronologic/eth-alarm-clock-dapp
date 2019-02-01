@@ -43,21 +43,49 @@ class TimeNodeWallet extends Component {
     this.walletTabRef.removeEventListener('keyup', this._handleEnterPress);
   }
 
-  verifyKeystore() {
-    try {
-      const file = this.walletFileRef.files[0];
-      const timeNodeStore = this.props.timeNodeStore;
+  verifyKeystoreCapitalization(keystore) {
+    // Some keystores incorrectly capitalize the `Crypto` key
+    // This section fixes that
+    if (keystore.hasOwnProperty('Crypto')) {
+      keystore['crypto'] = keystore['Crypto'];
+      delete keystore['Crypto'];
+    }
+    return keystore;
+  }
 
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async function() {
-          const keystore = timeNodeStore.encrypt(reader.result);
-          timeNodeStore.setKeyStore(keystore);
-        };
-        reader.readAsText(file, 'utf-8');
-      }
-    } catch (e) {
-      showNotification('Please select a wallet file.');
+  verifyKeystore() {
+    const file = this.walletFileRef.files[0];
+    const timeNodeStore = this.props.timeNodeStore;
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        const keystore = reader.result;
+        const supportedKeystoreVersion = 3;
+
+        try {
+          let parsedKeystore = JSON.parse(keystore);
+          if (parsedKeystore.version !== supportedKeystoreVersion) {
+            showNotification(
+              `Keystore version doesn't match. Supported versions: ${supportedKeystoreVersion}`
+            );
+            throw new Error();
+          }
+
+          if ('id' in parsedKeystore && 'address' in parsedKeystore) {
+            parsedKeystore = this.verifyKeystoreCapitalization(parsedKeystore);
+
+            const encryptedKeystore = timeNodeStore.encrypt(JSON.stringify(parsedKeystore));
+            timeNodeStore.setKeyStore(encryptedKeystore);
+          } else {
+            throw new Error();
+          }
+        } catch (e) {
+          showNotification('Please select a valid wallet file.');
+        }
+      };
+      reader.readAsText(file, 'utf-8');
     }
   }
 
