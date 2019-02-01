@@ -99,17 +99,14 @@ class Header extends Component {
                 Transferred:
               </span>
             </span>
-            <span
-              className="analytics-count"
-              title="Some or all data provided by Nomics.com Cryptocurrency Market Data API."
-            >
+            <span className="analytics-count">
               {eacStore.totalEthTransferred !== null ? (
                 `${eacStore.totalEthTransferred} ETH`
               ) : (
                 <BeatLoader color="#fff" size={4} />
               )}
               {eacStore.totalUsdTransferred !== null &&
-                ` (${eacStore.getFormattedUSDTranferred()})`}
+                ` (${eacStore.getFormattedUSDTranferred()}*)`}
             </span>
           </div>
 
@@ -279,12 +276,13 @@ class Header extends Component {
           {!isRunningInElectron() && (
             <div
               className="search-link"
+              title="Search scheduled transactions by address"
               onClick={() => {
                 this.props.updateSearchState(true);
               }}
             >
               <i className="pg-search" />
-              <span className="d-md-inline-block d-none">Search by address</span>
+              <span className="search-text">Search by address</span>
             </div>
           )}
         </div>

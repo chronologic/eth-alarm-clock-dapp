@@ -9,19 +9,21 @@ import moment from 'moment';
 import { ValueDisplay } from '../Common/ValueDisplay';
 import * as ethUtil from 'ethereumjs-util';
 import { BeatLoader } from 'react-spinners';
-
 import CancelSection from './TransactionDetails/CancelSection';
 import ProxySection from './TransactionDetails/ProxySection';
+import CollectibleDisplay from '../Common/CollectibleDisplay';
 
 const INITIAL_STATE = {
   callData: '',
   customProxyData: '',
   executedAt: '',
+  isCollectibleTransfer: false,
   isTokenTransfer: false,
   isFrozen: '',
   proxyDataCheckBox: false,
   status: '',
   token: {},
+  tokenTransferApproved: false,
   tokenTransferDetails: []
 };
 
@@ -79,11 +81,22 @@ class TransactionDetails extends Component {
     target.innerHTML = 'Approving...';
 
     try {
-      const approvalTx = await tokenHelper.approveTokenTransfer(
-        toAddress,
-        address,
-        this.state.token.info.value
-      );
+      let approvalTx;
+
+      if (this.state.isCollectibleTransfer) {
+        approvalTx = await tokenHelper.approveERC721Transfer(
+          toAddress,
+          address,
+          this.state.token.info.value
+        );
+      } else {
+        approvalTx = await tokenHelper.approveTokenTransfer(
+          toAddress,
+          address,
+          this.state.token.info.value
+        );
+      }
+
       if (approvalTx) {
         showNotification(`Token Transfer approval sent in tx: ${approvalTx}`, 'info', 0);
         target.innerHTML = 'Approval sent. Waiting...';
@@ -234,10 +247,13 @@ class TransactionDetails extends Component {
 
   async fetchTokenTransferInfo() {
     const { tokenHelper, transaction } = this.props;
-    const { toAddress } = transaction;
-    const tokenDetails = await tokenHelper.fetchTokenDetails(toAddress);
 
-    this.setState({ token: tokenDetails });
+    const tokenDetails = await tokenHelper.fetchTokenDetails(transaction.toAddress);
+    tokenDetails.info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
+
+    if (this._isMounted) {
+      this.setState({ token: tokenDetails });
+    }
   }
 
   getExecutedEvents(requestLib, fromBlock = 0) {
@@ -257,18 +273,6 @@ class TransactionDetails extends Component {
 
     const isFrozen = await transactionStore.isTransactionFrozen(transaction);
     this.setState({ isFrozen: isFrozen || transaction.isCancelled });
-  }
-
-  getTransactionPropertyTimeDisplay(transaction, property) {
-    let display = '';
-
-    if (transaction[property] && transaction[property].toString) {
-      const parsedUnixTime = moment.unix(transaction[property].toString());
-
-      display = parsedUnixTime.format('YYYY/MM/DD HH:mm:ss');
-    }
-
-    return display;
   }
 
   handleProxyDataClick() {
@@ -326,6 +330,8 @@ class TransactionDetails extends Component {
   async setupDetails() {
     const { transaction, transactionStore, transactionMissingData } = this.props;
 
+    await transactionStore.init();
+
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
     const statePropertiesToSet = {
@@ -354,36 +360,66 @@ class TransactionDetails extends Component {
 
   async testToken() {
     const { tokenHelper, transaction } = this.props;
+    const { callData, status } = this.state;
     const { address, owner, toAddress } = transaction;
 
     let tokenTransferApproved;
-    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(this.state.callData);
+    const isTokenTransfer = tokenHelper.isTokenTransferTransaction(callData);
 
     if (isTokenTransfer) {
       await this.fetchTokenTransferInfo();
 
-      const info = await tokenHelper.getTokenTransferInfoFromData(this.state.callData);
-      this.setState({ token: Object.assign(this.state.token, { info }) });
+      const {
+        ERC721: isCollectibleTransfer,
+        getApproved: getApprovedSupported
+      } = await tokenHelper.isERC721(toAddress);
 
-      if (this.state.status === TRANSACTION_STATUS.SCHEDULED) {
-        const checkTransferApproved = async () => {
-          const previouslyApproved = this.state.tokenTransferApproved;
-          const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
-            toAddress,
-            owner,
-            address,
-            this.state.token.info.value
-          );
+      this.setState({
+        isCollectibleTransfer
+      });
 
-          if (tokenTransferApproved) {
-            if (previouslyApproved === false) {
-              showNotification(`Token transfer approved.`, 'success', 0);
+      if (status === TRANSACTION_STATUS.SCHEDULED) {
+        let checkTransferApproved;
+
+        if (isCollectibleTransfer) {
+          checkTransferApproved = async () => {
+            const previouslyApproved = this.state.tokenTransferApproved;
+            const tokenTransferApproved = await tokenHelper.isERC721TransferApproved(
+              toAddress,
+              address,
+              this.state.token.info.value,
+              getApprovedSupported
+            );
+
+            if (this.state.tokenTransferApproved) {
+              if (previouslyApproved === false) {
+                showNotification(`Token transfer approved.`, 'success', 0);
+              }
+              clearInterval(this.tokenCheckInterval);
             }
-            clearInterval(this.tokenCheckInterval);
-          }
 
-          this.setState({ isTokenTransfer, tokenTransferApproved });
-        };
+            this.setState({ isTokenTransfer, tokenTransferApproved });
+          };
+        } else {
+          checkTransferApproved = async () => {
+            const previouslyApproved = this.state.tokenTransferApproved;
+            const tokenTransferApproved = await tokenHelper.isTokenTransferApproved(
+              toAddress,
+              owner,
+              address,
+              this.state.token.info.value
+            );
+
+            if (this.state.tokenTransferApproved) {
+              if (previouslyApproved === false) {
+                showNotification(`Token transfer approved.`, 'success', 0);
+              }
+              clearInterval(this.tokenCheckInterval);
+            }
+
+            this.setState({ isTokenTransfer, tokenTransferApproved });
+          };
+        }
 
         if (!tokenTransferApproved) {
           this.tokenCheckInterval = setInterval(checkTransferApproved, 1000);
@@ -392,6 +428,7 @@ class TransactionDetails extends Component {
         tokenTransferApproved = true;
       }
     }
+
     this.setState({ isTokenTransfer, tokenTransferApproved });
   }
 
@@ -446,6 +483,7 @@ class TransactionDetails extends Component {
   getTokenNotificationSection() {
     const {
       status,
+      isCollectibleTransfer,
       isFrozen,
       isTokenTransfer,
       tokenTransferApproved,
@@ -467,17 +505,25 @@ class TransactionDetails extends Component {
       isTokenTransfer &&
       (isFrozen || status === TRANSACTION_STATUS.SCHEDULED)
     ) {
+      let message;
+
+      if (isCollectibleTransfer) {
+        message = `This transaction schedules a collectible transfer. This transaction has to be approved.`;
+      } else {
+        message = `This transaction schedules a token transfer. A minimum allowance of ${this.state
+          .token.info.value /
+          10 ** this.state.token.decimals} ${
+          this.state.token.symbol
+        } tokens is required to be approved to complete the scheduling.`;
+      }
+
       return (
         <Alert
           {...{
             type: 'warning',
             close: false,
             action: approve,
-            msg: `This transaction schedules a token transfer. A minimum allowance of ${this.state
-              .token.info.value /
-              10 ** this.state.token.decimals} ${
-              this.state.token.symbol
-            } tokens is required to be approved to complete the scheduling.`
+            msg: message
           }}
         />
       );
@@ -486,13 +532,55 @@ class TransactionDetails extends Component {
     return null;
   }
 
+  getValueDisplay() {
+    if (this.state.isTokenTransfer) {
+      if (this.state.isCollectibleTransfer) {
+        return (
+          <CollectibleDisplay
+            tokenAddress={this.props.transaction.toAddress}
+            collectibleId={this.state.token.info.value}
+            tokenName={this.state.token.name}
+          />
+        );
+      }
+
+      return `${this.state.token.info.value / 10 ** this.state.token.decimals} ${
+        this.state.token.symbol
+      }`;
+    }
+
+    return <ValueDisplay priceInWei={this.props.transaction.callValue} />;
+  }
+
+  isCancelButtonEnabled() {
+    const { transaction, transactionMissingData, transactionStore } = this.props;
+    const { isFrozen, status } = this.state;
+    const isOwner = this.isOwner(transaction);
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+
+    let isBeforeClaimWindowStart = false;
+
+    if (isTimestamp) {
+      isBeforeClaimWindowStart = moment.unix(transaction.claimWindowStart) > moment();
+    } else {
+      isBeforeClaimWindowStart = transaction.claimWindowStart > transactionStore.lastBlock;
+    }
+
+    return (
+      !transactionMissingData &&
+      isOwner &&
+      !isFrozen &&
+      ((status === TRANSACTION_STATUS.SCHEDULED && isBeforeClaimWindowStart) ||
+        status === TRANSACTION_STATUS.MISSED)
+    );
+  }
+
   render() {
-    const { transaction, transactionMissingData } = this.props;
-    const { callData, executedAt, isFrozen, status, tokenTransferApproved } = this.state;
+    const { transaction, transactionMissingData, transactionStore } = this.props;
+    const { callData, executedAt, status, tokenTransferApproved } = this.state;
     const {
       bounty,
       callGas,
-      callValue,
       fee,
       gasPrice,
       owner,
@@ -503,7 +591,7 @@ class TransactionDetails extends Component {
     } = transaction;
 
     const isOwner = this.isOwner(transaction);
-    const isTimestamp = transaction.temporalUnit === 2;
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
 
     const tokenTransferApprovalStatus = tokenTransferApproved ? 'Approved' : 'Not Approved';
 
@@ -581,15 +669,7 @@ class TransactionDetails extends Component {
             )}
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Value/Amount</td>
-              <td className="d-inline-block col-7 col-md-9">
-                {!this.state.isTokenTransfer ? (
-                  <ValueDisplay priceInWei={callValue} />
-                ) : (
-                  `${this.state.token.info.value / 10 ** this.state.token.decimals} ${
-                    this.state.token.symbol
-                  }`
-                )}
-              </td>
+              <td className="d-inline-block col-7 col-md-9">{this.getValueDisplay()}</td>
             </tr>
             <tr className="row">
               <td className="d-inline-block col-5 col-md-3">Data</td>
@@ -647,23 +727,14 @@ class TransactionDetails extends Component {
           <div className="col-12">{this.getInfoMessage()}</div>
         </div>
         <CancelSection
-          cancelButtonEnabled={
-            !transactionMissingData &&
-            isOwner &&
-            !isFrozen &&
-            ((status === TRANSACTION_STATUS.SCHEDULED &&
-              moment() < moment.unix(transaction.claimWindowStart)) ||
-              status === TRANSACTION_STATUS.MISSED)
-          }
+          cancelButtonEnabled={this.isCancelButtonEnabled()}
           cancelBtnRef={el => (this.cancelBtn = el)}
           cancelTransaction={this.cancelTransaction}
-          claimWindowStart={this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}
-          executionWindowEnd={this.getTransactionPropertyTimeDisplay(
-            transaction,
-            'executionWindowEnd'
-          )}
+          claimWindowStart={transaction.claimWindowStart}
+          executionWindowEnd={transaction.executionWindowEnd}
           isOwner={isOwner}
           owner={owner}
+          isTimestamp={isTimestamp}
         />
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}

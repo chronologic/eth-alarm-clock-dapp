@@ -85,4 +85,4 @@ function isMyCryptoSigValid(signature, timeNodeAddress) {
   return stripHexPrefixAndLower(address) === pubToAddress(pubKey).toString('hex');
 }
 
-export { parseSig, isSignatureValid, isMyCryptoSigValid, SIGNATURE_ERRORS };
+export { parseSig, isSignatureValid, isMyCryptoSigValid, SIGNATURE_ERRORS, stripHexPrefixAndLower };

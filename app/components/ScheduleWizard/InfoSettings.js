@@ -4,8 +4,9 @@ import Bb from 'bluebird';
 import Switch from 'react-switch';
 import AbstractSetting from './AbstractSetting';
 import Alert from '../Common/Alert';
-import { TOKEN_ADDRESSES, PREDEFINED_TOKENS_FOR_NETWORK } from '../../config/web3Config';
+import { TOKEN_ADDRESSES } from '../../config/web3Config';
 import Select from '../Common/Select';
+import CollectibleDisplay from '../Common/CollectibleDisplay';
 
 @inject('tokenHelper')
 @inject('scheduleStore')
@@ -18,7 +19,8 @@ class InfoSettings extends AbstractSetting {
     this.state = {
       account: '',
       minGas: 21000,
-      token: {}
+      token: {},
+      tokensOfOwner: []
     };
     const { _validations, _validationsErrors } = this.props;
     this._validations = _validations.InfoSettings;
@@ -95,7 +97,7 @@ class InfoSettings extends AbstractSetting {
     return estimate;
   }
 
-  async calculateTokenTransferMinimumGasandData() {
+  async calculateTokenTransferMinimumGasAndData() {
     const {
       web3Service: { web3 },
       scheduleStore,
@@ -110,18 +112,37 @@ class InfoSettings extends AbstractSetting {
       isAddress(scheduleStore.receiverAddress, web3) == 0
     ) {
       try {
-        estimate = await tokenHelper.estimateTokenTransfer(
-          scheduleStore.toAddress,
-          scheduleStore.receiverAddress,
-          scheduleStore.tokenToSend * 10 ** this.state.token.decimals
-        );
-        estimate = estimate + 20000;
-        scheduleStore.tokenData = await tokenHelper.getTokenTransferData(
-          scheduleStore.toAddress,
-          scheduleStore.receiverAddress,
-          scheduleStore.tokenToSend * 10 ** this.state.token.decimals
-        );
+        const isCollectibleTransfer = this.isCollectibleTransfer();
+
+        if (isCollectibleTransfer) {
+          estimate = await tokenHelper.estimateERC721Transfer(
+            scheduleStore.toAddress,
+            null,
+            scheduleStore.receiverAddress,
+            scheduleStore.collectibleIdToTransfer
+          );
+          estimate = estimate + 20000;
+          scheduleStore.tokenData = await tokenHelper.getERC721TransferData(
+            scheduleStore.toAddress,
+            null,
+            scheduleStore.receiverAddress,
+            scheduleStore.collectibleIdToTransfer
+          );
+        } else {
+          estimate = await tokenHelper.estimateTokenTransfer(
+            scheduleStore.toAddress,
+            scheduleStore.receiverAddress,
+            scheduleStore.tokenToSend * 10 ** this.state.token.decimals
+          );
+          estimate = estimate + 20000;
+          scheduleStore.tokenData = await tokenHelper.getTokenTransferData(
+            scheduleStore.toAddress,
+            scheduleStore.receiverAddress,
+            scheduleStore.tokenToSend * 10 ** this.state.token.decimals
+          );
+        }
       } catch (e) {
+        console.error('Error in function calculateTokenTransferMinimumGasAndData', e);
         scheduleStore.tokenData = '';
         return;
       }
@@ -136,6 +157,7 @@ class InfoSettings extends AbstractSetting {
     if (!this._mounted) {
       return;
     }
+
     const {
       web3Service,
       web3Service: { web3 },
@@ -149,10 +171,12 @@ class InfoSettings extends AbstractSetting {
     ) {
       return;
     }
+
     this.setState({ account: web3Service.accounts[0] });
+
     if (scheduleStore.isTokenTransfer && isAddress(scheduleStore.toAddress, web3) === 0) {
       await this.getTokenDetails(true);
-      await this.calculateTokenTransferMinimumGasandData();
+      await this.calculateTokenTransferMinimumGasAndData();
     }
   }
 
@@ -162,6 +186,7 @@ class InfoSettings extends AbstractSetting {
       const tokenDetails = await tokenHelper.fetchTokenDetails(scheduleStore.toAddress);
       this.setState({ token: tokenDetails });
       scheduleStore.tokenSymbol = tokenDetails.symbol;
+      scheduleStore.tokenName = tokenDetails.name;
     }
     let _balance = await tokenHelper.fetchTokenBalance(scheduleStore.toAddress);
     _balance = _balance == '-' ? _balance : Number(_balance / 10 ** this.state.token.decimals);
@@ -171,6 +196,13 @@ class InfoSettings extends AbstractSetting {
       1 / 10 ** this.state.token.decimals,
       balance
     );
+
+    const tokensOfOwner = await tokenHelper.getTokensOfOwner(scheduleStore.toAddress);
+
+    this.setState({
+      tokensOfOwner
+    });
+
     this.checkAmountValidation();
     this.forceUpdate();
   }
@@ -205,11 +237,19 @@ class InfoSettings extends AbstractSetting {
       this.validators.tokenToSend = this.decimalValidator();
       return;
     }
+
     if (property === 'toAddress') {
       await this.getTokenDetails();
     }
-    await this.calculateTokenTransferMinimumGasandData();
+
+    await this.calculateTokenTransferMinimumGasAndData();
     this.forceUpdate();
+  }
+
+  async chooseCollectible(tokenId) {
+    this.props.scheduleStore.collectibleIdToTransfer = tokenId;
+
+    await this.calculateTokenTransferMinimumGasAndData();
   }
 
   onChangeCheck = property => async event => {
@@ -217,7 +257,7 @@ class InfoSettings extends AbstractSetting {
       target: { value }
     } = event;
     const { scheduleStore } = this.props;
-    this.onChange(property)({ target: { value: value } });
+    this.onChange(property)({ target: { value } });
 
     if (scheduleStore.isTokenTransfer) {
       await this.tokenChangeCheck(property);
@@ -229,11 +269,18 @@ class InfoSettings extends AbstractSetting {
   };
 
   async useToken(tokenSymbol) {
+    const { scheduleStore, web3Service } = this.props;
+
     if (tokenSymbol && tokenSymbol !== 'PLACEHOLDER') {
-      this.props.scheduleStore.toAddress =
-        TOKEN_ADDRESSES[tokenSymbol][this.props.web3Service.network.id];
+      const tokenInfo = TOKEN_ADDRESSES[tokenSymbol][web3Service.network.id];
+      scheduleStore.toAddress = tokenInfo.address;
+
+      if (tokenInfo.type === 'erc721') {
+        scheduleStore.tokenToSend = 1;
+      }
     } else {
-      this.props.scheduleStore.toAddress = '';
+      scheduleStore.toAddress = '';
+      scheduleStore.tokenToSend = null;
     }
 
     await this.revalidateToAddress();
@@ -265,13 +312,24 @@ class InfoSettings extends AbstractSetting {
     this._mounted = false;
   }
 
-  render() {
-    const { scheduleStore, web3Service } = this.props;
-    const { _validations, _validationsErrors } = this;
-    this.validators.gasAmount = this.integerValidator(this.state.minGas);
+  isCollectibleTransfer() {
+    const { tokenHelper } = this.props;
+    const { token } = this.state;
 
-    const predefinedTokens =
-      web3Service.network && PREDEFINED_TOKENS_FOR_NETWORK[web3Service.network.id];
+    return token && tokenHelper.isCollectible(token.address);
+  }
+
+  render() {
+    const { scheduleStore, tokenHelper } = this.props;
+    const { _validations, _validationsErrors } = this;
+    const { minGas, token, tokensOfOwner } = this.state;
+    const { collectibleIdToTransfer } = scheduleStore;
+
+    this.validators.gasAmount = this.integerValidator(minGas);
+
+    const predefinedTokensSymbols = tokenHelper.getPredefinedTokenSymbols();
+
+    const isCollectibleTransfer = this.isCollectibleTransfer();
 
     return (
       <div id="infoSettings" className="tab-pane slide">
@@ -310,9 +368,9 @@ class InfoSettings extends AbstractSetting {
                     <label>Name:</label>
                     <span className="w-100 d-block">
                       {scheduleStore.isTokenTransfer &&
-                      predefinedTokens &&
+                      predefinedTokensSymbols &&
                       (!scheduleStore.toAddress ||
-                        predefinedTokens.includes(this.state.token.symbol)) ? (
+                        predefinedTokensSymbols.includes(token.symbol)) ? (
                         <div>
                           <Select
                             setupOptions={{
@@ -323,11 +381,11 @@ class InfoSettings extends AbstractSetting {
                               width: '160px'
                             }}
                             onChange={event => this.useToken(event.target.value)}
-                            value={this.state.token.symbol}
+                            value={token.symbol}
                           >
                             <option value="PLACEHOLDER">Predefined Tokens</option>
 
-                            {predefinedTokens.map(token => (
+                            {predefinedTokensSymbols.map(token => (
                               <option key={token} value={token}>
                                 {token}
                               </option>
@@ -335,17 +393,19 @@ class InfoSettings extends AbstractSetting {
                           </Select>
                         </div>
                       ) : (
-                        this.state.token.name
+                        token.name
                       )}
                     </span>
                   </div>
-                  <div className="col-sm-4">
-                    <label>Decimals:</label>
-                    <span className="w-100 d-block">{this.state.token.decimals}</span>
-                  </div>
+                  {!isCollectibleTransfer && (
+                    <div className="col-sm-4">
+                      <label>Decimals:</label>
+                      <span className="w-100 d-block">{token.decimals}</span>
+                    </div>
+                  )}
                   <div className="col-sm-4">
                     <label>Balance:</label>
-                    <span className="w-100 d-block">{this.state.token.balance}</span>
+                    <span className="w-100 d-block">{token.balance}</span>
                   </div>
                 </div>
               </div>
@@ -399,7 +459,7 @@ class InfoSettings extends AbstractSetting {
         </div>
 
         <div className="row">
-          {scheduleStore.isTokenTransfer && (
+          {scheduleStore.isTokenTransfer && !isCollectibleTransfer && (
             <div className="col-md-4">
               <div
                 className={
@@ -525,6 +585,41 @@ class InfoSettings extends AbstractSetting {
               )}
             </div>
           </div>
+        )}
+        {scheduleStore.isTokenTransfer && tokensOfOwner.length > 0 && isCollectibleTransfer && (
+          <React.Fragment>
+            <br />
+            <div className="row">
+              <div className="col-md-12">
+                Choose collectible you&#39;d like to transfer:
+                <br />
+                <br />
+                <div className="collectibles">
+                  {tokensOfOwner.map((collectibleId, index) => (
+                    <div
+                      className={`collectibles_item ${
+                        collectibleIdToTransfer === collectibleId.toString()
+                          ? 'collectibles_item-selected'
+                          : ''
+                      }`}
+                      key={index}
+                      onClick={() => this.chooseCollectible(collectibleId.toString())}
+                    >
+                      <CollectibleDisplay
+                        className="collectibles_item_image"
+                        tokenAddress={scheduleStore.toAddress}
+                        collectibleId={collectibleId.toString()}
+                        tokenName={token.name}
+                      />
+                      <div className="collectibles_item_title">{collectibleId.toString()}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <br />
+            <br />
+          </React.Fragment>
         )}
       </div>
     );

@@ -32,6 +32,8 @@ export default class ScheduleStore {
   @observable tokenToSend;
   @observable tokenData;
   @observable tokenSymbol;
+  @observable tokenName;
+  @observable collectibleIdToTransfer;
 
   @observable isUsingTime;
   @observable isTokenTransfer;
@@ -46,8 +48,8 @@ export default class ScheduleStore {
   }
 
   /*
-  * Currently MobX doesn't have a more elegant
-  * way to reset to defaults.
+   * Currently MobX doesn't have a more elegant
+   * way to reset to defaults.
    */
   @action
   reset = () => {
@@ -62,13 +64,13 @@ export default class ScheduleStore {
     this.blockSize = '';
 
     this.requireDeposit = true;
-    this.timeBounty = '';
-    this.deposit = '';
+    this.timeBounty = '0.02';
+    this.deposit = '0.04';
 
     this.toAddress = '';
     this.gasAmount = 21000;
     this.amountToSend = '';
-    this.gasPrice = '';
+    this.gasPrice = '20';
     this.useData = false;
     this.yourData = '';
 
@@ -76,6 +78,8 @@ export default class ScheduleStore {
     this.tokenToSend = '';
     this.tokenData = '';
     this.tokenSymbol = '';
+    this.tokenName = '';
+    this.collectibleIdToTransfer = null;
 
     this.isUsingTime = true;
     this.isTokenTransfer = false;

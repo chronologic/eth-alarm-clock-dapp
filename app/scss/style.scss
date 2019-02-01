@@ -72,6 +72,12 @@ $warning-color: gold;
     margin: 0px 4px;
     white-space: nowrap;
   }
+
+  & .search-text {
+    @media screen and (max-width: 1600px) {
+      display: none;
+    }
+  }
 }
 
 .loading-icon {
@@ -423,6 +429,12 @@ hr {
   display: none;
 }
 
+.sidebar-bottom-item {
+  position: absolute;
+  bottom: 0;
+  padding: 15px !important;
+}
+
 .sidebar-additional-item {
   display: none !important;
 
@@ -480,6 +492,85 @@ hr {
   .sidebar-visible {
     .sidebar-separator {
       display: block;
+    }
+  }
+}
+
+.collectibles {
+  display: flex;
+  flex-wrap: wrap;
+
+  &_item {
+    width: 180px;
+    height: 180px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    cursor: pointer;
+    margin-top: 5px;
+
+    &-selected {
+      background: rgba(0, 0, 0, 0.07);
+      border: 1px solid #000000;
+    }
+
+    $root: &;
+
+    &:hover {
+      background: #ededed;
+
+      #{$root}_image {
+        width: 160px;
+        height: 160px;
+      }
+    }
+
+    &:not(:first-child) {
+      margin-left: 5px;
+    }
+
+    &_image {
+      width: 140px;
+      height: 140px;
+    }
+  }
+}
+
+.TimeBountyField {
+  &-advanced-toggle {
+    display: block;
+    font-weight: normal;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+}
+
+.GroupedRadioToggle {
+  $root: &;
+
+  &-button {
+    min-width: 60px;
+    padding: 10px 20px;
+    border-radius: 0;
+    height: 48px;
+    line-height: 26px;
+
+    &:not(:first-of-type) {
+      border-left: none;
+    }
+  }
+
+  &-input {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .input-group & {
+    margin-bottom: 1rem;
+  }
+
+  &.invalid {
+    #{$root}-button {
+      border-color: #db5846;
     }
   }
 }
