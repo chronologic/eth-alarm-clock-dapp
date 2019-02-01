@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "1.2.3",
+  "version": "1.4.0",
   "main": "main.js",
   "description": "",
   "scripts": {
@@ -71,7 +71,7 @@
     "crypto-js": "3.1.9-1",
     "css-loader": "1.0.1",
     "debug": "4.1.1",
-    "dotenv-webpack": "1.6.0",
+    "dotenv-webpack": "1.7.0",
     "eac-counter": "0.1.2",
     "eac.js-lib": "2.5.1",
     "electron": "3.0.11",
@@ -99,7 +99,7 @@
     "jquery.scrollbar": "0.2.11",
     "js-cookie": "2.2.0",
     "keen-analysis": "3.1.5",
-    "keen-tracking": "3.1.2",
+    "keen-tracking": "4.0.17",
     "lint-staged": "7.3.0",
     "lokijs": "1.5.6",
     "mini-css-extract-plugin": "0.5.0",

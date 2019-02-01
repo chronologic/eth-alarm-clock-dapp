@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { BlockOrTimeDisplay } from '../BlockOrTimeDisplay';
 
 const CancelSection = props => {
-  const { cancelButtonEnabled, cancelBtnRef, cancelTransaction, claimWindowStart, executionWindowEnd, isOwner, owner } = props;
+  const { cancelButtonEnabled, cancelBtnRef, cancelTransaction, claimWindowStart, executionWindowEnd, isOwner, isTimestamp, owner } = props;
 
   return (
     <div className="row mt-4">
@@ -21,12 +22,16 @@ const CancelSection = props => {
           <br />
           <ol className="list-normalized">
             <li>
-              Before <b>{claimWindowStart}</b>{' '}
+              Before <b>
+                <BlockOrTimeDisplay model={claimWindowStart} isTimestamp={isTimestamp} includeUnitText={true} />
+              </b>{' '}
               (Claim Window Start)
             </li>
             <li>
               When wasn&#39;t executed by any TimeNode after{' '}
-              <b>{executionWindowEnd}</b>{' '}
+              <b>
+                <BlockOrTimeDisplay model={executionWindowEnd} isTimestamp={isTimestamp} includeUnitText={true} />
+              </b>{' '}
               (Execution Window End)
             </li>
             <li>When it hasn&#39;t been already cancelled</li>

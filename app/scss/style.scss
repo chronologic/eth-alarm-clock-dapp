@@ -72,6 +72,12 @@ $warning-color: gold;
     margin: 0px 4px;
     white-space: nowrap;
   }
+
+  & .search-text {
+    @media screen and (max-width: 1600px) {
+      display: none;
+    }
+  }
 }
 
 .loading-icon {
@@ -525,6 +531,46 @@ hr {
     &_image {
       width: 140px;
       height: 140px;
+    }
+  }
+}
+
+.TimeBountyField {
+  &-advanced-toggle {
+    display: block;
+    font-weight: normal;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+}
+
+.GroupedRadioToggle {
+  $root: &;
+
+  &-button {
+    min-width: 60px;
+    padding: 10px 20px;
+    border-radius: 0;
+    height: 48px;
+    line-height: 26px;
+
+    &:not(:first-of-type) {
+      border-left: none;
+    }
+  }
+
+  &-input {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .input-group & {
+    margin-bottom: 1rem;
+  }
+
+  &.invalid {
+    #{$root}-button {
+      border-color: #db5846;
     }
   }
 }
