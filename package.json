@@ -133,7 +133,7 @@
     "wait-on": "3.2.0",
     "web3": "0.20.6",
     "web3-providers-ws": "1.0.0-beta.37",
-    "webpack": "4.29.4",
+    "webpack": "4.29.5",
     "webpack-bundle-analyzer": "3.0.4",
     "webpack-cli": "3.2.3",
     "webpack-dev-server": "3.1.14",
