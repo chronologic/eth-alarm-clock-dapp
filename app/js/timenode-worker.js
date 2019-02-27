@@ -23,6 +23,10 @@ const STATS_SAVE_INTERVAL = 2000;
 const STATS_NUM_DECIMALS = 5;
 
 const formatBN = num => {
+  if (!num.toNumber) {
+    num = new BigNumber(num);
+  }
+
   return (
     Math.round(num.toNumber() * Math.pow(10, STATS_NUM_DECIMALS)) / Math.pow(10, STATS_NUM_DECIMALS)
   );
@@ -73,6 +77,10 @@ class TimeNodeWorker {
       economicStrategy: options.economicStrategy,
       statsDb: browserDB
     });
+
+    if (typeof this.config.web3.currentProvider.setMaxListeners == 'function') {
+      this.config.web3.currentProvider.setMaxListeners(999);
+    }
 
     await this.config.statsDbLoaded;
 
@@ -142,7 +150,7 @@ class TimeNodeWorker {
   }
 
   async getBalances() {
-    const balance = await this.config.eac.Util.getBalance(this.myAddress);
+    const balance = await this.config.web3.eth.getBalance(this.myAddress);
     const balanceETH = this.config.web3.utils.fromWei(balance);
     let network = this.network;
 
@@ -187,9 +195,9 @@ class TimeNodeWorker {
 
     postMessage({
       type: TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_STATS,
-      bounties: formatBN(toEth(bounties)),
-      costs: formatBN(toEth(costs)),
-      profit: formatBN(toEth(profit)),
+      bounties: formatBN(toEth(bounties.toString())),
+      costs: formatBN(toEth(costs.toString())),
+      profit: formatBN(toEth(profit.toString())),
       successfulClaims: this._rawStatsArray(successfulClaims),
       failedClaims: this._rawStatsArray(failedClaims),
       successfulExecutions: this._rawStatsArray(successfulExecutions),
@@ -329,7 +337,7 @@ onmessage = async event => {
   switch (type) {
     case TIMENODE_WORKER_MESSAGE_TYPES.START:
       timeNodeWorker = new TimeNodeWorker();
-      await timeNodeWorker.start(event.data.options);
+      await timeNodeWorker.start(event.data.params);
       break;
 
     case TIMENODE_WORKER_MESSAGE_TYPES.START_SCANNING:

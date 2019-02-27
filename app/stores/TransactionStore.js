@@ -1,6 +1,6 @@
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-import { Util } from '@ethereum-alarm-clock/lib';
+import { GasPriceUtil } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
 import { showNotification } from '../services/notification';
 
@@ -59,7 +59,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
-    this._util = new Util(web3);
+    this._util = new GasPriceUtil(web3);
 
     this.init();
   }
@@ -570,7 +570,7 @@ export class TransactionStore {
     // '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000748656c6c6f252100000000000000000000000000000000000000000000000000',
     // ['0x000000000000000000000000000000000000000000000000000000000000f310', '0x0000000000000000000000000000000000000000000000000000000000000010']);
 
-    // @TODO 
+    // @TODO
 
     // const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
 

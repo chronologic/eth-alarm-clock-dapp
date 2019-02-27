@@ -185,6 +185,10 @@ export default class Web3Service {
     if (this.accounts && this.accounts.length > 0) {
       web3.eth.defaultAccount = this.accounts[0];
     }
+
+    if (typeof this.web3.currentProvider.setMaxListeners == 'function') {
+      this.web3.currentProvider.setMaxListeners(999);
+    }
   }
 
   @action

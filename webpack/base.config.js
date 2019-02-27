@@ -23,12 +23,14 @@ module.exports = {
     // Output folder in which the files will be built
     path: paths.dist,
     // All the JS files will be bundled in this one minified/obfuscated file
-    filename: './[name].js'
+    filename: './[name].js',
+    globalObject: 'this'
   },
 
   node: {
     fs: 'empty',
-    repl: 'empty'
+    repl: 'empty',
+    net: 'empty'
   },
 
   module: {
@@ -63,7 +65,9 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      moment: path.resolve(__dirname, '../node_modules/moment')
+      'any-promise': path.resolve(__dirname, '../__mocks__/any-promise'),
+      moment: path.resolve(__dirname, '../node_modules/moment'),
+      dgram: path.resolve(__dirname, '../__mocks__/dgram')
     }
   },
 
