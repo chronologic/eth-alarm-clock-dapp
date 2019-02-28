@@ -157,7 +157,11 @@ export default class TokenHelper {
     const supportsEIP165 = await this._web3Service.supportsEIP165(address);
 
     if (!supportsEIP165) {
-      return false;
+      return {
+        ERC721: false,
+        safeTransferFrom: false,
+        getApproved: false
+      };
     }
 
     const INTERFACE_ERC_721 = '0x80ac58cd'; // ERC721 with safeTransferFrom and getApproved

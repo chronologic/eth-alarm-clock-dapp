@@ -9,7 +9,7 @@ const COLLECTIONS = {
 };
 
 // 2 minutes in milliseconds
-const ACTIVE_TIMENODES_POLLING_INTERVAL = 2 * 60 * 1000;
+const ACTIVE_TIMENODES_POLLING_INTERVAL = 5 * 60 * 1000;
 const TEN_MIN = 10 * 60 * 1000;
 const FIVE_SEC = 5000;
 
@@ -30,6 +30,7 @@ export class KeenStore {
   isBlacklisted = false;
 
   _web3Service = null;
+  initialized;
 
   @observable
   historyActiveTimeNodes = [];
@@ -46,7 +47,7 @@ export class KeenStore {
     this._web3Service = web3Service;
     this.versions = versions;
 
-    this.initialize();
+    this.initialized = this.initialize();
   }
 
   async initialize() {
@@ -69,17 +70,6 @@ export class KeenStore {
     this._pollActiveTimeNodesCount();
   }
 
-  async awaitKeenInitialized() {
-    if (!this.networkId || !this.analysisClient || !this.trackingClient) {
-      return new Promise(resolve => {
-        setTimeout(async () => {
-          resolve(await this.awaitKeenInitialized());
-        }, 500);
-      });
-    }
-    return true;
-  }
-
   sendPageView() {
     this.trackingClient.recordEvent(COLLECTIONS.PAGEVIEWS, {
       title: document.title
@@ -87,7 +77,7 @@ export class KeenStore {
   }
 
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
-    await this.awaitKeenInitialized();
+    await this.initialized;
     nodeAddress = this._web3Service.web3.utils.sha3(nodeAddress).toString();
     dayAddress = this._web3Service.web3.utils.sha3(dayAddress).toString();
     networkId = networkId.toString();
@@ -97,8 +87,7 @@ export class KeenStore {
       dayAddress,
       networkId,
       eacVersions: this.versions,
-      nodeType: 'dapp',
-      status: 'active'
+      nodeType: 'dapp'
     };
     this.trackingClient.recordEvent(COLLECTIONS.TIMENODES, event);
   }
@@ -145,25 +134,55 @@ export class KeenStore {
   }
 
   async _getActiveTimeNodesHistory() {
-    const promises = [];
+    await this.initialized;
 
-    for (let i = 24; i > 0; i--) {
-      const promise = this.getActiveTimeNodesCount(this.timeNodeSpecificProviderNetId, {
-        start: moment()
-          .subtract(i, 'hours')
-          .toISOString(),
-        end: moment()
-          .subtract(i - 1, 'hours')
-          .toISOString()
+    if (!this.isBlacklisted) {
+      const count = new KeenAnalysis.Query('count_unique', {
+        event_collection: COLLECTIONS.TIMENODES,
+        target_property: 'nodeAddress',
+        timeframe: {
+          start: moment()
+            .subtract(24, 'hours')
+            .toISOString(),
+          end: moment().toISOString()
+        },
+        interval: 'hourly',
+        group_by: 'nodeAddress',
+        filters: [
+          {
+            property_name: 'networkId',
+            operator: 'eq',
+            property_value: this.timeNodeSpecificProviderNetId
+          },
+          {
+            property_name: 'eacVersions.contracts',
+            operator: 'eq',
+            property_value: this.versions.contracts
+          }
+        ]
       });
-      promises.push(promise);
-    }
 
-    return Promise.all(promises);
+      let response = null;
+      try {
+        response = await this.analysisClient.run(count);
+      } catch (e) {
+        this.isBlacklisted = true;
+      }
+
+      if (
+        response === null ||
+        !response.hasOwnProperty('result') ||
+        response.hasOwnProperty('err')
+      ) {
+        return null;
+      }
+
+      return response.result.map(res => res.value[0].result);
+    }
   }
 
-  async getActiveTimeNodesCount(networkId, timeframe = 'previous_2_minutes') {
-    await this.awaitKeenInitialized();
+  async getActiveTimeNodesCount(networkId, timeframe = 'this_5_minutes') {
+    await this.initialized;
 
     if (!this.isBlacklisted) {
       const count = new KeenAnalysis.Query('count', {
@@ -181,11 +200,6 @@ export class KeenStore {
             property_name: 'eacVersions.contracts',
             operator: 'eq',
             property_value: this.versions.contracts
-          },
-          {
-            property_name: 'status',
-            operator: 'eq',
-            property_value: 'active'
           }
         ]
       });

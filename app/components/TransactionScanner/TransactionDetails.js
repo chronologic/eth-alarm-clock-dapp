@@ -276,18 +276,6 @@ class TransactionDetails extends Component {
     this.setState({ isFrozen: isFrozen || transaction.isCancelled });
   }
 
-  getTransactionPropertyTimeDisplay(transaction, property) {
-    let display = '';
-
-    if (transaction[property] && transaction[property].toString) {
-      const parsedUnixTime = moment.unix(transaction[property].toString());
-
-      display = parsedUnixTime.format('YYYY/MM/DD HH:mm:ss');
-    }
-
-    return display;
-  }
-
   handleProxyDataClick() {
     this.setState({
       proxyDataCheckBox: !this.state.proxyDataCheckBox
@@ -338,6 +326,8 @@ class TransactionDetails extends Component {
 
   async setupDetails() {
     const { transaction, transactionStore, transactionMissingData } = this.props;
+
+    await transactionStore.init();
 
     const status = await transactionStore.getTxStatus(transaction, moment().unix());
 
@@ -559,9 +549,32 @@ class TransactionDetails extends Component {
     return <ValueDisplay priceInWei={this.props.transaction.callValue} />;
   }
 
+  isCancelButtonEnabled() {
+    const { transaction, transactionMissingData, transactionStore } = this.props;
+    const { isFrozen, status } = this.state;
+    const isOwner = this.isOwner(transaction);
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
+
+    let isBeforeClaimWindowStart = false;
+
+    if (isTimestamp) {
+      isBeforeClaimWindowStart = moment.unix(transaction.claimWindowStart) > moment();
+    } else {
+      isBeforeClaimWindowStart = transaction.claimWindowStart > transactionStore.lastBlock;
+    }
+
+    return (
+      !transactionMissingData &&
+      isOwner &&
+      !isFrozen &&
+      ((status === TRANSACTION_STATUS.SCHEDULED && isBeforeClaimWindowStart) ||
+        status === TRANSACTION_STATUS.MISSED)
+    );
+  }
+
   render() {
-    const { transaction, transactionMissingData } = this.props;
-    const { callData, executedAt, isFrozen, status, tokenTransferApproved } = this.state;
+    const { transaction, transactionMissingData, transactionStore } = this.props;
+    const { callData, executedAt, status, tokenTransferApproved } = this.state;
     const {
       bounty,
       callGas,
@@ -575,7 +588,7 @@ class TransactionDetails extends Component {
     } = transaction;
 
     const isOwner = this.isOwner(transaction);
-    const isTimestamp = transaction.temporalUnit === 2;
+    const isTimestamp = transactionStore.isTxUnitTimestamp(transaction);
 
     const tokenTransferApprovalStatus = tokenTransferApproved ? 'Approved' : 'Not Approved';
 
@@ -711,23 +724,14 @@ class TransactionDetails extends Component {
           <div className="col-12">{this.getInfoMessage()}</div>
         </div>
         <CancelSection
-          cancelButtonEnabled={
-            !transactionMissingData &&
-            isOwner &&
-            !isFrozen &&
-            ((status === TRANSACTION_STATUS.SCHEDULED &&
-              moment() < moment.unix(transaction.claimWindowStart)) ||
-              status === TRANSACTION_STATUS.MISSED)
-          }
+          cancelButtonEnabled={this.isCancelButtonEnabled()}
           cancelBtnRef={el => (this.cancelBtn = el)}
           cancelTransaction={this.cancelTransaction}
-          claimWindowStart={this.getTransactionPropertyTimeDisplay(transaction, 'claimWindowStart')}
-          executionWindowEnd={this.getTransactionPropertyTimeDisplay(
-            transaction,
-            'executionWindowEnd'
-          )}
+          claimWindowStart={transaction.claimWindowStart}
+          executionWindowEnd={transaction.executionWindowEnd}
           isOwner={isOwner}
           owner={owner}
+          isTimestamp={isTimestamp}
         />
         <ProxySection
           afterExecutionWindow={this.state.afterExecutionWindow}
