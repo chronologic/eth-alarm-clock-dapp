@@ -566,41 +566,44 @@ export class TransactionStore {
       type: 'event'
     };
 
-    // this._web3.eth.abi.decodeLog(requestCreatedEventABI,
-    // '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000748656c6c6f252100000000000000000000000000000000000000000000000000',
-    // ['0x000000000000000000000000000000000000000000000000000000000000f310', '0x0000000000000000000000000000000000000000000000000000000000000010']);
+    const REQUEST_CREATED_LOG_SIGNATURE =
+      '0x15aac4af776447c09d895192c86bab463c38b92191f3ba3f7b8831723c548d6e';
 
-    // @TODO
+    const parsedLogs = logs
+      .map(log => {
+        if (REQUEST_CREATED_LOG_SIGNATURE === log.topics[0]) {
+          const decodedLog = this._web3.web3.eth.abi.decodeLog(
+            requestCreatedEventABI.inputs,
+            log.data,
+            log.topics
+          );
 
-    // const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+          return Object.assign({}, log, {
+            returnValues: decodedLog
+          });
+        }
+      })
+      .filter(parsedLog => parsedLog);
 
-    // const parsedLogs = logs
-    //   .map(log => {
-    //     if (decoder.signature() === log.topics[0].replace('0x', '')) {
-    //       return decoder.decode(log);
-    //     }
-    //   })
-    //   .filter(parsedLog => parsedLog);
+    const requestCreatedLog = parsedLogs[0];
 
-    // const requestCreatedLog = parsedLogs[0];
+    if (!requestCreatedLog) {
+      throw new Error('RequestCreated log has not been found.');
+    }
 
-    // if (!requestCreatedLog) {
-    //   throw new Error('RequestCreated log has not been found.');
-    // }
+    this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
 
-    // this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
+    const transactionAddress = requestCreatedLog.returnValues.request;
 
-    // const transactionAddress = requestCreatedLog.args.request;
+    const scheduledTx = this.scheduledTransactions.find(
+      tx => tx.transactionHash === requestCreatedLog.transactionHash
+    );
 
-    // const scheduledTx = this.scheduledTransactions.find(
-    //   tx => tx.transactionHash === requestCreatedLog.transactionHash
-    // );
+    if (scheduledTx) {
+      scheduledTx.address = transactionAddress;
+    }
 
-    // if (scheduledTx) {
-    //   scheduledTx.address = transactionAddress;
-    // }
-
-    // return transactionAddress;
+    return transactionAddress;
   }
 
   fillTransactionDataFromRequestCreatedEvent(transaction, requestCreatedEvent) {

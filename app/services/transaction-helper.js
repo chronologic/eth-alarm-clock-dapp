@@ -13,9 +13,9 @@ export default class TransactionHelper {
     let afterExecutionWindow;
 
     if (this.isTxUnitTimestamp(transaction)) {
-      afterExecutionWindow = transaction.executionWindowEnd.lessThan(currentTimestamp);
+      afterExecutionWindow = transaction.executionWindowEnd.lt(currentTimestamp);
     } else {
-      afterExecutionWindow = transaction.executionWindowEnd.lessThan(currentBlock);
+      afterExecutionWindow = transaction.executionWindowEnd.lt(currentBlock);
     }
 
     return Boolean(afterExecutionWindow && !transaction.wasCalled);

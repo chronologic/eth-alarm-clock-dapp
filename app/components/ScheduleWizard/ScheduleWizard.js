@@ -243,7 +243,7 @@ class ScheduleWizard extends Component {
     fee = toWei(fee);
     timeBounty = toWei(timeBounty);
     deposit = toWei(deposit === '' ? 0 : deposit);
-    const data = isTokenTransfer ? tokenData : yourData;
+    const callData = (isTokenTransfer ? tokenData : yourData) || '0x';
 
     try {
       const scheduled = await this.props.eacService.schedule({
@@ -251,7 +251,7 @@ class ScheduleWizard extends Component {
         windowStart: executionTime,
         timestampScheduling: isUsingTime,
         bounty: timeBounty,
-        callData: data,
+        callData,
         callGas: gasAmount,
         callValue: amountToSend,
         windowSize: executionWindow,
@@ -266,6 +266,7 @@ class ScheduleWizard extends Component {
         document.body.className = originalBodyCss;
       }
     } catch (error) {
+      console.error('error in ScheduleWizard::scheduleTransaction', error);
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
       document.body.className = originalBodyCss;
       this.scheduleBtn.innerHTML = 'Schedule';

@@ -104,7 +104,7 @@ export default class TransactionCache {
     if (logs) {
       newLogs = JSON.parse(logs);
 
-      const exists = newLogs.find(cachedLog => cachedLog.args.request === log.args.request);
+      const exists = newLogs.find(cachedLog => cachedLog.request === log.request);
 
       if (!exists) {
         newLogs.push(log);

@@ -307,9 +307,15 @@ export default class TransactionFetcher {
       return;
     }
 
+    let fromBlock = this._cache.requestCreatedLogsLastBlockFetched;
+
+    if (isNaN(fromBlock)) {
+      fromBlock = 1;
+    }
+
     this.requestWatcher = await this._requestFactory.watchRequestCreatedLogs(
       {},
-      this._cache.requestCreatedLogsLastBlockFetched,
+      fromBlock,
       async (error, log) => {
         if (log) {
           const address = log.address;
