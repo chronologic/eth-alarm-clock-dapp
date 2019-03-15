@@ -1,4 +1,4 @@
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { initWeb3Service } from './web3';
 import { initEacService } from './eac';
 import LocalStorageService from './storage';
@@ -11,13 +11,17 @@ const networkAwareKeyModifier = new NetworkAwareKeyModifier();
 
 const storageService = new LocalStorageService();
 const networkAwareStorageService = new NetworkAwareStorageService(networkAwareKeyModifier);
-const w3Util = new W3Util();
 
 if (window && window.ethereum && window.ethereum.enable) {
   window.ethereum.enable();
 }
 
-const web3Service = initWeb3Service(false, window.web3, networkAwareKeyModifier, w3Util);
+const web3Service = initWeb3Service(
+  false,
+  window.web3,
+  networkAwareKeyModifier,
+  new Util(window.web3)
+);
 web3Service.init();
 
 const eacService = initEacService(web3Service);

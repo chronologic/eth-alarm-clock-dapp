@@ -28,14 +28,16 @@ class ConfirmSettings extends Component {
     } = this.props;
     let { gasAmount, amountToSend, gasPrice, fee, timeBounty } = scheduleStore;
 
-    amountToSend = web3.toWei(amountToSend, 'ether');
-    gasPrice = web3.toWei(gasPrice, 'gwei');
-    fee = web3.toWei(fee, 'ether');
-    timeBounty = web3.toWei(timeBounty, 'ether');
+    const stringifyNum = value => (value === '' ? '0' : value.toString());
+
+    amountToSend = web3.utils.toWei(stringifyNum(amountToSend), 'ether');
+    gasPrice = web3.utils.toWei(stringifyNum(gasPrice), 'gwei');
+    fee = web3.utils.toWei(stringifyNum(fee), 'ether');
+    timeBounty = web3.utils.toWei(stringifyNum(timeBounty), 'ether');
 
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
-    return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
+    return Number(web3.utils.fromWei(stringifyNum(endowment), 'ether')); // Only for display purposes
   }
 
   get executionWindow() {

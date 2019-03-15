@@ -17,7 +17,7 @@ describe('Stores / TransactionStore', () => {
       },
       requestFactory: () =>
         Promise.resolve({
-          getRequestCreatedLogs() {
+          getRequestCreatedEvents() {
             return MOCKED_TRANSACTIONS.map(tx => ({
               args: {
                 request: tx,
@@ -106,7 +106,7 @@ describe('Stores / TransactionStore', () => {
       },
       requestFactory: () =>
         Promise.resolve({
-          getRequestCreatedLogs() {
+          getRequestCreatedEvents() {
             return [];
           }
         }),

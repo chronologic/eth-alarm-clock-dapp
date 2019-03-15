@@ -1,4 +1,4 @@
-import Web3 from 'web3/index';
+import Web3 from 'web3';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
 import {
@@ -6,7 +6,7 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { stripHexPrefixAndLower } from '../lib/signature.js';
 
 let instance = null;
@@ -51,10 +51,6 @@ export default class Web3Service {
     return this._initializationPromise;
   }
 
-  fromWei(wei) {
-    return this.web3.fromWei(wei);
-  }
-
   async getBlockNumberFromTxHash(txHash) {
     return new Promise(resolve => {
       this.web3.eth.getTransaction(txHash, (_, res) => {
@@ -96,22 +92,17 @@ export default class Web3Service {
     return Log;
   }
 
-  getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.eth.filter({
-      fromBlock,
-      toBlock: 'latest',
+  async getTokenTransfers(address, fromBlock = this.requestFactoryStartBlock) {
+    const filter = await this.web3.eth.getPastLogs({
       topics: [
         '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         null, // from
         '0x' + '0'.repeat(24) + address.slice(2) // to
-      ]
+      ],
+      fromBlock
     });
 
-    return new Promise(resolve => {
-      filter.get((_, res) => {
-        resolve(res);
-      });
-    });
+    return filter;
   }
 
   async trackTransaction(hash) {
@@ -167,15 +158,14 @@ export default class Web3Service {
         web3 = new Web3(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
-        web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
+        web3 = Util.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
-
-      this.web3 = web3;
     }
+    this.web3 = web3;
 
-    const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+    const netId = await this.web3.eth.net.getId();
 
     if (this._keyModifier) {
       this._keyModifier.setNetworkId(netId);
@@ -185,15 +175,19 @@ export default class Web3Service {
     this.explorer = this.network.explorer;
 
     if (this.network && this.network.endpoint && this.connectedToMetaMask) {
-      this._web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
+      this._web3AlternativeToMetaMask = Util.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
-    if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
+    if (!this.connectedToMetaMask || !this.web3.eth.net.isListening()) return;
 
-    this.accounts = web3.eth.accounts;
+    this.accounts = this.web3.eth.getAccounts();
 
     if (this.accounts && this.accounts.length > 0) {
       web3.eth.defaultAccount = this.accounts[0];
+    }
+
+    if (typeof this.web3.currentProvider.setMaxListeners == 'function') {
+      this.web3.currentProvider.setMaxListeners(999);
     }
   }
 
@@ -212,10 +206,6 @@ export default class Web3Service {
 
   isOnMainnet() {
     return this.network === Networks[MAIN_NETWORK_ID];
-  }
-
-  getWeb3FromProviderUrl(url) {
-    return W3Util.getWeb3FromProviderUrl(url);
   }
 
   /**

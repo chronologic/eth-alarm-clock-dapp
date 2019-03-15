@@ -7,14 +7,9 @@ export const MAIN_NETWORK_ID = 1;
 export const ROPSTEN_NETWORK_ID = 3;
 export const KOVAN_NETWORK_ID = 42;
 export const DOCKER_NETWORK_ID = 1001;
+export const RSK_TESTNET_NETWORK_ID = 31;
 
 export const DEFAULT_NETWORK_WHEN_NO_METAMASK = MAIN_NETWORK_ID;
-
-export const requestFactoryStartBlocks = {
-  [MAIN_NETWORK_ID]: 6204104,
-  [ROPSTEN_NETWORK_ID]: 2594245,
-  [KOVAN_NETWORK_ID]: 5555500
-};
 
 const CRYPTO_KITTIES_API_KEY = process.env.CRYPTO_KITTIES_API_KEY;
 
@@ -91,6 +86,19 @@ const Networks = {
     dayFaucetAbi: testnetDAYFaucetABI,
     supported: true,
     explorer: 'https://kovan.etherscan.io/'
+  },
+  [RSK_TESTNET_NETWORK_ID]: {
+    id: RSK_TESTNET_NETWORK_ID,
+    name: 'RSK TestNet',
+    endpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com:4444/',
+    httpEndpoint: 'http://ec2-54-210-114-200.compute-1.amazonaws.com:4444/',
+    showInChooser: true,
+    // dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
+    dayTokenAbi: DAYTokenABI,
+    // dayFaucetAddress: '0x3baebd8b6839f8ae0c88fc15b9d8d7b641d06731',
+    dayFaucetAbi: testnetDAYFaucetABI,
+    supported: true,
+    explorer: 'https://explorer.testnet.rsk.co'
   },
   [DOCKER_NETWORK_ID]: {
     id: DOCKER_NETWORK_ID,

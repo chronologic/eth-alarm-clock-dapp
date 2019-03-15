@@ -9,9 +9,9 @@ import PoweredByEAC from '../Common/PoweredByEAC';
 import ConfirmValueModal from './Modal/ConfirmValueModal';
 import { showNotification } from '../../services/notification';
 
+@inject('eacService')
 @inject('web3Service')
 @inject('scheduleStore')
-@inject('transactionStore')
 @inject('featuresService')
 @observer
 class ScheduleWizard extends Component {
@@ -205,7 +205,6 @@ class ScheduleWizard extends Component {
 
     const {
       scheduleStore,
-      transactionStore,
       web3Service: { web3 },
       history
     } = this.props;
@@ -236,28 +235,30 @@ class ScheduleWizard extends Component {
       isTokenTransfer
     } = scheduleStore;
 
-    amountToSend = web3.toWei(amountToSend, 'ether');
-    gasPrice = web3.toWei(gasPrice, 'gwei');
-    fee = web3.toWei(fee, 'ether');
-    timeBounty = web3.toWei(timeBounty, 'ether');
-    deposit = web3.toWei(deposit, 'ether');
-    const data = isTokenTransfer ? tokenData : yourData;
+    const toWei = (value, fromDenomination = 'ether') =>
+      web3.utils.toWei(value.toString(), fromDenomination);
+
+    amountToSend = toWei(amountToSend);
+    gasPrice = toWei(gasPrice, 'gwei');
+    fee = toWei(fee);
+    timeBounty = toWei(timeBounty);
+    deposit = toWei(deposit === '' ? 0 : deposit);
+    const callData = (isTokenTransfer ? tokenData : yourData) || '0x';
 
     try {
-      const scheduled = await transactionStore.schedule(
+      const scheduled = await this.props.eacService.schedule({
         toAddress,
-        data,
-        gasAmount,
-        amountToSend,
-        executionWindow,
-        executionTime,
+        windowStart: executionTime,
+        timestampScheduling: isUsingTime,
+        bounty: timeBounty,
+        callData,
+        callGas: gasAmount,
+        callValue: amountToSend,
+        windowSize: executionWindow,
         gasPrice,
         fee,
-        timeBounty,
-        deposit,
-        false, //do not wait for mining to return values
-        isUsingTime
-      );
+        requiredDeposit: deposit
+      });
 
       if (scheduled) {
         scheduleStore.reset();
@@ -265,6 +266,7 @@ class ScheduleWizard extends Component {
         document.body.className = originalBodyCss;
       }
     } catch (error) {
+      console.error('error in ScheduleWizard::scheduleTransaction', error);
       showNotification('Transaction cancelled by the user.', 'danger', 4000);
       document.body.className = originalBodyCss;
       this.scheduleBtn.innerHTML = 'Schedule';
@@ -444,10 +446,10 @@ class ScheduleWizard extends Component {
 }
 
 ScheduleWizard.propTypes = {
+  eacService: PropTypes.any,
   featuresService: PropTypes.any,
   web3Service: PropTypes.any,
   scheduleStore: PropTypes.any,
-  transactionStore: PropTypes.any,
   history: PropTypes.any,
   isWeb3Usable: PropTypes.any
 };

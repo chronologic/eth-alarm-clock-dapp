@@ -47,7 +47,7 @@ export default class TransactionCache {
     this.requestCreatedLogs =
       storedLogs &&
       storedLogs.map(log => {
-        log.args.params = log.args.params.map(param => new BigNumber(param));
+        log.returnValues.params = log.returnValues.params.map(param => new BigNumber(param));
 
         return log;
       });
@@ -104,7 +104,7 @@ export default class TransactionCache {
     if (logs) {
       newLogs = JSON.parse(logs);
 
-      const exists = newLogs.find(cachedLog => cachedLog.args.request === log.args.request);
+      const exists = newLogs.find(cachedLog => cachedLog.request === log.request);
 
       if (!exists) {
         newLogs.push(log);

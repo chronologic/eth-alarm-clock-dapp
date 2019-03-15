@@ -33,9 +33,11 @@ describe('App', () => {
       },
       explorer: TEST_EXPLORER,
       web3: {
-        fromWei: a => a,
-        toWei: a => a,
-        isConnected: () => true,
+        utils: {
+          fromWei: a => a,
+          toWei: a => a
+        },
+        isListening: () => true,
         eth: {
           contract() {
             return {

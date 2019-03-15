@@ -1,10 +1,18 @@
-import { showNotification } from '../services/notification';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-import { requestFactoryStartBlocks } from '../config/web3Config';
-import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
+import { GasPriceUtil } from '@ethereum-alarm-clock/lib';
 import { observable } from 'mobx';
-import SolidityEvent from 'web3/lib/web3/event.js';
+import { showNotification } from '../services/notification';
+
+const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
+  EmptyToAddress: 'Please enter recipient address.',
+  CallGasTooHigh: 'Call gas is too high.',
+  ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.',
+  InsufficientEndowment:
+    'Automatically calculated endowment is insufficient. Please contact developers.',
+  ReservedWindowBiggerThanExecutionWindow: 'Reserved window is bigger than execution window.',
+  InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
+};
 
 export const DEFAULT_LIMIT = 10;
 
@@ -20,16 +28,6 @@ export class TEMPORAL_UNIT {
   static BLOCK = 1;
   static TIMESTAMP = 2;
 }
-
-const PARAMS_ERROR_TO_MESSAGE_MAPPING = {
-  EmptyToAddress: 'Please enter recipient address.',
-  CallGasTooHigh: 'Call gas is too high.',
-  ExecutionWindowTooSoon: 'Execution window too soon. Please choose later date.',
-  InsufficientEndowment:
-    'Automatically calculated endowment is insufficient. Please contact developers.',
-  ReservedWindowBiggerThanExecutionWindow: 'Reserved window is bigger than execution window.',
-  InvalidTemporalUnit: 'Temporal unit is invalid. It should be either block or time.'
-};
 
 export class TransactionStore {
   @observable
@@ -61,7 +59,7 @@ export class TransactionStore {
     this._features = featuresService;
     this._helper = helper;
     this._bucketHelper = bucketHelper;
-    this._util = new TNUtil(this._web3);
+    this._util = new GasPriceUtil(web3);
 
     this.init();
   }
@@ -77,12 +75,6 @@ export class TransactionStore {
   // Returns an array of only the addresses of all transactions
   get allTransactionsAddresses() {
     return this._fetcher.allTransactionsAddresses;
-  }
-
-  get requestFactoryStartBlock() {
-    const { network } = this._web3;
-
-    return (network && requestFactoryStartBlocks[network.id]) || 0;
   }
 
   _initializationPromise;
@@ -111,9 +103,12 @@ export class TransactionStore {
       this._requestFactory = await this._eac.requestFactory();
     }
 
+    const startBlock = await this._eac.util.getRequestFactoryStartBlock();
+    this.requestFactoryStartBlock = (this._web3.network && startBlock) || 0;
+
     this._bucketHelper.setRequestFactory(this._requestFactory);
 
-    this._eacScheduler = this._eacScheduler || (await this._eac.scheduler());
+    this._eacScheduler = this._eacScheduler || (await this._eac.getScheduler());
 
     this._fetcher.requestFactoryStartBlock = this.requestFactoryStartBlock || 1;
     this._fetcher.startLazy();
@@ -244,7 +239,7 @@ export class TransactionStore {
     transactions = processed;
 
     if (sortByTimestampAscending) {
-      const currentBlockTimestamp = await this._eac.Util.getTimestampForBlock(this.lastBlock);
+      const currentBlockTimestamp = await this._eac.util.getTimestampForBlock(this.lastBlock);
 
       transactions = transactions.sort((a, b) => {
         const aTimestamp = this._helper.getTxTimestampEstimation(
@@ -371,7 +366,7 @@ export class TransactionStore {
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
-      bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
+      bountyInEth = new BigNumber(web3.utils.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
     });
 
@@ -571,12 +566,21 @@ export class TransactionStore {
       type: 'event'
     };
 
-    const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+    const REQUEST_CREATED_LOG_SIGNATURE =
+      '0x15aac4af776447c09d895192c86bab463c38b92191f3ba3f7b8831723c548d6e';
 
     const parsedLogs = logs
       .map(log => {
-        if (decoder.signature() === log.topics[0].replace('0x', '')) {
-          return decoder.decode(log);
+        if (REQUEST_CREATED_LOG_SIGNATURE === log.topics[0]) {
+          const decodedLog = this._web3.web3.eth.abi.decodeLog(
+            requestCreatedEventABI.inputs,
+            log.data,
+            log.topics
+          );
+
+          return Object.assign({}, log, {
+            returnValues: decodedLog
+          });
         }
       })
       .filter(parsedLog => parsedLog);
@@ -589,7 +593,7 @@ export class TransactionStore {
 
     this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
 
-    const transactionAddress = requestCreatedLog.args.request;
+    const transactionAddress = requestCreatedLog.returnValues.request;
 
     const scheduledTx = this.scheduledTransactions.find(
       tx => tx.transactionHash === requestCreatedLog.transactionHash

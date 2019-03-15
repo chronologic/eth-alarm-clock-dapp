@@ -192,13 +192,13 @@ class TransactionDetails extends Component {
     let executedAt = '';
 
     if (status === TRANSACTION_STATUS.EXECUTED || status === TRANSACTION_STATUS.FAILED) {
-      const events = await this.getExecutedEvents(
+      const executedEvent = await this.getExecutedEvents(
         requestLib,
         transactionStore.requestFactoryStartBlock
       );
 
-      if (events.length > 0) {
-        executedAt = events[0].transactionHash;
+      if (executedEvent) {
+        executedAt = executedEvent.transactionHash;
       }
     }
 
@@ -228,6 +228,7 @@ class TransactionDetails extends Component {
     }
 
     if (afterExecutionWindow) {
+      // const tokenContract = new web3Service.web3.Contract(address);
       const tokenTransferEvents = await web3Service.getTokenTransfers(address, fromBlock);
       const tokenTransferDetails = await Promise.all(
         tokenTransferEvents.map(async event => {
@@ -258,8 +259,8 @@ class TransactionDetails extends Component {
 
   getExecutedEvents(requestLib, fromBlock = 0) {
     return new Promise(resolve => {
-      requestLib.Executed({}, { fromBlock, toBlock: 'latest' }).get((error, events) => {
-        resolve(events);
+      requestLib.events.Executed({}, { fromBlock, toBlock: 'latest' }, (error, event) => {
+        resolve(event);
       });
     });
   }
@@ -283,13 +284,9 @@ class TransactionDetails extends Component {
 
   isOwner(transaction) {
     const { owner } = transaction;
-    const {
-      web3Service: {
-        eth: { accounts }
-      }
-    } = this.props;
-
-    return accounts[0] == owner;
+    const { web3Service } = this.props;
+    const isOwner = web3Service.accounts[0].toLowerCase() == owner.toLowerCase();
+    return isOwner;
   }
 
   proxyInputOnChange(e) {

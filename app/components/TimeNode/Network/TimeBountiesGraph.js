@@ -41,8 +41,8 @@ class TimeBountiesGraph extends Component {
         const valuesInGwei = [];
 
         values.forEach(value => {
-          const wei = web3Service.web3.toWei(value, 'ether');
-          valuesInGwei.push(web3Service.web3.fromWei(wei, 'gwei'));
+          const wei = web3Service.web3.utils.toWei(value.toString(), 'ether');
+          valuesInGwei.push(web3Service.web3.utils.fromWei(wei, 'gwei'));
         });
         values = valuesInGwei;
 

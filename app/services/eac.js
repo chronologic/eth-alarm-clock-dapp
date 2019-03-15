@@ -1,9 +1,8 @@
-import EAC from 'eac.js-lib';
+import { EAC, Analytics, RequestFactory, Util } from '@ethereum-alarm-clock/lib';
 import BigNumber from 'bignumber.js';
 import RequestLib from '../abi/RequestLib';
 
 let instance = null;
-let web3 = null;
 
 export const TRANSACTION_EVENT = {
   ABORTED: 'aborted',
@@ -13,7 +12,7 @@ export const TRANSACTION_EVENT = {
 
 const getAdditionalProperties = () => ({
   getRequestLibInstance(address) {
-    return web3.eth.contract(RequestLib).at(address);
+    return new this.web3.eth.Contract(RequestLib, address);
   },
 
   calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, payment = 0) {
@@ -23,11 +22,7 @@ const getAdditionalProperties = () => ({
     fee = fee || 0;
     payment = payment || 0;
 
-    const {
-      Util: { calcEndowment }
-    } = this;
-
-    const endowment = calcEndowment(
+    const endowment = Util.calcEndowment(
       new BigNumber(gasAmount),
       new BigNumber(amountToSend),
       new BigNumber(gasPrice),
@@ -39,17 +34,23 @@ const getAdditionalProperties = () => ({
   },
 
   async getActiveContracts() {
-    const { Util } = this;
-    const chainName = await Util.getChainName();
+    const contractsAddresses = await this.util.getContractsAddresses();
+    return contractsAddresses;
+  },
 
-    return require(`eac.js-lib/lib/assets/${chainName}.json`);
+  async getTotalEthTransferred() {
+    const addresses = await this.util.getContractsAddresses();
+    const requestFactory = new RequestFactory(addresses.requestFactory, this.web3);
+    const analytics = new Analytics(this.web3, requestFactory);
+
+    const total = await analytics.getTotalEthTransferred();
+    return total;
   }
 });
 
 export function initEacService(web3Service) {
   if (!instance) {
-    web3 = web3Service;
-    instance = Object.assign(EAC(web3Service), getAdditionalProperties());
+    instance = Object.assign(new EAC(web3Service.web3), getAdditionalProperties());
   }
   return instance;
 }

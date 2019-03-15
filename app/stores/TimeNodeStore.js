@@ -2,12 +2,13 @@ import { observable, computed } from 'mobx';
 import CryptoJS from 'crypto-js';
 import ethereumJsWallet from 'ethereumjs-wallet';
 
-import { EAC_WORKER_MESSAGE_TYPES } from '../js/eac-worker-message-types';
+import { TIMENODE_WORKER_MESSAGE_TYPES } from '../js/timenode-worker-message-types';
 import { showNotification } from '../services/notification';
 import { LOGGER_MSG_TYPES, LOG_TYPE } from '../lib/worker-logger.js';
 import { isMyCryptoSigValid, isSignatureValid, parseSig, SIGNATURE_ERRORS } from '../lib/signature';
 import { getDAYBalance } from '../lib/timenode-util';
-import { Config, W3Util } from '@ethereum-alarm-clock/timenode-core';
+import { Config } from '@ethereum-alarm-clock/timenode-core';
+import { Util } from '@ethereum-alarm-clock/lib';
 import { isRunningInElectron } from '../lib/electron-util';
 import { Networks } from '../config/web3Config';
 
@@ -161,7 +162,7 @@ export default class TimeNodeStore {
     return Networks[currentNetId];
   }
 
-  eacWorker = null;
+  timeNodeWorker = null;
 
   _keenStore = null;
   _storageService = null;
@@ -193,6 +194,7 @@ export default class TimeNodeStore {
     this.updateBalances = this.updateBalances.bind(this);
     this.updateBountiesGraph = this.updateBountiesGraph.bind(this);
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
+    this.updateProcessedTxsGraph = this.updateProcessedTxsGraph.bind(this);
   }
 
   async unlockTimeNode(password) {
@@ -253,9 +255,9 @@ export default class TimeNodeStore {
 
   startWorker(options) {
     return new Promise(resolve => {
-      this.eacWorker = new Worker('../js/eac-worker.js', { type: 'module' });
+      this.timeNodeWorker = new Worker('../js/timenode-worker.js', { type: 'module' });
 
-      this.eacWorker.onmessage = async event => {
+      this.timeNodeWorker.onmessage = async event => {
         const { type, value } = event.data;
         const getValuesIfInMessage = values => {
           values.forEach(value => {
@@ -266,18 +268,18 @@ export default class TimeNodeStore {
         };
 
         switch (type) {
-          case EAC_WORKER_MESSAGE_TYPES.STARTED:
+          case TIMENODE_WORKER_MESSAGE_TYPES.STARTED:
             this.stopIntervals();
             this.startIntervals();
 
             resolve();
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.LOG:
+          case TIMENODE_WORKER_MESSAGE_TYPES.LOG:
             this.handleLogMessage(value);
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS:
+          case TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_STATS:
             getValuesIfInMessage([
               'bounties',
               'costs',
@@ -290,16 +292,16 @@ export default class TimeNodeStore {
             ]);
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
+          case TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_BALANCES:
             getValuesIfInMessage(['balanceETH', 'balanceDAY', 'isTimeMint']);
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS:
+          case TIMENODE_WORKER_MESSAGE_TYPES.CLEAR_STATS:
             showNotification('Cleared the stats.', 'success');
             this.updateStats();
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
+          case TIMENODE_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
             getValuesIfInMessage(['providerBlockNumber', 'netId']);
             if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
               this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
@@ -307,33 +309,28 @@ export default class TimeNodeStore {
             }
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
+          case TIMENODE_WORKER_MESSAGE_TYPES.RECEIVED_CLAIMED_NOT_EXECUTED_TRANSACTIONS:
             this._getClaimedNotExecutedTransactionsPromiseResolver(event.data['transactions']);
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
+          case TIMENODE_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA:
             this.updatingBountiesGraphInProgress = false;
             getValuesIfInMessage(['bountiesGraphData']);
             break;
 
-          case EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
+          case TIMENODE_WORKER_MESSAGE_TYPES.PROCESSED_TXS:
             getValuesIfInMessage(['processedTxs']);
             this.updatingProcessedTxsGraphInProgress = false;
             break;
         }
       };
 
-      this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.START,
-        options
-      });
+      this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.START, options);
     });
   }
 
   async getClaimedNotExecutedTransactions() {
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS
-    });
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.GET_CLAIMED_NOT_EXECUTED_TRANSACTIONS);
 
     return new Promise(resolve => {
       this._getClaimedNotExecutedTransactionsPromiseResolver = resolve;
@@ -371,9 +368,7 @@ export default class TimeNodeStore {
       STATUS_UPDATE_INTERVAL
     );
 
-    this.eacWorker.postMessage({
-      type: EAC_WORKER_MESSAGE_TYPES.START_SCANNING
-    });
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.START_SCANNING);
 
     this.updateStats();
     this._storageService.save(STORAGE_KEYS.SCANNING, true);
@@ -386,10 +381,8 @@ export default class TimeNodeStore {
       clearInterval(this._timeNodeStatusCheckIntervalRef);
     }
 
-    if (this.eacWorker) {
-      this.eacWorker.postMessage({
-        type: EAC_WORKER_MESSAGE_TYPES.STOP_SCANNING
-      });
+    if (this.timeNodeWorker) {
+      this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.STOP_SCANNING);
     }
     this._storageService.remove(STORAGE_KEYS.SCANNING);
   }
@@ -422,7 +415,7 @@ export default class TimeNodeStore {
   }
 
   async testCustomProvider(endpoint) {
-    return W3Util.testProvider(endpoint);
+    return Util.testProvider(endpoint);
   }
 
   async setCustomProvider(id, endpoint) {
@@ -471,38 +464,39 @@ export default class TimeNodeStore {
     }
   }
 
-  sendMessageWorker(messageType) {
-    if (this.eacWorker) {
-      this.eacWorker.postMessage({
-        type: messageType
+  sendMessageWorker(messageType, params = {}) {
+    if (this.timeNodeWorker) {
+      this.timeNodeWorker.postMessage({
+        type: messageType,
+        params
       });
     }
   }
 
   getNetworkInfo() {
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO);
   }
 
   updateStats() {
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_STATS);
   }
 
   updateBalances() {
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.UPDATE_BALANCES);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.UPDATE_BALANCES);
   }
 
   updateBountiesGraph() {
     this.updatingBountiesGraphInProgress = true;
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.BOUNTIES_GRAPH_DATA);
   }
 
   updateProcessedTxsGraph() {
     this.updatingProcessedTxsGraphInProgress = true;
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.PROCESSED_TXS);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.PROCESSED_TXS);
   }
 
   clearStats() {
-    this.sendMessageWorker(EAC_WORKER_MESSAGE_TYPES.CLEAR_STATS);
+    this.sendMessageWorker(TIMENODE_WORKER_MESSAGE_TYPES.CLEAR_STATS);
     this.allLogs = [];
   }
 
@@ -525,12 +519,12 @@ export default class TimeNodeStore {
 
       const { balanceDAY, mintingPower } = await getDAYBalance(
         this.network,
-        this._web3Service.getWeb3FromProviderUrl(this.network.endpoint),
+        Util.getWeb3FromProviderUrl(this.network.endpoint),
         signature.address
       );
 
-      this.balanceDAY = balanceDAY.toNumber();
-      this.isTimeMint = mintingPower > 0;
+      this.balanceDAY = parseInt(balanceDAY);
+      this.isTimeMint = parseInt(mintingPower) > 0;
 
       const encryptedAttachedAddress = this.encrypt(signature.address);
 
@@ -557,7 +551,7 @@ export default class TimeNodeStore {
       this._storageService.remove(STORAGE_KEYS.CLAIMING);
     }
 
-    const numberFromString = string => this._web3Service.web3.toWei(string, 'ether');
+    const numberFromString = string => this._web3Service.web3.utils.toWei(string, 'ether');
     for (let key of Object.keys(economicStrategy)) {
       if (economicStrategy[key]) {
         const value =
@@ -581,7 +575,7 @@ export default class TimeNodeStore {
   async restart(password) {
     this.stopScanning();
     this.stopIntervals();
-    this.eacWorker = null;
+    this.timeNodeWorker = null;
     await this.startClient(this.walletKeystore, password);
     await this.startScanning();
   }
@@ -599,7 +593,7 @@ export default class TimeNodeStore {
     this._storageService.remove(STORAGE_KEYS.SCANNING);
     this.stopScanning();
 
-    this.eacWorker = null;
+    this.timeNodeWorker = null;
     showNotification('Your wallet has been detached.', 'success');
   }
 
