@@ -22,9 +22,9 @@ export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
       ws:
-        'wss://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/',
+        'wss://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/',
       http:
-        'https://neatly-tolerant-coral.quiknode.io/73b04107-89ee-4261-9a8f-3c1e946c17b2/CyYMMeeGTb-EeIBHGwORaw==/'
+        'https://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/'
     },
     DAPPNODE: {
       ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',
@@ -66,7 +66,7 @@ const Networks = {
     dayTokenAbi: DAYTokenABI,
     dayFaucetAddress: '0xfc5c1dc438411dce1cee4971fa333ecd3c3fa7d3',
     dayFaucetAbi: testnetDAYFaucetABI,
-    supported: true,
+    supported: false,
     explorer: 'https://ropsten.etherscan.io/'
   },
   4: {
