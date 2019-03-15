@@ -13,10 +13,10 @@ export default class TransactionHelper {
     let afterExecutionWindow;
 
     if (this.isTxUnitTimestamp(transaction)) {
-      afterExecutionWindow = transaction.executionWindowEnd.lt(currentTimestamp);
+      afterExecutionWindow = transaction.executionWindowEnd.isLessThan(currentTimestamp);
     } else {
       if (currentBlock) {
-        afterExecutionWindow = transaction.executionWindowEnd.lt(currentBlock);
+        afterExecutionWindow = transaction.executionWindowEnd.isLessThan(currentBlock);
       }
     }
 
@@ -82,7 +82,7 @@ export default class TransactionHelper {
   }
 
   isTransactionAfterWindowStart(transaction, currentTimestamp, currentBlock) {
-    return transaction.windowStart.lessThan(
+    return transaction.windowStart.isLessThan(
       this.isTxUnitTimestamp(transaction) ? currentTimestamp : currentBlock
     );
   }
