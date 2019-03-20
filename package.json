@@ -140,7 +140,7 @@
     "webpack-merge": "4.2.1",
     "websocket": "1.0.28",
     "worker-plugin": "2.0.1",
-    "xss": "1.0.3"
+    "xss": "1.0.4"
   },
   "repository": {
     "type": "git",
