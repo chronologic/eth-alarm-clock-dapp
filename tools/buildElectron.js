@@ -71,8 +71,8 @@ async function buildElectron() {
         publish: [
           {
             provider: 'bintray',
-            repo: 'eth-alarm-clock-dapp',
-            owner: 'kuzirashi'
+            repo: 'TimeNode',
+            owner: 'kosecki123'
           }
         ],
         // IMPORTANT: Prevents extending configs in node_modules
