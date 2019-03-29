@@ -74,7 +74,7 @@
     "dotenv-webpack": "1.7.0",
     "eac-counter": "0.1.2",
     "eac.js-lib": "2.5.1",
-    "electron": "3.0.16",
+    "electron": "4.1.2",
     "electron-builder": "20.39.0",
     "electron-packager": "13.1.1",
     "enzyme": "3.9.0",
