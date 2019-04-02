@@ -48,7 +48,7 @@
     "@babel/plugin-transform-runtime": "7.4.3",
     "@babel/preset-env": "7.4.3",
     "@babel/preset-react": "7.0.0",
-    "@babel/runtime": "7.4.2",
+    "@babel/runtime": "7.4.3",
     "@ethereum-alarm-clock/timenode-core": "5.5.0",
     "@fortawesome/fontawesome-free": "5.8.1",
     "acorn5-object-spread": "5.1.2",
