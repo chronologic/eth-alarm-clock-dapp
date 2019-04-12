@@ -113,7 +113,7 @@
     "popper": "1.0.1",
     "popper.js": "1.14.7",
     "postcss-loader": "3.0.0",
-    "prettier": "1.16.4",
+    "prettier": "1.17.0",
     "prop-types": "15.7.2",
     "react": "16.8.5",
     "react-dom": "16.8.5",
