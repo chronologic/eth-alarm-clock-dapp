@@ -22,9 +22,9 @@ export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
       ws:
-        'wss://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/',
+        'wss://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/',
       http:
-        'https://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/'
+        'https://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/'
     },
     DAPPNODE: {
       ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',
@@ -60,7 +60,7 @@ const Networks = {
     id: ROPSTEN_NETWORK_ID,
     name: 'Ropsten',
     endpoint:
-      'wss://abnormally-just-wombat.quiknode.io/286cd134-837e-44ce-bfd7-d6d7d01632dc/dFQbkQcp3ZCfgUjXghtXLA==/',
+      'https://ropsten.infura.io/v3/da724dd8cb184a54bc90632053137b80',
     showInChooser: true,
     dayTokenAddress: '0x7941bc77E1d6BD4628467b6cD3650F20F745dB06',
     dayTokenAbi: DAYTokenABI,
@@ -81,9 +81,7 @@ const Networks = {
     id: KOVAN_NETWORK_ID,
     name: 'Kovan',
     endpoint:
-      'wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
-    httpEndpoint:
-      'https://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/',
+      'https://kovan.infura.io/v3/da724dd8cb184a54bc90632053137b80',
     showInChooser: true,
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
     dayTokenAbi: DAYTokenABI,
