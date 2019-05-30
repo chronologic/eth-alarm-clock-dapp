@@ -6,6 +6,8 @@ _Update: This DApp is operational on the Mainnet as well as on the Kovan and Rop
 
 [![Build Status](https://travis-ci.org/chronologic/eth-alarm-clock-dapp.svg?branch=master)](https://travis-ci.org/chronologic/eth-alarm-clock-dapp)
 [![Greenkeeper badge](https://badges.greenkeeper.io/chronologic/eth-alarm-clock-dapp.svg)](https://greenkeeper.io/)
+[![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=SFFlRGMwbTVFUlpaVVNud2ZrcHlET1VLdWhQSFM5VngrWmRKY3UrbUxrOD0tLU9BMHFaWTliOHk3Q29LSDhlcDNRV1E9PQ==--2127056c69c0489e4bdca6546c40bb7ebd26c671)](https://www.browserstack.com/automate/public-build/SFFlRGMwbTVFUlpaVVNud2ZrcHlET1VLdWhQSFM5VngrWmRKY3UrbUxrOD0tLU9BMHFaWTliOHk3Q29LSDhlcDNRV1E9PQ==--2127056c69c0489e4bdca6546c40bb7ebd26c671)
+
 
 __Homepage:__ [Ethereum Alarm Clock](http://www.ethereum-alarm-clock.com/)
 
