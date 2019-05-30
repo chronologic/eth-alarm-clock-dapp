@@ -73,7 +73,7 @@
     "debug": "4.1.1",
     "dotenv-webpack": "1.7.0",
     "eac-counter": "0.1.2",
-    "eac.js-lib": "2.5.1",
+    "eac.js-lib": "2.5.2",
     "electron": "3.0.16",
     "electron-builder": "20.42.0",
     "electron-packager": "13.1.1",
