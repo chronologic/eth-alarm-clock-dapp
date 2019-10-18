@@ -8,7 +8,7 @@ import NetworkChooser from '../Header/NetworkChooser';
 
 @inject('transactionStatistics')
 @inject('web3Service')
-@inject('keenStore')
+// @inject('keenStore')
 @inject('eacStore')
 @observer
 class SidePanel extends Component {
@@ -82,7 +82,7 @@ class SidePanel extends Component {
     ];
 
     const { isElectron } = this.state;
-    const { keenStore, transactionStatistics, web3Service, eacStore } = this.props;
+    const { transactionStatistics, web3Service, eacStore } = this.props;
 
     const defaultAccount = web3Service.accounts && web3Service.accounts[0];
 
@@ -100,9 +100,10 @@ class SidePanel extends Component {
       </span>
     );
 
-    const displayActiveTimenodes = keenStore.isBlacklisted
-      ? infoBtn
-      : loaderIfNull(keenStore.activeTimeNodes);
+    const displayActiveTimenodes = infoBtn;
+    // const displayActiveTimenodes = keenStore.isBlacklisted
+    //   ? infoBtn
+    //   : loaderIfNull(keenStore.activeTimeNodes);
 
     const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 

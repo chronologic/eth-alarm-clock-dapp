@@ -9,9 +9,9 @@ import { withRouter } from 'react-router-dom';
 @withRouter
 @inject('transactionStatistics')
 @inject('web3Service')
-@inject('keenStore')
+// @inject('keenStore')
 @inject('featuresService')
-@inject('timeNodeStore')
+// @inject('timeNodeStore')
 @inject('eacStore')
 @observer
 class Header extends Component {
@@ -48,26 +48,31 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service, keenStore, timeNodeStore, transactionStatistics, eacStore } = this.props;
+    const { web3Service, transactionStatistics, eacStore } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
-    const numActiveTimeNodes = {
-      timeNodeScreen: timeNodeStore.unlocked
-        ? keenStore.activeTimeNodesTimeNodeSpecificProvider
-        : this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
-      otherScreens: keenStore.activeTimeNodes
-    };
+    // const numActiveTimeNodes = {
+    //   timeNodeScreen: this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
+    //   otherScreens: null
+    //   // timeNodeScreen: timeNodeStore.unlocked
+    //   //   ? keenStore.activeTimeNodesTimeNodeSpecificProvider
+    //   //   : this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
+    //   // otherScreens: keenStore.activeTimeNodes
+    // };
 
-    const whichCounter = loaderIfNull(
-      this.isOnTimeNodeScreen()
-        ? numActiveTimeNodes.timeNodeScreen
-        : numActiveTimeNodes.otherScreens
+    // const whichCounter = loaderIfNull(
+    //   this.isOnTimeNodeScreen()
+    //     ? numActiveTimeNodes.timeNodeScreen
+    //     : numActiveTimeNodes.otherScreens
+    // );
+
+    const displayActiveTimenodes = this.getInfoButton(
+      'To enable site analytics, please <strong>whitelist our site</strong>.'
     );
-
-    const displayActiveTimenodes = keenStore.isBlacklisted
-      ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
-      : whichCounter;
+    // const displayActiveTimenodes = keenStore.isBlacklisted
+    //   ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
+    //   : whichCounter;
 
     const { efficiency, transactionsScheduledInNextHoursAmount } = transactionStatistics;
 
@@ -296,8 +301,8 @@ Header.propTypes = {
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
-  keenStore: PropTypes.any,
-  timeNodeStore: PropTypes.any,
+  // keenStore: PropTypes.any,
+  // timeNodeStore: PropTypes.any,
   eacStore: PropTypes.any,
   transactionStatistics: PropTypes.any,
   history: PropTypes.object.isRequired

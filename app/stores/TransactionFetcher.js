@@ -209,7 +209,7 @@ export default class TransactionFetcher {
 
     const requestFactory = web3.eth.contract(RequestFactoryABI).at(this._requestFactory.address);
 
-    let transactions = await new Promise(resolve => {
+    let transactions = await new Promise((resolve, reject) => {
       requestFactory
         .RequestCreated(
           {
@@ -221,6 +221,9 @@ export default class TransactionFetcher {
           }
         )
         .get((error, events) => {
+          if (error) {
+            return reject(error);
+          }
           resolve(
             events.map(log => ({
               address: log.args.request,
@@ -369,7 +372,7 @@ export default class TransactionFetcher {
     let allEvents = [];
 
     for (let i = 0; i < addresses.length; i += MAX_ADDRESSES_AMOUNT_IN_CHUNK) {
-      await new Promise(resolve => {
+      await new Promise((resolve, reject) => {
         this._web3
           .filter({
             address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
@@ -378,6 +381,9 @@ export default class TransactionFetcher {
             toBlock: 'latest'
           })
           .get((error, events) => {
+            if (error) {
+              return reject(error);
+            }
             allEvents = allEvents.concat(...events);
             resolve();
           });

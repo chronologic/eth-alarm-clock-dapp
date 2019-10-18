@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
 import moment from 'moment';
 
-@inject('keenStore')
+// @inject('keenStore')
 @observer
 class ActiveTimeNodesGraph extends Component {
   constructor(props) {

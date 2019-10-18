@@ -94,11 +94,17 @@ export class KeenStore {
   }
 
   setTimeNodeSpecificProviderNetId(netId) {
+    console.log(netId);
     this.timeNodeSpecificProviderNetId = parseInt(netId);
   }
 
   async refreshActiveTimeNodesCount() {
     this.activeTimeNodes = await this.getActiveTimeNodesCount(this.networkId);
+    console.log({
+      networkId: this.networkId,
+      timeNodeSpecificProviderNetId: this.timeNodeSpecificProviderNetId,
+      activeTimeNodes: this.activeTimeNodes
+    });
 
     if (this.timeNodeSpecificProviderNetId === this.networkId) {
       this.activeTimeNodesTimeNodeSpecificProvider = this.activeTimeNodes;

@@ -163,7 +163,7 @@ export default class TimeNodeStore {
 
   eacWorker = null;
 
-  _keenStore = null;
+  // _keenStore = null;
   _storageService = null;
   _timeNodeStatusCheckIntervalRef = null;
 
@@ -178,10 +178,10 @@ export default class TimeNodeStore {
   @observable
   updatingProcessedTxsGraphInProgress = false;
 
-  constructor(eacService, web3Service, keenStore, storageService) {
+  constructor(eacService, web3Service, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
-    this._keenStore = keenStore;
+    // this._keenStore = keenStore;
     this._storageService = storageService;
 
     this.attachedDAYAccount = this._storageService.load(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT);
