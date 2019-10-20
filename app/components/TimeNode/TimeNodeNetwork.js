@@ -1,25 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { TimeBountiesGraph, ProcessedTransactionsGraph } from './Network';
+import { TimeBountiesGraph, ProcessedTransactionsGraph, ActiveTimeNodesGraph } from './Network';
 import { BeatLoader } from 'react-spinners';
 
-// @inject('keenStore')
+@inject('analyticsStore')
 @inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      historyPollingInterval: 5000 // props.keenStore.historyPollingInterval
+      historyPollingInterval: props.analyticsStore.historyPollingInterval
     };
   }
 
   componentDidMount() {
-    // this.activeTimeNodesFetchInterval = setInterval(
-    //   () => this.props.keenStore.refreshActiveTimeNodesHistory(),
-    //   this.props.keenStore.historyPollingInterval
-    // );
+    this.props.analyticsStore.refreshActiveTimeNodesHistory();
+    this.activeTimeNodesFetchInterval = setInterval(
+      () => this.props.analyticsStore.refreshActiveTimeNodesHistory(),
+      this.props.analyticsStore.historyPollingInterval
+    );
   }
 
   componentWillUnmount() {
@@ -29,16 +30,16 @@ class TimeNodeNetwork extends Component {
   }
 
   componentDidUpdate() {
-    // const newInterval = this.props.keenStore.historyPollingInterval;
-    // const { historyPollingInterval } = this.state;
-    // if (historyPollingInterval !== newInterval) {
-    //   this.setState({ historyPollingInterval: newInterval });
-    //   clearInterval(this.activeTimeNodesFetchInterval);
-    //   this.activeTimeNodesFetchInterval = setInterval(
-    //     () => this.props.keenStore.refreshActiveTimeNodesHistory(),
-    //     newInterval
-    //   );
-    // }
+    const newInterval = this.props.analyticsStore.historyPollingInterval;
+    const { historyPollingInterval } = this.state;
+    if (historyPollingInterval !== newInterval) {
+      this.setState({ historyPollingInterval: newInterval });
+      clearInterval(this.activeTimeNodesFetchInterval);
+      this.activeTimeNodesFetchInterval = setInterval(
+        () => this.props.analyticsStore.refreshActiveTimeNodesHistory(),
+        newInterval
+      );
+    }
   }
 
   deepCopy(array) {
@@ -52,14 +53,14 @@ class TimeNodeNetwork extends Component {
       processedTxs,
       updatingProcessedTxsGraphInProgress
     } = this.props.timeNodeStore;
-    // const {
-    //   historyActiveTimeNodes,
-    //   gettingActiveTimeNodesHistory,
-    //   isBlacklisted
-    // } = this.props.keenStore;
+    const {
+      historyActiveTimeNodes,
+      gettingActiveTimeNodesHistory,
+      isBlacklisted
+    } = this.props.analyticsStore;
 
-    // const shouldShowActiveTimeNodesGraph =
-    //   (historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory) || isBlacklisted;
+    const shouldShowActiveTimeNodesGraph =
+      (historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory) || isBlacklisted;
 
     const shouldShowTimeBountiesGraph =
       bountiesGraphData !== null && !updatingBountiesGraphInProgress;
@@ -77,35 +78,35 @@ class TimeNodeNetwork extends Component {
                 <div className="card-controls">
                   <ul>
                     <li>
-                      {/* {shouldShowActiveTimeNodesGraph ? (
+                      {shouldShowActiveTimeNodesGraph ? (
                         <a
                           data-toggle="refresh"
                           className="card-refresh"
                           onClick={async () =>
-                            await this.props.keenStore.refreshActiveTimeNodesHistory()
+                            await this.props.analyticsStore.refreshActiveTimeNodesHistory()
                           }
                         >
                           <i className="card-icon card-icon-refresh" />
                         </a>
                       ) : (
                         <BeatLoader size={6} />
-                        )} */}
+                      )}
                       <BeatLoader size={6} />
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="card-body horizontal-center">
-                <div>
-                  <h3 className="text-warning">
-                    <i className="fa fa-info-circle" />
-                  </h3>
-                  <p>Please whitelist our site to see this graph.</p>
-                </div>
-                {/* {isBlacklisted ? (
+                {isBlacklisted ? (
+                  <div>
+                    <h3 className="text-warning">
+                      <i className="fa fa-info-circle" />
+                    </h3>
+                    <p>Please whitelist our site to see this graph.</p>
+                  </div>
                 ) : (
                   <ActiveTimeNodesGraph data={this.deepCopy(historyActiveTimeNodes)} />
-                )} */}
+                )}
               </div>
             </div>
           </div>
@@ -175,7 +176,7 @@ class TimeNodeNetwork extends Component {
 }
 
 TimeNodeNetwork.propTypes = {
-  keenStore: PropTypes.any,
+  analyticsStore: PropTypes.any,
   timeNodeStore: PropTypes.any
 };
 

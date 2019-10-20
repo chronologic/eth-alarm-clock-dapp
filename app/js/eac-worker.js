@@ -61,10 +61,6 @@ class EacWorker {
       }
     }
 
-    console.log({
-      providerUrl
-    });
-
     this.config = new Config({
       providerUrls: [providerUrl],
       claiming: options.claiming,

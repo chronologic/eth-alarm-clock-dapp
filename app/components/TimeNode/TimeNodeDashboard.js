@@ -8,7 +8,7 @@ import { BeatLoader } from 'react-spinners';
 import moment from 'moment';
 
 @inject('timeNodeStore')
-// @inject('keenStore')
+@inject('analyticsStore')
 @inject('transactionStore')
 @inject('dateTimeValidatorStore')
 @observer
@@ -63,13 +63,15 @@ class TimeNodeDashboard extends Component {
 
   startTimeNode() {
     this.props.timeNodeStore.startScanning();
-    // this.props.keenStore.activeTimeNodes += 1;
+    this.props.analyticsStore.activeTimeNodes += 1;
   }
 
   stopTimeNode() {
     this.props.timeNodeStore.stopScanning();
-    // this.props.keenStore.activeTimeNodes =
-    //   this.props.keenStore.activeTimeNodes > 0 ? this.props.keenStore.activeTimeNodes - 1 : 0;
+    this.props.analyticsStore.activeTimeNodes =
+      this.props.analyticsStore.activeTimeNodes > 0
+        ? this.props.analyticsStore.activeTimeNodes - 1
+        : 0;
   }
 
   async refreshStats() {
@@ -474,7 +476,7 @@ class TimeNodeDashboard extends Component {
 
 TimeNodeDashboard.propTypes = {
   timeNodeStore: PropTypes.any,
-  // keenStore: PropTypes.any,
+  analyticsStore: PropTypes.any,
   dateTimeValidatorStore: PropTypes.any
 };
 
