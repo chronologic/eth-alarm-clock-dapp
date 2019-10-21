@@ -51,7 +51,7 @@ class ActiveTimeNodesGraph extends Component {
         .subtract(i, 'hours')
         .startOf('hour');
 
-      labels.push(datetime.format('HH:00'));
+      labels.push(datetime.format('H:00'));
 
       values.push(data.filter(item => item.key[0] == datetime.toISOString()).length);
     }
