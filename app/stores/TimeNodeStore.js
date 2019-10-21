@@ -192,7 +192,9 @@ export default class TimeNodeStore {
     this.updateStats = this.updateStats.bind(this);
     this.updateBalances = this.updateBalances.bind(this);
     this.updateBountiesGraph = this.updateBountiesGraph.bind(this);
+    this.updateProcessedTxsGraph = this.updateProcessedTxsGraph.bind(this);
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
+    this.sendMessageWorker = this.sendMessageWorker.bind(this);
   }
 
   async unlockTimeNode(password) {
