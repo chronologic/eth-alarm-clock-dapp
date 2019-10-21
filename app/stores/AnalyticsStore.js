@@ -74,12 +74,6 @@ export class AnalyticsStore {
     });
   }
 
-  // sendPageView() {
-  //   this.trackingClient.recordEvent(EVENT_TYPES.PAGEVIEWS, {
-  //     title: document.title
-  //   });
-  // }
-
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
     await this.initialized;
 
