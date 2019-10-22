@@ -136,7 +136,7 @@ export class AnalyticsStore {
       };
       const query = `function main() {
         function groupByHour(event) {
-          const roundedToHour = Math.floor(event.properties.timestamp / (3600 * 1000)) * 3600 * 1000;
+          const roundedToHour = Math.ceil(event.properties.timestamp / (3600 * 1000)) * 3600 * 1000;
           return new Date(roundedToHour).toISOString();
         }
 
