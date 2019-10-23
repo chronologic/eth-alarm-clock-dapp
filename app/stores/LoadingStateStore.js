@@ -27,7 +27,7 @@ const CORE_LOADING_STATES_INFO = {
   },
   [CORE_LOADING_STATES_NAMES.FETCHING_TRANSACTIONS]: {
     IS_COMPLETE: ({ _transactionStore }) => !_transactionStore.info.gettingTransactions,
-    LOADING_MESSAGE: 'Fetching transactions...'
+    LOADING_MESSAGE: 'Fetching transactions. This may take a couple of minutes...'
   },
   [CORE_LOADING_STATES_NAMES.FINISHING]: {
     LOADING_MESSAGE: 'Fetching remaining data...',
