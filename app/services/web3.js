@@ -1,4 +1,4 @@
-import Web3 from 'web3/index';
+import Web3 from 'web3';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
 import {

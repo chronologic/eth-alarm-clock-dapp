@@ -361,14 +361,18 @@ export default class TokenHelper {
     }
 
     let types = [];
-    const Coder = require('web3/lib/solidity/coder');
+    // const Coder = require('web3/lib/solidity/coder');
     for (let p = 0; p < params.length; p++) {
       types.push(params[p].type);
     }
     const funcName = `${functionName}(${types.join(',')})`;
     const preparedData = callData.substring(this._encodeFunctionName(funcName).length);
 
-    return Coder.decodeParams(types, preparedData);
+    console.log({
+      types,
+      preparedData
+    });
+    // return Coder.decodeParams(types, preparedData);
   }
 
   /**

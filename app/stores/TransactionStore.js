@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 import { observable } from 'mobx';
-import SolidityEvent from 'web3/lib/web3/event.js';
+import SolidityEvent from 'web3';
 
 export const DEFAULT_LIMIT = 10;
 
