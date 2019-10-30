@@ -31,7 +31,7 @@ describe('SidePanel', () => {
       }
     });
 
-    const keenStore = {};
+    const analyticsStore = {};
     const transactionStatistics = {};
     const featuresService = {};
 
@@ -43,7 +43,7 @@ describe('SidePanel', () => {
 
     const injectables = {
       eacStore,
-      keenStore,
+      analyticsStore,
       timeNodeStore,
       transactionStatistics,
       web3Service

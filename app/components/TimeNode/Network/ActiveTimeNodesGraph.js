@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { Chart } from 'chart.js';
 import moment from 'moment';
 
-@inject('keenStore')
+@inject('analyticsStore')
 @observer
 class ActiveTimeNodesGraph extends Component {
   constructor(props) {
@@ -31,19 +31,7 @@ class ActiveTimeNodesGraph extends Component {
     const { data } = this.props;
 
     if (data.length > 0) {
-      const labels = [];
-      for (let i = 24; i > 0; i--) {
-        labels.push(
-          moment()
-            .subtract(i, 'hours')
-            .hour() + ':00'
-        );
-      }
-
-      const graphData = {
-        labels,
-        values: data
-      };
+      const graphData = this.getGraphData();
 
       if (this.state.chart !== null) {
         this.updateChart(graphData);
@@ -51,6 +39,27 @@ class ActiveTimeNodesGraph extends Component {
         this.setChart(this.activeTnsGraph.getContext('2d'), graphData);
       }
     }
+  }
+
+  getGraphData() {
+    const { data } = this.props;
+
+    const labels = [];
+    const values = [];
+    for (let i = 24; i > 0; i--) {
+      const datetime = moment()
+        .subtract(i, 'hours')
+        .startOf('hour');
+
+      labels.push(datetime.format('H:00'));
+
+      values.push(data.filter(item => item.key[0] == datetime.toISOString()).length);
+    }
+
+    return {
+      labels,
+      values
+    };
   }
 
   setChart(ctx, data) {

@@ -9,7 +9,7 @@ import { withRouter } from 'react-router-dom';
 @withRouter
 @inject('transactionStatistics')
 @inject('web3Service')
-@inject('keenStore')
+@inject('analyticsStore')
 @inject('featuresService')
 @inject('timeNodeStore')
 @inject('eacStore')
@@ -48,15 +48,21 @@ class Header extends Component {
   }
 
   render() {
-    const { web3Service, keenStore, timeNodeStore, transactionStatistics, eacStore } = this.props;
+    const {
+      web3Service,
+      transactionStatistics,
+      eacStore,
+      timeNodeStore,
+      analyticsStore
+    } = this.props;
 
     const loaderIfNull = value => (value !== null ? value : <BeatLoader color="#fff" size={4} />);
 
     const numActiveTimeNodes = {
       timeNodeScreen: timeNodeStore.unlocked
-        ? keenStore.activeTimeNodesTimeNodeSpecificProvider
+        ? analyticsStore.activeTimeNodesTimeNodeSpecificProvider
         : this.getInfoButton('<strong>Unlock</strong> your TimeNode to see the analytics.'),
-      otherScreens: keenStore.activeTimeNodes
+      otherScreens: analyticsStore.activeTimeNodes
     };
 
     const whichCounter = loaderIfNull(
@@ -65,7 +71,7 @@ class Header extends Component {
         : numActiveTimeNodes.otherScreens
     );
 
-    const displayActiveTimenodes = keenStore.isBlacklisted
+    const displayActiveTimenodes = analyticsStore.isBlacklisted
       ? this.getInfoButton('To enable site analytics, please <strong>whitelist our site</strong>.')
       : whichCounter;
 
@@ -296,7 +302,7 @@ Header.propTypes = {
   featuresService: PropTypes.any,
   updateSearchState: PropTypes.any,
   web3Service: PropTypes.any,
-  keenStore: PropTypes.any,
+  analyticsStore: PropTypes.any,
   timeNodeStore: PropTypes.any,
   eacStore: PropTypes.any,
   transactionStatistics: PropTypes.any,

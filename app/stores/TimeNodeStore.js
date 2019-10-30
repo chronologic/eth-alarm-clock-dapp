@@ -32,8 +32,8 @@ export class TIMENODE_STATUS {
   static LOADING = 'Loading';
 }
 
-// 2 minute as milliseconds
-const STATUS_UPDATE_INTERVAL = 5 * 60 * 1000;
+const MINUTE_MILLIS = 60 * 1000;
+const STATUS_UPDATE_INTERVAL = 10 * MINUTE_MILLIS;
 const LOG_CAP = 1000;
 const BASIC_LOG_TYPES = [LOGGER_MSG_TYPES.INFO, LOGGER_MSG_TYPES.ERROR];
 
@@ -163,7 +163,7 @@ export default class TimeNodeStore {
 
   eacWorker = null;
 
-  _keenStore = null;
+  _analyticsStore = null;
   _storageService = null;
   _timeNodeStatusCheckIntervalRef = null;
 
@@ -178,10 +178,10 @@ export default class TimeNodeStore {
   @observable
   updatingProcessedTxsGraphInProgress = false;
 
-  constructor(eacService, web3Service, keenStore, storageService) {
+  constructor(eacService, web3Service, analyticsStore, storageService) {
     this._eacService = eacService;
     this._web3Service = web3Service;
-    this._keenStore = keenStore;
+    this._analyticsStore = analyticsStore;
     this._storageService = storageService;
 
     this.attachedDAYAccount = this._storageService.load(STORAGE_KEYS.ATTACHED_DAY_ACCOUNT);
@@ -192,7 +192,9 @@ export default class TimeNodeStore {
     this.updateStats = this.updateStats.bind(this);
     this.updateBalances = this.updateBalances.bind(this);
     this.updateBountiesGraph = this.updateBountiesGraph.bind(this);
+    this.updateProcessedTxsGraph = this.updateProcessedTxsGraph.bind(this);
     this.getNetworkInfo = this.getNetworkInfo.bind(this);
+    this.sendMessageWorker = this.sendMessageWorker.bind(this);
   }
 
   async unlockTimeNode(password) {
@@ -301,9 +303,9 @@ export default class TimeNodeStore {
 
           case EAC_WORKER_MESSAGE_TYPES.GET_NETWORK_INFO:
             getValuesIfInMessage(['providerBlockNumber', 'netId']);
-            if (this._keenStore.timeNodeSpecificProviderNetId != this.netId) {
-              this._keenStore.setTimeNodeSpecificProviderNetId(this.netId);
-              await this._keenStore.refreshActiveTimeNodesCount();
+            if (this._analyticsStore.timeNodeSpecificProviderNetId != this.netId) {
+              this._analyticsStore.setTimeNodeSpecificProviderNetId(this.netId);
+              await this._analyticsStore.refreshActiveTimeNodesCount();
             }
             break;
 
@@ -353,7 +355,10 @@ export default class TimeNodeStore {
 
   sendActiveTimeNodeEvent() {
     if (this.scanningStarted) {
-      this._keenStore.sendActiveTimeNodeEvent(this.getMyAddress(), this.getAttachedDAYAddress());
+      this._analyticsStore.sendActiveTimeNodeEvent(
+        this.getMyAddress(),
+        this.getAttachedDAYAddress()
+      );
     }
   }
 
