@@ -43,7 +43,7 @@ describe('Header', () => {
       }
     });
 
-    const keenStore = {};
+    const analyticsStore = {};
     const featuresService = {};
 
     const storageService = new LocalStorageService(new LocalStorageMock());
@@ -54,7 +54,7 @@ describe('Header', () => {
 
     const injectables = {
       featuresService,
-      keenStore,
+      analyticsStore,
       storageService,
       web3Service,
       timeNodeStore,

@@ -130,7 +130,7 @@ describe('App', () => {
 
     const scheduleStore = new ScheduleStore();
 
-    const keenStore = {};
+    const analyticsStore = {};
 
     const dateTimeValidatorStore = new DateTimeValidator();
 
@@ -145,7 +145,7 @@ describe('App', () => {
       eacService,
       eacStore,
       featuresService,
-      keenStore,
+      analyticsStore,
       scheduleStore,
       storageService,
       tokenHelper,
