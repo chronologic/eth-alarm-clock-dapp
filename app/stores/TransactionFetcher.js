@@ -393,7 +393,9 @@ export default class TransactionFetcher {
     const cachedEvents = this._cache.addressesEvents;
 
     if (cachedEvents) {
-      addressesToCheck = addresses.filter(address => typeof cachedEvents[address] === 'undefined');
+      addressesToCheck = addresses.filter(
+        address => typeof cachedEvents[address] === 'undefined' && address.length > 2
+      );
     }
 
     const events = await this.getTransactionsEventsForAddresses(addressesToCheck);

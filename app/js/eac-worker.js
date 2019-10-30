@@ -1,3 +1,4 @@
+import './window-patch';
 import Bb from 'bluebird';
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
@@ -14,7 +15,7 @@ import NetworkAwareKeyModifier from '../services/network-specific-key-modifier';
 import NetworkAwareStorageService from '../services/network-aware-storage';
 import TransactionFetcher from '../stores/TransactionFetcher';
 import TransactionCache from '../stores/TransactionCache';
-import { initWeb3Service } from '../services/web3';
+import Web3Service, { initWeb3Service } from '../services/web3';
 import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 
@@ -35,6 +36,7 @@ class EacWorker {
   dayAccountAddress = null;
   keystore = null;
   detectedNetId = null;
+  web3_1 = null;
 
   _web3Service = null;
 
@@ -85,9 +87,11 @@ class EacWorker {
 
     const networkAwareKeyModifier = new NetworkAwareKeyModifier();
 
+    this.web3_1 = Web3Service.getWeb3FromProviderUrl(providerUrl);
+
     const web3Service = initWeb3Service(
       false,
-      { web3: this.config.web3 },
+      { web3: this.web3_1 },
       networkAwareKeyModifier,
       new W3Util()
     );
@@ -130,7 +134,7 @@ class EacWorker {
    */
   async getNetworkInfo() {
     const providerBlockNumber = await Bb.fromCallback(callback =>
-      this.config.web3.eth.getBlockNumber(callback)
+      this.web3_1.eth.getBlockNumber(callback)
     );
 
     await this._detectNetworkId();
@@ -144,7 +148,7 @@ class EacWorker {
 
   async getBalances() {
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
-    const balanceETH = this.config.web3.utils.fromWei(balance);
+    const balanceETH = new BigNumber(this.web3_1.utils.fromWei(String(balance)));
     let network = this.network;
 
     if (this.detectedNetId) {
@@ -153,7 +157,7 @@ class EacWorker {
 
     const { balanceDAY, mintingPower } = await getDAYBalance(
       network,
-      this.config.web3,
+      this.web3_1,
       this.dayAccountAddress
     );
 
@@ -170,7 +174,8 @@ class EacWorker {
    * and updates the TimeNodeStore.
    */
   async updateStats() {
-    const { statsDb, web3 } = this.config;
+    const { web3_1 } = this;
+    const { statsDb } = this.config;
 
     const bounties = statsDb.totalBounty(this.myAddress);
     const costs = statsDb.totalCost(this.myAddress);
@@ -184,7 +189,7 @@ class EacWorker {
     const successfulExecutions = statsDb.getSuccessfulExecutions(this.myAddress);
     const failedExecutions = statsDb.getFailedExecutions(this.myAddress);
 
-    const toEth = num => web3.utils.fromWei(num, 'ether');
+    const toEth = num => new BigNumber(web3_1.utils.fromWei(String(num), 'ether'));
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
@@ -236,9 +241,7 @@ class EacWorker {
 
   async _detectNetworkId() {
     if (this.network.id === CUSTOM_PROVIDER_NET_ID) {
-      this.detectedNetId = await Bb.fromCallback(callback =>
-        this.config.web3.eth.net.getId(callback)
-      );
+      this.detectedNetId = await Bb.fromCallback(callback => this.web3_1.eth.net.getId(callback));
     }
   }
 
@@ -289,7 +292,7 @@ class EacWorker {
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
-      bountyInEth = new BigNumber(this.config.web3.utils.fromWei(bounty, 'ether'));
+      bountyInEth = new BigNumber(this.web3_1.utils.fromWei(String(bounty), 'ether'));
       bounties.push(bountyInEth);
     });
 

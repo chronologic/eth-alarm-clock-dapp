@@ -1,4 +1,5 @@
-import Web3 from 'web3';
+import Web3 from 'web3-1';
+import Web3WsProvider from 'web3-providers-ws';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
 import {
@@ -6,7 +7,6 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 import { stripHexPrefixAndLower } from '../lib/signature.js';
 
 let instance = null;
@@ -216,8 +216,25 @@ export default class Web3Service {
     return this.network === Networks[MAIN_NETWORK_ID];
   }
 
-  getWeb3FromProviderUrl(url) {
-    return W3Util.getWeb3FromProviderUrl(url);
+  getWeb3FromProviderUrl(providerUrl) {
+    return Web3Service.getWeb3FromProviderUrl(providerUrl);
+  }
+
+  static getWeb3FromProviderUrl(providerUrl) {
+    let provider;
+    if (this.isHTTPConnection(providerUrl)) {
+      provider = new Web3.providers.HttpProvider(providerUrl);
+    } else if (this.isWSConnection(providerUrl)) {
+      provider = new Web3WsProvider(providerUrl);
+      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+    }
+    return new Web3(provider);
+  }
+  static isHTTPConnection(url) {
+    return url.includes('http://') || url.includes('https://');
+  }
+  static isWSConnection(url) {
+    return url.includes('ws://') || url.includes('wss://');
   }
 
   /**
