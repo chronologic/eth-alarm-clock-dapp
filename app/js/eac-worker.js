@@ -148,7 +148,7 @@ class EacWorker {
 
   async getBalances() {
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
-    const balanceETH = new BigNumber(this.web3_1.utils.fromWei(String(balance)));
+    const balanceETH = new BigNumber(this.web3_1.utils.fromWei(String(balance || 0)));
     let network = this.network;
 
     if (this.detectedNetId) {
