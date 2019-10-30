@@ -27,16 +27,6 @@ class MetamaskComponent extends Component {
     return this.props.web3Service.web3.eth.net.isListening();
   }
 
-  // get isWeb3Usable() {
-  //   const { web3Service } = this.props;
-
-  //   return (
-  //     web3Service.web3.isConnected() &&
-  //     typeof web3Service.accounts !== 'undefined' &&
-  //     web3Service.accounts !== null &&
-  //     web3Service.accounts.length > 0
-  //   );
-  // }
   get isWeb3Usable() {
     const { web3Service } = this.props;
 
@@ -117,11 +107,6 @@ class MetamaskComponent extends Component {
     }
     this.timeout = setTimeout(() => this.scoutUpdates(), SCOUT_TIMEOUT);
     await this.runNotifications();
-
-    if (window && window.ethereum) {
-      window.ethereum.autoRefreshOnNetworkChange = false;
-      window.ethereum.on('networkChanged', () => window.location.reload());
-    }
   }
 
   async resolveWeb3() {
@@ -135,6 +120,11 @@ class MetamaskComponent extends Component {
     this.setState({ accounts: web3Service.accounts });
     this.scoutUpdates();
     await this.runNotifications();
+
+    if (window && window.ethereum) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
+      window.ethereum.on('networkChanged', () => window.location.reload());
+    }
   }
 
   componentDidMount() {
