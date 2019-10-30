@@ -47,7 +47,17 @@ export default class TransactionCache {
     this.requestCreatedLogs =
       storedLogs &&
       storedLogs.map(log => {
-        log.args.params = log.args.params.map(param => new BigNumber(param));
+        // new decodeLog method in web3 1.x.x returns data in a different shape than 0.x.x
+        // so we have to account for that here
+        // see https://web3js.readthedocs.io/en/v1.2.0/web3-eth-abi.html#decodelog
+        if (log.args) {
+          log.params = log.args.params;
+          log.request = log.args.request;
+          log.owner = log.args.owner;
+        }
+        log.request = log.request.toLowerCase();
+        log.owner = log.owner.toLowerCase();
+        log.params = log.params.map(param => new BigNumber(param));
 
         return log;
       });
@@ -104,7 +114,15 @@ export default class TransactionCache {
     if (logs) {
       newLogs = JSON.parse(logs);
 
-      const exists = newLogs.find(cachedLog => cachedLog.args.request === log.args.request);
+      const exists = newLogs.find(cachedLog => {
+        // new decodeLog method in web3 1.x.x returns data in a different shape than 0.x.x
+        // so we have to account for that here
+        // see https://web3js.readthedocs.io/en/v1.2.0/web3-eth-abi.html#decodelog
+        const cachedLogRequest = cachedLog.args ? cachedLog.args.request : cachedLog.request;
+        const logRequest = log.args ? log.args.request : log.args;
+
+        return cachedLogRequest === logRequest;
+      });
 
       if (!exists) {
         newLogs.push(log);

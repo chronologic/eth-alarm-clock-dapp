@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 import { requestFactoryStartBlocks } from '../config/web3Config';
 import { W3Util as TNUtil } from '@ethereum-alarm-clock/timenode-core';
 import { observable } from 'mobx';
-import SolidityEvent from 'web3';
 
 export const DEFAULT_LIMIT = 10;
 
@@ -371,7 +370,7 @@ export class TransactionStore {
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
-      bountyInEth = new BigNumber(web3.fromWei(bounty, 'ether'));
+      bountyInEth = new BigNumber(web3.utils.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
     });
 
@@ -571,12 +570,18 @@ export class TransactionStore {
       type: 'event'
     };
 
-    const decoder = new SolidityEvent(null, requestCreatedEventABI, null);
+    const signature = this._web3.web3.eth.abi.encodeEventSignature(requestCreatedEventABI);
 
     const parsedLogs = logs
       .map(log => {
-        if (decoder.signature() === log.topics[0].replace('0x', '')) {
-          return decoder.decode(log);
+        if (signature === log.topics[0]) {
+          const decoded = this._web3.web3.eth.abi.decodeLog(
+            requestCreatedEventABI.inputs,
+            log.data,
+            log.topics.slice(1)
+          );
+          decoded.blockNumber = log.blockNumber;
+          return decoded;
         }
       })
       .filter(parsedLog => parsedLog);
@@ -589,7 +594,7 @@ export class TransactionStore {
 
     this._cache.addRequestCreatedLogToCache(requestCreatedLog, true);
 
-    const transactionAddress = requestCreatedLog.args.request;
+    const transactionAddress = requestCreatedLog.request;
 
     const scheduledTx = this.scheduledTransactions.find(
       tx => tx.transactionHash === requestCreatedLog.transactionHash
@@ -618,8 +623,8 @@ export class TransactionStore {
       [
         [
           '', // self.claimData.claimedBy,
-          requestCreatedEvent.args.owner, // self.meta.createdBy,
-          requestCreatedEvent.args.owner, // self.meta.owner,
+          requestCreatedEvent.owner, // self.meta.createdBy,
+          requestCreatedEvent.owner, // self.meta.owner,
           '', // self.paymentData.feeRecipient,
           '', // self.paymentData.bountyBenefactor,
           toAddress // self.txnData.toAddress
@@ -627,20 +632,20 @@ export class TransactionStore {
         [false, false, false],
         [
           0, // self.claimData.claimDeposit,
-          requestCreatedEvent.args.params[0], // self.paymentData.fee,
+          requestCreatedEvent.params[0], // self.paymentData.fee,
           0, // self.paymentData.feeOwed,
-          requestCreatedEvent.args.params[1], // self.paymentData.bounty,
+          requestCreatedEvent.params[1], // self.paymentData.bounty,
           0, // self.paymentData.bountyOwed,
-          requestCreatedEvent.args.params[2], // self.schedule.claimWindowSize,
-          requestCreatedEvent.args.params[3], // self.schedule.freezePeriod,
-          requestCreatedEvent.args.params[4], // self.schedule.reservedWindowSize,
-          requestCreatedEvent.args.params[5], // uint(self.schedule.temporalUnit),
-          requestCreatedEvent.args.params[6], // self.schedule.windowSize,
-          requestCreatedEvent.args.params[7], // self.schedule.windowStart,
-          requestCreatedEvent.args.params[8], // self.txnData.callGas,
-          requestCreatedEvent.args.params[9], // self.txnData.callValue,
-          requestCreatedEvent.args.params[10], // self.txnData.gasPrice,
-          requestCreatedEvent.args.params[11] // self.claimData.requiredDeposit
+          requestCreatedEvent.params[2], // self.schedule.claimWindowSize,
+          requestCreatedEvent.params[3], // self.schedule.freezePeriod,
+          requestCreatedEvent.params[4], // self.schedule.reservedWindowSize,
+          requestCreatedEvent.params[5], // uint(self.schedule.temporalUnit),
+          requestCreatedEvent.params[6], // self.schedule.windowSize,
+          requestCreatedEvent.params[7], // self.schedule.windowStart,
+          requestCreatedEvent.params[8], // self.txnData.callGas,
+          requestCreatedEvent.params[9], // self.txnData.callValue,
+          requestCreatedEvent.params[10], // self.txnData.gasPrice,
+          requestCreatedEvent.params[11] // self.claimData.requiredDeposit
         ],
         []
       ],

@@ -52,7 +52,7 @@ export default class Web3Service {
   }
 
   fromWei(wei) {
-    return this.web3.fromWei(wei);
+    return this.web3.utils.fromWei(wei);
   }
 
   async getBlockNumberFromTxHash(txHash) {
@@ -97,7 +97,7 @@ export default class Web3Service {
   }
 
   getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.eth.filter({
+    const filter = this.web3.eth.getPastLogs({
       fromBlock,
       toBlock: 'latest',
       topics: [
@@ -175,7 +175,7 @@ export default class Web3Service {
       this.web3 = web3;
     }
 
-    const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+    const netId = await Bb.fromCallback(callback => web3.eth.net.getId(callback));
 
     if (this._keyModifier) {
       this._keyModifier.setNetworkId(netId);
@@ -188,7 +188,9 @@ export default class Web3Service {
       this._web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
-    if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
+    const isListening = await web3.eth.net.isListening();
+
+    if (!this.connectedToMetaMask || !isListening) return;
 
     this.accounts = web3.eth.accounts;
 
@@ -226,9 +228,9 @@ export default class Web3Service {
    * @param {object} options
    */
   filter(options) {
-    const web3 = this._web3AlternativeToMetaMask || this.web3;
+    // const web3 = this._web3AlternativeToMetaMask || this.web3;
 
-    return web3.eth.filter(options);
+    return this.web3.eth.getPastLogs(options);
   }
 
   toBoolean(hexString) {

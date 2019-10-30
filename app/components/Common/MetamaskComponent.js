@@ -24,29 +24,42 @@ class MetamaskComponent extends Component {
   }
 
   get isWeb3Viewable() {
-    return this.props.web3Service.web3.isConnected();
+    return this.props.web3Service.web3.eth.net.isListening();
   }
 
+  // get isWeb3Usable() {
+  //   const { web3Service } = this.props;
+
+  //   return (
+  //     web3Service.web3.isConnected() &&
+  //     typeof web3Service.accounts !== 'undefined' &&
+  //     web3Service.accounts !== null &&
+  //     web3Service.accounts.length > 0
+  //   );
+  // }
   get isWeb3Usable() {
     const { web3Service } = this.props;
 
-    return (
-      web3Service.web3.isConnected() &&
-      typeof web3Service.accounts !== 'undefined' &&
-      web3Service.accounts !== null &&
-      web3Service.accounts.length > 0
-    );
+    return web3Service.web3.eth.net.isListening().then(isListening => {
+      return (
+        isListening &&
+        typeof web3Service.accounts !== 'undefined' &&
+        web3Service.accounts !== null &&
+        web3Service.accounts.length > 0
+      );
+    });
   }
 
-  runNotifications() {
+  async runNotifications() {
     const { web3Service } = this.props;
     /*
-    * Detects if the Metamask state (installed/not installed)
-    * has changed since the last page refresh/state change.
-    * - Shows the notification only if the state has changed since previous load.
-    * - Uses cookies to save the states
-    */
-    const metamaskInstalled = web3Service.web3.isConnected() && web3Service.connectedToMetaMask;
+     * Detects if the Metamask state (installed/not installed)
+     * has changed since the last page refresh/state change.
+     * - Shows the notification only if the state has changed since previous load.
+     * - Uses cookies to save the states
+     */
+    const isListening = await web3Service.web3.eth.net.isListening();
+    const metamaskInstalled = isListening && web3Service.connectedToMetaMask;
     const hasPreviousMetamaskState = Cookies.get('metamaskInstalled') !== undefined;
     const previousMetamaskState = Cookies.get('metamaskInstalled') === 'true';
     const hasChangedMetamaskState = metamaskInstalled !== previousMetamaskState;
@@ -103,7 +116,12 @@ class MetamaskComponent extends Component {
       showNotification(`Accounts updated`, 'info', 4000);
     }
     this.timeout = setTimeout(() => this.scoutUpdates(), SCOUT_TIMEOUT);
-    this.runNotifications();
+    await this.runNotifications();
+
+    if (window && window.ethereum) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
+      window.ethereum.on('networkChanged', () => window.location.reload());
+    }
   }
 
   async resolveWeb3() {
@@ -116,7 +134,7 @@ class MetamaskComponent extends Component {
 
     this.setState({ accounts: web3Service.accounts });
     this.scoutUpdates();
-    this.runNotifications();
+    await this.runNotifications();
   }
 
   componentDidMount() {

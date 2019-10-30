@@ -144,7 +144,7 @@ class EacWorker {
 
   async getBalances() {
     const balance = await this.config.eac.Util.getBalance(this.myAddress);
-    const balanceETH = this.config.web3.fromWei(balance);
+    const balanceETH = this.config.web3.utils.fromWei(balance);
     let network = this.network;
 
     if (this.detectedNetId) {
@@ -184,7 +184,7 @@ class EacWorker {
     const successfulExecutions = statsDb.getSuccessfulExecutions(this.myAddress);
     const failedExecutions = statsDb.getFailedExecutions(this.myAddress);
 
-    const toEth = num => web3.fromWei(num, 'ether');
+    const toEth = num => web3.utils.fromWei(num, 'ether');
 
     postMessage({
       type: EAC_WORKER_MESSAGE_TYPES.UPDATE_STATS,
@@ -237,7 +237,7 @@ class EacWorker {
   async _detectNetworkId() {
     if (this.network.id === CUSTOM_PROVIDER_NET_ID) {
       this.detectedNetId = await Bb.fromCallback(callback =>
-        this.config.web3.version.getNetwork(callback)
+        this.config.web3.eth.net.getId(callback)
       );
     }
   }
@@ -289,7 +289,7 @@ class EacWorker {
 
     transactions.forEach(tx => {
       bounty = tx.data.paymentData.bounty;
-      bountyInEth = new BigNumber(this.config.web3.fromWei(bounty, 'ether'));
+      bountyInEth = new BigNumber(this.config.web3.utils.fromWei(bounty, 'ether'));
       bounties.push(bountyInEth);
     });
 

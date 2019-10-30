@@ -283,11 +283,7 @@ class TransactionDetails extends Component {
 
   isOwner(transaction) {
     const { owner } = transaction;
-    const {
-      web3Service: {
-        eth: { accounts }
-      }
-    } = this.props;
+    const { accounts } = this.props.web3Service;
 
     return accounts[0] == owner;
   }
