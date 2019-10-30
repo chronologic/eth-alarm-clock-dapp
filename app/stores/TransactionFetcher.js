@@ -223,10 +223,13 @@ export default class TransactionFetcher {
             return reject(error);
           }
           resolve(
-            events.map(log => ({
-              address: log.args.request,
-              params: log.args.params
-            }))
+            events.map(log => {
+              const { request, params } = log.args || log.returnValues || {};
+              return {
+                address: request,
+                params: params
+              };
+            })
           );
         }
       );

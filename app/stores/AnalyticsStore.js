@@ -77,8 +77,8 @@ export class AnalyticsStore {
   async sendActiveTimeNodeEvent(nodeAddress, dayAddress, networkId = this.networkId) {
     await this.initialized;
 
-    nodeAddress = this._web3Service.web3.sha3(nodeAddress).toString();
-    dayAddress = this._web3Service.web3.sha3(dayAddress).toString();
+    nodeAddress = this._web3Service.web3.utils.sha3(nodeAddress).toString();
+    dayAddress = this._web3Service.web3.utils.sha3(dayAddress).toString();
     networkId = networkId.toString();
 
     const event = {
@@ -199,7 +199,7 @@ export class AnalyticsStore {
           .groupBy(['properties.nodeAddress'], mixpanel.reducer.count());
       }`;
 
-      let response = null;
+      let response = [];
       try {
         response = await this.runMixpanelQuery(query, params);
       } catch (e) {
