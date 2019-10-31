@@ -20,6 +20,7 @@ if (window && window.ethereum && window.ethereum.enable) {
 const web3Service = initWeb3Service(false, window.web3, networkAwareKeyModifier, w3Util);
 web3Service.init();
 
+// EAC requires web3 0.x so this is a temporary workaround until it gets updated
 let eacWeb3Service = Object.assign(Object.create(Object.getPrototypeOf(web3Service)), web3Service);
 eacWeb3Service.web3 = eacWeb3Service.web3_0;
 eacWeb3Service = Object.assign(eacWeb3Service, eacWeb3Service.web3);
