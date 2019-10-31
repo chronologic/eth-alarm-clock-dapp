@@ -21,10 +21,8 @@ describe('Stores / TransactionFetcher', () => {
         Promise.resolve({
           getRequestCreatedLogs() {
             return MOCKED_TRANSACTIONS.map(tx => ({
-              args: {
-                request: tx,
-                params: []
-              }
+              request: tx,
+              params: []
             }));
           }
         }),
@@ -52,12 +50,12 @@ describe('Stores / TransactionFetcher', () => {
 
     const web3 = {
       network: Networks[KOVAN_NETWORK_ID],
-      filter() {
-        return {
-          get(callback) {
-            callback(null, []);
+      web3: {
+        eth: {
+          getPastLogs() {
+            return Promise.resolve([]);
           }
-        };
+        }
       },
       init: () => Promise.resolve(true)
     };

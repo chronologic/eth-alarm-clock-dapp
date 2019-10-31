@@ -21,7 +21,7 @@ describe('package.json', () => {
     const deps = Object.values(packageJSON.devDependencies);
     deps.forEach(depVersion => {
       nonExactPrefixes.forEach(badPrefix => {
-        expect(depVersion.includes(badPrefix)).toBeFalsy();
+        expect(depVersion.startsWith(badPrefix)).toBeFalsy();
       });
     });
   });
