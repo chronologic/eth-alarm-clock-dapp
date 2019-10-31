@@ -1,4 +1,5 @@
 import Web3 from 'web3-1';
+import Web3_0 from 'web3';
 import Web3WsProvider from 'web3-providers-ws';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
@@ -163,16 +164,22 @@ export default class Web3Service {
   async connect() {
     let { web3 } = this;
     if (!web3) {
+      let web3_0;
       if (typeof window.web3 !== 'undefined') {
         web3 = new Web3(window.ethereum);
+        web3_0 = new Web3_0(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
         web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
+        web3_0 = this.getWeb3_0FromProviderUrl(
+          Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint
+        );
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
 
       this.web3 = web3;
+      this.web3_0 = web3_0;
     }
 
     const netId = await Bb.fromCallback(callback => web3.eth.net.getId(callback));
@@ -220,6 +227,10 @@ export default class Web3Service {
     return Web3Service.getWeb3FromProviderUrl(providerUrl);
   }
 
+  getWeb3_0FromProviderUrl(providerUrl) {
+    return Web3Service.getWeb3_0FromProviderUrl(providerUrl);
+  }
+
   static getWeb3FromProviderUrl(providerUrl) {
     let provider;
     if (this.isHTTPConnection(providerUrl)) {
@@ -229,6 +240,17 @@ export default class Web3Service {
       provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
     }
     return new Web3(provider);
+  }
+
+  static getWeb3_0FromProviderUrl(providerUrl) {
+    let provider;
+    if (this.isHTTPConnection(providerUrl)) {
+      provider = new Web3_0.providers.HttpProvider(providerUrl);
+    } else if (this.isWSConnection(providerUrl)) {
+      provider = new Web3WsProvider(providerUrl);
+      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+    }
+    return new Web3_0(provider);
   }
   static isHTTPConnection(url) {
     return url.includes('http://') || url.includes('https://');
