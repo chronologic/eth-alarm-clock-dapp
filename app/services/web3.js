@@ -267,8 +267,6 @@ export default class Web3Service {
    * @param {object} options
    */
   filter(options) {
-    // const web3 = this._web3AlternativeToMetaMask || this.web3;
-
     return this.web3.eth.getPastLogs(options);
   }
 
