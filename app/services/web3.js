@@ -1,4 +1,6 @@
-import Web3 from 'web3/index';
+import Web3 from 'web3-1';
+import Web3_0 from 'web3';
+import Web3WsProvider from 'web3-providers-ws';
 import Bb from 'bluebird';
 import { action, observable } from 'mobx';
 import {
@@ -6,7 +8,6 @@ import {
   DEFAULT_NETWORK_WHEN_NO_METAMASK,
   MAIN_NETWORK_ID
 } from '../config/web3Config.js';
-import { W3Util } from '@ethereum-alarm-clock/timenode-core';
 import { stripHexPrefixAndLower } from '../lib/signature.js';
 
 let instance = null;
@@ -52,7 +53,7 @@ export default class Web3Service {
   }
 
   fromWei(wei) {
-    return this.web3.fromWei(wei);
+    return this.web3.utils.fromWei(wei);
   }
 
   async getBlockNumberFromTxHash(txHash) {
@@ -97,7 +98,7 @@ export default class Web3Service {
   }
 
   getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.eth.filter({
+    const filter = this.web3.eth.getPastLogs({
       fromBlock,
       toBlock: 'latest',
       topics: [
@@ -163,19 +164,25 @@ export default class Web3Service {
   async connect() {
     let { web3 } = this;
     if (!web3) {
+      let web3_0;
       if (typeof window.web3 !== 'undefined') {
         web3 = new Web3(window.ethereum);
+        web3_0 = new Web3_0(window.ethereum);
         this.connectedToMetaMask = true;
       } else {
         web3 = this.getWeb3FromProviderUrl(Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint);
+        web3_0 = this.getWeb3_0FromProviderUrl(
+          Networks[DEFAULT_NETWORK_WHEN_NO_METAMASK].httpEndpoint
+        );
         Object.assign(this, web3);
         this.connectedToMetaMask = false;
       }
 
       this.web3 = web3;
+      this.web3_0 = web3_0;
     }
 
-    const netId = await Bb.fromCallback(callback => web3.version.getNetwork(callback));
+    const netId = await Bb.fromCallback(callback => web3.eth.net.getId(callback));
 
     if (this._keyModifier) {
       this._keyModifier.setNetworkId(netId);
@@ -188,7 +195,9 @@ export default class Web3Service {
       this._web3AlternativeToMetaMask = this.getWeb3FromProviderUrl(this.network.endpoint);
     }
 
-    if (!this.connectedToMetaMask || !this.web3.isConnected()) return;
+    const isListening = await web3.eth.net.isListening();
+
+    if (!this.connectedToMetaMask || !isListening) return;
 
     this.accounts = web3.eth.accounts;
 
@@ -214,8 +223,40 @@ export default class Web3Service {
     return this.network === Networks[MAIN_NETWORK_ID];
   }
 
-  getWeb3FromProviderUrl(url) {
-    return W3Util.getWeb3FromProviderUrl(url);
+  getWeb3FromProviderUrl(providerUrl) {
+    return Web3Service.getWeb3FromProviderUrl(providerUrl);
+  }
+
+  getWeb3_0FromProviderUrl(providerUrl) {
+    return Web3Service.getWeb3_0FromProviderUrl(providerUrl);
+  }
+
+  static getWeb3FromProviderUrl(providerUrl) {
+    let provider;
+    if (this.isHTTPConnection(providerUrl)) {
+      provider = new Web3.providers.HttpProvider(providerUrl);
+    } else if (this.isWSConnection(providerUrl)) {
+      provider = new Web3WsProvider(providerUrl);
+      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+    }
+    return new Web3(provider);
+  }
+
+  static getWeb3_0FromProviderUrl(providerUrl) {
+    let provider;
+    if (this.isHTTPConnection(providerUrl)) {
+      provider = new Web3_0.providers.HttpProvider(providerUrl);
+    } else if (this.isWSConnection(providerUrl)) {
+      provider = new Web3WsProvider(providerUrl);
+      provider.__proto__.sendAsync = provider.__proto__.sendAsync || provider.__proto__.send;
+    }
+    return new Web3_0(provider);
+  }
+  static isHTTPConnection(url) {
+    return url.includes('http://') || url.includes('https://');
+  }
+  static isWSConnection(url) {
+    return url.includes('ws://') || url.includes('wss://');
   }
 
   /**
@@ -226,14 +267,12 @@ export default class Web3Service {
    * @param {object} options
    */
   filter(options) {
-    const web3 = this._web3AlternativeToMetaMask || this.web3;
-
-    return web3.eth.filter(options);
+    return this.web3.eth.getPastLogs(options);
   }
 
   toBoolean(hexString) {
     if (hexString === '0x') hexString = '0x0';
-    return this.web3.toBigNumber(hexString).toString() === '1';
+    return this.web3.utils.toBN(hexString).toString() === '1';
   }
 
   supportsEIP165(address) {

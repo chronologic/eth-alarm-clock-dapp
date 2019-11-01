@@ -28,14 +28,14 @@ class ConfirmSettings extends Component {
     } = this.props;
     let { gasAmount, amountToSend, gasPrice, fee, timeBounty } = scheduleStore;
 
-    amountToSend = web3.toWei(amountToSend, 'ether');
-    gasPrice = web3.toWei(gasPrice, 'gwei');
-    fee = web3.toWei(fee, 'ether');
-    timeBounty = web3.toWei(timeBounty, 'ether');
+    amountToSend = web3.utils.toWei(String(amountToSend) || '0', 'ether');
+    gasPrice = web3.utils.toWei(String(gasPrice) || '0', 'gwei');
+    fee = web3.utils.toWei(String(fee) || '0', 'ether');
+    timeBounty = web3.utils.toWei(String(timeBounty) || '0', 'ether');
 
     const endowment = eacService.calcEndowment(gasAmount, amountToSend, gasPrice, fee, timeBounty);
 
-    return Number(web3.fromWei(endowment, 'ether')); // Only for display purposes
+    return Number(web3.utils.fromWei(String(endowment), 'ether')); // Only for display purposes
   }
 
   get executionWindow() {

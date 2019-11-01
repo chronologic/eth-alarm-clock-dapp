@@ -14,9 +14,7 @@ describe('TransactionDetails', () => {
     const TEST_EXPLORER = 'https://etherscan.io/';
 
     const web3Service = new Web3Service({
-      eth: {
-        accounts: []
-      },
+      accounts: [],
       explorer: TEST_EXPLORER,
       web3: {
         eth: {

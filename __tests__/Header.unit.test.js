@@ -33,11 +33,14 @@ describe('Header', () => {
         eth: {
           getBlockNumber(callback) {
             callback(null, CURRENT_BLOCK);
-          }
-        },
-        version: {
-          getNetwork(callback) {
-            callback(null, KOVAN_NETWORK_ID);
+          },
+          net: {
+            getId(callback) {
+              callback(null, KOVAN_NETWORK_ID);
+            },
+            isListening() {
+              return Promise.resolve(true);
+            }
           }
         }
       }

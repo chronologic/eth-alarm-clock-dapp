@@ -91,7 +91,6 @@ class TimeNodeNetwork extends Component {
                       ) : (
                         <BeatLoader size={6} />
                       )}
-                      <BeatLoader size={6} />
                     </li>
                   </ul>
                 </div>

@@ -21,10 +21,8 @@ const CRYPTO_KITTIES_API_KEY = process.env.CRYPTO_KITTIES_API_KEY;
 export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
-      ws:
-        'wss://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/',
-      http:
-        'https://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/'
+      ws: 'wss://mainnet.infura.io/ws/v3/22ac4c94510047f8bfc8cddf18055a3e',
+      http: 'https://mainnet.infura.io/v3/22ac4c94510047f8bfc8cddf18055a3e'
     },
     DAPPNODE: {
       ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',
@@ -59,8 +57,7 @@ const Networks = {
   [ROPSTEN_NETWORK_ID]: {
     id: ROPSTEN_NETWORK_ID,
     name: 'Ropsten',
-    endpoint:
-      'https://ropsten.infura.io/v3/da724dd8cb184a54bc90632053137b80',
+    endpoint: 'https://ropsten.infura.io/v3/da724dd8cb184a54bc90632053137b80',
     showInChooser: true,
     dayTokenAddress: '0x7941bc77E1d6BD4628467b6cD3650F20F745dB06',
     dayTokenAbi: DAYTokenABI,
@@ -80,8 +77,7 @@ const Networks = {
   [KOVAN_NETWORK_ID]: {
     id: KOVAN_NETWORK_ID,
     name: 'Kovan',
-    endpoint:
-      'https://kovan.infura.io/v3/da724dd8cb184a54bc90632053137b80',
+    endpoint: 'https://kovan.infura.io/v3/da724dd8cb184a54bc90632053137b80',
     showInChooser: true,
     dayTokenAddress: '0x5a6b5c6387196bd4ea264f627792af9d09096876',
     dayTokenAbi: DAYTokenABI,

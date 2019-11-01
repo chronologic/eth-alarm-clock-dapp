@@ -89,7 +89,7 @@ class AbstractSetting extends Component {
 
   ethereumAddressValidator() {
     return {
-      validator: (value, web3) => (web3.isAddress(value) ? 0 : 1),
+      validator: (value, web3) => (web3.utils.isAddress(value) ? 0 : 1),
       errors: ['Please provide a valid address']
     };
   }

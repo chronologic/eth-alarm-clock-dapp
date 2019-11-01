@@ -45,6 +45,8 @@ function createWindow() {
     }
   });
 
+  // mainWindow.webContents.openDevTools();
+
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
 
