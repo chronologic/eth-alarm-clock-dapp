@@ -98,7 +98,7 @@ export default class Web3Service {
   }
 
   getTokenTransfers(address, fromBlock = 0) {
-    const filter = this.web3.eth.getPastLogs({
+    return this.web3.eth.getPastLogs({
       fromBlock,
       toBlock: 'latest',
       topics: [
@@ -106,12 +106,6 @@ export default class Web3Service {
         null, // from
         '0x' + '0'.repeat(24) + address.slice(2) // to
       ]
-    });
-
-    return new Promise(resolve => {
-      filter.get((_, res) => {
-        resolve(res);
-      });
     });
   }
 

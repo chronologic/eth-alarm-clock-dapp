@@ -1,4 +1,4 @@
-FROM nginx:1.15.6-alpine
+FROM nginx:1.17.5-alpine
 
 RUN apk update && apk add --no-cache bash git jq nano python alpine-sdk nginx nodejs nodejs-npm
 
