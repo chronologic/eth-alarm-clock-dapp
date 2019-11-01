@@ -1,5 +1,5 @@
 // window is not defined in the worker context
-// so we need to patch it for some packages that expect it to be defined (*cough* web3 *cough*)
+// this makes window globally available for scripts that expect it
 if (self) {
   self.window = self;
 }
