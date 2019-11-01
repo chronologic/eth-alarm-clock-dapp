@@ -85,7 +85,7 @@ export default class TokenHelper {
 
     const details = this._decodeTransactionData(callData, functionName, params);
 
-    details.map((val, index) => (details[params[index].name] = val));
+    details.forEach((val, index) => (details[params[index].name] = val));
 
     return details;
   }
@@ -231,9 +231,7 @@ export default class TokenHelper {
     };
 
     try {
-      details.decimals = (await Bb.fromCallback(callback =>
-        contract.decimals.call(callback)
-      )).valueOf();
+      details.decimals = await contract.methods.decimals().call();
     } catch (error) {
       console.error(
         'Trying to call token decimals() function failed. Falling back to decimals: 0.',
@@ -255,7 +253,7 @@ export default class TokenHelper {
           data: SYMBOL_CALL_DATA
         },
         (error, result) => {
-          resolve(cleanAsciiText(this._web3.toAscii(result)));
+          resolve(cleanAsciiText(this._web3.utils.hexToAscii(result)));
         }
       );
     });
@@ -271,7 +269,7 @@ export default class TokenHelper {
           data: NAME_CALL_DATA
         },
         (error, result) => {
-          resolve(cleanAsciiText(this._web3.toAscii(result)));
+          resolve(cleanAsciiText(this._web3.utils.hexToAscii(result)));
         }
       );
     });
@@ -362,18 +360,17 @@ export default class TokenHelper {
     }
 
     let types = [];
-    // const Coder = require('web3/lib/solidity/coder');
     for (let p = 0; p < params.length; p++) {
       types.push(params[p].type);
     }
     const funcName = `${functionName}(${types.join(',')})`;
     const preparedData = callData.substring(this._encodeFunctionName(funcName).length);
+    const decodedParamsObj = this._web3.eth.abi.decodeParameters(types, preparedData);
 
-    console.log({
-      types,
-      preparedData
-    });
-    // return Coder.decodeParams(types, preparedData);
+    return Object.keys(decodedParamsObj)
+      .map(Number)
+      .filter(num => !isNaN(num))
+      .map(key => decodedParamsObj[key]);
   }
 
   /**

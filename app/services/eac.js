@@ -13,7 +13,7 @@ export const TRANSACTION_EVENT = {
 
 const getAdditionalProperties = () => ({
   getRequestLibInstance(address) {
-    return new web3.web3.eth.Contract(RequestLib, address);
+    return web3.eth.contract(RequestLib).at(address);
   },
 
   calcEndowment(gasAmount = 0, amountToSend = 0, gasPrice = 0, fee = 0, payment = 0) {

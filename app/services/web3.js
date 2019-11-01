@@ -274,7 +274,7 @@ export default class Web3Service {
 
   toBoolean(hexString) {
     if (hexString === '0x') hexString = '0x0';
-    return this.web3.toBigNumber(hexString).toString() === '1';
+    return this.web3.utils.toBN(hexString).toString() === '1';
   }
 
   supportsEIP165(address) {
