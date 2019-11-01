@@ -25,7 +25,7 @@ class ConfirmModal extends Component {
               <p>{this.props.modalBody}</p>
             </div>
             <div className="modal-footer">
-              <div className="row">
+              <div className="row col-md-8">
                 <div className="col-md-6">
                   <button
                     className="btn btn-light btn-block"
