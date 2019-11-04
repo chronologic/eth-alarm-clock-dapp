@@ -33,9 +33,10 @@ describe('App', () => {
       },
       explorer: TEST_EXPLORER,
       web3: {
-        fromWei: a => a,
-        toWei: a => a,
-        isConnected: () => true,
+        utils: {
+          fromWei: a => a,
+          toWei: a => a
+        },
         eth: {
           contract() {
             return {
@@ -49,7 +50,12 @@ describe('App', () => {
           getBlockNumber(callback) {
             callback(null, 9999999);
           },
-          getAccounts: () => []
+          getAccounts: () => [],
+          net: {
+            isListening() {
+              return Promise.resolve(true);
+            }
+          }
         },
 
         sha3() {
@@ -130,7 +136,7 @@ describe('App', () => {
 
     const scheduleStore = new ScheduleStore();
 
-    const keenStore = {};
+    const analyticsStore = {};
 
     const dateTimeValidatorStore = new DateTimeValidator();
 
@@ -145,7 +151,7 @@ describe('App', () => {
       eacService,
       eacStore,
       featuresService,
-      keenStore,
+      analyticsStore,
       scheduleStore,
       storageService,
       tokenHelper,

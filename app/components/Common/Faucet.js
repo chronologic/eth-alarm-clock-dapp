@@ -24,7 +24,8 @@ class Faucet extends MetamaskComponent {
     faucetBalance: 0,
     waitTime: 3600,
     waitTimeLeft: 0,
-    lastUsed: ''
+    lastUsed: '',
+    isEligible: false
   };
 
   instance = {};
@@ -40,12 +41,13 @@ class Faucet extends MetamaskComponent {
   }
 
   get isEligible() {
-    return (
-      this.isWeb3Usable &&
-      this.state.loaded &&
-      this.networkHasFaucet &&
-      this.state.defaultAccount &&
-      this.waitTimeLeft == 0
+    return this.isWeb3Usable.then(
+      isWeb3Usable =>
+        isWeb3Usable &&
+        this.state.loaded &&
+        this.networkHasFaucet &&
+        this.state.defaultAccount &&
+        this.waitTimeLeft == 0
     );
   }
 
@@ -98,7 +100,8 @@ class Faucet extends MetamaskComponent {
       dayTokenAddress: web3Service.network.dayTokenAddress
     });
 
-    if (!this.isWeb3Usable || !this.state.faucetAddress) {
+    const isWeb3Usable = await this.isWeb3Usable;
+    if (!isWeb3Usable || !this.state.faucetAddress) {
       return;
     }
 
@@ -107,7 +110,8 @@ class Faucet extends MetamaskComponent {
     } = this.props;
 
     const faucetAbi = web3Service.network.dayFaucetAbi;
-    this.instance = web3.eth.contract(faucetAbi).at(this.state.faucetAddress);
+    this.instance = new web3.eth.Contract(faucetAbi, this.state.faucetAddress);
+    const isEligible = await this.isEligible;
 
     this.setState({
       faucetBalance: Number(
@@ -121,7 +125,8 @@ class Faucet extends MetamaskComponent {
       waitTime: Number(await Bb.fromCallback(callback => this.instance.waitTime(callback))),
       allowedTokens: Number(
         await Bb.fromCallback(callback => this.instance.allowedTokens(callback))
-      )
+      ),
+      isEligible
     });
 
     this.setWaitTime();
@@ -172,6 +177,7 @@ class Faucet extends MetamaskComponent {
 
   render() {
     const { web3Service } = this.props;
+    const { isEligible } = this.state;
     const explorer = web3Service.explorer;
 
     const dayTokenAddressProps = this.hrefProps();
@@ -283,7 +289,7 @@ class Faucet extends MetamaskComponent {
             </div>
             <button
               className="btn btn-primary pull-right btn-lg"
-              disabled={!this.isEligible || this.state.faucetBalance < this.state.allowedTokens}
+              disabled={!isEligible || this.state.faucetBalance < this.state.allowedTokens}
               onClick={this.useFaucet}
             >
               Get Testnet DAY

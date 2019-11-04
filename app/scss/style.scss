@@ -1,23 +1,24 @@
-$primary-color: #21FFFF;
+$primary-color: #21ffff;
 $warning-color: gold;
 
 /* PAGES TEMPLATE OVERRIDES */
 
-#root, .app-container {
+#root,
+.app-container {
   height: 100%;
 }
 
 .brand {
-	margin-left: 20px;
+  margin-left: 20px;
 }
 
 .page-content-wrapper {
-	background: url(../assets/img/background.jpg) no-repeat center center fixed;
+  background: url(../assets/img/background.jpg) no-repeat center center fixed;
   background-size: cover;
 }
 
 .header {
-	background: transparent;
+  background: transparent;
   border-bottom: none;
   background: rgba(0, 0, 0, 0.5);
 
@@ -29,7 +30,8 @@ $warning-color: gold;
     transition: ease-in 0.3s;
     cursor: pointer;
 
-    &:hover, &:visited {
+    &:hover,
+    &:visited {
       color: #fff;
     }
   }
@@ -71,6 +73,9 @@ $warning-color: gold;
   &-item {
     margin: 0px 4px;
     white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   & .search-text {
@@ -93,7 +98,7 @@ $warning-color: gold;
 
 .page-sidebar {
   & .sidebar-header {
-    background-color: #1D252A;
+    background-color: #1d252a;
   }
   & .icon-thumbnail.active {
     background: $primary-color;
@@ -103,24 +108,21 @@ $warning-color: gold;
 
 .datepicker {
   & thead tr .prev::before {
-    content: "<";
+    content: '<';
   }
   & thead tr .next::before {
-    content: ">";
+    content: '>';
   }
 }
 
-
-[data-toggle=buttons] {
-
-  & > .btn input[type=radio],
-  & > .btn-group > .btn input[type=radio] {
-      position: absolute;
-      clip: rect(0, 0, 0, 0);
-      pointer-events: none;
+[data-toggle='buttons'] {
+  & > .btn input[type='radio'],
+  & > .btn-group > .btn input[type='radio'] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
   }
 }
-
 
 .input-group {
   flex-wrap: nowrap;
@@ -142,7 +144,7 @@ $warning-color: gold;
 }
 
 .overlay-close {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .nav-tabs-simple > li > a::after {
@@ -161,7 +163,6 @@ $warning-color: gold;
     color: #fff;
   }
 }
-
 
 $titleColor: #fff;
 
@@ -184,13 +185,13 @@ hr {
 }
 
 .view-title {
-	color: $titleColor;
-	font-size: 32px;
-	font-weight: normal;
+  color: $titleColor;
+  font-size: 32px;
+  font-weight: normal;
 }
 
 .view-subtitle {
-	color: transparentize($color: $titleColor, $amount: 0.35);
+  color: transparentize($color: $titleColor, $amount: 0.35);
 }
 
 .text-grey {
@@ -214,7 +215,7 @@ hr {
 }
 
 .horizontal-center {
-	text-align: center;
+  text-align: center;
 }
 
 .absolute-center {
@@ -231,13 +232,13 @@ hr {
   }
 }
 
-.loader{
-	width: 50px;
-	height: 50px;
-	background-size: 100% auto;
-	margin: 0 auto;
-	margin-top:7%;
-	margin-bottom: 24px;
+.loader {
+  width: 50px;
+  height: 50px;
+  background-size: 100% auto;
+  margin: 0 auto;
+  margin-top: 7%;
+  margin-bottom: 24px;
 }
 
 .subsection {
@@ -248,13 +249,15 @@ hr {
   }
 }
 
-#scheduleWizard .footer-buttons, .subsection .footer-buttons{
-	margin-top: 15px;
-	display:block;
-	height:6.5%;
+#scheduleWizard .footer-buttons,
+.subsection .footer-buttons {
+  margin-top: 15px;
+  display: block;
+  height: 6.5%;
 }
 
-#confirmSettings table td, #transactionScanner table td {
+#confirmSettings table td,
+#transactionScanner table td {
   padding: 10px 20px;
   word-wrap: normal;
   text-overflow: ellipsis;
@@ -297,7 +300,7 @@ hr {
     & > a::after {
       border-color: #fff;
       width: inherit;
-      content: "";
+      content: '';
       display: block;
       position: absolute;
       left: 0;
@@ -313,13 +316,24 @@ hr {
     & > a.active::after {
       margin-left: 0px;
       border-color: #fff;
-      clip-path: polygon(0 0, calc(50% - 10px) 0, 50% 50%, calc(50% + 10px) 0, 100% 0, 100% 100%, 0 100%);
+      clip-path: polygon(
+        0 0,
+        calc(50% - 10px) 0,
+        50% 50%,
+        calc(50% + 10px) 0,
+        100% 0,
+        100% 100%,
+        0 100%
+      );
     }
   }
 }
 
 .analytics-name {
   color: $primary-color;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .analytics-count {
@@ -347,7 +361,7 @@ hr {
   background: #000;
 }
 
-@media(max-width: 768px) {
+@media (max-width: 768px) {
   #scheduleWizard .nav li a .tab-icon-wrapper {
     text-align: center !important;
   }
@@ -357,7 +371,8 @@ hr {
   font-size: 20px;
 }
 
-.pagination-entry, .pagination-arrow {
+.pagination-entry,
+.pagination-arrow {
   cursor: pointer;
 }
 
@@ -425,7 +440,7 @@ hr {
 }
 
 .sidebar-separator {
-  border-color: #1D1F27;
+  border-color: #1d1f27;
   display: none;
 }
 

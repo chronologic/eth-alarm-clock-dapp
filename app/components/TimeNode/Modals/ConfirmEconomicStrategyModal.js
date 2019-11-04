@@ -70,7 +70,7 @@ class ConfirmClaimingModal extends Component {
               />
             </div>
             <div className="modal-footer">
-              <div className="row">
+              <div className="row col-md-8">
                 <div className="col-md-6">
                   <button className="btn btn-light btn-block" type="button" data-dismiss="modal">
                     Cancel

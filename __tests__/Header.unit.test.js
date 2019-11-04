@@ -33,17 +33,20 @@ describe('Header', () => {
         eth: {
           getBlockNumber(callback) {
             callback(null, CURRENT_BLOCK);
-          }
-        },
-        version: {
-          getNetwork(callback) {
-            callback(null, KOVAN_NETWORK_ID);
+          },
+          net: {
+            getId(callback) {
+              callback(null, KOVAN_NETWORK_ID);
+            },
+            isListening() {
+              return Promise.resolve(true);
+            }
           }
         }
       }
     });
 
-    const keenStore = {};
+    const analyticsStore = {};
     const featuresService = {};
 
     const storageService = new LocalStorageService(new LocalStorageMock());
@@ -54,7 +57,7 @@ describe('Header', () => {
 
     const injectables = {
       featuresService,
-      keenStore,
+      analyticsStore,
       storageService,
       web3Service,
       timeNodeStore,

@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { ActiveTimeNodesGraph, TimeBountiesGraph, ProcessedTransactionsGraph } from './Network';
+import { TimeBountiesGraph, ProcessedTransactionsGraph, ActiveTimeNodesGraph } from './Network';
 import { BeatLoader } from 'react-spinners';
 
-@inject('keenStore')
+@inject('analyticsStore')
 @inject('timeNodeStore')
 @observer
 class TimeNodeNetwork extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      historyPollingInterval: props.keenStore.historyPollingInterval
+      historyPollingInterval: props.analyticsStore.historyPollingInterval
     };
   }
 
   componentDidMount() {
+    this.props.analyticsStore.refreshActiveTimeNodesHistory();
     this.activeTimeNodesFetchInterval = setInterval(
-      () => this.props.keenStore.refreshActiveTimeNodesHistory(),
-      this.props.keenStore.historyPollingInterval
+      () => this.props.analyticsStore.refreshActiveTimeNodesHistory(),
+      this.props.analyticsStore.historyPollingInterval
     );
   }
 
@@ -29,14 +30,13 @@ class TimeNodeNetwork extends Component {
   }
 
   componentDidUpdate() {
-    const newInterval = this.props.keenStore.historyPollingInterval;
+    const newInterval = this.props.analyticsStore.historyPollingInterval;
     const { historyPollingInterval } = this.state;
-
     if (historyPollingInterval !== newInterval) {
       this.setState({ historyPollingInterval: newInterval });
       clearInterval(this.activeTimeNodesFetchInterval);
       this.activeTimeNodesFetchInterval = setInterval(
-        () => this.props.keenStore.refreshActiveTimeNodesHistory(),
+        () => this.props.analyticsStore.refreshActiveTimeNodesHistory(),
         newInterval
       );
     }
@@ -57,7 +57,7 @@ class TimeNodeNetwork extends Component {
       historyActiveTimeNodes,
       gettingActiveTimeNodesHistory,
       isBlacklisted
-    } = this.props.keenStore;
+    } = this.props.analyticsStore;
 
     const shouldShowActiveTimeNodesGraph =
       (historyActiveTimeNodes.length > 0 && !gettingActiveTimeNodesHistory) || isBlacklisted;
@@ -83,7 +83,7 @@ class TimeNodeNetwork extends Component {
                           data-toggle="refresh"
                           className="card-refresh"
                           onClick={async () =>
-                            await this.props.keenStore.refreshActiveTimeNodesHistory()
+                            await this.props.analyticsStore.refreshActiveTimeNodesHistory()
                           }
                         >
                           <i className="card-icon card-icon-refresh" />
@@ -175,7 +175,7 @@ class TimeNodeNetwork extends Component {
 }
 
 TimeNodeNetwork.propTypes = {
-  keenStore: PropTypes.any,
+  analyticsStore: PropTypes.any,
   timeNodeStore: PropTypes.any
 };
 

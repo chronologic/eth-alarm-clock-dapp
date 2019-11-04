@@ -140,8 +140,8 @@ export default class TransactionFetcher {
     const requests = [];
     logs.forEach(log => {
       requests.push({
-        address: log.args.request,
-        params: log.args.params
+        address: log.request,
+        params: log.params
       });
     });
 
@@ -207,27 +207,32 @@ export default class TransactionFetcher {
         ? this._web3._web3AlternativeToMetaMask
         : this._web3.web3;
 
-    const requestFactory = web3.eth.contract(RequestFactoryABI).at(this._requestFactory.address);
-
-    let transactions = await new Promise(resolve => {
-      requestFactory
-        .RequestCreated(
-          {
+    const requestFactory = new web3.eth.Contract(RequestFactoryABI, this._requestFactory.address);
+    let transactions = await new Promise((resolve, reject) => {
+      requestFactory.getPastEvents(
+        'RequestCreated',
+        {
+          filter: {
             bucket: buckets
           },
-          {
-            fromBlock: this.requestFactoryStartBlock,
-            toBlock: 'latest'
+          fromBlock: this.requestFactoryStartBlock,
+          toBlock: 'latest'
+        },
+        (error, events) => {
+          if (error) {
+            return reject(error);
           }
-        )
-        .get((error, events) => {
           resolve(
-            events.map(log => ({
-              address: log.args.request,
-              params: log.args.params
-            }))
+            events.map(log => {
+              const { request, params } = log.args || log.returnValues || {};
+              return {
+                address: request,
+                params: params
+              };
+            })
           );
-        });
+        }
+      );
     });
 
     transactions.reverse(); // Switch to most recent block first
@@ -268,7 +273,7 @@ export default class TransactionFetcher {
 
     const logs = await this.getRequestCreatedLogs(startBlock, endBlock);
 
-    const transactions = logs.map(({ args: { request: address, params } }) => {
+    const transactions = logs.map(({ request: address, params }) => {
       const request = this._eac.transactionRequest(address);
 
       request.data = this.getDataForRequestParams(params, request);
@@ -369,19 +374,13 @@ export default class TransactionFetcher {
     let allEvents = [];
 
     for (let i = 0; i < addresses.length; i += MAX_ADDRESSES_AMOUNT_IN_CHUNK) {
-      await new Promise(resolve => {
-        this._web3
-          .filter({
-            address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
-            topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
-            fromBlock: this.requestFactoryStartBlock,
-            toBlock: 'latest'
-          })
-          .get((error, events) => {
-            allEvents = allEvents.concat(...events);
-            resolve();
-          });
+      const events = await this._web3.web3.eth.getPastLogs({
+        address: addresses.slice(i, i + MAX_ADDRESSES_AMOUNT_IN_CHUNK),
+        topics: [[ABORTED_TOPIC, CANCELLED_TOPIC, EXECUTED_TOPIC]],
+        fromBlock: this.requestFactoryStartBlock,
+        toBlock: 'latest'
       });
+      allEvents = allEvents.concat(...events);
     }
 
     return allEvents;
@@ -397,7 +396,9 @@ export default class TransactionFetcher {
     const cachedEvents = this._cache.addressesEvents;
 
     if (cachedEvents) {
-      addressesToCheck = addresses.filter(address => typeof cachedEvents[address] === 'undefined');
+      addressesToCheck = addresses.filter(
+        address => typeof cachedEvents[address] === 'undefined' && address.length > 2
+      );
     }
 
     const events = await this.getTransactionsEventsForAddresses(addressesToCheck);

@@ -43,15 +43,16 @@ class ReleaseNotesModal extends Component {
     const converter = new showdown.Converter();
 
     const allReleaseNotes = [];
+    let i = 0;
 
-    for (let note of releaseNotes) {
+    releaseNotes.forEach((note, i) => {
       allReleaseNotes.push(
-        <div className="release-notes-row" key={note.name}>
+        <div className="release-notes-row" key={note.name + i}>
           <h2>{note.name}</h2>
           <p dangerouslySetInnerHTML={{ __html: converter.makeHtml(note.body) }} />
         </div>
       );
-    }
+    });
 
     return (
       <div

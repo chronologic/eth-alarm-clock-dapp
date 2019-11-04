@@ -5,7 +5,7 @@ import TimeNodeStore from './TimeNodeStore';
 import { services } from '../services';
 import ScheduleStore from './ScheduleStore';
 import DateTimeValidatorStore from './DateTimeValidatorStore';
-import { KeenStore } from './KeenStore';
+import { AnalyticsStore } from './AnalyticsStore';
 import TransactionFetcher from './TransactionFetcher';
 import TransactionCache from './TransactionCache';
 import TransactionHelper from '../services/transaction-helper';
@@ -28,10 +28,9 @@ const eacVersions = {
   lib: eacService.version
 };
 
-const keenStore = new KeenStore(
-  process.env.KEEN_PROJECT_ID,
-  process.env.KEEN_WRITE_KEY,
-  process.env.KEEN_READ_KEY,
+const analyticsStore = new AnalyticsStore(
+  process.env.MIXPANEL_TOKEN,
+  process.env.MIXPANEL_QUERY_TOKEN,
   web3Service,
   eacVersions
 );
@@ -61,7 +60,12 @@ export const transactionStore = new TransactionStore(
   transactionHelper,
   bucketHelper
 );
-export const timeNodeStore = new TimeNodeStore(eacService, web3Service, keenStore, storageService);
+export const timeNodeStore = new TimeNodeStore(
+  eacService,
+  web3Service,
+  analyticsStore,
+  storageService
+);
 
 export const transactionStatistics = new TransactionStatistics(transactionHelper, transactionStore);
 
@@ -75,7 +79,7 @@ export const stores = {
   dateTimeValidatorStore,
   eacStore,
   loadingStateStore,
-  keenStore,
+  analyticsStore,
   routing: routingStore,
   scheduleStore,
   timeNodeStore,
