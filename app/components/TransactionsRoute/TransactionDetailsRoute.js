@@ -86,7 +86,7 @@ class TransactionDetailsRoute extends Component {
 
     if (transactionHasNoBasicData) {
       const requestCreatedLog = transactionCache.requestCreatedLogs.find(
-        l => l.args.request === transaction.address
+        l => l.request === transaction.address
       );
 
       if (requestCreatedLog) {

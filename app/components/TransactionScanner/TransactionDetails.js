@@ -285,7 +285,7 @@ class TransactionDetails extends Component {
     const { owner } = transaction;
     const { accounts } = this.props.web3Service;
 
-    return accounts[0] == owner;
+    return accounts[0].toLowerCase() == owner.toLowerCase();
   }
 
   proxyInputOnChange(e) {
