@@ -18,22 +18,17 @@ export default class TokenHelper {
   async approveTokenTransfer(token, receiver, amount) {
     const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
-    return contract.methods.approve(receiver, amount).send({ from: this._defaultAccount });
+    return contract.methods
+      .approve(receiver, amount)
+      .send({ from: this._defaultAccount || this._firstAccount });
   }
 
   async approveERC721Transfer(token, spender, collectibleId) {
     const contract = new this._web3.eth.Contract(ERC721Abi, token);
 
-    console.log({
-      token,
-      spender,
-      collectibleId,
-      contract,
-      first: this._firstAccount,
-      default: this._defaultAccount
-    });
-
-    return contract.methods.approve(spender, collectibleId).send({ from: this._firstAccount });
+    return contract.methods
+      .approve(spender, collectibleId)
+      .send({ from: this._defaultAccount || this._firstAccount });
   }
 
   isTokenTransferTransaction(callData) {
@@ -52,7 +47,7 @@ export default class TokenHelper {
   async isTokenTransferApproved(token, owner, spender, value) {
     const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
-    const allowance = contract.methods.allowance(owner, spender).call();
+    const allowance = await contract.methods.allowance(owner, spender).call();
 
     return Number(allowance) >= Number(value);
   }
@@ -91,7 +86,9 @@ export default class TokenHelper {
   async getTokenTransferData(token, receiver, amount) {
     const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
-    return contract.methods.transferFrom(this._firstAccount, receiver, amount).encodeABI();
+    return contract.methods
+      .transferFrom(this._firstAccount, receiver, this._web3.utils.toHex(amount))
+      .encodeABI();
   }
 
   async estimateTokenTransfer(token, receiver, amount) {
@@ -101,7 +98,7 @@ export default class TokenHelper {
 
     const contract = new this._web3.eth.Contract(standardTokenAbi, token);
 
-    return await contract.methods.transfer(receiver, amount).estimateGas();
+    return contract.methods.transfer(receiver, this._web3.utils.toHex(amount)).estimateGas();
   }
 
   async estimateERC721Transfer(tokenAddress, from, to, tokenId) {
@@ -118,11 +115,11 @@ export default class TokenHelper {
     const config = this.getTokenConfig(tokenAddress);
 
     if (config && config.supportedMethods && config.supportedMethods.safeTransferFrom) {
-      return await contract.methods.safeTransferFrom(from, to, tokenId).estimateGas();
+      return contract.methods.safeTransferFrom(from, to, tokenId).estimateGas();
     }
 
     try {
-      return await contract.methods.transferFrom(from, to, tokenId).estimateGas();
+      return contract.methods.transferFrom(from, to, tokenId).estimateGas();
     } catch (error) {
       const cryptoKittiesContract = new this._web3.eth.Contract(
         cryptoKittiesTokenAbi,
@@ -132,7 +129,7 @@ export default class TokenHelper {
         'Error when estimating gas cost for ERC721 transferFrom. Falling back to estimation for transfer.',
         error
       );
-      return await cryptoKittiesContract.methods.transfer(to, tokenId).estimateGas();
+      return cryptoKittiesContract.methods.transfer(to, tokenId).estimateGas();
     }
   }
 
