@@ -70,7 +70,7 @@ export class TransactionStore {
   }
 
   async updateLastBlock() {
-    return await this._fetcher.updateLastBlock();
+    return this._fetcher.updateLastBlock();
   }
 
   // Returns an array of only the addresses of all transactions
@@ -157,7 +157,7 @@ export class TransactionStore {
       return this._fetcher.allTransactionsAddresses;
     }
 
-    return await this._fetcher.getTransactions({}, true, true);
+    return this._fetcher.getTransactions({}, true, true);
   }
 
   /**
@@ -291,7 +291,7 @@ export class TransactionStore {
     let transactions = await this.getTransactions({ startBlock, endBlock });
 
     if (resolved || unresolved) {
-      return await this._queryTransactions({
+      return this._queryTransactions({
         transactions,
         offset,
         limit,
@@ -333,11 +333,11 @@ export class TransactionStore {
   async getTransactionByAddress(address) {
     await this._web3.init();
 
-    return await this._eac.transactionRequest(address, this._web3);
+    return this._eac.transactionRequest(address, this._web3);
   }
 
   async isTransactionFrozen(transaction) {
-    return await transaction.inFreezePeriod();
+    return transaction.inFreezePeriod();
   }
 
   isTxUnitTimestamp(transaction) {
@@ -345,11 +345,11 @@ export class TransactionStore {
   }
 
   async cancel(transaction, txParameters) {
-    return await transaction.cancel(txParameters);
+    return transaction.cancel(txParameters);
   }
 
   async refund(transaction, txParameters) {
-    return await transaction.sendOwnerEther(txParameters);
+    return transaction.sendOwnerEther(txParameters);
   }
 
   async getBountiesForBucket(windowStart, isUsingTime) {

@@ -21,8 +21,10 @@ const CRYPTO_KITTIES_API_KEY = process.env.CRYPTO_KITTIES_API_KEY;
 export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
-      ws: 'wss://mainnet.infura.io/ws/v3/22ac4c94510047f8bfc8cddf18055a3e',
-      http: 'https://mainnet.infura.io/v3/22ac4c94510047f8bfc8cddf18055a3e'
+      ws:
+        'wss://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/',
+      http:
+        'https://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/'
     },
     DAPPNODE: {
       ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',

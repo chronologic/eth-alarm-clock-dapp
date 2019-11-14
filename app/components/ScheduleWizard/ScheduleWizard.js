@@ -236,7 +236,7 @@ class ScheduleWizard extends Component {
       isTokenTransfer
     } = scheduleStore;
 
-    amountToSend = web3.utils.toWei(String(amountToSend), 'ether');
+    amountToSend = web3.utils.toWei(String(amountToSend || 0), 'ether');
     gasPrice = web3.utils.toWei(String(gasPrice), 'gwei');
     fee = web3.utils.toWei(String(fee), 'ether');
     timeBounty = web3.utils.toWei(String(timeBounty), 'ether');
