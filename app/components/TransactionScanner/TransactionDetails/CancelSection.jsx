@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 import { BlockOrTimeDisplay } from '../BlockOrTimeDisplay';
 
 const CancelSection = props => {
-  const { cancelButtonEnabled, cancelBtnRef, cancelTransaction, claimWindowStart, executionWindowEnd, isOwner, isTimestamp, owner } = props;
+  const {
+    cancelButtonEnabled,
+    cancelBtnRef,
+    cancelTransaction,
+    claimWindowStart,
+    executionWindowEnd,
+    isOwner,
+    isTimestamp,
+    owner
+  } = props;
 
   return (
     <div className="row mt-4">
@@ -11,9 +20,8 @@ const CancelSection = props => {
         <div className="alert alert-info">
           {!isOwner && (
             <React.Fragment>
-              In order to cancel this transaction you must be the owner.
-              Please switch to account <b>{owner}</b>{' '}
-              (transaction owner).
+              In order to cancel this transaction you must be the owner. Please switch to account{' '}
+              <b>{owner}</b> (transaction owner).
               <br />
               <br />
             </React.Fragment>
@@ -22,15 +30,24 @@ const CancelSection = props => {
           <br />
           <ol className="list-normalized">
             <li>
-              Before <b>
-                <BlockOrTimeDisplay model={claimWindowStart} isTimestamp={isTimestamp} includeUnitText={true} />
+              Before{' '}
+              <b>
+                <BlockOrTimeDisplay
+                  model={claimWindowStart}
+                  isTimestamp={isTimestamp}
+                  includeUnitText={true}
+                />
               </b>{' '}
               (Claim Window Start)
             </li>
             <li>
               When wasn&#39;t executed by any TimeNode after{' '}
               <b>
-                <BlockOrTimeDisplay model={executionWindowEnd} isTimestamp={isTimestamp} includeUnitText={true} />
+                <BlockOrTimeDisplay
+                  model={executionWindowEnd}
+                  isTimestamp={isTimestamp}
+                  includeUnitText={true}
+                />
               </b>{' '}
               (Execution Window End)
             </li>
@@ -49,7 +66,6 @@ const CancelSection = props => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -62,6 +78,7 @@ CancelSection.propTypes = {
   claimWindowStart: PropTypes.any,
   executionWindowEnd: PropTypes.any,
   isOwner: PropTypes.any,
+  isTimestamp: PropTypes.any,
   owner: PropTypes.any
 };
 

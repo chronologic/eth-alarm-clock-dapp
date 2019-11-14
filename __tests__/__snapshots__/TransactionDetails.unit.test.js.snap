@@ -229,7 +229,8 @@ exports[`TransactionDetails correctly renders 1`] = `
           className="list-normalized"
         >
           <li>
-            Before 
+            Before
+             
             <b>
               
             </b>
