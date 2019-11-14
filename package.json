@@ -132,7 +132,7 @@
     "wait-on": "3.2.0",
     "web3": "0.20.7",
     "web3-1": "npm:web3@^1.2.2",
-    "web3-providers-ws": "1.2.2",
+    "web3-providers-ws": "1.2.3",
     "webpack": "4.32.2",
     "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.3.2",
