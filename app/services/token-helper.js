@@ -119,7 +119,7 @@ export default class TokenHelper {
     }
 
     try {
-      return contract.methods.transferFrom(from, to, tokenId).estimateGas();
+      return await contract.methods.transferFrom(from, to, tokenId).estimateGas();
     } catch (error) {
       const cryptoKittiesContract = new this._web3.eth.Contract(
         cryptoKittiesTokenAbi,
