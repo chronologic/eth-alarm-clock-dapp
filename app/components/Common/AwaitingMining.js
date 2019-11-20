@@ -7,6 +7,8 @@ const loaderConfig = {
   color: '#21ffff'
 };
 
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 @inject('transactionStore')
 @inject('web3Service')
 @observer
@@ -38,6 +40,7 @@ class AwaitingMining extends Component {
     }
 
     const txReceipt = await web3Service.waitForMining(hash);
+    await wait(5000);
 
     const requestAddress = transactionStore.getAndSaveRequestFromLogs(txReceipt.logs);
 
