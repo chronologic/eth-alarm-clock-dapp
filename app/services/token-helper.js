@@ -65,7 +65,7 @@ export default class TokenHelper {
       approved = (await contract.methods.kittyIndexToApproved(tokenId).call()).valueOf();
     }
 
-    return approved === scheduledTxAddress;
+    return (approved || '').toLowerCase() === (scheduledTxAddress || '').toLowerCase();
   }
 
   async getTokenTransferInfoFromData(callData) {

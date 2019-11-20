@@ -118,7 +118,7 @@ class TransactionDetails extends Component {
     this.cancelBtn.innerHTML = 'Canceling...';
 
     try {
-      const success = await transactionStore.cancel(transaction);
+      const success = await transactionStore.cancel(transaction, { from: transaction.owner });
       if (success) {
         this.setState({
           status: TRANSACTION_STATUS.CANCELLED
@@ -126,6 +126,7 @@ class TransactionDetails extends Component {
         this.checkContractBalance();
       }
     } catch (error) {
+      console.error(error);
       showNotification('Action cancelled by the user.', 'danger', 0);
       this.cancelBtn.innerHTML = 'Cancel';
     }
@@ -302,13 +303,14 @@ class TransactionDetails extends Component {
     target.innerHTML = 'Refunding...';
 
     try {
-      const success = await transactionStore.refund(transaction);
+      const success = await transactionStore.refund(transaction, { from: transaction.owner });
       if (success) {
         showNotification(`Funds successfully refunded: ${success.transactionHash}`, 'success', 0);
         this.setState({ balance: 0 });
         this.checkContractBalance();
       }
     } catch (error) {
+      console.error(error);
       showNotification('Action cancelled by the user.', 'danger', 0);
     }
     target.innerHTML = 'Refund Balance';
@@ -418,7 +420,7 @@ class TransactionDetails extends Component {
         }
 
         if (!tokenTransferApproved) {
-          this.tokenCheckInterval = setInterval(checkTransferApproved, 1000);
+          this.tokenCheckInterval = setInterval(checkTransferApproved, 5000);
         }
       } else {
         tokenTransferApproved = true;
