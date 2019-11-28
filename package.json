@@ -60,7 +60,7 @@
     "babel-loader": "8.0.6",
     "babel-plugin-transform-class-properties": "6.24.1",
     "bignumber.js": "5.0.0",
-    "bluebird": "3.5.5",
+    "bluebird": "3.7.2",
     "bootstrap": "4.3.1",
     "bootstrap-datepicker": "1.9.0",
     "bootstrap-timepicker": "0.5.2",
