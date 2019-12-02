@@ -70,7 +70,7 @@
     "concurrently": "4.1.0",
     "copy-webpack-plugin": "4.6.0",
     "crypto-js": "3.1.9-1",
-    "css-loader": "1.0.1",
+    "css-loader": "3.2.1",
     "debug": "4.1.1",
     "dotenv-webpack": "1.7.0",
     "eac-counter": "0.1.2",
