@@ -67,7 +67,7 @@
     "browserslist": "4.6.0",
     "chart.js": "2.8.0",
     "compression-webpack-plugin": "2.0.0",
-    "concurrently": "4.1.0",
+    "concurrently": "5.0.2",
     "copy-webpack-plugin": "4.6.0",
     "crypto-js": "3.1.9-1",
     "css-loader": "1.0.1",
