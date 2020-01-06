@@ -164,7 +164,7 @@ exports[`SidePanel is correctly rendered 1`] = `
       </li>
       <li>
         <a
-          href="https://blog.chronologic.network/automate-meets-zapier-acd09d31c166"
+          href="https://blog.chronologic.network/search?q=zapier"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -376,7 +376,7 @@ exports[`SidePanel is correctly rendered 1`] = `
       >
         <small>
           * Some data provided by Nomics.com
-           
+
           <a
             href="https://p.nomics.com/cryptocurrency-bitcoin-api"
             rel="noopener noreferrer"
