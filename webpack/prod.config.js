@@ -46,7 +46,13 @@ module.exports = merge(baseConfig, {
     minimizer: [
       // Uglifies and minifies the JS
       new TerserPlugin({
-        parallel: true
+        parallel: true,
+        // https://github.com/ethereum/web3.js/issues/1043
+        terserOptions: {
+          mangle: {
+            reserved: ['BigNumber']
+          }
+        }
       }),
       new webpack.optimize.AggressiveMergingPlugin(),
       new webpack.optimize.OccurrenceOrderPlugin(),

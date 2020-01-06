@@ -199,7 +199,7 @@ class SidePanel extends Component {
             </li>
             <li>
               <a
-                href="https://blog.chronologic.network/automate-meets-zapier-acd09d31c166"
+                href="https://blog.chronologic.network/search?q=zapier"
                 target="_blank"
                 rel="noopener noreferrer"
               >
