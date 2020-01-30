@@ -64,7 +64,7 @@
     "bootstrap": "4.3.1",
     "bootstrap-datepicker": "1.9.0",
     "bootstrap-timepicker": "0.5.2",
-    "browserslist": "4.6.0",
+    "browserslist": "4.8.6",
     "chart.js": "2.8.0",
     "compression-webpack-plugin": "2.0.0",
     "concurrently": "4.1.0",
