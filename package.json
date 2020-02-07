@@ -77,7 +77,7 @@
     "eac.js-lib": "2.5.2",
     "electron": "4.2.2",
     "electron-builder": "20.42.0",
-    "electron-packager": "13.1.1",
+    "electron-packager": "14.2.1",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.13.2",
     "eslint": "5.16.0",
