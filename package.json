@@ -115,7 +115,7 @@
     "prettier": "1.17.1",
     "prop-types": "15.7.2",
     "react": "16.13.0",
-    "react-dom": "16.8.6",
+    "react-dom": "16.13.0",
     "react-hot-loader": "4.8.8",
     "react-paginate": "5.3.1",
     "react-router": "4.3.1",
