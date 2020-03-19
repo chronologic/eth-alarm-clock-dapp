@@ -122,7 +122,7 @@
     "react-router-dom": "4.3.1",
     "react-spinners": "0.4.5",
     "react-switch": "3.0.4",
-    "react-test-renderer": "16.8.6",
+    "react-test-renderer": "16.13.1",
     "resolve-url-loader": "3.1.0",
     "sass-loader": "7.1.0",
     "select2": "4.0.7",
