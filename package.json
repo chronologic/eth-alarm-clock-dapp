@@ -39,7 +39,7 @@
     ]
   },
   "dependencies": {
-    "electron-is-dev": "1.1.0",
+    "electron-is-dev": "1.2.0",
     "electron-updater": "4.0.6",
     "mixpanel-browser": "2.29.1"
   },
