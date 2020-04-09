@@ -92,7 +92,7 @@
     "ethereumjs-wallet": "0.6.2",
     "file-loader": "2.0.0",
     "github-api": "3.2.0",
-    "html-webpack-plugin": "3.2.0",
+    "html-webpack-plugin": "4.2.0",
     "husky": "2.3.0",
     "is-url": "1.2.4",
     "jest": "24.8.0",
