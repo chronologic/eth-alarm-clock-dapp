@@ -41,7 +41,7 @@
   "dependencies": {
     "electron-is-dev": "1.1.0",
     "electron-updater": "4.0.6",
-    "mixpanel-browser": "2.29.1"
+    "mixpanel-browser": "2.36.0"
   },
   "devDependencies": {
     "@babel/core": "7.4.5",
