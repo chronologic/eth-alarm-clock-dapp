@@ -118,7 +118,7 @@
     "react-dom": "16.8.6",
     "react-hot-loader": "4.8.8",
     "react-paginate": "5.3.1",
-    "react-router": "4.3.1",
+    "react-router": "5.2.0",
     "react-router-dom": "4.3.1",
     "react-spinners": "0.4.5",
     "react-switch": "3.0.4",
