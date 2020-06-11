@@ -206,7 +206,7 @@ export class AnalyticsStore {
         this.isBlacklisted = true;
       }
 
-      return response.length;
+      return response.length + 1 /* chronologic CLI timenode */;
     }
   }
 
