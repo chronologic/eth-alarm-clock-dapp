@@ -206,7 +206,7 @@ export class AnalyticsStore {
         this.isBlacklisted = true;
       }
 
-      return response.length + 1 /* chronologic CLI timenode */;
+      return response.length + 1 /* CLI timenode run by chronologic - it does not use mixpanel */;
     }
   }
 
