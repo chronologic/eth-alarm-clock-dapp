@@ -1,6 +1,6 @@
 {
   "name": "eth-alarm-clock-dapp",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "main": "main.js",
   "description": "",
   "scripts": {
