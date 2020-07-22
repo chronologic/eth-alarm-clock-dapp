@@ -72,7 +72,7 @@ async function buildElectron() {
           {
             provider: 'bintray',
             repo: 'TimeNode',
-            owner: 'kosecki123'
+            owner: 'chronologic'
           }
         ],
         // IMPORTANT: Prevents extending configs in node_modules

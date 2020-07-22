@@ -45,8 +45,6 @@ function createWindow() {
     }
   });
 
-  // mainWindow.webContents.openDevTools();
-
   // Load the index.html of the app.
   mainWindow.loadURL(MAIN_URL);
 
@@ -70,6 +68,12 @@ function createWindow() {
         enabled: false
       },
       { type: 'separator' },
+      {
+        label: 'Open Dev Tools',
+        click() {
+          mainWindow.webContents.openDevTools();
+        }
+      },
       {
         label: 'Report an Issue',
         click() {

@@ -27,14 +27,22 @@ export default class EacStore {
 
     this.contracts = await this._eac.getActiveContracts();
 
-    const eacCounter = new EacCounter();
+    const eacCounter = new EacCounter({
+      nomicsApiKey: process.env.NOMICS_API_KEY,
+      etherscanApiKey: process.env.ETHERSCAN_API_KEY
+    });
 
-    await eacCounter.enableUSDFetching(process.env.NOMICS_API_KEY);
+    await eacCounter.enableUSDFetching();
 
-    const { eth, usd } = await eacCounter.getTotalTransferred();
+    try {
+      const { eth, usd } = await eacCounter.getTotalTransferred();
 
-    this.totalEthTransferred = Math.round(eth);
-    this.totalUsdTransferred = usd ? Math.round(usd) : null;
+      console.log('TOTAL', { eth, usd });
+      this.totalEthTransferred = Math.round(eth);
+      this.totalUsdTransferred = usd ? Math.round(usd) : null;
+    } catch (e) {
+      console.error('TOTAL', e);
+    }
   }
 
   getFormattedUSDTranferred() {

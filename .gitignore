@@ -7,3 +7,5 @@ electron-builds
 yarn.lock
 TimeNode.app/
 dappnode/build_*
+signed-msg.txt
+wallet.txt
