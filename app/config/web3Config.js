@@ -22,9 +22,27 @@ export const PROVIDER_URLS = {
   MAINNET: {
     QUIKNODE: {
       ws:
-        'wss://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/',
+        // 'wss://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/',
+        // 'wss://mainnet.infura.io/ws/v3/22ac4c94510047f8bfc8cddf18055a3e',
+        randomArrayElement([
+          'wss://mainnet.infura.io/ws/v3/03782d1e57754461bb6fd774240a07c2',
+          'wss://mainnet.infura.io/ws/v3/890f3b0506e440ccb7493bb5f3ef5abc',
+          'wss://mainnet.infura.io/ws/v3/06a8f1e75e3b49f887b00adc114fff57',
+          'wss://mainnet.infura.io/ws/v3/56117f2bbe0b461f8e2690812944142c',
+          'wss://mainnet.infura.io/ws/v3/1309d15392394944b26b0328edf3e8eb',
+          'wss://mainnet.infura.io/ws/v3/09a8bfac7234446891b322c8e6c55898'
+        ]),
       http:
-        'https://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/'
+        // 'https://smoothly-included-cattle.quiknode.io/4541de38-7057-4f36-9b63-08dac0e0098e/3fjrTlXVDWwLRmrbP0KbAQ==/'
+        // 'https://mainnet.infura.io/v3/22ac4c94510047f8bfc8cddf18055a3e'
+        randomArrayElement([
+          'https://mainnet.infura.io/v3/03782d1e57754461bb6fd774240a07c2',
+          'https://mainnet.infura.io/v3/890f3b0506e440ccb7493bb5f3ef5abc',
+          'https://mainnet.infura.io/v3/06a8f1e75e3b49f887b00adc114fff57',
+          'https://mainnet.infura.io/v3/56117f2bbe0b461f8e2690812944142c',
+          'https://mainnet.infura.io/v3/1309d15392394944b26b0328edf3e8eb',
+          'https://mainnet.infura.io/v3/09a8bfac7234446891b322c8e6c55898'
+        ])
     },
     DAPPNODE: {
       ws: 'ws://my.ethchain.dnp.dappnode.eth:8546',
@@ -32,6 +50,10 @@ export const PROVIDER_URLS = {
     }
   }
 };
+
+function randomArrayElement(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
 const Networks = {
   0: {

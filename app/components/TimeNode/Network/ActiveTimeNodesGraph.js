@@ -53,7 +53,10 @@ class ActiveTimeNodesGraph extends Component {
 
       labels.push(datetime.format('H:00'));
 
-      values.push(data.filter(item => item.key[0] == datetime.toISOString()).length);
+      values.push(
+        data.filter(item => item.key[0] == datetime.toISOString()).length +
+          1 /* chronologic CLI timenode */
+      );
     }
 
     return {
